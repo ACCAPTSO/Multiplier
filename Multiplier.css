@@ -1,0 +1,71 @@
+article, aside, figure, footer, header, hgroup, menu,
+nav, section{ display: block }
+
+/* oddball colors are for debugging - can be changed to blend with the
+  background later */
+body {
+  width: 50%;
+  margin: 0 auto;
+  text-align: left;
+  background-color: cornsilk;
+}
+header {
+  background-color: #FFBBFF;
+}
+table, th {
+  border:2px solid black;
+  text-align: center;
+}
+/* classes -can be used more than once */
+.c1 {
+  margin: 0 auto;
+/*  width: 192px; */
+}
+/* carry boxes */
+.c2 {
+  width: 10px;
+  background-color: #b7baf7;
+  text-align: center;
+  border:1px solid black;
+}
+/* blanks between carry boxes */
+.b1 {
+  width: 24px; 
+  background-color: #f7eaa7; 
+  color: #e7da97; 
+  border:1px solid brown;
+}
+/* height of carry row */
+.r1 {
+  height: 14px;
+}
+/* spaces between operands */
+.s2 {
+  width: 10px;
+  background-color: #cfaf6f; 
+  color: #c0a060; 
+}
+/* operands */
+.n1 {
+  width: 24px;
+  background-color: #e7caa7; 
+  color: black; 
+  text-align: center;
+  border:1px solid orange;
+  height: 28px;
+}
+/* answer boxes */
+.a1 {
+  width: 24px;
+  background-color: #f7caa7; 
+  color: black; 
+  text-align: center;
+  border:2px solid black;
+  height: 28px;
+}
+#th-id1 {
+  background-color: #BBF0FF;
+}
+#th-id2 {
+  background-color: #FFFFBB;
+}
