@@ -11,8 +11,40 @@
 
 package process;
 // import javax.servlet.http.*;
-// trying to access request from here didn't work
+// import java.io.*;
+// import java.util.*;
 public class ProcessAns {
+    //public static void checkrow( HttpServletRequest req, Vector<Boxentry> c,
+    //        Vector<Boxentry> firstOp, Vector<Boxentry> secndOp, int whatcarry ){
+    //    HttpSession ses = req.getSession();
+    //    int sz = c.size();
+    //    String n;
+    //    Boxentry b;
+    //    int d;
+    //    int op1;
+    //    int op2;
+    //    int cin;
+    //    for( int idx = 0; idx < sz; idx++ ){
+            //b = new Boxentry(c.elementAt(idx));
+            //n = b.getNme();
+            //b.setParm(ses.getAttribute(n));
+            // this should have returned true or false and the rest should
+            // only execute if there is a new parameter
+            //b.setPrm(req.getParameter(n));
+            //d = b.getInt();
+            // was o11 and o12, hardcoding constants for now
+            //if( idx == 0 ) {
+            //    cin = 0;
+            //} else {
+            //    cin = (c.elementAt(idx-1)).getInt();
+            //}
+            //op1 = firstOp.elementAt(whatcarry).getInt();
+            //op2 = secndOp.elementAt(idx).getInt();
+            //b.setClr(checkCarry( d, op1, op2, cin ));
+            //System.out.println("From checkrow setting attribute " + n + " to " + d );
+            //ses.setAttribute( n, d );
+        //}
+    //}
     public static String param2string( String parm, String intable ){
         if( parm != null ) {
             if( !parm.matches("[0-9]") ) {
@@ -47,18 +79,73 @@ public class ProcessAns {
             if( cstr.matches("-?\\d+(\\.\\d+)?") ) {
                 Integer CInt = new Integer(cstr);
                 c1 = CInt;
-                System.out.println("I'm printing from an included package carry is " + c1 );
             }
         }
         return c1;
     }
+    public static String checkLast( int p1, int op1, int op2, int pc ) {
+        String tclr = "blue";
+        int md;
+        md = (op1*op2+pc)/10;
+        if( p1 != (op1*op2+pc)/10 ) {
+             tclr = "red";
+        } else {
+            tclr = "black";
+        } 
+                System.out.println("p1 = " + p1 + " op1 = " + op1 + " op2 = " + op2 + " tclr = " + tclr + " p1shouldbe " + md);
+        return tclr;
+    }
+    public static String checkMult( int p1, int op1, int op2, int pc ) {
+        String tclr = "fuschia";
+        int md;
+        md = (op1*op2+pc)%10;
+        if( p1 != (op1*op2+pc)%10 ) {
+            tclr = "red";
+        } else {
+            tclr = "black";
+        }
+        System.out.println("p1 = " + p1 + " op1 = " + op1 + " op2 = " + op2 +
+                " cin = " + pc +
+                " tclr = " + tclr + " p1shouldbe " + md);
+        return tclr;
+    }
     public static String checkCarry( int c1, int op1, int op2, int pc ) {
         String tclr = "pink";
+        int md;
+        md = (op1*op2+pc)/10;
         if(c1 != ( op1*op2 + pc)/10) {
             tclr = "red";
         } else {
             tclr = "black";
-        }  
+        }
+        System.out.println("c1 = " + c1 + " op1 = " + op1 + " op2 = " + op2 +
+                " cin " + pc + " tclr = " + tclr + " c1 s.b. " + md);
+        return tclr;
+    }
+    public static String checkAddCarry( int c1, int op1, int op2, int pc ) {
+        String tclr = "pink";
+        int md;
+        md = (op1+op2+pc)/10;
+        if(c1 == md ){
+            tclr = "black";
+        } else {           
+            tclr = "red";
+        }
+        System.out.println("c1 = " + c1 + " op1 = " + op1 + " op2 = " + op2 +
+                " cin " + pc + " tclr = " + tclr + " c1 s.b. " + md);
+        return tclr;
+    }
+    public static String checkAdd( int p1, int op1, int op2, int pc ) {
+        String tclr = "pink";
+        int md;
+        md = (op1+op2+pc)%10;
+        if(p1 == md ){
+            tclr = "black";
+        } else {           
+            tclr = "red";
+        }
+        System.out.println("p1 = " + p1 + " op1 = " + op1 + " op2 = " + op2 +
+                " cin " + pc + " tclr = " + tclr + " p1 s.b. " + md);
         return tclr;
     }
 }

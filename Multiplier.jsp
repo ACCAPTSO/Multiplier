@@ -50,93 +50,260 @@ document.getElementById('F1:A1').focus();
 and is what will take the user's input and display it red if incorrect
 //-->
 <%
-    String c1clr = "lime";
-    String c2clr = "lime";
-    String c3clr = "lime";
-    String c4clr = "lime";
-    String c1str = "";
-    String c2str = "";
-    String c3str = "";
-    String c4str = "";
+//    String c1clr = "lime";
+//    String c2clr = "lime";
+//    String c3clr = "lime";
+//    String c4clr = "lime";
+//    String c1str = "";
+//    String c2str = "";
+//    String c3str = "";
+//    String c4str = "";
     String tmp = "";
-    int o23 = 1;
-    int o22 = 2;
-    int o21 = 3;
-    int o12 = 4;
-    int o11 = 5;
-    int cr1 = 6;
-    int cr2 = 5;
-    int cr3 = 4;
-    int cr4 = 3;
-    // need to check something besides session.isNew, want to generate problem
-    // after problem, clear answers session.isNew || what?
+    final int SZ2_MX = 4;
+    int[][] op;
+
+    int digits1 = 2;
+    int digits2 = 3;
+    
+    String att;
+    int idx;
+    int jdx;
+    int[][] num;   // numeric version of multiplicative carry
+    String[][] cm; //string version of multiplicative carry
+    String[][] clr; // text color (red = wrong, 
+                    // black = right) of multiplicative carry
+    int cin = 0;
+    int ca_in = 0;
+    int max = 0;
+    
+    // thought I was having threading issues so I gave up on oo
+    int[][] a1n;        // intermediate answer numeric
+    String[][] a1s;     // intermediate answer string
+    String[][] a1clr;   // intermediate answer text color
+    
+    int[] ann;      // final answer numeric
+    String[] ans;   // final answer string
+    String[] anclr; // final answer text color
+    
+    int[] can;      // additive carry numeric
+    String[] cas;   // additive carry string
+    String[] caclr; // additive color text  color
+    
+    op = new int[2][SZ2_MX];
+    cm = new String[2][SZ2_MX];
+    num = new int[2][SZ2_MX];
+    clr = new String[2][SZ2_MX];
+    can = new int[SZ2_MX];
+    cas = new String[SZ2_MX];
+    caclr = new String[SZ2_MX];
+   
+    for (idx = 0; idx < SZ2_MX; idx++ ) {
+        op[0][idx] = 9;
+        op[1][idx] = 9;
+        cm[0][idx] = "";
+        cm[1][idx] = "";
+        num[0][idx] = 0;
+        num[1][idx] = 0;
+        clr[0][idx] = "green";
+        clr[1][idx] = "green";
+        can[idx] = 0;
+        cas[idx] = "";
+        caclr[idx] = "green";
+    }
+    
+    a1n = new int[2][SZ2_MX+2];
+    a1s = new String[2][SZ2_MX+2];
+    a1clr = new String[2][SZ2_MX+2];
+    ann = new int[SZ2_MX+2];
+    ans = new String[SZ2_MX+2];
+    anclr = new String[SZ2_MX+2];
+    
+    max = SZ2_MX + 2;
+    for ( idx = 0; idx < max; idx++ ) {
+        ann[idx] = 0;
+        ans[idx] = "";
+        anclr[idx] = "blue";
+        for ( jdx = 0; jdx < 2; jdx++ ) {
+            a1n[jdx][idx] = 0;
+            a1s[jdx][idx] = "";
+            a1clr[jdx][idx] = "green";
+        }
+    }
+
     if( session.isNew() ) {
         // Math.random() generates x, 0<=x<1
-        o23 = (new Double(1+9*Math.random())).intValue();      
-        o22 = (new Double(10*Math.random())).intValue();
-        o21 = (new Double(10*Math.random())).intValue();
-        o12 = (new Double(1+9*Math.random())).intValue();
-        o11 = (new Double(10*Math.random())).intValue();
-        session.setAttribute("o23", o23);
-        session.setAttribute("o22", o22);
-        session.setAttribute("o21", o21);
-        session.setAttribute("o12", o12);
-        session.setAttribute("o11", o11);
+        //digits2 = (new Double(1+SZ1_MX*Math.random())).intValue();
+        //digits1 = (new Double(1+digits2*Math.random())).intValue();
+        session.setAttribute("digits2", digits2);
+        for (idx = 0; idx < digits2 - 1; idx++){
+            op[1][idx] = (new Double(10*Math.random())).intValue();
+            att = new String("op2" + idx);
+            session.setAttribute(att, op[1][idx]);
+        }
+        op[1][idx] = (new Double(1+9*Math.random())).intValue();
+        att = new String("op2" + idx);
+        session.setAttribute(att, op[1][idx]);
+        
+        session.setAttribute("digits1", digits1);
+        for (idx = 0; idx < digits1 - 1; idx++){
+            op[0][idx] = (new Double(10*Math.random())).intValue();
+            att = new String("op1" + idx);
+            session.setAttribute(att, op[0][idx]);
+        }
+        op[0][idx] = (new Double(1+9*Math.random())).intValue();
+        att = new String("op1" + idx);
+        session.setAttribute(att, op[0][idx]);
     } else {
-    
-        // these are previously generated and saved in the session
-        o23 = (new Integer(session.getAttribute("o23").toString())).intValue();
-        o22 = (new Integer(session.getAttribute("o22").toString())).intValue();
-        o21 = (new Integer(session.getAttribute("o21").toString())).intValue();
-        o12 = (new Integer(session.getAttribute("o12").toString())).intValue();
-        o11 = (new Integer(session.getAttribute("o11").toString())).intValue();
+        digits2 = (new Integer(session.getAttribute("digits2").toString())).intValue();
+        for( idx = 0; idx < digits2; idx++ ){
+            att = new String("op2" + idx);
+            op[1][idx] = (new Integer(session.getAttribute(att).toString())).intValue();  
+        }
+        digits1 = (new Integer(session.getAttribute("digits1").toString())).intValue();
+        for( idx = 0; idx < digits1; idx++ ){
+            att = new String("op1" + idx);
+            op[0][idx] = (new Integer(session.getAttribute(att).toString())).intValue();  
+        }
     }
-              
-    // needs to be a separate method pass request, session, "cr1", clclr
-    // things don't seem to be set and got right when you pass request
-    // and session
+    
+    for( jdx = 0; jdx < 2; jdx++ ){
+        for( idx = 0; idx < digits1; idx++ ) {
+            att = new String("cr" + jdx + "" + idx);
+            if( (tmp = ProcessAns.obj2string(session.getAttribute(att))) !=
+                                                                        null ) {
+                cm[jdx][idx] = tmp; // display it in the table
+            }
+            if((tmp = request.getParameter(att)) != null ) {
+                cm[jdx][idx] = tmp;
+            
+                num[jdx][idx] = ProcessAns.string2int( cm[jdx][idx] );
+                cin = 0;
+                if( idx > 0 ) {
+                    cin = num[jdx][idx-1];
+                }
+                clr[jdx][idx] =
+                    ProcessAns.checkCarry( num[jdx][idx], op[0][jdx],
+                                                            op[1][idx], cin );
+                // do i need this? try commenting out
+                // if i do need it, i need it for a1's as well
+                // session.setAttribute(att, cm[jdx][idx]); // row, column
+                // it checks all of them, whether there was anything new typed
+                // or not. do i need a separate form for every digit?
+                // if there is nothing typed in there is nothing to display in
+                // red. I don't know where the 0's are coming from, I would have
+                // thought the getParameter would return null and not do any
+                // processing
+            }
+        }
+    }
 
-    // is this object oriented? if you can't pass session and request
-    // to another class it may well be the best you can do
-    if( (tmp = ProcessAns.obj2string(session.getAttribute("cr1"))) != null )
-        c1str = tmp;
-    if((tmp = request.getParameter("cr1")) != null)   
-        c1str = tmp;                 
-    cr1= ProcessAns.string2int( c1str );
-    // set the color red if it's incorrect
-    c1clr = ProcessAns.checkCarry( cr1, o11, o21, 0 );
-    session.setAttribute("cr1", cr1);
-       
-    if( (tmp = ProcessAns.obj2string(session.getAttribute("cr2"))) != null )
-        c2str = tmp;
-    if((tmp = request.getParameter("cr2")) != null)  
-        c2str = tmp;
-    cr2= ProcessAns.string2int( c2str );
-    c2clr = ProcessAns.checkCarry( cr2, o11, o22, cr1 );
-    session.setAttribute("cr2", cr2);
-       
-    if( (tmp = ProcessAns.obj2string(session.getAttribute("cr3"))) != null )
-        c3str = tmp;
-    if((tmp = request.getParameter("cr3")) != null)   
-        c3str = tmp;
-    cr3 = ProcessAns.string2int( c3str );
-    c3clr = ProcessAns.checkCarry( cr3, o12, o21, 0 );
-    session.setAttribute("cr3", cr3);
-        
-    if( (tmp = ProcessAns.obj2string(session.getAttribute("cr4"))) != null )
-        c4str = tmp;
-    if((tmp = request.getParameter("cr4")) != null)   
-        c4str = tmp;
-    cr4 = ProcessAns.string2int( c4str );
-    c4clr = ProcessAns.checkCarry( cr4, o12, o22, cr3 );
-    session.setAttribute("cr4", cr4);
-        
-        // out.println("c4str, c3str, c2str, c1str = " + c4str + ", " + c3str + ", " + c2str + ", " + c1str + "<br>" );
-        // need another routine for this
-    //    c5str = request.getParameter("cr5");
-    //    c5clr = ProcessAns.checkCarry( c5str, session, "cr5", o12, o22 );
-      
-    //out.println("session ID is" + session.getId() + "<br>" );
+    // need to check in the actual order that people do them  (interspersed 
+    // multiplication and carries) or i need to compare answers with the real
+    // answers, not necessarily what is computed from what the person typed in.
+    // which is easier?
+    // probably comparing to actual answer
+    // which is more relevant? probably compare with what is calculated from
+    // what is previously typed in but
+    // if someone doesn't enter a carry and screws up their answer, it needs
+    // to be marked red
+    // so checkAdd at least needs to use actual carry if none is entered
+    // checkMult as well and perhaps a modified checkLast needs to be used
+    // instead of checkCarry for the most significant digit of a1's
+    for ( idx = 0; idx < digits2; idx ++ ) {
+        att = new String("a10" + idx);
+        if( (tmp = ProcessAns.obj2string(session.getAttribute(att))) != null ) {
+            a1s[0][idx] = tmp;
+        }
+        if((tmp = request.getParameter(att)) != null ) {
+            a1s[0][idx] = tmp;
+            a1n[0][idx] = ProcessAns.string2int( a1s[0][idx] );
+            cin = 0;
+            if( idx > 0 ) {
+                cin = num[0][idx-1];
+            }
+            a1clr[0][idx] =
+                ProcessAns.checkMult( a1n[0][idx], op[0][0], op[1][idx], cin );
+        }
+    }
+    att = new String("a10" + idx);
+    if( (tmp = ProcessAns.obj2string(session.getAttribute(att))) != null ) {
+        a1s[0][idx] = tmp;
+    }
+    if((tmp = request.getParameter(att)) != null ) {
+        a1s[0][idx] = tmp;    
+        a1n[0][idx] = ProcessAns.string2int( a1s[0][idx] );
+        // checking the carry now, so keep the cin & op[1][arg] same as
+        // in last iteration of previous loop
+        cin = num[0][idx-2];
+        a1clr[0][idx] =
+            ProcessAns.checkCarry( a1n[0][idx], op[0][0], op[1][idx-1], cin );
+    }
+
+    max = digits2 + 1;
+    for ( idx = 1; idx < max; idx ++ ) {
+        att = new String("a11" + idx);
+        if( (tmp = ProcessAns.obj2string(session.getAttribute(att))) != null ) {
+            a1s[1][idx] = tmp;
+        }
+        if((tmp = request.getParameter(att)) != null ) {
+            a1s[1][idx] = tmp;
+
+            a1n[1][idx] = ProcessAns.string2int( a1s[1][idx] );
+            cin = 0;
+            if( idx > 1 ) {
+                cin = num[1][idx-2];
+            }
+            a1clr[1][idx] = 
+                ProcessAns.checkMult( a1n[1][idx], op[0][1], op[1][idx-1],
+                                                                        cin ); 
+        }
+    }
+    att = new String("a11" + idx);
+    if( (tmp = ProcessAns.obj2string(session.getAttribute(att))) != null ) {
+        a1s[1][idx] = tmp;
+    }
+    if((tmp = request.getParameter(att)) != null ) {
+        a1s[1][idx] = tmp;
+
+        a1n[1][idx] = ProcessAns.string2int( a1s[1][idx] );
+        // checking the carry now, so keep the cin & op[1][arg] same as in last 
+        // last iteration of previous loop
+        cin = num[1][idx-3];
+        a1clr[1][idx] =
+            ProcessAns.checkCarry( a1n[1][idx], op[0][1], op[1][idx-2], cin );
+    }
+    
+    max = digits2 + 2;
+    for( idx = 0; idx < max; idx++ ) {
+        att = new String("an" + idx);
+        if( (tmp = ProcessAns.obj2string(session.getAttribute(att))) != null ) {
+            ans[idx] = tmp;
+        }
+        if((tmp = request.getParameter(att)) != null ) {
+            ans[idx] = tmp;
+            ann[idx] = ProcessAns.string2int( ans[idx] );
+            cin = 0;
+            if( idx > 1 ) {
+                jdx = idx - 2;
+                ca_in = 0;
+                if( jdx > 0 ) {
+                    ca_in = can[jdx-1];
+                }
+                att = new String("ca" + jdx);
+                if((tmp = request.getParameter(att)) != null ) {
+                     cas[jdx] = tmp;
+                     can[jdx] = ProcessAns.string2int( cas[jdx] );
+                }
+                caclr[jdx] = ProcessAns.checkAddCarry(
+                    can[jdx], a1n[0][idx-1], a1n[1][idx-1], ca_in);
+                cin = can[jdx];
+            }
+            anclr[idx] = 
+                ProcessAns.checkAdd( ann[idx], a1n[0][idx], a1n[1][idx],
+                                                                        cin ); 
+        }
+    }
+ 
 %>
 <form id="th-id2" method="get" action="Multiplier.jsp">
 
@@ -148,69 +315,101 @@ and is what will take the user's input and display it red if incorrect
 <tr class="r1">
     <td class="s2"></td><td class="b1"></td>
     <td class="s2"></td><td class="b1"></td>
-    <td><input type="text" name="cr4" class="c2" style="color:<%=c4clr%>" value="<%=c4str%>"></td>
+    <td><input type="text" name="cr11" class="c2" 
+               style="color:<%=clr[1][1]%>" value="<%=cm[1][1]%>"></td>
     <td class="b1"></td>
-    <td><input type="text" name="cr3" class="c2" style="color:<%=c3clr%>" value="<%=c3str%>"></td>
+    <td><input type="text" name="cr10" class="c2" 
+               style="color:<%=clr[1][0]%>" value="<%=cm[1][0]%>"></td>
     <td class="b1"></td>
     <td class="s2"></td><td class="b1"></td>
 </tr>
 <tr class="r1">
     <td class="s2"></td><td class="b1"></td>
     <td class="s2"></td><td class="b1"></td>
-    <td><input type="text" name="cr2" class="c2" style="color:<%=c2clr%>" value="<%=c2str%>"></td>
+    <td><input type="text" name="cr01" class="c2" 
+               style="color:<%=clr[0][1]%>" value="<%=cm[0][1]%>"></td>
     <td class="b1"></td>
-    <td><input type="text" name="cr1" class="c2" style="color:<%=c1clr%>" value="<%=c1str%>" ></td>
+    <td><input type="text" name="cr00" class="c2" 
+               style="color:<%=clr[0][0]%>" value="<%=cm[0][0]%>" ></td>
     <td class="b1"></td>
     <td class="s2"></td><td class="b1"></td>
 </tr>
 <tr>
     <td class="s2"></td><td class="n1"></td>
     <td class="s2"></td><td class="n1"></td>
-    <td class="s2"></td><td class="n1"><%=o23%></td>
-    <td class="s2"></td><td class="n1"><%=o22%></td>
-    <td class="s2"></td><td class="n1"><%=o21%></td>
+    <td class="s2"></td><td class="n1"><%=op[1][2]%></td>
+    <td class="s2"></td><td class="n1"><%=op[1][1]%></td>
+    <td class="s2"></td><td class="n1"><%=op[1][0]%></td>
 </tr>
 <tr>
     <td class="s2"></td><td class="n1"></td>
     <td class="s2"></td><td class="n1"></td>
     <td class="s2"></td><td class="n1"></td>
-    <td class="s2"></td><td class="n1"><%=o12%></td>
-    <td class="s2"></td><td class="n1"><%=o11%></td>
+    <td class="s2"></td><td class="n1"><%=op[0][1]%></td>
+    <td class="s2"></td><td class="n1"><%=op[0][0]%></td>
 </tr>
 <tr><th id="th-id1" colspan="10"></th></tr>
 <tr class="r1">
-    <td><input type="text" name="cr7" class="c2"></td><td class="b1"></td>
-    <td><input type="text" name="cr6" class="c2"></td><td class="b1"></td>
-    <td><input type="text" name="cr5" class="c2"></td><td class="b1"></td>
+    <td><input type="text" name="ca2" class="c2"
+               style="color:<%=caclr[2]%>" value="<%=cas[2]%>"></td>
+    <td class="b1"></td>
+    <td><input type="text" name="ca1" class="c2"
+                style="color:<%=caclr[1]%>" value="<%=cas[1]%>"></td>
+    <td class="b1"></td>
+    <td><input type="text" name="ca0" class="c2"
+                style="color:<%=caclr[0]%>" value="<%=cas[0]%>"></td>
+    <td class="b1"></td>
     <td class="s2"></td><td class="b1"></td>
     <td class="s2"></td><td class="b1"></td>
 </tr>
 <tr>
     <td class="s2"></td><td class="n1"></td>
     <td class="s2"></td>
-    <td><input type="text" name="an4" class="a1"></td>
+    <td><input type="text" name="a103" class="a1"
+               style="color:<%=a1clr[0][3]%>" value="<%=a1s[0][3]%>"></td>
     <td class="s2"></td>
-    <td><input type="text" name="an3" class="a1"></td>
+    <td><input type="text" name="a102" class="a1"
+               style="color:<%=a1clr[0][2]%>" value="<%=a1s[0][2]%>"></td>
     <td class="s2"></td>
-    <td><input type="text" name="an2" class="a1"></td>
-    <td class="s2"></td><td>
-    <input type="text" id="A1" name="an1" class="a1"></td>
+    <td><input type="text" name="a101" class="a1"
+               style="color:<%=a1clr[0][1]%>" value="<%=a1s[0][1]%>"></td>
+    <td class="s2"></td>
+    <td><input type="text" id="A1" name="a100" class="a1"
+               style="color:<%=a1clr[0][0]%>" value="<%=a1s[0][0]%>"></td>
         
 </tr>
 <tr>
-    <td class="s2"></td><td><input type="text" name="an9" class="a1"></td>
-    <td class="s2"></td><td><input type="text" name="an8" class="a1"></td>
-    <td class="s2"></td><td><input type="text" name="an7" class="a1"></td>
-    <td class="s2"></td><td><input type="text" name="an6" class="a1"></td>
-    <td class="s2"></td><td><input type="text" name="an5" class="a1"></td>
+    <td class="s2"></td>
+    <td><input type="text" name="a114" class="a1"
+               style="color:<%=a1clr[1][4]%>" value="<%=a1s[1][4]%>"></td>
+    <td class="s2"></td>
+    <td><input type="text" name="a113" class="a1"
+               style="color:<%=a1clr[1][3]%>" value="<%=a1s[1][3]%>"></td>
+    <td class="s2"></td>
+    <td><input type="text" name="a112" class="a1"
+               style="color:<%=a1clr[1][2]%>" value="<%=a1s[1][2]%>"></td>
+    <td class="s2"></td>
+    <td><input type="text" name="a111" class="a1"
+               style="color:<%=a1clr[1][1]%>" value="<%=a1s[1][1]%>"></td>
+    <td class="s2"></td><td class="n1"></td>
 </tr>
 <tr><th colspan="10"></th></tr>
 <tr>
-    <td class="s2"></td><td><input type="text" name="an14" class="a1"></td>
-    <td class="s2"></td><td><input type="text" name="an13" class="a1"></td>
-    <td class="s2"></td><td><input type="text" name="an12" class="a1"></td>
-    <td class="s2"></td><td><input type="text" name="an11" class="a1"></td>
-    <td class="s2"></td><td><input type="text" name="an10" class="a1"></td>
+    <td class="s2"></td>
+    <td><input type="text" name="an4" class="a1"
+               style="color:<%=anclr[4]%>" value="<%=ans[4]%>"></td>
+    <td class="s2"></td>
+    <td><input type="text" name="an3" class="a1"
+               style="color:<%=anclr[3]%>" value="<%=ans[3]%>"></td>
+    <td class="s2"></td>
+    <td><input type="text" name="an2" class="a1"
+               style="color:<%=anclr[2]%>" value="<%=ans[2]%>"></td>
+    <td class="s2"></td>
+    <td><input type="text" name="an1" class="a1"
+               style="color:<%=anclr[1]%>" value="<%=ans[1]%>"></td>
+    <td class="s2"></td>
+    <td><input type="text" name="an0" class="a1"
+               style="color:<%=anclr[0]%>" value="<%=ans[0]%>"></td>
 </tr>
 </tbody>
 </table>

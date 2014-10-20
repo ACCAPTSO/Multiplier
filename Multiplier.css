@@ -1,3 +1,13 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : Oct 15, 2014, 7:27:38 AM
+    Author     : irene
+*/
+
 article, aside, figure, footer, header, hgroup, menu,
 nav, section{ display: block }
 
@@ -24,7 +34,7 @@ table, th {
 /* carry boxes */
 .c2 {
   width: 10px;
-  background-color: #b7baf7;
+  background-color: #d7daf7;
   text-align: center;
   border:1px solid black;
 }
