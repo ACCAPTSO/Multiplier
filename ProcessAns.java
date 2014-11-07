@@ -75,11 +75,9 @@ public class ProcessAns {
     }
     public static int string2int( String cstr ){
         int c1 = 0;
-        if( cstr != null ) {
-            if( cstr.matches("-?\\d+(\\.\\d+)?") ) {
-                Integer CInt = new Integer(cstr);
-                c1 = CInt;
-            }
+        if( cstr.matches("-?\\d+(\\.\\d+)?") ) {
+            Integer CInt = new Integer(cstr);
+            c1 = CInt;
         }
         return c1;
     }
@@ -122,6 +120,8 @@ public class ProcessAns {
                 " cin " + pc + " tclr = " + tclr + " c1 s.b. " + md);
         return tclr;
     }
+    // these two methods assume a 2 digit second operand - will need to be
+    // modified if number of digits is randomized
     public static String checkAddCarry( int c1, int op1, int op2, int pc ) {
         String tclr = "pink";
         int md;

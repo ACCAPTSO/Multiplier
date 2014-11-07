@@ -7,7 +7,7 @@
 <%@page import="process.*,javax.servlet.http.*, java.io.*,java.util.*" %>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!--
-this is a comment -the // is for javascript which i don't use anyway
+this is a comment -the // is for javascript 
 //-->
 <!--
 this entire page may be changed to a java servlet or .jsp at a later date
@@ -26,57 +26,66 @@ this entire page may be changed to a java servlet or .jsp at a later date
 <!-- the following tells where to get style information to specify how to
      format a table, a body a header etc. and define a class or id //-->
 <link rel="stylesheet" href="Multiplier.css" type="text/css">
-<script type="text/javascript">
+
 <!-- snippet code goes here -->
 <!-- code to set the default input focus -->
 <!-- not working -see if you can get help from someone who knows javascript -->
 <!-- 
-function setFocus() {
-
-document.getElementById('F1:A1').focus();
-
- document.getElementById('F1').elements[11].select();
- document.getElementById('F1').elements[11].focus(); 
-
 //-->
+<script>
+function setFocus() { // this part is javascript
+    var x = document.getElementById("th-id2");
+    //document.getElementById("test").innerHTML = x.length;
+    var i = 10;
+    var j = document.getElementById("test").value;
+    i = Number(j);
+    x.elements[i].focus();
+    x.elements[i].value="";
+}
 </script>
 </head>
 <!-- need to think through how to make it expandable before I put too much
     detail in -->
 <!-- This is what actually gets displayed on the page //-->
-<body onload="setfocus();">
+<body onload="setFocus();">
 
 <!-- multi-checker.jsp (or  should it be a java class?) remains to be written
 and is what will take the user's input and display it red if incorrect
 //-->
 <%
-//    String c1clr = "lime";
-//    String c2clr = "lime";
-//    String c3clr = "lime";
-//    String c4clr = "lime";
-//    String c1str = "";
-//    String c2str = "";
-//    String c3str = "";
-//    String c4str = "";
-    String tmp = "";
-    final int SZ2_MX = 4;
-    int[][] op;
+    String tmp = "";        // temporary storage for newly gotten 
+                            // session attribute or request parameter
+    final int SZ2_MX = 4;   // maximum operand size
+    int[][] op;             // operands first index is what operand
+                            // second index is what digit of that operand
 
-    int digits1 = 2;
-    int digits2 = 3;
+    int digits1 = 2;        // how many digits does the bottom operand have
+    int digits2 = 3;        // how many digits dows the top operand have
     
-    String att;
+    String att;             // temporary storage for an attribute name that you
+                            // are about to get or set
     int idx;
     int jdx;
+    
+    int bdx;                // box index used to track what box is selected
+    
+    // array with input box order for a 3 digit number times a 2 digit number
+    int[] whatBx = { 10,  3,  9,  2, 8,  7, 14,  1, 13, 0,
+                     12, 11, 19, 18, 6, 17,  5, 16, 4, 15, 20 };
+ //   String lastclr = "black";
+ //   String whatclr = "black";
+    String lastans = "";
+    
     int[][] num;   // numeric version of multiplicative carry
     String[][] cm; //string version of multiplicative carry
     String[][] clr; // text color (red = wrong, 
                     // black = right) of multiplicative carry
-    int cin = 0;
-    int ca_in = 0;
-    int max = 0;
+    int cin = 0;    // temporary storage for carry in
+    int ca_in = 0;  // previous cin (for adds)
+    int max = 0;    // loop counter maximum
     
     // thought I was having threading issues so I gave up on oo
+    // probably not the case, but this is faster anyway
     int[][] a1n;        // intermediate answer numeric
     String[][] a1s;     // intermediate answer string
     String[][] a1clr;   // intermediate answer text color
@@ -88,6 +97,7 @@ and is what will take the user's input and display it red if incorrect
     int[] can;      // additive carry numeric
     String[] cas;   // additive carry string
     String[] caclr; // additive color text  color
+    
     
     op = new int[2][SZ2_MX];
     cm = new String[2][SZ2_MX];
@@ -131,6 +141,8 @@ and is what will take the user's input and display it red if incorrect
     }
 
     if( session.isNew() ) {
+        bdx = 0;
+
         // Math.random() generates x, 0<=x<1
         //digits2 = (new Double(1+SZ1_MX*Math.random())).intValue();
         //digits1 = (new Double(1+digits2*Math.random())).intValue();
@@ -154,6 +166,16 @@ and is what will take the user's input and display it red if incorrect
         att = new String("op1" + idx);
         session.setAttribute(att, op[0][idx]);
     } else {
+     //   lastclr = session.getAttribute("lastclr").toString();
+        bdx = (new Integer(session.getAttribute("bdx").toString())).intValue();
+        if( bdx < 20 ) { 
+            bdx = bdx + 1;
+            //if( lastclr.equals("red") ) {
+            //    bdx = bdx - 2; // too late
+            //}
+        }
+    //    whatclr = lastclr;
+ //       lastclr = "black";
         digits2 = (new Integer(session.getAttribute("digits2").toString())).intValue();
         for( idx = 0; idx < digits2; idx++ ){
             att = new String("op2" + idx);
@@ -165,25 +187,39 @@ and is what will take the user's input and display it red if incorrect
             op[0][idx] = (new Integer(session.getAttribute(att).toString())).intValue();  
         }
     }
+    session.setAttribute("bdx", bdx);
+//    session.setAttribute("lastclr", "black");
+    // it's checking every single box whether it has an entry or not. If the box is blank, 
+    // it's counted as a zero and if it's not supposed to be zero, it turns lastclr red
     
+    // need to assume actual carry, not zero for carry not entered so that
+    // checking the final answer gives valid result
+    // check multiplicative carries j= 0 => first row, j = 1 => second row
     for( jdx = 0; jdx < 2; jdx++ ){
         for( idx = 0; idx < digits1; idx++ ) {
             att = new String("cr" + jdx + "" + idx);
-            if( (tmp = ProcessAns.obj2string(session.getAttribute(att))) !=
-                                                                        null ) {
-                cm[jdx][idx] = tmp; // display it in the table
-            }
             if((tmp = request.getParameter(att)) != null ) {
                 cm[jdx][idx] = tmp;
             
                 num[jdx][idx] = ProcessAns.string2int( cm[jdx][idx] );
                 cin = 0;
                 if( idx > 0 ) {
-                    cin = num[jdx][idx-1];
+                    cin = num[jdx][idx-1]; // this was input and checked prev
                 }
-                clr[jdx][idx] =
+                if( (clr[jdx][idx] =
                     ProcessAns.checkCarry( num[jdx][idx], op[0][jdx],
-                                                            op[1][idx], cin );
+                                        op[1][idx], cin )).equals("red") ) {
+                    if(!cm[jdx][idx].equals("")) { // Don't set the box back
+                        // unless there actually was an entry that was wrong.
+                        // Every box is checked every enter and it assumes 0
+                        // if there is no entry which is not necessarily the
+                        // right answer
+     //                   session.setAttribute("lastclr", "red");
+                        bdx = bdx - 1;
+                        session.setAttribute("bdx", bdx);
+                        lastans = cm[jdx][idx];                       
+                    }
+                }
                 // do i need this? try commenting out
                 // if i do need it, i need it for a1's as well
                 // session.setAttribute(att, cm[jdx][idx]); // row, column
@@ -192,7 +228,7 @@ and is what will take the user's input and display it red if incorrect
                 // if there is nothing typed in there is nothing to display in
                 // red. I don't know where the 0's are coming from, I would have
                 // thought the getParameter would return null and not do any
-                // processing
+                // processing. Do I even need to check if getParameter is null?
             }
         }
     }
@@ -206,14 +242,15 @@ and is what will take the user's input and display it red if incorrect
     // what is previously typed in but
     // if someone doesn't enter a carry and screws up their answer, it needs
     // to be marked red
+    // also if they don't enter a carry but get a correct final answer it 
+    // should be marked black
     // so checkAdd at least needs to use actual carry if none is entered
     // checkMult as well and perhaps a modified checkLast needs to be used
     // instead of checkCarry for the most significant digit of a1's
+    
+    // check first row of intermediate answers
     for ( idx = 0; idx < digits2; idx ++ ) {
         att = new String("a10" + idx);
-        if( (tmp = ProcessAns.obj2string(session.getAttribute(att))) != null ) {
-            a1s[0][idx] = tmp;
-        }
         if((tmp = request.getParameter(att)) != null ) {
             a1s[0][idx] = tmp;
             a1n[0][idx] = ProcessAns.string2int( a1s[0][idx] );
@@ -221,30 +258,41 @@ and is what will take the user's input and display it red if incorrect
             if( idx > 0 ) {
                 cin = num[0][idx-1];
             }
-            a1clr[0][idx] =
-                ProcessAns.checkMult( a1n[0][idx], op[0][0], op[1][idx], cin );
+            if( (a1clr[0][idx] =
+                ProcessAns.checkMult( a1n[0][idx], op[0][0],
+                                        op[1][idx], cin )).equals("red") ) {
+                if(!a1s[0][idx].equals("")) {
+    //                session.setAttribute("lastclr", "red");
+                    lastans = a1s[0][idx];
+                    bdx = bdx - 1;
+                    session.setAttribute("bdx", bdx);
+                }
+            }
         }
     }
     att = new String("a10" + idx);
-    if( (tmp = ProcessAns.obj2string(session.getAttribute(att))) != null ) {
-        a1s[0][idx] = tmp;
-    }
     if((tmp = request.getParameter(att)) != null ) {
         a1s[0][idx] = tmp;    
         a1n[0][idx] = ProcessAns.string2int( a1s[0][idx] );
         // checking the carry now, so keep the cin & op[1][arg] same as
         // in last iteration of previous loop
         cin = num[0][idx-2];
-        a1clr[0][idx] =
-            ProcessAns.checkCarry( a1n[0][idx], op[0][0], op[1][idx-1], cin );
+        if( (a1clr[0][idx] =
+            ProcessAns.checkCarry( a1n[0][idx], op[0][0],
+                                        op[1][idx-1], cin )).equals("red") ) {
+            if(!a1s[0][idx].equals("")) {
+ //               session.setAttribute("lastclr", "red");
+                lastans = a1s[0][idx];
+                bdx = bdx - 1;
+                session.setAttribute("bdx", bdx);
+            }
+        }
     }
 
+    // check second row of intermediate answers
     max = digits2 + 1;
     for ( idx = 1; idx < max; idx ++ ) {
         att = new String("a11" + idx);
-        if( (tmp = ProcessAns.obj2string(session.getAttribute(att))) != null ) {
-            a1s[1][idx] = tmp;
-        }
         if((tmp = request.getParameter(att)) != null ) {
             a1s[1][idx] = tmp;
 
@@ -253,15 +301,19 @@ and is what will take the user's input and display it red if incorrect
             if( idx > 1 ) {
                 cin = num[1][idx-2];
             }
-            a1clr[1][idx] = 
-                ProcessAns.checkMult( a1n[1][idx], op[0][1], op[1][idx-1],
-                                                                        cin ); 
+            if( (a1clr[1][idx] = 
+                ProcessAns.checkMult( a1n[1][idx], op[0][1],
+                                        op[1][idx-1], cin )).equals("red") ) { 
+                if(!a1s[1][idx].equals("")) {
+//                    session.setAttribute("lastclr", "red");
+                    lastans = a1s[1][idx];
+                                 bdx = bdx - 1;
+                session.setAttribute("bdx", bdx);
+                }
+            }
         }
     }
     att = new String("a11" + idx);
-    if( (tmp = ProcessAns.obj2string(session.getAttribute(att))) != null ) {
-        a1s[1][idx] = tmp;
-    }
     if((tmp = request.getParameter(att)) != null ) {
         a1s[1][idx] = tmp;
 
@@ -269,16 +321,22 @@ and is what will take the user's input and display it red if incorrect
         // checking the carry now, so keep the cin & op[1][arg] same as in last 
         // last iteration of previous loop
         cin = num[1][idx-3];
-        a1clr[1][idx] =
-            ProcessAns.checkCarry( a1n[1][idx], op[0][1], op[1][idx-2], cin );
+        if( (a1clr[1][idx] =
+            ProcessAns.checkCarry( a1n[1][idx], op[0][1],
+                                        op[1][idx-2], cin )).equals("red") ) {
+            if(!a1s[1][idx].equals("")) {
+//                session.setAttribute("lastclr", "red");
+                lastans = a1s[1][idx];
+                bdx = bdx - 1;
+                session.setAttribute("bdx", bdx);
+            }
+        }
     }
     
+    // check final adds and carries
     max = digits2 + 2;
     for( idx = 0; idx < max; idx++ ) {
         att = new String("an" + idx);
-        if( (tmp = ProcessAns.obj2string(session.getAttribute(att))) != null ) {
-            ans[idx] = tmp;
-        }
         if((tmp = request.getParameter(att)) != null ) {
             ans[idx] = tmp;
             ann[idx] = ProcessAns.string2int( ans[idx] );
@@ -294,13 +352,29 @@ and is what will take the user's input and display it red if incorrect
                      cas[jdx] = tmp;
                      can[jdx] = ProcessAns.string2int( cas[jdx] );
                 }
-                caclr[jdx] = ProcessAns.checkAddCarry(
-                    can[jdx], a1n[0][idx-1], a1n[1][idx-1], ca_in);
+                // check cin before you check addition
+                if( (caclr[jdx] = 
+                        ProcessAns.checkAddCarry( can[jdx], a1n[0][idx-1], 
+                                        a1n[1][idx-1], ca_in)).equals("red") ) {
+                    if(!cas[jdx].equals("")) {
+  //                      session.setAttribute("lastclr", "red");
+                        lastans = cas[jdx];  
+                        bdx = bdx - 1;
+                        session.setAttribute("bdx", bdx);
+                    }
+                }
                 cin = can[jdx];
             }
-            anclr[idx] = 
-                ProcessAns.checkAdd( ann[idx], a1n[0][idx], a1n[1][idx],
-                                                                        cin ); 
+            if( (anclr[idx] = 
+                ProcessAns.checkAdd( ann[idx], a1n[0][idx],
+                        a1n[1][idx],cin )).equals("red") ) {
+                if(!ans[idx].equals("")) {
+ //                   session.setAttribute("lastclr", "red");
+                    lastans = ans[idx]; 
+                    bdx = bdx - 1;
+                    session.setAttribute("bdx", bdx);
+                }
+            }
         }
     }
  
@@ -344,7 +418,7 @@ and is what will take the user's input and display it red if incorrect
 <tr>
     <td class="s2"></td><td class="n1"></td>
     <td class="s2"></td><td class="n1"></td>
-    <td class="s2"></td><td class="n1"></td>
+    <td class="s2"></td><td class="n1"> x </td>
     <td class="s2"></td><td class="n1"><%=op[0][1]%></td>
     <td class="s2"></td><td class="n1"><%=op[0][0]%></td>
 </tr>
@@ -414,9 +488,12 @@ and is what will take the user's input and display it red if incorrect
 </tbody>
 </table>
 <input type="submit" value="enter">
-</form>
+<button type="reset" value="Reset">Start again</button>
 
-<input type="button" value="start again">
+</form>
+<label>What Box </label><input id="test" type="text" value="<%=whatBx[bdx]%>"><br>
+<input type="text" value="<%=lastans%>"><label> was a wrong answer </label>
+
 </body>
 </html>
 
