@@ -1,6 +1,7 @@
 <%-- 
     Document   : Multiplier
-    Created on : Oct 15, 2014, 7:22:00 AM
+    Created on : Oct 15, 2014, 7:22:00 AM<%-- 
+
     Author     : irene
 --%>
 
@@ -29,7 +30,6 @@ this entire page may be changed to a java servlet or .jsp at a later date
 
 <!-- snippet code goes here -->
 <!-- code to set the default input focus -->
-<!-- not working -see if you can get help from someone who knows javascript -->
 <!-- 
 //-->
 <script>
@@ -40,7 +40,26 @@ function setFocus() { // this part is javascript
     var j = document.getElementById("test").value;
     i = Number(j);
     x.elements[i].focus();
-    x.elements[i].value="";
+    if( i < 20 ) {
+        x.elements[i].value="";
+    }
+}
+</script>
+<script>
+function startAgain() {
+    
+    var x = document.getElementById("th-id2");
+     x.elements[0].value="";
+     x.elements[1].value="";
+     x.elements[2].value="";
+     x.elements[9].setAttribute('value','');
+    for( i = 0; i < x.length-1; i++ ) {
+        x.elements[i].value="";
+        x.elements[i].setAttribute('value','');
+    }
+    var elem = document.getElementById("rst");
+    elem.setAttribute('value','Click Enter ->'); // client changes value
+    //x.submit();
 }
 </script>
 </head>
@@ -53,6 +72,7 @@ function setFocus() { // this part is javascript
 and is what will take the user's input and display it red if incorrect
 //-->
 <%
+    String restarted = "Click Enter ->";
     String tmp = "";        // temporary storage for newly gotten 
                             // session attribute or request parameter
     final int SZ2_MX = 4;   // maximum operand size
@@ -67,13 +87,16 @@ and is what will take the user's input and display it red if incorrect
     int idx;
     int jdx;
     
-    int bdx;                // box index used to track what box is selected
+    int bdx = 0;            // box index used to track what box is selected
+                            // if you leave a box blank and hit enter it 
+                            // continues to the next fixit? doesn't track what
+                            // what the answer should be
+                            // can you pick up what the person selected?
     
     // array with input box order for a 3 digit number times a 2 digit number
     int[] whatBx = { 10,  3,  9,  2, 8,  7, 14,  1, 13, 0,
                      12, 11, 19, 18, 6, 17,  5, 16, 4, 15, 20 };
- //   String lastclr = "black";
- //   String whatclr = "black";
+
     String lastans = "";
     
     int[][] num;   // numeric version of multiplicative carry
@@ -106,20 +129,6 @@ and is what will take the user's input and display it red if incorrect
     can = new int[SZ2_MX];
     cas = new String[SZ2_MX];
     caclr = new String[SZ2_MX];
-   
-    for (idx = 0; idx < SZ2_MX; idx++ ) {
-        op[0][idx] = 9;
-        op[1][idx] = 9;
-        cm[0][idx] = "";
-        cm[1][idx] = "";
-        num[0][idx] = 0;
-        num[1][idx] = 0;
-        clr[0][idx] = "green";
-        clr[1][idx] = "green";
-        can[idx] = 0;
-        cas[idx] = "";
-        caclr[idx] = "green";
-    }
     
     a1n = new int[2][SZ2_MX+2];
     a1s = new String[2][SZ2_MX+2];
@@ -128,20 +137,40 @@ and is what will take the user's input and display it red if incorrect
     ans = new String[SZ2_MX+2];
     anclr = new String[SZ2_MX+2];
     
-    max = SZ2_MX + 2;
-    for ( idx = 0; idx < max; idx++ ) {
-        ann[idx] = 0;
-        ans[idx] = "";
-        anclr[idx] = "blue";
-        for ( jdx = 0; jdx < 2; jdx++ ) {
-            a1n[jdx][idx] = 0;
-            a1s[jdx][idx] = "";
-            a1clr[jdx][idx] = "green";
-        }
+    
+    if(( tmp = request.getParameter("rstind")) != null) {
+        restarted = tmp.toString();
     }
-
-    if( session.isNew() ) {
+    System.out.println("restarted = " + restarted );
+    
+    if( restarted.equals("Click Enter ->") ) {
+        restarted = "no";
         bdx = 0;
+
+        for (idx = 0; idx < SZ2_MX; idx++ ) {
+            op[0][idx] = 9;
+            op[1][idx] = 9;
+            cm[0][idx] = "";
+            cm[1][idx] = "";
+            num[0][idx] = 0;
+            num[1][idx] = 0;
+            clr[0][idx] = "red";
+            clr[1][idx] = "red";
+            can[idx] = 0;
+            cas[idx] = "";
+            caclr[idx] = "red";
+        }
+        max = SZ2_MX + 2;
+        for ( idx = 0; idx < max; idx++ ) {
+            ann[idx] = 0;
+            ans[idx] = "";
+            anclr[idx] = "red";
+            for ( jdx = 0; jdx < 2; jdx++ ) {
+                a1n[jdx][idx] = 0;
+                a1s[jdx][idx] = "";
+                a1clr[jdx][idx] = "red";
+            }
+        }
 
         // Math.random() generates x, 0<=x<1
         //digits2 = (new Double(1+SZ1_MX*Math.random())).intValue();
@@ -166,16 +195,11 @@ and is what will take the user's input and display it red if incorrect
         att = new String("op1" + idx);
         session.setAttribute(att, op[0][idx]);
     } else {
-     //   lastclr = session.getAttribute("lastclr").toString();
         bdx = (new Integer(session.getAttribute("bdx").toString())).intValue();
         if( bdx < 20 ) { 
             bdx = bdx + 1;
-            //if( lastclr.equals("red") ) {
-            //    bdx = bdx - 2; // too late
-            //}
+
         }
-    //    whatclr = lastclr;
- //       lastclr = "black";
         digits2 = (new Integer(session.getAttribute("digits2").toString())).intValue();
         for( idx = 0; idx < digits2; idx++ ){
             att = new String("op2" + idx);
@@ -188,7 +212,7 @@ and is what will take the user's input and display it red if incorrect
         }
     }
     session.setAttribute("bdx", bdx);
-//    session.setAttribute("lastclr", "black");
+    System.out.println("line 196 bdx = " + bdx );
     // it's checking every single box whether it has an entry or not. If the box is blank, 
     // it's counted as a zero and if it's not supposed to be zero, it turns lastclr red
     
@@ -214,7 +238,6 @@ and is what will take the user's input and display it red if incorrect
                         // Every box is checked every enter and it assumes 0
                         // if there is no entry which is not necessarily the
                         // right answer
-     //                   session.setAttribute("lastclr", "red");
                         bdx = bdx - 1;
                         session.setAttribute("bdx", bdx);
                         lastans = cm[jdx][idx];                       
@@ -262,10 +285,10 @@ and is what will take the user's input and display it red if incorrect
                 ProcessAns.checkMult( a1n[0][idx], op[0][0],
                                         op[1][idx], cin )).equals("red") ) {
                 if(!a1s[0][idx].equals("")) {
-    //                session.setAttribute("lastclr", "red");
                     lastans = a1s[0][idx];
                     bdx = bdx - 1;
                     session.setAttribute("bdx", bdx);
+                        System.out.println("line 275 bdx = " + bdx );
                 }
             }
         }
@@ -281,10 +304,10 @@ and is what will take the user's input and display it red if incorrect
             ProcessAns.checkCarry( a1n[0][idx], op[0][0],
                                         op[1][idx-1], cin )).equals("red") ) {
             if(!a1s[0][idx].equals("")) {
- //               session.setAttribute("lastclr", "red");
                 lastans = a1s[0][idx];
                 bdx = bdx - 1;
                 session.setAttribute("bdx", bdx);
+                    System.out.println("line 295 bdx = " + bdx );
             }
         }
     }
@@ -309,6 +332,7 @@ and is what will take the user's input and display it red if incorrect
                     lastans = a1s[1][idx];
                                  bdx = bdx - 1;
                 session.setAttribute("bdx", bdx);
+                    System.out.println("line 320 bdx = " + bdx );
                 }
             }
         }
@@ -325,10 +349,10 @@ and is what will take the user's input and display it red if incorrect
             ProcessAns.checkCarry( a1n[1][idx], op[0][1],
                                         op[1][idx-2], cin )).equals("red") ) {
             if(!a1s[1][idx].equals("")) {
-//                session.setAttribute("lastclr", "red");
                 lastans = a1s[1][idx];
                 bdx = bdx - 1;
                 session.setAttribute("bdx", bdx);
+                    System.out.println("line 340 bdx = " + bdx );
             }
         }
     }
@@ -357,10 +381,10 @@ and is what will take the user's input and display it red if incorrect
                         ProcessAns.checkAddCarry( can[jdx], a1n[0][idx-1], 
                                         a1n[1][idx-1], ca_in)).equals("red") ) {
                     if(!cas[jdx].equals("")) {
-  //                      session.setAttribute("lastclr", "red");
                         lastans = cas[jdx];  
                         bdx = bdx - 1;
                         session.setAttribute("bdx", bdx);
+                            System.out.println("line 372 bdx = " + bdx );
                     }
                 }
                 cin = can[jdx];
@@ -369,20 +393,20 @@ and is what will take the user's input and display it red if incorrect
                 ProcessAns.checkAdd( ann[idx], a1n[0][idx],
                         a1n[1][idx],cin )).equals("red") ) {
                 if(!ans[idx].equals("")) {
- //                   session.setAttribute("lastclr", "red");
                     lastans = ans[idx]; 
                     bdx = bdx - 1;
                     session.setAttribute("bdx", bdx);
+                        System.out.println("line 384 bdx = " + bdx );
                 }
             }
         }
     }
  
 %>
+<div class="d1">
 <form id="th-id2" method="get" action="Multiplier.jsp">
 
-<table class="c1">
-<tbody>
+<table class="t1">
 
 <!-- colspan="10" is worst case for 3 digit x 2 digit with carries //-->
 <tr><th id="F1" colspan="10">Multiplication Problem</th></tr>
@@ -422,7 +446,7 @@ and is what will take the user's input and display it red if incorrect
     <td class="s2"></td><td class="n1"><%=op[0][1]%></td>
     <td class="s2"></td><td class="n1"><%=op[0][0]%></td>
 </tr>
-<tr><th id="th-id1" colspan="10"></th></tr>
+<tr><th class="th-id1" colspan="10"></th></tr>
 <tr class="r1">
     <td><input type="text" name="ca2" class="c2"
                style="color:<%=caclr[2]%>" value="<%=cas[2]%>"></td>
@@ -467,7 +491,7 @@ and is what will take the user's input and display it red if incorrect
                style="color:<%=a1clr[1][1]%>" value="<%=a1s[1][1]%>"></td>
     <td class="s2"></td><td class="n1"></td>
 </tr>
-<tr><th colspan="10"></th></tr>
+<tr><th class="th-id1" colspan="10"></th></tr>
 <tr>
     <td class="s2"></td>
     <td><input type="text" name="an4" class="a1"
@@ -485,15 +509,30 @@ and is what will take the user's input and display it red if incorrect
     <td><input type="text" name="an0" class="a1"
                style="color:<%=anclr[0]%>" value="<%=ans[0]%>"></td>
 </tr>
-</tbody>
+
 </table>
-<input type="submit" value="enter">
-<button type="reset" value="Reset">Start again</button>
 
+
+
+<div class="d2">
+<label>What Box </label>
+<input id="test" type="text" value="<%=whatBx[bdx]%>" class="shortbox">
+<br>
+</div>
+<div class="d2">
+<% if (lastans != "" ) { %>
+<input  type="text" value="<%=lastans%>" class="shortbox">
+<label> was a wrong answer </label>
+<% } %>
+<br>
+</div>
+<div class="d2">
+<button type="reset" value="Reset" onclick="startAgain()">Start again</button>
+<input type="text" id="rst" name="rstind" value="<%=restarted%>" class="shortbox">
+<input type="submit" value="Enter">
+</div>
 </form>
-<label>What Box </label><input id="test" type="text" value="<%=whatBx[bdx]%>"><br>
-<input type="text" value="<%=lastans%>"><label> was a wrong answer </label>
-
+</div>
 </body>
 </html>
 

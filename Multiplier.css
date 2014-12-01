@@ -14,36 +14,52 @@ nav, section{ display: block }
 /* oddball colors are for debugging - can be changed to blend with the
   background later */
 body {
-  width: 50%;
+  //width: 50%;
   margin: 0 auto;
-  text-align: left;
-  background-color: cornsilk;
+  //text-align: left;
+  background-color: #FAF3E4;
+  //columns: 2 auto;
 }
 header {
   background-color: #FFBBFF;
 }
 table, th {
   border:2px solid black;
-  text-align: center;
+  //text-align: center;
 }
 /* classes -can be used more than once */
-.c1 {
+.d1{
+    -webkit-column-count: 2;
+    -webkit-column-gap: 20px;
+    
+    -moz-column-count:2;
+    -moz-column-gap: 20px;
+    
+    column-count: 2;
+    column-gap: 20px;
+}
+.d2{
+    padding-top: 40px;
+    height: 80px;
+    text-align: left;
+}
+.t1 {
   margin: 0 auto;
 /*  width: 192px; */
 }
 /* carry boxes */
 .c2 {
-  width: 10px;
-  background-color: #d7daf7;
+  width: 8px;
+  background-color: #E1EAE4;
   text-align: center;
   border:1px solid black;
 }
 /* blanks between carry boxes */
 .b1 {
-  width: 24px; 
-  background-color: #f7eaa7; 
-  color: #e7da97; 
-  border:1px solid brown;
+  width: 18px; 
+  //background-color: #f7eaa7; 
+  //color: #e7da97; 
+  //border:1px solid brown;
 }
 /* height of carry row */
 .r1 {
@@ -51,31 +67,38 @@ table, th {
 }
 /* spaces between operands */
 .s2 {
-  width: 10px;
-  background-color: #cfaf6f; 
-  color: #c0a060; 
+  width: 8px;
+  //background-color: #cfaf6f; 
+  //color: #c0a060; 
 }
 /* operands */
 .n1 {
-  width: 24px;
-  background-color: #e7caa7; 
+  width: 18px;
+  //background-color: #e7caa7; 
   color: black; 
   text-align: center;
-  border:1px solid orange;
+  //border:1px solid orange;
   height: 28px;
 }
 /* answer boxes */
 .a1 {
-  width: 24px;
-  background-color: #f7caa7; 
+  width: 18px;
+  background-color: #E1EAE4; 
   color: black; 
   text-align: center;
   border:2px solid black;
   height: 28px;
 }
-#th-id1 {
-  background-color: #BBF0FF;
+.shortbox{
+    width: 70px;
+    text-align: center;
+    color: red;
+}
+.th-id1 {
+  background-color: #2E7FA7;
 }
 #th-id2 {
-  background-color: #FFFFBB;
+  background-color: #FAF3E4;
+  //text-align: center;
+  columns: 2 auto;
 }

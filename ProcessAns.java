@@ -90,7 +90,7 @@ public class ProcessAns {
         } else {
             tclr = "black";
         } 
-                System.out.println("p1 = " + p1 + " op1 = " + op1 + " op2 = " + op2 + " tclr = " + tclr + " p1shouldbe " + md);
+        //System.out.println("p1 = " + p1 + " op1 = " + op1 + " op2 = " + op2 + " tclr = " + tclr + " p1shouldbe " + md);
         return tclr;
     }
     public static String checkMult( int p1, int op1, int op2, int pc ) {
@@ -102,9 +102,9 @@ public class ProcessAns {
         } else {
             tclr = "black";
         }
-        System.out.println("p1 = " + p1 + " op1 = " + op1 + " op2 = " + op2 +
-                " cin = " + pc +
-                " tclr = " + tclr + " p1shouldbe " + md);
+        //System.out.println("p1 = " + p1 + " op1 = " + op1 + " op2 = " + op2 +
+        //        " cin = " + pc +
+        //        " tclr = " + tclr + " p1shouldbe " + md);
         return tclr;
     }
     public static String checkCarry( int c1, int op1, int op2, int pc ) {
@@ -116,8 +116,8 @@ public class ProcessAns {
         } else {
             tclr = "black";
         }
-        System.out.println("c1 = " + c1 + " op1 = " + op1 + " op2 = " + op2 +
-                " cin " + pc + " tclr = " + tclr + " c1 s.b. " + md);
+        //System.out.println("c1 = " + c1 + " op1 = " + op1 + " op2 = " + op2 +
+        //        " cin " + pc + " tclr = " + tclr + " c1 s.b. " + md);
         return tclr;
     }
     // these two methods assume a 2 digit second operand - will need to be
@@ -131,8 +131,8 @@ public class ProcessAns {
         } else {           
             tclr = "red";
         }
-        System.out.println("c1 = " + c1 + " op1 = " + op1 + " op2 = " + op2 +
-                " cin " + pc + " tclr = " + tclr + " c1 s.b. " + md);
+        //System.out.println("c1 = " + c1 + " op1 = " + op1 + " op2 = " + op2 +
+        //        " cin " + pc + " tclr = " + tclr + " c1 s.b. " + md);
         return tclr;
     }
     public static String checkAdd( int p1, int op1, int op2, int pc ) {
@@ -144,8 +144,8 @@ public class ProcessAns {
         } else {           
             tclr = "red";
         }
-        System.out.println("p1 = " + p1 + " op1 = " + op1 + " op2 = " + op2 +
-                " cin " + pc + " tclr = " + tclr + " p1 s.b. " + md);
+        //System.out.println("p1 = " + p1 + " op1 = " + op1 + " op2 = " + op2 +
+        //        " cin " + pc + " tclr = " + tclr + " p1 s.b. " + md);
         return tclr;
     }
 }
