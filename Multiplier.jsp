@@ -37,10 +37,10 @@ function setFocus() { // this part is javascript
     var x = document.getElementById("th-id2");
     //document.getElementById("test").innerHTML = x.length;
     var i = 10;
-    var j = document.getElementById("test").value;
+    var j = document.getElementById("whatbox").value;
     i = Number(j);
     x.elements[i].focus();
-    if( i < 20 ) {
+    if( i < x.length-1 ) {
         x.elements[i].value="";
     }
 }
@@ -78,25 +78,35 @@ and is what will take the user's input and display it red if incorrect
     final int SZ2_MX = 4;   // maximum operand size
     int[][] op;             // operands first index is what operand
                             // second index is what digit of that operand
+    
+    int operand0 = 0;
+    int operand1 = 0;
 
-    int digits1 = 2;        // how many digits does the bottom operand have
-    int digits2 = 3;        // how many digits dows the top operand have
+    int digits0 = 2;        // how many digits does the bottom operand have
+    int digits1 = 3;        // how many digits dows the top operand have
+    int ncarries = digits1 - 1;
+    //int maxAndig = digits1 + 2;
     
     String att;             // temporary storage for an attribute name that you
                             // are about to get or set
-    int idx;
-    int jdx;
+    int kdx;
+    int ldx;
     
     int bdx = 0;            // box index used to track what box is selected
                             // if you leave a box blank and hit enter it 
                             // continues to the next fixit? doesn't track what
                             // what the answer should be
                             // can you pick up what the person selected?
+                            // since I know what box it's on, can I skip
+                            // checking the boxes that haven't changed?
     
     // array with input box order for a 3 digit number times a 2 digit number
-    int[] whatBx = { 10,  3,  9,  2, 8,  7, 14,  1, 13, 0,
-                     12, 11, 19, 18, 6, 17,  5, 16, 4, 15, 20 };
-
+    int[] whatBx = { 10,  3,  9,  2, 8,  7, 
+                        14,  1, 13, 0, 12, 11, 
+                        19, 18, 6, 17,  5, 16, 4, 15, 20, 20, 20, 20, 20, 20 };
+    
+    int maxBx = 20;
+                      
     String lastans = "";
     
     int[][] num;   // numeric version of multiplicative carry
@@ -141,13 +151,13 @@ and is what will take the user's input and display it red if incorrect
     if(( tmp = request.getParameter("rstind")) != null) {
         restarted = tmp.toString();
     }
-    System.out.println("restarted = " + restarted );
+    //System.out.println("restarted = " + restarted );
     
     if( restarted.equals("Click Enter ->") ) {
         restarted = "no";
         bdx = 0;
 
-        for (idx = 0; idx < SZ2_MX; idx++ ) {
+        for (int idx = 0; idx < SZ2_MX; idx++ ) {
             op[0][idx] = 9;
             op[1][idx] = 9;
             cm[0][idx] = "";
@@ -161,11 +171,11 @@ and is what will take the user's input and display it red if incorrect
             caclr[idx] = "red";
         }
         max = SZ2_MX + 2;
-        for ( idx = 0; idx < max; idx++ ) {
+        for ( int idx = 0; idx < max; idx++ ) {
             ann[idx] = 0;
             ans[idx] = "";
             anclr[idx] = "red";
-            for ( jdx = 0; jdx < 2; jdx++ ) {
+            for ( int jdx = 0; jdx < 2; jdx++ ) {
                 a1n[jdx][idx] = 0;
                 a1s[jdx][idx] = "";
                 a1clr[jdx][idx] = "red";
@@ -173,54 +183,106 @@ and is what will take the user's input and display it red if incorrect
         }
 
         // Math.random() generates x, 0<=x<1
-        //digits2 = (new Double(1+SZ1_MX*Math.random())).intValue();
-        //digits1 = (new Double(1+digits2*Math.random())).intValue();
-        session.setAttribute("digits2", digits2);
-        for (idx = 0; idx < digits2 - 1; idx++){
-            op[1][idx] = (new Double(10*Math.random())).intValue();
-            att = new String("op2" + idx);
-            session.setAttribute(att, op[1][idx]);
-        }
-        op[1][idx] = (new Double(1+9*Math.random())).intValue();
-        att = new String("op2" + idx);
-        session.setAttribute(att, op[1][idx]);
-        
+        //digits1 = (new Double(1+SZ1_MX*Math.random())).intValue();
+        //digits0 = (new Double(1+digits1*Math.random())).intValue();
         session.setAttribute("digits1", digits1);
-        for (idx = 0; idx < digits1 - 1; idx++){
-            op[0][idx] = (new Double(10*Math.random())).intValue();
-            att = new String("op1" + idx);
-            session.setAttribute(att, op[0][idx]);
+        for (kdx = 0; kdx < digits1 - 1; kdx++){
+            op[1][kdx] = (new Double(10*Math.random())).intValue();
+            operand1 = operand1 + op[1][kdx]*(int)(Math.pow(10.,(double)kdx));
+            att = new String("op2" + kdx);
+            session.setAttribute(att, op[1][kdx]);
         }
-        op[0][idx] = (new Double(1+9*Math.random())).intValue();
-        att = new String("op1" + idx);
-        session.setAttribute(att, op[0][idx]);
+        op[1][kdx] = (new Double(1+9*Math.random())).intValue();
+        //op[1][kdx] = 3;
+        operand1 = operand1 + op[1][kdx]*(int)(Math.pow(10.,(double)kdx));
+        att = new String("op2" + kdx);
+        session.setAttribute(att, op[1][kdx]);
+        
+        session.setAttribute("digits0", digits0);
+        for (kdx = 0; kdx < digits0 - 1; kdx++){
+            op[0][kdx] = (new Double(10*Math.random())).intValue();
+            operand0 = operand0 + op[0][kdx]*(int)(Math.pow(10.,(double)kdx));
+            att = new String("op1" + kdx);
+            session.setAttribute(att, op[0][kdx]);
+        }
+        op[0][kdx] = (new Double(1+9*Math.random())).intValue();
+        //op[0][kdx] = 3;
+        operand0 = operand0 + op[0][kdx]*(int)(Math.pow(10.,(double)kdx));
+        att = new String("op1" + kdx);
+        session.setAttribute(att, op[0][kdx]);
     } else {
+        maxBx = (new Integer(session.getAttribute("maxBx").toString())).intValue();
         bdx = (new Integer(session.getAttribute("bdx").toString())).intValue();
-        if( bdx < 20 ) { 
+        if( bdx < maxBx )
             bdx = bdx + 1;
-
-        }
-        digits2 = (new Integer(session.getAttribute("digits2").toString())).intValue();
-        for( idx = 0; idx < digits2; idx++ ){
-            att = new String("op2" + idx);
-            op[1][idx] = (new Integer(session.getAttribute(att).toString())).intValue();  
-        }
+        
         digits1 = (new Integer(session.getAttribute("digits1").toString())).intValue();
-        for( idx = 0; idx < digits1; idx++ ){
-            att = new String("op1" + idx);
-            op[0][idx] = (new Integer(session.getAttribute(att).toString())).intValue();  
+        for( int idx = 0; idx < digits1; idx++ ){
+            att = new String("op2" + idx);
+            op[1][idx] = (new Integer(session.getAttribute(att).toString())).intValue(); 
+            operand1 = operand1 + op[1][idx]*(int)(Math.pow(10.,(double)idx));
         }
+        digits0 = (new Integer(session.getAttribute("digits0").toString())).intValue();
+        for( int idx = 0; idx < digits0; idx++ ){
+            att = new String("op1" + idx);
+            op[0][idx] = (new Integer(session.getAttribute(att).toString())).intValue(); 
+            operand0 = operand0 + op[0][idx]*(int)(Math.pow(10.,(double)idx));
+        }
+        ncarries = digits1 - 1;
     }
     session.setAttribute("bdx", bdx);
-    System.out.println("line 196 bdx = " + bdx );
+    
+    int maxA0dig = op[0][0] == 0? 0 : 1 + (int)(Math.log10((double)(op[0][0]*operand1)));
+    int maxA1dig = 1 + (int)(Math.log10((double)(op[0][1]*operand1)));
+    int maxAndig = 1 + (int)(Math.log10((double)(operand0*operand1)));
+    System.out.println("A0: " + maxA0dig + " A1: " + maxA1dig +
+            " An: " + maxAndig );
+    int el = 10; // calculated for 19 boxes, 3 digit times 2 digit biggest case
+    int em = 4;
+    int en = 14;
+    int pe = 2;
+    int qu = 19;
+    int ar = 8;
+    ldx = 0;
+    for( int idx = 0; idx < maxA0dig; idx++ ) {
+        if( idx > 0 && idx < digits1 ) {
+            whatBx[ldx] = em- idx;
+            ldx++;
+        }
+        whatBx[ldx] = el - idx;
+        ldx++;
+    }
+    for( int idx = 0; idx < maxA1dig; idx++ ) {
+        if( idx > 0 && idx < digits1 ) {
+            whatBx[ldx] = pe - idx;
+            ldx++;
+        }
+        whatBx[ldx] = en - idx;
+        ldx++;
+    }
+    for( int idx = 0; idx < maxAndig; idx++ ) {
+        if( idx > 1 && idx <= maxA1dig ) {
+            whatBx[ldx] = ar - idx;
+            ldx++;
+        }
+        whatBx[ldx] = qu - idx;
+        ldx++;
+    }
+    whatBx[ldx] = 20;
+    maxBx = ldx + 1;
+    session.setAttribute("maxBx", maxBx);
+    for( int idx = 0; idx < maxBx; idx++ ) {
+        System.out.print(whatBx[idx] + " ");
+    }
+    //System.out.println("line 196 bdx = " + bdx );
     // it's checking every single box whether it has an entry or not. If the box is blank, 
     // it's counted as a zero and if it's not supposed to be zero, it turns lastclr red
     
     // need to assume actual carry, not zero for carry not entered so that
     // checking the final answer gives valid result
     // check multiplicative carries j= 0 => first row, j = 1 => second row
-    for( jdx = 0; jdx < 2; jdx++ ){
-        for( idx = 0; idx < digits1; idx++ ) {
+    for( int jdx = 0; jdx < ncarries; jdx++ ){
+        for( int idx = 0; idx < digits0; idx++ ) {
             att = new String("cr" + jdx + "" + idx);
             if((tmp = request.getParameter(att)) != null ) {
                 cm[jdx][idx] = tmp;
@@ -272,98 +334,100 @@ and is what will take the user's input and display it red if incorrect
     // instead of checkCarry for the most significant digit of a1's
     
     // check first row of intermediate answers
-    for ( idx = 0; idx < digits2; idx ++ ) {
-        att = new String("a10" + idx);
+    for ( kdx = 0; kdx < digits1; kdx ++ ) {
+        att = new String("a10" + kdx);
         if((tmp = request.getParameter(att)) != null ) {
-            a1s[0][idx] = tmp;
-            a1n[0][idx] = ProcessAns.string2int( a1s[0][idx] );
+            a1s[0][kdx] = tmp;
+            a1n[0][kdx] = ProcessAns.string2int( a1s[0][kdx] );
             cin = 0;
-            if( idx > 0 ) {
-                cin = num[0][idx-1];
+            if( kdx > 0 ) {
+                cin = num[0][kdx-1];
             }
-            if( (a1clr[0][idx] =
-                ProcessAns.checkMult( a1n[0][idx], op[0][0],
-                                        op[1][idx], cin )).equals("red") ) {
-                if(!a1s[0][idx].equals("")) {
-                    lastans = a1s[0][idx];
+            if( (a1clr[0][kdx] =
+                ProcessAns.checkMult( a1n[0][kdx], op[0][0],
+                                        op[1][kdx], cin )).equals("red") ) {
+                if(!a1s[0][kdx].equals("")) {
+                    lastans = a1s[0][kdx];
                     bdx = bdx - 1;
                     session.setAttribute("bdx", bdx);
-                        System.out.println("line 275 bdx = " + bdx );
+                        //System.out.println("line 275 bdx = " + bdx );
                 }
             }
         }
     }
-    att = new String("a10" + idx);
+    att = new String("a10" + kdx);
     if((tmp = request.getParameter(att)) != null ) {
-        a1s[0][idx] = tmp;    
-        a1n[0][idx] = ProcessAns.string2int( a1s[0][idx] );
-        // checking the carry now, so keep the cin & op[1][arg] same as
+        a1s[0][kdx] = tmp;    
+        a1n[0][kdx] = ProcessAns.string2int( a1s[0][kdx] );
+        // checking the carry now, so keep the cin & op[1][arg] same as        
         // in last iteration of previous loop
-        cin = num[0][idx-2];
-        if( (a1clr[0][idx] =
-            ProcessAns.checkCarry( a1n[0][idx], op[0][0],
-                                        op[1][idx-1], cin )).equals("red") ) {
-            if(!a1s[0][idx].equals("")) {
-                lastans = a1s[0][idx];
+
+        cin = num[0][kdx-2];
+        if( (a1clr[0][kdx] =
+            ProcessAns.checkCarry( a1n[0][kdx], op[0][0],
+                                        op[1][kdx-1], cin )).equals("red") ) {
+            if(!a1s[0][kdx].equals("")) {
+                lastans = a1s[0][kdx];
                 bdx = bdx - 1;
                 session.setAttribute("bdx", bdx);
-                    System.out.println("line 295 bdx = " + bdx );
+                    //System.out.println("line 295 bdx = " + bdx );
             }
         }
     }
 
     // check second row of intermediate answers
-    max = digits2 + 1;
-    for ( idx = 1; idx < max; idx ++ ) {
-        att = new String("a11" + idx);
+    max = digits1 + 1;
+    for ( kdx = 1; kdx < max; kdx ++ ) {
+        att = new String("a11" + kdx);
         if((tmp = request.getParameter(att)) != null ) {
-            a1s[1][idx] = tmp;
+            a1s[1][kdx] = tmp;
 
-            a1n[1][idx] = ProcessAns.string2int( a1s[1][idx] );
+            a1n[1][kdx] = ProcessAns.string2int( a1s[1][kdx] );
             cin = 0;
-            if( idx > 1 ) {
-                cin = num[1][idx-2];
+            if( kdx > 1 ) {
+                cin = num[1][kdx-2];
             }
-            if( (a1clr[1][idx] = 
-                ProcessAns.checkMult( a1n[1][idx], op[0][1],
-                                        op[1][idx-1], cin )).equals("red") ) { 
-                if(!a1s[1][idx].equals("")) {
+            if( (a1clr[1][kdx] = 
+                ProcessAns.checkMult( a1n[1][kdx], op[0][1],
+                                        op[1][kdx-1], cin )).equals("red") ) { 
+                if(!a1s[1][kdx].equals("")) {
 //                    session.setAttribute("lastclr", "red");
-                    lastans = a1s[1][idx];
+                    lastans = a1s[1][kdx];
                                  bdx = bdx - 1;
                 session.setAttribute("bdx", bdx);
-                    System.out.println("line 320 bdx = " + bdx );
+                    //System.out.println("line 320 bdx = " + bdx );
                 }
             }
         }
     }
-    att = new String("a11" + idx);
+    att = new String("a11" + kdx);
     if((tmp = request.getParameter(att)) != null ) {
-        a1s[1][idx] = tmp;
+        a1s[1][kdx] = tmp;
 
-        a1n[1][idx] = ProcessAns.string2int( a1s[1][idx] );
+        a1n[1][kdx] = ProcessAns.string2int( a1s[1][kdx] );
         // checking the carry now, so keep the cin & op[1][arg] same as in last 
         // last iteration of previous loop
-        cin = num[1][idx-3];
-        if( (a1clr[1][idx] =
-            ProcessAns.checkCarry( a1n[1][idx], op[0][1],
-                                        op[1][idx-2], cin )).equals("red") ) {
-            if(!a1s[1][idx].equals("")) {
-                lastans = a1s[1][idx];
+        cin = num[1][kdx-3];
+        if( (a1clr[1][kdx] =
+            ProcessAns.checkCarry( a1n[1][kdx], op[0][1],
+                                        op[1][kdx-2], cin )).equals("red") ) {
+            if(!a1s[1][kdx].equals("")) {
+                lastans = a1s[1][kdx];
                 bdx = bdx - 1;
                 session.setAttribute("bdx", bdx);
-                    System.out.println("line 340 bdx = " + bdx );
+                    //System.out.println("line 340 bdx = " + bdx );
             }
         }
     }
     
     // check final adds and carries
-    max = digits2 + 2;
-    for( idx = 0; idx < max; idx++ ) {
+    for( int idx = 0; idx < maxAndig; idx++ ) {
+        int jdx = 0;
         att = new String("an" + idx);
         if((tmp = request.getParameter(att)) != null ) {
             ans[idx] = tmp;
             ann[idx] = ProcessAns.string2int( ans[idx] );
+            
             cin = 0;
             if( idx > 1 ) {
                 jdx = idx - 2;
@@ -384,19 +448,34 @@ and is what will take the user's input and display it red if incorrect
                         lastans = cas[jdx];  
                         bdx = bdx - 1;
                         session.setAttribute("bdx", bdx);
-                            System.out.println("line 372 bdx = " + bdx );
+                            //System.out.println("line 372 bdx = " + bdx );
                     }
                 }
                 cin = can[jdx];
             }
-            if( (anclr[idx] = 
-                ProcessAns.checkAdd( ann[idx], a1n[0][idx],
-                        a1n[1][idx],cin )).equals("red") ) {
-                if(!ans[idx].equals("")) {
-                    lastans = ans[idx]; 
-                    bdx = bdx - 1;
-                    session.setAttribute("bdx", bdx);
-                        System.out.println("line 384 bdx = " + bdx );
+            if( idx == maxAndig - 1 && (maxAndig > maxA1dig + 1) ){
+                if( (anclr[idx] = 
+                        ProcessAns.checkAddCarry( ann[idx], a1n[0][idx-1], 
+                                        a1n[1][idx-1], can[idx-3])).equals("red") ) {
+                    if(!ans[idx].equals("")) {
+                        lastans = ans[idx];  
+                        bdx = bdx - 1;
+                        session.setAttribute("bdx", bdx);
+                        System.out.println("line 457 bdx = " + bdx +
+                                " idx = " + idx );
+                    }
+                }
+            } else {
+                if( (anclr[idx] = 
+                    ProcessAns.checkAdd( ann[idx], a1n[0][idx],
+                                a1n[1][idx],cin )).equals("red") ) {
+                    if(!ans[idx].equals("")) {
+                        lastans = ans[idx]; 
+                        bdx = bdx - 1;
+                        session.setAttribute("bdx", bdx);
+                        System.out.println("line 468  whichBx[" + bdx + "] = " +
+                                    whatBx[bdx] );
+                    }
                 }
             }
         }
@@ -516,7 +595,7 @@ and is what will take the user's input and display it red if incorrect
 
 <div class="d2">
 <label>What Box </label>
-<input id="test" type="text" value="<%=whatBx[bdx]%>" class="shortbox">
+<input id="whatbox" type="text" value="<%=whatBx[bdx]%>" class="shortbox">
 <br>
 </div>
 <div class="d2">

@@ -50,7 +50,7 @@ table, th {
 /* carry boxes */
 .c2 {
   width: 8px;
-  background-color: #E1EAE4;
+  background-color: #E6EAE8;
   text-align: center;
   border:1px solid black;
 }
@@ -83,7 +83,7 @@ table, th {
 /* answer boxes */
 .a1 {
   width: 18px;
-  background-color: #E1EAE4; 
+  background-color: #E6EAE8; 
   color: black; 
   text-align: center;
   border:2px solid black;
