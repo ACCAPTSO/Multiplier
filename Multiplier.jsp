@@ -492,7 +492,7 @@ and is what will take the user's input and display it red if incorrect
 
 <!-- colspan="10" is worst case for 3 digit x 2 digit with carries //-->
 <tr><th id="F1" colspan="10">Multiplication Problem</th></tr>
-<tr class="r1">
+<!--<tr class="r1">
     <td class="s2"></td><td class="b1"></td>
     <td class="s2"></td><td class="b1"></td>
     <td><input type="text" name="cr11" class="c2" 
@@ -502,6 +502,20 @@ and is what will take the user's input and display it red if incorrect
                style="color:<%=cmclr[1][0]%>" value="<%=cms[1][0]%>"></td>
     <td class="b1"></td>
     <td class="s2"></td><td class="b1"></td>
+</tr> //-->
+<tr class="r1">
+<%  for( int idx = 0; idx <= SZ2_MX; idx++ ) {
+        if( idx < 2 || idx == SZ2_MX ) { %>
+            <td class="s2"></td>
+<%      } else { 
+            int val = 3 - idx;
+            String name = "cr1" + val;
+%>
+            <td><input type="text" name="<%=name%>" class="c2" 
+               style="color:<%=cmclr[1][val]%>" value="<%=cms[1][val]%>"></td>
+<%      } %>
+        <td class="b1"></td>
+<%  }%>
 </tr>
 <tr class="r1">
     <td class="s2"></td><td class="b1"></td>
