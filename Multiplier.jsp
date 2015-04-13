@@ -79,6 +79,8 @@ and is what will take the user's input and display it red if incorrect
     int btmOpDgts = 2;        // how many digits does the bottom operand have
     int topOpDgts = 3;        // how many digits dows the top operand have
     int ncarries = topOpDgts - 1;
+    int spacesb4cm = SZ2_MX + 1 - topOpDgts;
+    int spacesb4btmOp = SZ2_MX - btmOpDgts; // "x" takes up one space
     //int maxAndig = topOpDgts + 2;
     
     String att;             // temporary storage for an attribute name that you
@@ -241,11 +243,15 @@ and is what will take the user's input and display it red if incorrect
             " An: " + maxAndig );
     // calculated for 19 boxes, 3 digit times 2 digit biggest case
     int el = 10; // lsb of first/top intermediate answer
+    //int el = 15; // lsb of first/top intermediate answer
     int em = 4;  // box after first multiplicative carry box for first intermediate answer
     int en = 14; // lsb of 2nd/bottom intermediate answer
+    //int en = 19; // lsb of 2nd/bottom intermediate answer
     int pe = 2;  // box after first multiplicative carry box for 2nd intermediate answer
     int qu = 19; // lsb of final answer
+    //int qu = 24; // lsb of final answer
     int ar = 8;  // 2nd box after first additive carry - no carries for first two digits added
+    //int ar = 13;  // 2nd box after first additive carry - no carries for first two digits added
     ldx = 0;
     for( int idx = 0; idx < maxA0dig; idx++ ) {
         if( idx > 0 && idx < topOpDgts && op[0][0] > 1 ) {
@@ -263,6 +269,7 @@ and is what will take the user's input and display it red if incorrect
         whatBx[ldx] = en - idx;
         ldx++;
     }
+    // make it skip carry if adding 454 + 27240 fixit
     for( int idx = 0; idx < maxAndig; idx++ ) {
         if( idx > 1 && idx <= maxA1dig && maxA0dig != 0 ) {
             whatBx[ldx] = ar - idx;
@@ -501,22 +508,7 @@ and is what will take the user's input and display it red if incorrect
     <td><input type="text" name="cr10" class="c2" 
                style="color:<%=cmclr[1][0]%>" value="<%=cms[1][0]%>"></td>
     <td class="b1"></td>
-    <td class="s2"></td><td class="b1"></td>
-</tr> //-->
-<tr class="r1">
-<%  for( int idx = 0; idx <= SZ2_MX; idx++ ) {
-        if( idx < 2 || idx == SZ2_MX ) { %>
-            <td class="s2"></td>
-<%      } else { 
-            int val = 3 - idx;
-            String name = "cr1" + val;
-%>
-            <td><input type="text" name="<%=name%>" class="c2" 
-               style="color:<%=cmclr[1][val]%>" value="<%=cms[1][val]%>"></td>
-<%      } %>
-        <td class="b1"></td>
-<%  }%>
-</tr>
+    <td class="s2"></td><td class="b1"></td
 <tr class="r1">
     <td class="s2"></td><td class="b1"></td>
     <td class="s2"></td><td class="b1"></td>
@@ -528,20 +520,93 @@ and is what will take the user's input and display it red if incorrect
     <td class="b1"></td>
     <td class="s2"></td><td class="b1"></td>
 </tr>
+</tr> //-->
+<%  for( int ndx = 0; ndx < btmOpDgts; ndx++ ) { 
+        int row = btmOpDgts - 1 - ndx; %>
+        <tr class="r1">
+<%      for( int idx = 0; idx <= SZ2_MX; idx++ ) {
+            if( idx < spacesb4cm || idx == SZ2_MX ) { %>
+                <td class="s2"></td>
+<%          } else { 
+                int col = 3 - idx;
+                String name = "cr" + row + "" + col;
+%>
+                <td><input type="text" name="<%=name%>" class="c2" 
+                            style="color:<%=cmclr[row][col]%>" 
+                            value="<%=cms[row][col]%>"></td>
+<%          } %>
+            <td class="b1"></td>
+<%      }%>
+        </tr>
+<%  } %>
+
 <tr>
+<%  for( int idx = 0; idx <= SZ2_MX; idx++ ) { %>
+        <td class="s2"></td>
+<%      if( idx < spacesb4cm ) { %>
+            <td class="n1"></td>
+<%      } else { 
+            int col = topOpDgts - idx + spacesb4cm - 1;
+            switch(col) {
+                case 2: System.out.println("case 2"); %>
+                    <td class="n1"><%=op[1][2]%></td>
+                    <% break;
+                case 1: System.out.println("case 1");%>
+                    <td class="n1"><%=op[1][1]%></td>
+                    <% break;
+                case 0: System.out.println("case 0");%>
+                    <td class="n1"><%=op[1][0]%></td>
+                    <% break;
+                default: System.out.println("case default");%>
+                    <td class="n1">Y</td>
+                    <% break;
+            }       
+        }
+    } %>
+</tr>
+
+<tr>
+<%  for( int idx = 0; idx <= SZ2_MX; idx++ ) { %>
+        <td class="s2"></td>
+<%      if( idx < spacesb4btmOp ) { %>
+            <td class="n1"></td>
+<%      } else if ( idx == spacesb4btmOp ){ %>
+            <td class="n1"> x </td>
+<%      } else {
+            int col = btmOpDgts - idx + spacesb4btmOp; 
+            switch(col) {
+                case 2: System.out.println("case 2"); %>
+                    <td class="n1"><%=op[0][2]%></td>
+                    <% break;
+                case 1: System.out.println("case 1");%>
+                    <td class="n1"><%=op[0][1]%></td>
+                    <% break;
+                case 0: System.out.println("case 0");%>
+                    <td class="n1"><%=op[0][0]%></td>
+                    <% break;
+                default: System.out.println("case default");%>
+                    <td class="n1">Y</td>
+                    <% break;
+            }       
+        }
+    } %>
+</tr> 
+<!--
+ <tr>
     <td class="s2"></td><td class="n1"></td>
     <td class="s2"></td><td class="n1"></td>
     <td class="s2"></td><td class="n1"><%=op[1][2]%></td>
     <td class="s2"></td><td class="n1"><%=op[1][1]%></td>
     <td class="s2"></td><td class="n1"><%=op[1][0]%></td>
-</tr>
+</tr> 
 <tr>
     <td class="s2"></td><td class="n1"></td>
     <td class="s2"></td><td class="n1"></td>
     <td class="s2"></td><td class="n1"> x </td>
     <td class="s2"></td><td class="n1"><%=op[0][1]%></td>
     <td class="s2"></td><td class="n1"><%=op[0][0]%></td>
-</tr>
+</tr> 
+//-->
 <tr><th class="th-id1" colspan="10"></th></tr>
 <tr class="r1">
     <td><input type="text" name="ca2" class="c2"
