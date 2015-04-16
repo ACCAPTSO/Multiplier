@@ -81,6 +81,7 @@ and is what will take the user's input and display it red if incorrect
     int ncarries = topOpDgts - 1;
     int spacesb4cm = SZ2_MX + 1 - topOpDgts;
     int spacesb4btmOp = SZ2_MX - btmOpDgts; // "x" takes up one space
+    int spacesb4ca = SZ2_MX + 1 - topOpDgts - btmOpDgts; 
     //int maxAndig = topOpDgts + 2;
     
     String att;             // temporary storage for an attribute name that you
@@ -239,8 +240,8 @@ and is what will take the user's input and display it red if incorrect
     int maxA1dig = 1 + (int)(Math.log10((double)(op[0][1]*operand1)));
     // maximum digits in final answer
     int maxAndig = 1 + (int)(Math.log10((double)(operand0*operand1)));
-    System.out.println("A0: " + maxA0dig + " A1: " + maxA1dig +
-            " An: " + maxAndig );
+    //System.out.println("A0: " + maxA0dig + " A1: " + maxA1dig +
+    //        " An: " + maxAndig );
     // calculated for 19 boxes, 3 digit times 2 digit biggest case
     int el = 10; // lsb of first/top intermediate answer
     //int el = 15; // lsb of first/top intermediate answer
@@ -281,9 +282,9 @@ and is what will take the user's input and display it red if incorrect
     whatBx[ldx] = 20;
     maxBx = ldx + 1;
     session.setAttribute("maxBx", maxBx);
-    for( int idx = 0; idx < maxBx; idx++ ) {
-        System.out.print(whatBx[idx] + " ");
-    }
+    //for( int idx = 0; idx < maxBx; idx++ ) {
+    //    System.out.print(whatBx[idx] + " ");
+    //}
     //System.out.println("line 196 bdx = " + bdx );
     // it's checking every single box whether it has an entry or not. If the box is blank, 
     // it's counted as a zero and if it's not supposed to be zero, it turns lastclr red
@@ -471,8 +472,8 @@ and is what will take the user's input and display it red if incorrect
                         lastans = ans[idx];  
                         bdx = bdx - 1;
                         session.setAttribute("bdx", bdx);
-                        System.out.println("line 457 bdx = " + bdx +
-                                " idx = " + idx );
+                        //System.out.println("line 457 bdx = " + bdx +
+                        //        " idx = " + idx );
                     }
                 }
             } else {
@@ -483,8 +484,8 @@ and is what will take the user's input and display it red if incorrect
                         lastans = ans[idx]; 
                         bdx = bdx - 1;
                         session.setAttribute("bdx", bdx);
-                        System.out.println("line 468  whichBx[" + bdx + "] = " +
-                                    whatBx[bdx] );
+                        //System.out.println("line 468  whichBx[" + bdx + "] = " +
+                        //            whatBx[bdx] );
                     }
                 }
             }
@@ -548,16 +549,16 @@ and is what will take the user's input and display it red if incorrect
 <%      } else { 
             int col = topOpDgts - idx + spacesb4cm - 1;
             switch(col) {
-                case 2: System.out.println("case 2"); %>
-                    <td class="n1"><%=op[1][2]%></td>
-                    <% break;
-                case 1: System.out.println("case 1");%>
-                    <td class="n1"><%=op[1][1]%></td>
-                    <% break;
-                case 0: System.out.println("case 0");%>
+                case 0: //System.out.println("case 0");%>
                     <td class="n1"><%=op[1][0]%></td>
                     <% break;
-                default: System.out.println("case default");%>
+                case 1: //System.out.println("case 1");%>
+                    <td class="n1"><%=op[1][1]%></td>
+                    <% break;
+                case 2: //System.out.println("case 2"); %>
+                    <td class="n1"><%=op[1][2]%></td>
+                    <% break;
+                default: //System.out.println("case default");%>
                     <td class="n1">Y</td>
                     <% break;
             }       
@@ -575,16 +576,16 @@ and is what will take the user's input and display it red if incorrect
 <%      } else {
             int col = btmOpDgts - idx + spacesb4btmOp; 
             switch(col) {
-                case 2: System.out.println("case 2"); %>
-                    <td class="n1"><%=op[0][2]%></td>
-                    <% break;
-                case 1: System.out.println("case 1");%>
+                case 0: //System.out.println("case 0");%>
+                    <td class="n1"><%=op[0][0]%></td>
+                    <% break; 
+                case 1: //System.out.println("case 1");%>
                     <td class="n1"><%=op[0][1]%></td>
                     <% break;
-                case 0: System.out.println("case 0");%>
-                    <td class="n1"><%=op[0][0]%></td>
+                case 2: //System.out.println("case 2"); %>
+                    <td class="n1"><%=op[0][2]%></td>
                     <% break;
-                default: System.out.println("case default");%>
+                default: //System.out.println("case default");%>
                     <td class="n1">Y</td>
                     <% break;
             }       
@@ -609,6 +610,21 @@ and is what will take the user's input and display it red if incorrect
 //-->
 <tr><th class="th-id1" colspan="10"></th></tr>
 <tr class="r1">
+<%  for( int idx = 0; idx <= SZ2_MX; idx++ ) {
+        if( idx >= spacesb4ca && idx < SZ2_MX - 1 ) { 
+            int col = SZ2_MX - 2 - idx + spacesb4ca; 
+            String name = "ca" + col; %>
+            <td><input type="text" name="<%=name%>" class="c2"
+                style="color:<%=caclr[col]%>" value="<%=cas[col]%>"></td>
+<%      } else { %>
+            <td class="s2"></td>
+<%      } %>
+    <td class="b1"></td>
+<%  } %>
+</tr>
+<!--
+<tr><th class="th-id1" colspan="10"></th></tr>
+<tr class="r1">
     <td><input type="text" name="ca2" class="c2"
                style="color:<%=caclr[2]%>" value="<%=cas[2]%>"></td>
     <td class="b1"></td>
@@ -621,6 +637,7 @@ and is what will take the user's input and display it red if incorrect
     <td class="s2"></td><td class="b1"></td>
     <td class="s2"></td><td class="b1"></td>
 </tr>
+//-->
 <tr>
     <td class="s2"></td><td class="n1"></td>
     <td class="s2"></td>
