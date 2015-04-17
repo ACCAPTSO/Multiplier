@@ -493,7 +493,7 @@ and is what will take the user's input and display it red if incorrect
     }
  
 %>
-<div class="d1">
+<div class="d1" onselectstart="return false">
 <form id="th-id2" method="get" action="Multiplier.jsp">
 
 <table class="t1">
@@ -608,6 +608,8 @@ and is what will take the user's input and display it red if incorrect
     <td class="s2"></td><td class="n1"><%=op[0][0]%></td>
 </tr> 
 //-->
+<!-- cleaner if whatBx, ca boxes and ai boxes took into account that not all boxes are always used
+and should not be displayed -->
 <tr><th class="th-id1" colspan="10"></th></tr>
 <tr class="r1">
 <%  for( int idx = 0; idx <= SZ2_MX; idx++ ) {
@@ -637,7 +639,7 @@ and is what will take the user's input and display it red if incorrect
     <td class="s2"></td><td class="b1"></td>
     <td class="s2"></td><td class="b1"></td>
 </tr>
-//-->
+
 <tr>
     <td class="s2"></td><td class="n1"></td>
     <td class="s2"></td>
@@ -669,6 +671,25 @@ and is what will take the user's input and display it red if incorrect
                style="color:<%=aiclr[1][1]%>" value="<%=ais[1][1]%>"></td>
     <td class="s2"></td><td class="n1"></td>
 </tr>
+//-->
+<%  for( int row = 0; row < btmOpDgts; row++ ) { %>
+        <tr>
+<%      int spacesb4ai = SZ2_MX - topOpDgts - row;
+        int aispaces = spacesb4ai + topOpDgts + 2 - row;
+        for( int idx = 0; idx <= SZ2_MX; idx++ ) { %>
+            <td class="s2"></td>
+<%          if( idx >= spacesb4ai && idx < aispaces ) { 
+                int col = SZ2_MX - idx + spacesb4ca; 
+                String name = "ai" + row + "" + col; 
+                System.out.println( "row = " + row + " col = " + col ); %>
+                <td><input type="text" name="<%=name%>" class="a1"
+               style="color:<%=aiclr[row][col]%>" value="<%=ais[row][col]%>"></td>
+<%          } else { %>
+                <td class="n1"></td>
+<%          } 
+        } %>        
+        </tr>
+<%   } %>
 <tr><th class="th-id1" colspan="10"></th></tr>
 <tr>
     <td class="s2"></td>
