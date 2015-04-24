@@ -10,7 +10,8 @@
 <!--
 this is a comment -the // is for javascript 
 //-->
-
+<!-- 539 x 16 has carry boxes upstairs fixit //-->
+<!-- changing SZ2_MX up or down gives array out of bounds errors fixit //-->
 <!-- Document Type Definition -don't muck with it //-->
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 
@@ -69,15 +70,16 @@ and is what will take the user's input and display it red if incorrect
     String restarted = "Click Enter ->";
     String tmp = "";        // temporary storage for newly gotten 
                             // session attribute or request parameter
-    final int SZ2_MX = 4;   // maximum operand size
+    final int SZ2_MX = 5;   // maximum operand size
+    int colspan = 2*(SZ2_MX + 1);
     int[][] op;             // operands first index is what operand
                             // second index is what digit of that operand
     
     int operand0 = 0;
     int operand1 = 0;
 
-    int btmOpDgts = 2;        // how many digits does the bottom operand have
-    int topOpDgts = 3;        // how many digits dows the top operand have
+    int btmOpDgts = SZ2_MX + 1 - 4;        // how many digits does the bottom operand have
+    int topOpDgts = SZ2_MX - btmOpDgts;        // how many digits dows the top operand have
     int nmcarries = topOpDgts - 1;
     
     //int maxAndig = topOpDgts + 2;
@@ -98,7 +100,9 @@ and is what will take the user's input and display it red if incorrect
     // array with input box order for a 3 digit number times a 2 digit number
     int[] whatBx = { 10,  3,  9,  2, 8,  7, 
                         14,  1, 13, 0, 12, 11, 
-                        19, 18, 6, 17,  5, 16, 4, 15, 20, 20, 20, 20, 20, 20 };
+                        19, 18, 6, 17,  5, 16, 4, 15, 20, 20, 20, 20, 20, 
+                        20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20,
+                        20, 20, 20, 20, 20, 20 };
     
     int maxBx = 20;
                       
@@ -128,16 +132,16 @@ and is what will take the user's input and display it red if incorrect
     
     
     op = new int[2][SZ2_MX];
-    cms = new String[2][SZ2_MX];
-    cmn = new int[2][SZ2_MX];
-    cmclr = new String[2][SZ2_MX];
+    cms = new String[btmOpDgts][SZ2_MX];
+    cmn = new int[btmOpDgts][SZ2_MX];
+    cmclr = new String[btmOpDgts][SZ2_MX];
     can = new int[SZ2_MX];
     cas = new String[SZ2_MX];
     caclr = new String[SZ2_MX];
     
-    ain = new int[2][SZ2_MX+2];
-    ais = new String[2][SZ2_MX+2];
-    aiclr = new String[2][SZ2_MX+2];
+    ain = new int[btmOpDgts][SZ2_MX+2];
+    ais = new String[btmOpDgts][SZ2_MX+2];
+    aiclr = new String[btmOpDgts][SZ2_MX+2];
     ann = new int[SZ2_MX+2];
     ans = new String[SZ2_MX+2];
     anclr = new String[SZ2_MX+2];
@@ -206,7 +210,7 @@ and is what will take the user's input and display it red if incorrect
         }
         // msb cannot be 0
         op[0][kdx] = (new Double(1+9*Math.random())).intValue();
-        //op[0][kdx] = 3;
+        //op[0][kdx] = 1;
         operand0 = operand0 + op[0][kdx]*(int)(Math.pow(10.,(double)kdx));
         att = new String("op1" + kdx);
         session.setAttribute(att, op[0][kdx]);
@@ -232,13 +236,13 @@ and is what will take the user's input and display it red if incorrect
     }
     session.setAttribute("bdx", bdx);
     
-    int maxAdig[] = { 0, 0 };
-    boolean nocarries = op[0][0] <= 1;
+    int maxAdig[] = { 0, 0, 0 };
     boolean no1st = op[0][0] == 0;
     // maximum digits in top/first intermediate answer
     maxAdig[0] = no1st? 0 : 1 + (int)(Math.log10((double)(op[0][0]*operand1)));
     // maximum digits in bottom/second intermediate answer
     maxAdig[1] = 1 + (int)(Math.log10((double)(op[0][1]*operand1)));
+    maxAdig[2] = 1 + (int)(Math.log10((double)(op[0][2]*operand1)));
     // maximum digits in final answer
     int maxAndig = 1 + (int)(Math.log10((double)(operand0*operand1)));
     int nacarries = no1st? 0 : maxAdig[1] - 1;
@@ -256,8 +260,12 @@ and is what will take the user's input and display it red if incorrect
     //System.out.println("A0: " + maxAdig[0] + " A1: " + maxAdig[1] +
     //        " An: " + maxAndig );
     // calculated for 19 boxes, 3 digit times 2 digit biggest case
-    //int em = 4;  // box after first multiplicative carry box for first intermediate answer
-    int em = nmcarries + (nocarries? 0 : nmcarries); // after first multiplicative carry box for first intermediate answer
+    //int em = 4;  // box after first multiplicative carry box for first intermediate answer 
+    int em = 0;
+    for( int idx = 0; idx < btmOpDgts; idx++ ) {
+        em += (op[0][idx] <= 1? 0 : nmcarries); 
+        //System.out.println("op[0][" + idx + "] = " + op[0][idx] + " m = " + em);
+    }
     //int el = 10; // lsb of first/top intermediate answer
     int el = em + nacarries + maxAdig[0] - 1; // lsb of first/top intermediate answer
     //int en = 14; // lsb of 2nd/bottom intermediate answer
@@ -299,9 +307,9 @@ and is what will take the user's input and display it red if incorrect
     whatBx[ldx] = 20;
     maxBx = ldx + 1;
     session.setAttribute("maxBx", maxBx);
-    //for( int idx = 0; idx < maxBx; idx++ ) {
-        //System.out.print(whatBx[idx] + " ");
-    //}
+    for( int idx = 0; idx < maxBx; idx++ ) {
+        System.out.print(whatBx[idx] + " ");
+    }
     //System.out.println("line 196 bdx = " + bdx );
     // it's checking every single box whether it has an entry or not. If the box is blank, 
     // it's counted as a zero and if it's not supposed to be zero, it turns lastclr red
@@ -309,30 +317,33 @@ and is what will take the user's input and display it red if incorrect
     // need to assume actual carry, not zero for carry not entered so that
     // checking the final answer gives valid result
     // check multiplicative carries j= 0 => first row, j = 1 => second row
-    for( int jdx = 0; jdx < nmcarries; jdx++ ){
-        for( int idx = 0; idx < btmOpDgts; idx++ ) {
-            att = new String("cr" + jdx + "" + idx);
-            if((tmp = request.getParameter(att)) != null ) {
-                cms[jdx][idx] = tmp;
+    for( int jdx = 0; jdx < btmOpDgts; jdx++ ) {
+        //System.out.println("jdx = " + jdx + " op[0][jdx] = " + op[0][jdx] );
+        if( op[0][jdx] > 1 ) {
+            for( int idx = 0; idx < nmcarries; idx++ ) {
+                att = new String("cr" + jdx + "" + idx);
+                if((tmp = request.getParameter(att)) != null ) {
+                    cms[jdx][idx] = tmp;
             
-                cmn[jdx][idx] = ProcessAns.string2int( cms[jdx][idx] );
-                cin = 0;
-                if( idx > 0 ) {
-                    cin = cmn[jdx][idx-1]; // this was input and checked prev
-                }
-                if( (cmclr[jdx][idx] =
-                    ProcessAns.checkCarry( cmn[jdx][idx], op[0][jdx],
-                                        op[1][idx], cin )).equals("red") ) {
-                    if(!cms[jdx][idx].equals("")) { // Don't set the box back
-                        // unless there actually was an entry that was wrong.
-                        // Every box is checked every enter and it assumes 0
-                        // if there is no entry which is not necessarily the
-                        // right answer
-                        bdx = bdx - 1;
-                        session.setAttribute("bdx", bdx);
-                        lastans = cms[jdx][idx];                       
+                    cmn[jdx][idx] = ProcessAns.string2int( cms[jdx][idx] );
+                    cin = 0;
+                    if( idx > 0 ) {
+                        cin = cmn[jdx][idx-1]; // this was input and checked prev
                     }
-                }
+                    //System.out.println("checking carries cmn[" + jdx + "][" + idx + "] = " + cmn[jdx][idx]);
+                    if( (cmclr[jdx][idx] =
+                        ProcessAns.checkCarry( cmn[jdx][idx], op[0][jdx],
+                                            op[1][idx], cin )).equals("red") ) {
+                        if(!cms[jdx][idx].equals("")) { // Don't set the box back
+                            // unless there actually was an entry that was wrong.
+                            // Every box is checked every enter and it assumes 0
+                            // if there is no entry which is not necessarily the
+                            // right answer
+                            bdx = bdx - 1;
+                            session.setAttribute("bdx", bdx);
+                            lastans = cms[jdx][idx];                       
+                        }
+                    }
                 // do i need this? try commenting out
                 // if i do need it, i need it for ai's as well
                 // session.setAttribute(att, cms[jdx][idx]); // row, column
@@ -342,6 +353,7 @@ and is what will take the user's input and display it red if incorrect
                 // red. I don't know where the 0's are coming from, I would have
                 // thought the getParameter would return null and not do any
                 // processing. Do I even need to check if getParameter is null?
+                }
             }
         }
     }
@@ -517,8 +529,8 @@ and is what will take the user's input and display it red if incorrect
 
 <table class="t1">
 
-<!-- colspan="10" is worst case for 3 digit x 2 digit with carries //-->
-<tr><th id="F1" colspan="10">Multiplication Problem</th></tr>
+<!-- colspan="<%=colspan%>" is worst case for 3 digit x 2 digit with carries //-->
+<tr><th id="F1" colspan="<%=colspan%>">Multiplication Problem</th></tr>
 <!--<tr class="r1">
     <td class="s2"></td><td class="b1"></td>
     <td class="s2"></td><td class="b1"></td>
@@ -543,14 +555,21 @@ and is what will take the user's input and display it red if incorrect
 </tr> //-->
 <%  for( int ndx = 0; ndx < btmOpDgts; ndx++ ) { 
         int row = btmOpDgts - 1 - ndx; 
-        if( ndx == 0 || op[0][0] > 1 ) { %>
+        if( op[0][row] > 1 ) { %>
             <tr class="r1">
 <%          for( int idx = 0; idx <= SZ2_MX; idx++ ) {
                 if( idx < spacesb4cm || idx == SZ2_MX ) { %>
                     <td class="s2"></td>
 <%              } else { 
-                    int col = 3 - idx;
-                    String name = "cr" + row + "" + col; %>
+                    int col = SZ2_MX - 1 - idx;
+                    String name = "cr" + row + "" + col; 
+                    //System.out.print("cm row = " + row + " cm col = " + col);
+                    
+                    if( col < 0 || col >= SZ2_MX ) {
+                        System.out.println("cm col = " + col + "being set to 0");
+                        col = 0;
+                    } 
+                    //System.out.println(" cm = " + cms[row][col]); %>
                     <td><input type="text" name="<%=name%>" class="c2" 
                             style="color:<%=cmclr[row][col]%>" 
                             value="<%=cms[row][col]%>"></td>
@@ -577,6 +596,9 @@ and is what will take the user's input and display it red if incorrect
                     <% break;
                 case 2: //System.out.println("case 2"); %>
                     <td class="n1"><%=op[1][2]%></td>
+                    <% break;
+                case 3: //System.out.println("case 2"); %>
+                    <td class="n1"><%=op[1][3]%></td>
                     <% break;
                 default: //System.out.println("case default");%>
                     <td class="n1">Y</td>
@@ -630,14 +652,18 @@ and is what will take the user's input and display it red if incorrect
 //-->
 <!-- cleaner if whatBx, ca boxes and ai boxes took into account that not all boxes are always used
 and should not be displayed -->
-<tr><th class="th-id1" colspan="10"></th></tr>
+<tr><th class="th-id1" colspan="<%=colspan%>"></th></tr>
 <tr class="r1">
 <%  for( int idx = 0; idx <= SZ2_MX; idx++ ) {
         if( idx >= spacesb4ca && idx < nacarries + spacesb4ca && !no1st ) { 
             //int col = SZ2_MX - 2 - idx + spacesb4ca;
             int col = SZ2_MX - 2 - idx;
+            String name = "ca" + col; 
             //System.out.println("ca col = " + col);
-            String name = "ca" + col; %>
+            if( col < 0 || col >= SZ2_MX ) {
+                 System.out.println("ca col = " + col + "being reduced to 0");
+                 col = 0;
+            } %>
             <td><input type="text" name="<%=name%>" class="c2"
                 style="color:<%=caclr[col]%>" value="<%=cas[col]%>"></td>
 <%      } else { %>
@@ -647,7 +673,7 @@ and should not be displayed -->
 <%  } %>
 </tr>
 <!--
-<tr><th class="th-id1" colspan="10"></th></tr>
+<tr><th class="th-id1" colspan="<%=colspan%>"></th></tr>
 <tr class="r1">
     <td><input type="text" name="ca2" class="c2"
                style="color:<%=caclr[2]%>" value="<%=cas[2]%>"></td>
@@ -712,7 +738,7 @@ and should not be displayed -->
         } %>        
         </tr>
 <%   } %>
-<tr><th class="th-id1" colspan="10"></th></tr>
+<tr><th class="th-id1" colspan="<%=colspan%>"></th></tr>
 <tr>
 <%  int spacesb4an = SZ2_MX + 1 - maxAndig;
     for( int idx = 0; idx <= SZ2_MX; idx++ ) { %>
