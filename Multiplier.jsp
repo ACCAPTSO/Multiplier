@@ -70,7 +70,7 @@ and is what will take the user's input and display it red if incorrect
     String restarted = "Click Enter ->";
     String tmp = "";        // temporary storage for newly gotten 
                             // session attribute or request parameter
-    final int SZ2_MX = 5;   // maximum operand size
+    final int SZ2_MX = 6;   // maximum answer size
     int colspan = 2*(SZ2_MX + 1);
     int[][] op;             // operands first index is what operand
                             // second index is what digit of that operand
@@ -78,8 +78,9 @@ and is what will take the user's input and display it red if incorrect
     int operand0 = 0;
     int operand1 = 0;
 
-    int btmOpDgts = SZ2_MX + 1 - 4;        // how many digits does the bottom operand have
-    int topOpDgts = SZ2_MX - btmOpDgts;        // how many digits dows the top operand have
+    int topOpDgts = SZ2_MX + 1 - 3;      // how many digits dows the top operand have  
+    int btmOpDgts = SZ2_MX - topOpDgts;  // how many digits does the bottom operand have
+    
     int nmcarries = topOpDgts - 1;
     
     //int maxAndig = topOpDgts + 2;
@@ -182,8 +183,8 @@ and is what will take the user's input and display it red if incorrect
         }
 
         // Math.random() generates x, 0<=x<1
-        //topOpDgts = (new Double(1+SZ1_MX*Math.random())).intValue();
-        //btmOpDgts = (new Double(1+topOpDgts*Math.random())).intValue();
+        //topOpDgts = (new Double(1+SZ2_MX*Math.random())).intValue() - 3;
+        //btmOpDgts = (new Double((SZ2_MX-topOpDgts)*Math.random())).intValue();
         session.setAttribute("topOpDgts", topOpDgts);
         for (kdx = 0; kdx < topOpDgts - 1; kdx++){
             op[1][kdx] = (new Double(10*Math.random())).intValue();
@@ -304,13 +305,14 @@ and is what will take the user's input and display it red if incorrect
         whatBx[ldx] = qu - idx; // final answer
         ldx++;
     }
-    whatBx[ldx] = 20;
+    whatBx[ldx] = qu + 1;  //why? fixit
     maxBx = ldx + 1;
     session.setAttribute("maxBx", maxBx);
+    System.out.print("whatBxes ");
     for( int idx = 0; idx < maxBx; idx++ ) {
         System.out.print(whatBx[idx] + " ");
     }
-    //System.out.println("line 196 bdx = " + bdx );
+    System.out.println("line 196 bdx = " + bdx ); // need printLN or it never outputs previous prints
     // it's checking every single box whether it has an entry or not. If the box is blank, 
     // it's counted as a zero and if it's not supposed to be zero, it turns lastclr red
     
