@@ -78,10 +78,10 @@ and is what will take the user's input and display it red if incorrect
     int operand0 = 0;
     int operand1 = 0;
 
-    int topOpDgts = SZ2_MX + 1 - 3;      // how many digits dows the top operand have  
-    int btmOpDgts = SZ2_MX - topOpDgts;  // how many digits does the bottom operand have
+    int topOpDgts = 0; //SZ2_MX + 1 - 3;      // how many digits dows the top operand have  
+    int btmOpDgts = 0; //SZ2_MX - topOpDgts;  // how many digits does the bottom operand have
     
-    int nmcarries = topOpDgts - 1;
+    int nmcarries = 0; //topOpDgts - 1;
     
     //int maxAndig = topOpDgts + 2;
     
@@ -130,30 +130,33 @@ and is what will take the user's input and display it red if incorrect
     int[] can;      // additive carry numeric
     String[] cas;   // additive carry string
     String[] caclr; // additive color text  color
-    
-    
-    op = new int[2][SZ2_MX];
-    cms = new String[btmOpDgts][SZ2_MX];
-    cmn = new int[btmOpDgts][SZ2_MX];
-    cmclr = new String[btmOpDgts][SZ2_MX];
-    can = new int[SZ2_MX];
-    cas = new String[SZ2_MX];
-    caclr = new String[SZ2_MX];
-    
-    ain = new int[btmOpDgts][SZ2_MX+2];
-    ais = new String[btmOpDgts][SZ2_MX+2];
-    aiclr = new String[btmOpDgts][SZ2_MX+2];
-    ann = new int[SZ2_MX+2];
-    ans = new String[SZ2_MX+2];
-    anclr = new String[SZ2_MX+2];
-    
-    
-    if(( tmp = request.getParameter("rstind")) != null) {
+     if(( tmp = request.getParameter("rstind")) != null) {
         restarted = tmp.toString();
     }
     //System.out.println("restarted = " + restarted );
     
-    if( restarted.equals("Click Enter ->") ) {
+    if( restarted.equals("Click Enter ->") ) {   
+        // Math.random() generates x, 0<=x<1
+        topOpDgts = (new Double(2+(SZ2_MX-3)*Math.random())).intValue();
+        //System.out.println("topOpDgts = " + topOpDgts );
+        nmcarries = topOpDgts - 1;
+        //btmOpDgts = (new Double((SZ2_MX-topOpDgts)*Math.random())).intValue();
+        btmOpDgts = 2;
+        op = new int[2][SZ2_MX];
+        cms = new String[btmOpDgts][SZ2_MX];
+        cmn = new int[btmOpDgts][SZ2_MX];
+        cmclr = new String[btmOpDgts][SZ2_MX];
+        can = new int[SZ2_MX];
+        cas = new String[SZ2_MX];
+        caclr = new String[SZ2_MX];
+    
+        ain = new int[btmOpDgts][SZ2_MX+2];
+        ais = new String[btmOpDgts][SZ2_MX+2];
+        aiclr = new String[btmOpDgts][SZ2_MX+2];
+        ann = new int[SZ2_MX+2];
+        ans = new String[SZ2_MX+2];
+        anclr = new String[SZ2_MX+2];
+
         restarted = "no";
         bdx = 0;
 
@@ -222,12 +225,29 @@ and is what will take the user's input and display it red if incorrect
             bdx = bdx + 1;
         
         topOpDgts = (new Integer(session.getAttribute("topOpDgts").toString())).intValue();
+        //System.out.println("retrieved topOpDgts = " + topOpDgts );
+        btmOpDgts = (new Integer(session.getAttribute("btmOpDgts").toString())).intValue();
+        //System.out.println("retrieved btmOpDgts = " + btmOpDgts );
+        op = new int[2][SZ2_MX];
+        cms = new String[btmOpDgts][SZ2_MX];
+        cmn = new int[btmOpDgts][SZ2_MX];
+        cmclr = new String[btmOpDgts][SZ2_MX];
+        can = new int[SZ2_MX];
+        cas = new String[SZ2_MX];
+        caclr = new String[SZ2_MX];
+    
+        ain = new int[btmOpDgts][SZ2_MX+2];
+        ais = new String[btmOpDgts][SZ2_MX+2];
+        aiclr = new String[btmOpDgts][SZ2_MX+2];
+        ann = new int[SZ2_MX+2];
+        ans = new String[SZ2_MX+2];
+        anclr = new String[SZ2_MX+2];
         for( int idx = 0; idx < topOpDgts; idx++ ){
             att = new String("op2" + idx);
             op[1][idx] = (new Integer(session.getAttribute(att).toString())).intValue(); 
             operand1 = operand1 + op[1][idx]*(int)(Math.pow(10.,(double)idx));
         }
-        btmOpDgts = (new Integer(session.getAttribute("btmOpDgts").toString())).intValue();
+        
         for( int idx = 0; idx < btmOpDgts; idx++ ){
             att = new String("op1" + idx);
             op[0][idx] = (new Integer(session.getAttribute(att).toString())).intValue(); 
@@ -308,11 +328,11 @@ and is what will take the user's input and display it red if incorrect
     whatBx[ldx] = qu + 1;  //why? fixit
     maxBx = ldx + 1;
     session.setAttribute("maxBx", maxBx);
-    System.out.print("whatBxes ");
-    for( int idx = 0; idx < maxBx; idx++ ) {
-        System.out.print(whatBx[idx] + " ");
-    }
-    System.out.println("line 196 bdx = " + bdx ); // need printLN or it never outputs previous prints
+    //System.out.print("whatBxes ");
+    //for( int idx = 0; idx < maxBx; idx++ ) {
+    //    System.out.print(whatBx[idx] + " ");
+    //}
+    //System.out.println("line 196 bdx = " + bdx ); // need printLN or it never outputs previous prints
     // it's checking every single box whether it has an entry or not. If the box is blank, 
     // it's counted as a zero and if it's not supposed to be zero, it turns lastclr red
     
@@ -405,7 +425,11 @@ and is what will take the user's input and display it red if incorrect
         // checking the carry now, so keep the cin & op[1][arg] same as        
         // in last iteration of previous loop
 
-        cin = cmn[0][kdx-2];
+        if( kdx > 1 ) {
+            cin = cmn[0][kdx-2];
+        } else {
+            cin = 0;
+        }
         if( (aiclr[0][kdx] =
             ProcessAns.checkCarry( ain[0][kdx], op[0][0],
                                         op[1][kdx-1], cin )).equals("red") ) {
@@ -450,7 +474,11 @@ and is what will take the user's input and display it red if incorrect
         ain[1][kdx] = ProcessAns.string2int( ais[1][kdx] );
         // checking the carry now, so keep the cin & op[1][arg] same as in last 
         // last iteration of previous loop
-        cin = cmn[1][kdx-3];
+        if( kdx > 2 ) {
+            cin = cmn[1][kdx-3];
+        } else {
+            cin = 0;
+        }
         if( (aiclr[1][kdx] =
             ProcessAns.checkCarry( ain[1][kdx], op[0][1],
                                         op[1][kdx-2], cin )).equals("red") ) {
