@@ -102,7 +102,7 @@ public class ProcessAns {
         } else {
             tclr = "black";
         }
-        //System.out.println("p1 = " + p1 + " op1 = " + op1 + " op2 = " + op2 + " cin = " + pc + " tclr = " + tclr + " p1shouldbe " + md);
+        //System.out.println("checkMult p1 = " + p1 + " op1 = " + op1 + " op2 = " + op2 + " cin = " + pc + " tclr = " + tclr + " p1shouldbe " + md);
         return tclr;
     }
     public static String checkCarry( int c1, int op1, int op2, int pc ) {
@@ -114,34 +114,33 @@ public class ProcessAns {
         } else {
             tclr = "black";
         }
-        //System.out.println("c1 = " + c1 + " op1 = " + op1 + " op2 = " + op2 +
-        //        " cin " + pc + " tclr = " + tclr + " c1 s.b. " + md);
+        //System.out.println("checkCarry c1 = " + c1 + " op1 = " + op1 + " op2 = " + op2 + " cin " + pc + " tclr = " + tclr + " c1 s.b. " + md);
         return tclr;
     }
     // these two methods assume a 2 digit second operand - will need to be
     // modified if number of digits is randomized
-    public static String checkAddCarry( int c1, int op1, int op2, int pc ) {
+    public static String checkAddCarry( int c1, int op1, int op2, int op3, int pc ) {
         String tclr = "pink";
         int md;
-        md = (op1+op2+pc)/10;
+        md = (op1+op2+op3+pc)/10;
         if(c1 == md ){
             tclr = "black";
         } else {           
             tclr = "red";
         }
-        //System.out.println("checkAddCarry c1 = " + c1 + " op1 = " + op1 + " op2 = " + op2 + " cin " + pc + " tclr = " + tclr + " c1 s.b. " + md);
+        //System.out.println("checkAddCarry c1 = " + c1 + " op1 = " + op1 + " op2 = " + op2 + " op3 = " + op3 + " cin " + pc + " tclr = " + tclr + " c1 s.b. " + md);
         return tclr;
     }
-    public static String checkAdd( int p1, int op1, int op2, int pc ) {
+    public static String checkAdd( int p1, int op1, int op2, int op3, int pc ) {
         String tclr = "pink";
         int md;
-        md = (op1+op2+pc)%10;
+        md = (op1+op2+op3+pc)%10;
         if(p1 == md ){
             tclr = "black";
         } else {           
             tclr = "red";
         }
-        //System.out.println("p1 = " + p1 + " op1 = " + op1 + " op2 = " + op2 +
+        //System.out.println("p1 = " + p1 + " op1 = " + op1 + " op2 = " + op2 + " op3 = " + op3 +
         //        " cin " + pc + " tclr = " + tclr + " p1 s.b. " + md);
         return tclr;
     }

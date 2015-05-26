@@ -40,6 +40,7 @@ function setFocus() { // this part is javascript
     }
 }
 </script>
+<!-- doesn't want to start again when btmOpDgts = 1 fixit -->
 <script>
 function startAgain() {
     
@@ -47,7 +48,7 @@ function startAgain() {
      x.elements[0].value="";
      x.elements[1].value="";
      x.elements[2].value="";
-     x.elements[9].setAttribute('value','');
+     //x.elements[9].setAttribute('value','');
     for( i = 0; i < x.length-1; i++ ) {
         x.elements[i].value="";
         x.elements[i].setAttribute('value','');
@@ -89,6 +90,7 @@ and is what will take the user's input and display it red if incorrect
                             // are about to get or set
     int kdx;
     int ldx;
+    int mdx;
     
     int bdx = 0;            // box index used to track what box is selected
                             // if you leave a box blank and hit enter it 
@@ -138,10 +140,20 @@ and is what will take the user's input and display it red if incorrect
     if( restarted.equals("Click Enter ->") ) {   
         // Math.random() generates x, 0<=x<1
         topOpDgts = (new Double(2+(SZ2_MX-3)*Math.random())).intValue();
+        //topOpDgts = 4;
         //System.out.println("topOpDgts = " + topOpDgts );
         nmcarries = topOpDgts - 1;
+        int maxBtmDgts = SZ2_MX-topOpDgts;
+        if( topOpDgts < maxBtmDgts ) {
+            maxBtmDgts = topOpDgts;
+        }
+        // don't want to overflow final answer fixit
         //btmOpDgts = (new Double((SZ2_MX-topOpDgts)*Math.random())).intValue();
-        btmOpDgts = 2;
+        // don't want bottom op to be bigger than top op
+        //btmOpDgts = (new Double(1+(topOpDgts)*Math.random())).intValue();
+        btmOpDgts = (new Double(1+(maxBtmDgts)*Math.random())).intValue();
+        //btmOpDgts = 3;
+        //System.out.println("generated btmOpDgts = " + btmOpDgts );
         op = new int[2][SZ2_MX];
         cms = new String[btmOpDgts][SZ2_MX];
         cmn = new int[btmOpDgts][SZ2_MX];
@@ -150,9 +162,12 @@ and is what will take the user's input and display it red if incorrect
         cas = new String[SZ2_MX];
         caclr = new String[SZ2_MX];
     
-        ain = new int[btmOpDgts][SZ2_MX+2];
-        ais = new String[btmOpDgts][SZ2_MX+2];
-        aiclr = new String[btmOpDgts][SZ2_MX+2];
+        //ain = new int[btmOpDgts][SZ2_MX+2];
+        //ais = new String[btmOpDgts][SZ2_MX+2];
+        //aiclr = new String[btmOpDgts][SZ2_MX+2];
+        ain = new int[3][SZ2_MX+2];
+        ais = new String[3][SZ2_MX+2];
+        aiclr = new String[3][SZ2_MX+2];
         ann = new int[SZ2_MX+2];
         ans = new String[SZ2_MX+2];
         anclr = new String[SZ2_MX+2];
@@ -160,15 +175,14 @@ and is what will take the user's input and display it red if incorrect
         restarted = "no";
         bdx = 0;
 
-        for (int idx = 0; idx < SZ2_MX; idx++ ) {
+        for( int idx = 0; idx < SZ2_MX; idx++ ) {
             op[0][idx] = 9;
             op[1][idx] = 9;
-            cms[0][idx] = "";
-            cms[1][idx] = "";
-            cmn[0][idx] = 0;
-            cmn[1][idx] = 0;
-            cmclr[0][idx] = "red";
-            cmclr[1][idx] = "red";
+            for( int jdx = 0; jdx < btmOpDgts; jdx++ ) { 
+                cms[jdx][idx] = "";
+                cmn[jdx][idx] = 0;
+                cmclr[jdx][idx] = "red";
+            }
             can[idx] = 0;
             cas[idx] = "";
             caclr[idx] = "red";
@@ -178,7 +192,7 @@ and is what will take the user's input and display it red if incorrect
             ann[idx] = 0;
             ans[idx] = "";
             anclr[idx] = "red";
-            for ( int jdx = 0; jdx < 2; jdx++ ) {
+            for ( int jdx = 0; jdx < 3; jdx++ ) {
                 ain[jdx][idx] = 0;
                 ais[jdx][idx] = "";
                 aiclr[jdx][idx] = "red";
@@ -197,7 +211,7 @@ and is what will take the user's input and display it red if incorrect
         }
         // msb cannot be 0
         op[1][kdx] = (new Double(1+9*Math.random())).intValue();
-        //op[1][kdx] = 3;
+        //op[1][kdx] = 1;
         operand1 = operand1 + op[1][kdx]*(int)(Math.pow(10.,(double)kdx));
         att = new String("op2" + kdx);
         session.setAttribute(att, op[1][kdx]);
@@ -206,18 +220,24 @@ and is what will take the user's input and display it red if incorrect
         //op[0][0] = 0;
         //session.setAttribute("op10", op[0][0]);
         //for (kdx = 1; kdx < btmOpDgts - 1; kdx++){
-        for (kdx = 0; kdx < btmOpDgts - 1; kdx++){
-            op[0][kdx] = (new Double(10*Math.random())).intValue();
-            operand0 = operand0 + op[0][kdx]*(int)(Math.pow(10.,(double)kdx));
-            att = new String("op1" + kdx);
-            session.setAttribute(att, op[0][kdx]);
+        for( kdx = 0; kdx < SZ2_MX; kdx++ ) {
+            if( kdx < btmOpDgts - 1 ) {
+                op[0][kdx] = (new Double(10*Math.random())).intValue();
+                operand0 = operand0 + op[0][kdx]*(int)(Math.pow(10.,(double)kdx));
+                att = new String("op1" + kdx);
+                session.setAttribute(att, op[0][kdx]);
+            } else if( kdx == btmOpDgts - 1 ) {
+                // msb cannot be 0
+                op[0][kdx] = (new Double(1+9*Math.random())).intValue();
+                //op[0][kdx] = 1;
+                operand0 = operand0 + op[0][kdx]*(int)(Math.pow(10.,(double)kdx));
+                att = new String("op1" + kdx);
+                session.setAttribute(att, op[0][kdx]);
+            } else {
+                op[0][kdx] = 0;
+            }
         }
-        // msb cannot be 0
-        op[0][kdx] = (new Double(1+9*Math.random())).intValue();
-        //op[0][kdx] = 1;
-        operand0 = operand0 + op[0][kdx]*(int)(Math.pow(10.,(double)kdx));
-        att = new String("op1" + kdx);
-        session.setAttribute(att, op[0][kdx]);
+        
     } else {
         maxBx = (new Integer(session.getAttribute("maxBx").toString())).intValue();
         bdx = (new Integer(session.getAttribute("bdx").toString())).intValue();
@@ -236,9 +256,9 @@ and is what will take the user's input and display it red if incorrect
         cas = new String[SZ2_MX];
         caclr = new String[SZ2_MX];
     
-        ain = new int[btmOpDgts][SZ2_MX+2];
-        ais = new String[btmOpDgts][SZ2_MX+2];
-        aiclr = new String[btmOpDgts][SZ2_MX+2];
+        ain = new int[3][SZ2_MX+2];
+        ais = new String[3][SZ2_MX+2];
+        aiclr = new String[3][SZ2_MX+2];
         ann = new int[SZ2_MX+2];
         ans = new String[SZ2_MX+2];
         anclr = new String[SZ2_MX+2];
@@ -248,10 +268,14 @@ and is what will take the user's input and display it red if incorrect
             operand1 = operand1 + op[1][idx]*(int)(Math.pow(10.,(double)idx));
         }
         
-        for( int idx = 0; idx < btmOpDgts; idx++ ){
-            att = new String("op1" + idx);
-            op[0][idx] = (new Integer(session.getAttribute(att).toString())).intValue(); 
-            operand0 = operand0 + op[0][idx]*(int)(Math.pow(10.,(double)idx));
+        for( int idx = 0; idx < SZ2_MX; idx++ ){
+            if( idx < btmOpDgts ) {
+                att = new String("op1" + idx);
+                op[0][idx] = (new Integer(session.getAttribute(att).toString())).intValue(); 
+                operand0 = operand0 + op[0][idx]*(int)(Math.pow(10.,(double)idx));
+            } else {
+                op[0][idx] = 0;
+            }
         }
         nmcarries = topOpDgts - 1;
     }
@@ -260,46 +284,59 @@ and is what will take the user's input and display it red if incorrect
     int maxAdig[] = { 0, 0, 0 };
     boolean no1st = op[0][0] == 0;
     // maximum digits in top/first intermediate answer
-    maxAdig[0] = no1st? 0 : 1 + (int)(Math.log10((double)(op[0][0]*operand1)));
+    if( op[0][0] != 0 && operand1 != 0 ) {
+        maxAdig[0] = 1 + (int)(Math.log10((double)(op[0][0]*operand1)));
+    }
     // maximum digits in bottom/second intermediate answer
-    maxAdig[1] = 1 + (int)(Math.log10((double)(op[0][1]*operand1)));
-    maxAdig[2] = 1 + (int)(Math.log10((double)(op[0][2]*operand1)));
+    if( op[0][1] != 0 && operand1 != 0 ) {
+        maxAdig[1] = 1 + (int)(Math.log10((double)(op[0][1]*operand1)));
+    }
+    if( op[0][2] != 0 && operand1 != 0 ) {
+        maxAdig[2] = 1 + (int)(Math.log10((double)(op[0][2]*operand1)));
+    }
     // maximum digits in final answer
     int maxAndig = 1 + (int)(Math.log10((double)(operand0*operand1)));
-    int nacarries = no1st? 0 : maxAdig[1] - 1;
+    //int nacarries = no1st? 0 : maxAdig[1] - 1;
+    int nacarries = 0;
+    
+    // if there are at least two intermediate numbers to add
+    if( maxAdig[0] != 0 && maxAdig[1] != 0 || maxAdig[0] != 0 && maxAdig[2] != 0
+            || maxAdig[1] != 0 && maxAdig[2] != 0 ) {
+        nacarries += (maxAdig[2] + 1 > maxAdig[1]?  maxAdig[2]: 
+                maxAdig[1] + 1 > maxAdig[0]? maxAdig[1]-1: maxAdig[0] - 2 );
+    }
+    
     int spacesb4cm = SZ2_MX + 1 - topOpDgts;
     int spacesb4btmOp = SZ2_MX - btmOpDgts; // "x" takes up one space
     // if they are both 2 less than SZ2_MX + 1, there is a space
-    int spacesb4ca = 0;
-    if( maxAdig[1] < SZ2_MX ) {
+    //int spacesb4ca = 0;
+    int spacesb4ca = SZ2_MX - 1 - nacarries;
+    //if( maxAdig[1] < SZ2_MX ) {
         //if( maxAdig[0] > maxAdig[1] - 1 ) {
-            spacesb4ca = SZ2_MX - maxAdig[1];
+      //      spacesb4ca = SZ2_MX - maxAdig[1];
         //} else {
           //  spacesb4ca = SZ2_MX - maxAdig[0];
         //}
-    } 
+    //} 
     //System.out.println("A0: " + maxAdig[0] + " A1: " + maxAdig[1] +
     //        " An: " + maxAndig );
-    // calculated for 19 boxes, 3 digit times 2 digit biggest case
-    //int em = 4;  // box after first multiplicative carry box for first intermediate answer 
-    int em = 0;
-    for( int idx = 0; idx < btmOpDgts; idx++ ) {
-        em += (op[0][idx] <= 1? 0 : nmcarries); 
-        //System.out.println("op[0][" + idx + "] = " + op[0][idx] + " m = " + em);
-    }
-    //int el = 10; // lsb of first/top intermediate answer
+    //System.out.println("op[0][2] op[0][1] op[0][0] = " + op[0][2] + " " + op[0][1] + " " + op[0][0]);
+    int te = op[0][2] <= 1? 0 : nmcarries;
+    int pe = te;
+    pe += (op[0][1] <= 1? 0 : nmcarries);  // box after first multiplicative carry box for 2nd intermediate answer
+    int em = pe;
+    em += (op[0][0] <= 1? 0 : nmcarries); 
+    //System.out.println("t, p, m = " + te + " " + pe + " " + em );
+        
     int el = em + nacarries + maxAdig[0] - 1; // lsb of first/top intermediate answer
-    //int en = 14; // lsb of 2nd/bottom intermediate answer
-    int en = el + maxAdig[1]; // lsb of 2nd/bottom intermediate answer
-    //int pe = 2;  // box after first multiplicative carry box for 2nd intermediate answer
-    int pe = nmcarries;  // box after first multiplicative carry box for 2nd intermediate answer
-    int qu = en + maxAndig; // lsb of final answer
-    //int qu = 24; // lsb of final answer
-    //int ar = 8;  // 2nd box after first additive carry - no carries for first two digits added
+    int en = el + maxAdig[1]; // lsb of 2nd intermediate answer
+    int es = en + maxAdig[2]; // lsb of 3rd intermediate answer
+    int qu = es + maxAndig; // lsb of final answer
     int ar = em + nacarries + 1;  // box after first additive carry - no carries for first two digits added
     ldx = 0;
+    //System.out.println("op1 = " + operand1 + " op0 = " + operand0);
     //System.out.println("nacarries = " + nacarries);
-    //System.out.println("l,m,n,p,q, r = " + el + " " + em + " " + en + " " + pe + " " + qu + " " + ar);
+    //System.out.println("l,m,n,p,q, r, s, t = " + el + " " + em + " " + en + " " + pe + " " + qu + " " + ar + " " + es + " " + te);
     for( int idx = 0; idx < maxAdig[0]; idx++ ) {
         if( idx > 0 && idx < topOpDgts && op[0][0] > 1 ) {
             whatBx[ldx] = em - idx; // first multiplicative carry boxes
@@ -308,24 +345,41 @@ and is what will take the user's input and display it red if incorrect
         whatBx[ldx] = el - idx; // first intermediate answer boxes
         ldx++;
     }
-    for( int idx = 0; idx < maxAdig[1]; idx++ ) {
-        if( idx > 0 && idx < topOpDgts && op[0][1] > 1 ) {
-            whatBx[ldx] = pe - idx;
+    if( btmOpDgts > 1 ) {
+        for( int idx = 0; idx < maxAdig[1]; idx++ ) {
+            if( idx > 0 && idx < topOpDgts && op[0][1] > 1 ) {
+                whatBx[ldx] = pe - idx;
+                ldx++;
+            }
+            whatBx[ldx] = en - idx;
             ldx++;
         }
-        whatBx[ldx] = en - idx;
-        ldx++;
+        if( btmOpDgts > 2 ) {
+            for( int idx = 0; idx < maxAdig[2]; idx++ ) {
+                if( idx > 0 && idx < topOpDgts && op[0][2] > 1 ) {
+                    whatBx[ldx] = te - idx;
+                    ldx++;
+                }
+                whatBx[ldx] = es - idx;
+                ldx++;
+            }
+        }
     }
     // make it skip carry if adding 454 + 27240 fixit
-    for( int idx = 0; idx < maxAndig; idx++ ) {
-        if( idx > 1 && idx <= maxAdig[1] && maxAdig[0] != 0 ) {
-            whatBx[ldx] = ar - idx; // additive carry
+    if( btmOpDgts > 1 ) {
+        for( int idx = 0; idx < maxAndig; idx++ ) {
+            if( idx > 1 && (btmOpDgts == 2 && idx <= maxAdig[1] && maxAdig[0] != 0
+                || btmOpDgts == 3 && idx <= maxAdig[2]+1 && (maxAdig[1] != 0 || maxAdig[0] != 0) )) {
+                whatBx[ldx] = ar - idx; // additive carry
+                ldx++;
+            }
+            whatBx[ldx] = qu - idx; // final answer
             ldx++;
         }
-        whatBx[ldx] = qu - idx; // final answer
-        ldx++;
+        whatBx[ldx] = qu + 1;
+    } else {
+        whatBx[ldx] = el + 1;
     }
-    whatBx[ldx] = qu + 1;  //why? fixit
     maxBx = ldx + 1;
     session.setAttribute("maxBx", maxBx);
     //System.out.print("whatBxes ");
@@ -395,103 +449,54 @@ and is what will take the user's input and display it red if incorrect
     // checkMult as well and perhaps a modified checkLast needs to be used
     // instead of checkCarry for the most significant digit of ai's
     
-    // check first row of intermediate answers
-    for ( kdx = 0; kdx < topOpDgts; kdx ++ ) {
-        att = new String("ai0" + kdx);
-        if((tmp = request.getParameter(att)) != null ) {
-            ais[0][kdx] = tmp;
-            ain[0][kdx] = ProcessAns.string2int( ais[0][kdx] );
-            cin = 0;
-            if( kdx > 0 ) {
-                cin = cmn[0][kdx-1];
+    for( int jdx = 0; jdx < btmOpDgts; jdx++ ) {
+        // kdx refers to the placement on the page of intermediate answers
+        // mdx refers to the digit of operand or carry
+        for ( kdx = jdx, mdx = 0; mdx < topOpDgts; kdx ++, mdx++ ) {
+            att = new String("ai" + jdx + "" + kdx);
+            if((tmp = request.getParameter(att)) != null ) {
+                ais[jdx][kdx] = tmp;
+                ain[jdx][kdx] = ProcessAns.string2int( ais[jdx][kdx] );
+                cin = 0;
+                if( mdx > 0 ) {
+                    cin = cmn[jdx][mdx-1];
+                }
+                //System.out.println("1st row kdx = " + kdx);
+                if( (aiclr[jdx][kdx] =
+                    ProcessAns.checkMult( ain[jdx][kdx], op[0][jdx],
+                                        op[1][mdx], cin )).equals("red") ) {
+                    if(!ais[jdx][kdx].equals("")) {
+                        lastans = ais[jdx][kdx];
+                        bdx = bdx - 1;
+                        session.setAttribute("bdx", bdx);
+                        //System.out.println("line 275 bdx = " + bdx );
+                    }
+                }
             }
-            //System.out.println("1st row kdx = " + kdx);
-            if( (aiclr[0][kdx] =
-                ProcessAns.checkMult( ain[0][kdx], op[0][0],
-                                        op[1][kdx], cin )).equals("red") ) {
-                if(!ais[0][kdx].equals("")) {
-                    lastans = ais[0][kdx];
+        }
+        att = new String("ai" + jdx + "" + kdx);
+        if((tmp = request.getParameter(att)) != null ) {
+            ais[jdx][kdx] = tmp;    
+            ain[jdx][kdx] = ProcessAns.string2int( ais[jdx][kdx] );
+            // checking the carry now, so keep the cin & op[1][arg] same as        
+            // in last iteration of previous loop
+            cin = 0;
+            if( mdx > 1 ) {
+                cin = cmn[jdx][mdx-2];   
+            }
+            if( (aiclr[jdx][kdx] =
+                ProcessAns.checkCarry( ain[jdx][kdx], op[0][jdx],
+                                        op[1][mdx-1], cin )).equals("red") ) {
+                if(!ais[jdx][kdx].equals("")) {
+                    lastans = ais[jdx][kdx];
                     bdx = bdx - 1;
                     session.setAttribute("bdx", bdx);
-                        //System.out.println("line 275 bdx = " + bdx );
-                }
-            }
-        }
-    }
-    att = new String("ai0" + kdx);
-    if((tmp = request.getParameter(att)) != null ) {
-        ais[0][kdx] = tmp;    
-        ain[0][kdx] = ProcessAns.string2int( ais[0][kdx] );
-        // checking the carry now, so keep the cin & op[1][arg] same as        
-        // in last iteration of previous loop
-
-        if( kdx > 1 ) {
-            cin = cmn[0][kdx-2];
-        } else {
-            cin = 0;
-        }
-        if( (aiclr[0][kdx] =
-            ProcessAns.checkCarry( ain[0][kdx], op[0][0],
-                                        op[1][kdx-1], cin )).equals("red") ) {
-            if(!ais[0][kdx].equals("")) {
-                lastans = ais[0][kdx];
-                bdx = bdx - 1;
-                session.setAttribute("bdx", bdx);
                     //System.out.println("line 295 bdx = " + bdx );
-            }
-        }
-    }
-
-    // check second row of intermediate answers
-    max = topOpDgts + 1;
-    for ( kdx = 1; kdx < max; kdx ++ ) {
-        att = new String("ai1" + kdx);
-        if((tmp = request.getParameter(att)) != null ) {
-            ais[1][kdx] = tmp;
-
-            ain[1][kdx] = ProcessAns.string2int( ais[1][kdx] );
-            cin = 0;
-            if( kdx > 1 ) {
-                cin = cmn[1][kdx-2];
-            }
-            if( (aiclr[1][kdx] = 
-                ProcessAns.checkMult( ain[1][kdx], op[0][1],
-                                        op[1][kdx-1], cin )).equals("red") ) { 
-                if(!ais[1][kdx].equals("")) {
-//                    session.setAttribute("lastclr", "red");
-                    lastans = ais[1][kdx];
-                                 bdx = bdx - 1;
-                session.setAttribute("bdx", bdx);
-                    //System.out.println("line 320 bdx = " + bdx );
                 }
             }
         }
     }
-    att = new String("ai1" + kdx);
-    if((tmp = request.getParameter(att)) != null ) {
-        ais[1][kdx] = tmp;
 
-        ain[1][kdx] = ProcessAns.string2int( ais[1][kdx] );
-        // checking the carry now, so keep the cin & op[1][arg] same as in last 
-        // last iteration of previous loop
-        if( kdx > 2 ) {
-            cin = cmn[1][kdx-3];
-        } else {
-            cin = 0;
-        }
-        if( (aiclr[1][kdx] =
-            ProcessAns.checkCarry( ain[1][kdx], op[0][1],
-                                        op[1][kdx-2], cin )).equals("red") ) {
-            if(!ais[1][kdx].equals("")) {
-                lastans = ais[1][kdx];
-                bdx = bdx - 1;
-                session.setAttribute("bdx", bdx);
-                    //System.out.println("line 340 bdx = " + bdx );
-            }
-        }
-    }
-    
-    // check final adds and carries
     for( int idx = 0; idx < maxAndig; idx++ ) {
         int jdx = 0;
         att = new String("an" + idx);
@@ -512,41 +517,43 @@ and is what will take the user's input and display it red if incorrect
                      cas[jdx] = tmp;
                      can[jdx] = ProcessAns.string2int( cas[jdx] );
                 }
+                //System.out.println("checking additive carry");
                 // check cin before you check addition
                 if( (caclr[jdx] = 
                     ProcessAns.checkAddCarry( can[jdx], ain[0][idx-1], 
-                                ain[1][idx-1], ca_in)).equals("red") ) {
+                                ain[1][idx-1], ain[2][idx-1], ca_in)).equals("red") ) {
                     if(!cas[jdx].equals("")) {
                         lastans = cas[jdx];  
                         bdx = bdx - 1;
                         session.setAttribute("bdx", bdx);
-                        //System.out.println("line 372 bdx = " + bdx );
                     }
                 }
                 cin = can[jdx];    
             }
-            if( idx == maxAndig - 1 && (maxAndig > maxAdig[1] + 1) ){
+            // last digit, what would normally be a carry
+            if( idx == maxAndig - 1 && (maxAndig > nacarries + 2) && nacarries > 0 ){
+                ca_in = 0;
+                if( jdx > 2 ) {
+                    ca_in = can[jdx-3];
+                }
+                //System.out.println("checking last digit");
                 if( (anclr[idx] = 
                         ProcessAns.checkAddCarry( ann[idx], ain[0][idx-1], 
-                                        ain[1][idx-1], can[idx-3])).equals("red") ) {
+                                        ain[1][idx-1], ain[2][idx-1], ca_in)).equals("red") ) {
                     if(!ans[idx].equals("")) {
                         lastans = ans[idx];  
                         bdx = bdx - 1;
                         session.setAttribute("bdx", bdx);
-                        //System.out.println("line 457 bdx = " + bdx +
-                        //        " idx = " + idx );
                     }
                 }
             } else {
                 if( (anclr[idx] = 
                     ProcessAns.checkAdd( ann[idx], ain[0][idx],
-                                ain[1][idx],cin )).equals("red") ) {
+                                ain[1][idx], ain[2][idx],cin )).equals("red") ) {
                     if(!ans[idx].equals("")) {
                         lastans = ans[idx]; 
                         bdx = bdx - 1;
                         session.setAttribute("bdx", bdx);
-                        //System.out.println("line 468  whichBx[" + bdx + "] = " +
-                        //            whatBx[bdx] );
                     }
                 }
             }
@@ -561,28 +568,6 @@ and is what will take the user's input and display it red if incorrect
 
 <!-- colspan="<%=colspan%>" is worst case for 3 digit x 2 digit with carries //-->
 <tr><th id="F1" colspan="<%=colspan%>">Multiplication Problem</th></tr>
-<!--<tr class="r1">
-    <td class="s2"></td><td class="b1"></td>
-    <td class="s2"></td><td class="b1"></td>
-    <td><input type="text" name="cr11" class="c2" 
-               style="color:<%=cmclr[1][1]%>" value="<%=cms[1][1]%>"></td>
-    <td class="b1"></td>
-    <td><input type="text" name="cr10" class="c2" 
-               style="color:<%=cmclr[1][0]%>" value="<%=cms[1][0]%>"></td>
-    <td class="b1"></td>
-    <td class="s2"></td><td class="b1"></td
-<tr class="r1">
-    <td class="s2"></td><td class="b1"></td>
-    <td class="s2"></td><td class="b1"></td>
-    <td><input type="text" name="cr01" class="c2" 
-               style="color:<%=cmclr[0][1]%>" value="<%=cms[0][1]%>"></td>
-    <td class="b1"></td>
-    <td><input type="text" name="cr00" class="c2" 
-               style="color:<%=cmclr[0][0]%>" value="<%=cms[0][0]%>" ></td>
-    <td class="b1"></td>
-    <td class="s2"></td><td class="b1"></td>
-</tr>
-</tr> //-->
 <%  for( int ndx = 0; ndx < btmOpDgts; ndx++ ) { 
         int row = btmOpDgts - 1 - ndx; 
         if( op[0][row] > 1 ) { %>
@@ -685,7 +670,7 @@ and should not be displayed -->
 <tr><th class="th-id1" colspan="<%=colspan%>"></th></tr>
 <tr class="r1">
 <%  for( int idx = 0; idx <= SZ2_MX; idx++ ) {
-        if( idx >= spacesb4ca && idx < nacarries + spacesb4ca && !no1st ) { 
+        if( idx >= spacesb4ca && idx < nacarries + spacesb4ca && nacarries > 0 ) { 
             //int col = SZ2_MX - 2 - idx + spacesb4ca;
             int col = SZ2_MX - 2 - idx;
             String name = "ca" + col; 
@@ -702,54 +687,7 @@ and should not be displayed -->
     <td class="b1"></td>
 <%  } %>
 </tr>
-<!--
-<tr><th class="th-id1" colspan="<%=colspan%>"></th></tr>
-<tr class="r1">
-    <td><input type="text" name="ca2" class="c2"
-               style="color:<%=caclr[2]%>" value="<%=cas[2]%>"></td>
-    <td class="b1"></td>
-    <td><input type="text" name="ca1" class="c2"
-                style="color:<%=caclr[1]%>" value="<%=cas[1]%>"></td>
-    <td class="b1"></td>
-    <td><input type="text" name="ca0" class="c2"
-                style="color:<%=caclr[0]%>" value="<%=cas[0]%>"></td>
-    <td class="b1"></td>
-    <td class="s2"></td><td class="b1"></td>
-    <td class="s2"></td><td class="b1"></td>
-</tr>
 
-<tr>
-    <td class="s2"></td><td class="n1"></td>
-    <td class="s2"></td>
-    <td><input type="text" name="ai03" class="a1"
-               style="color:<%=aiclr[0][3]%>" value="<%=ais[0][3]%>"></td>
-    <td class="s2"></td>
-    <td><input type="text" name="ai02" class="a1"
-               style="color:<%=aiclr[0][2]%>" value="<%=ais[0][2]%>"></td>
-    <td class="s2"></td>
-    <td><input type="text" name="ai01" class="a1"
-               style="color:<%=aiclr[0][1]%>" value="<%=ais[0][1]%>"></td>
-    <td class="s2"></td>
-    <td><input type="text" id="A1" name="ai00" class="a1"
-               style="color:<%=aiclr[0][0]%>" value="<%=ais[0][0]%>"></td>
-        
-</tr>
-<tr>
-    <td class="s2"></td>
-    <td><input type="text" name="ai14" class="a1"
-               style="color:<%=aiclr[1][4]%>" value="<%=ais[1][4]%>"></td>
-    <td class="s2"></td>
-    <td><input type="text" name="ai13" class="a1"
-               style="color:<%=aiclr[1][3]%>" value="<%=ais[1][3]%>"></td>
-    <td class="s2"></td>
-    <td><input type="text" name="ai12" class="a1"
-               style="color:<%=aiclr[1][2]%>" value="<%=ais[1][2]%>"></td>
-    <td class="s2"></td>
-    <td><input type="text" name="ai11" class="a1"
-               style="color:<%=aiclr[1][1]%>" value="<%=ais[1][1]%>"></td>
-    <td class="s2"></td><td class="n1"></td>
-</tr>
-//-->
 <%  for( int row = 0; row < btmOpDgts; row++ ) { %>
         <tr>
 <%      int spacesb4ai = SZ2_MX - maxAdig[row] + 1 - row;
@@ -767,10 +705,12 @@ and should not be displayed -->
 <%          } 
         } %>        
         </tr>
-<%   } %>
-<tr><th class="th-id1" colspan="<%=colspan%>"></th></tr>
-<tr>
-<%  int spacesb4an = SZ2_MX + 1 - maxAndig;
+<%   }
+if( btmOpDgts > 1 ) { %>
+    <tr><th class="th-id1" colspan="<%=colspan%>"></th></tr>
+    <tr>
+<%  
+    int spacesb4an = SZ2_MX + 1 - maxAndig;
     for( int idx = 0; idx <= SZ2_MX; idx++ ) { %>
         <td class="s2"></td>
 <%      if( idx >= spacesb4an ) { 
@@ -782,7 +722,8 @@ and should not be displayed -->
 <%      } else { %>
             <td class="n1"></td>
 <%      } 
-    } %>  
+    } 
+}   %>  
 </tr>
 <!-- <tr>
     <td class="s2"></td>
