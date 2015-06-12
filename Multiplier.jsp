@@ -48,14 +48,14 @@ function startAgain() {
      x.elements[0].value="";
      x.elements[1].value="";
      x.elements[2].value="";
-     //x.elements[9].setAttribute('value','');
-    for( i = 0; i < x.length-1; i++ ) {
+    // set every box but the rst box blank
+    for( i = 0; i < x.length-2; i++ ) {
         x.elements[i].value="";
         x.elements[i].setAttribute('value','');
     }
     var elem = document.getElementById("rst");
     elem.setAttribute('value','Click Enter ->'); // client changes value
-    //x.submit();
+    x.submit();
 }
 </script>
 </head>
@@ -748,8 +748,8 @@ if( btmOpDgts > 1 ) { %>
 
 
 <div class="d2">
-<label>What Box </label>
-<input id="whatbox" type="text" value="<%=whatBx[bdx]%>" class="shortbox">
+<!--<label>What Box </label>//-->
+<input id="whatbox" type="hidden" value="<%=whatBx[bdx]%>" class="shortbox">
 <br>
 </div>
 <div class="d2">
@@ -761,8 +761,9 @@ if( btmOpDgts > 1 ) { %>
 </div>
 <div class="d2">
 <button type="reset" value="Reset" onclick="startAgain()">Start again</button>
-<input type="text" id="rst" name="rstind" value="<%=restarted%>" class="shortbox">
-<input type="submit" value="Enter">
+<!--<input type="text" id="rst" name="rstind" value="<%=restarted%>" class="shortbox">//-->
+<input type="hidden" id="rst" name="rstind" value="<%=restarted%>" class="shortbox">
+<input type="submit" style="visibility: hidden;">
 </div>
 </form>
 </div>
