@@ -10,8 +10,6 @@
 <!--
 this is a comment -the // is for javascript 
 //-->
-<!-- 539 x 16 has carry boxes upstairs fixit //-->
-<!-- changing SZ2_MX up or down gives array out of bounds errors fixit //-->
 <!-- Document Type Definition -don't muck with it //-->
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 
@@ -26,49 +24,108 @@ this is a comment -the // is for javascript
      format a table, a body a header etc. and define a class or id //-->
 <link rel="stylesheet" href="Multiplier.css" type="text/css">
 
+
+<script>
+function startAgain() {
+    document.getElementById("dpPos").setAttribute('value', 7 );
+    chooseThis( 7 );
+    var x = document.getElementsByTagName("input");
+    //alert("in startAgain number of inputs is " + x.length)
+    // set every box but the rst box blank
+    for( i = 0; i < x.length-5; i++ ) {
+        if(x[i].getAttribute('type')=='text')  {
+            //alert("i = " + i); 
+            x[i].nodeValue="";
+            x[i].setAttribute('value','');
+        }
+    }
+    var elem = document.getElementById("rst"); // set hidden button for server
+    elem.setAttribute('value','Restart Now');  // to read in java
+    document.getElementById('th-id2').submit();
+}
+</script>
+<script> 
+// this script should imitate radio buttons, selecting only one at a time
+function chooseThis( which_one ) {   
+    var btns = document.getElementsByName('dec-pt');
+    //alert("in chooseThis btns.length = " + btns.length + " which_one = " + which_one);
+    for( i = 0; i < btns.length; i++ ) {
+        var att = "andsp" + i;
+        //alert("attribute is " + att + " i = " + i + " innerHTML = " + btns[i].innerHTML + " name = " + btns[i].getAttribute("name") + " class = " + btns[i].getAttribute("class") + " nodeValue = " + btns[i].childNodes[0].nodeValue);
+        if( i == which_one ) {
+            btns[i].childNodes[0].nodeValue=".";
+            btns[i].setAttribute( att,'.');
+            var totDec = Number(document.getElementById("btmDec").value) + Number(document.getElementById("topDec").value);
+            var markedDec = 7 - i;
+            //alert("totDec = " + totDec + " markedDec = " + markedDec);
+            if( totDec == markedDec ) { 
+                btns[i].style.color="black";
+            } else {
+                btns[i].style.color="red";
+            }
+            document.getElementById("dpPos").setAttribute('value', i );
+        } else {
+            btns[i].childNodes[0].nodeValue="_"; // can't click on a , perhaps you can hide it with color ? is there a min-width property?
+            btns[i].setAttribute( att,'');
+            btns[i].style.color="#FAF3E4";
+        }
+    }
+}
+</script>
 <!-- code to set the default input focus //-->
 <script>
 function setFocus() { // this part is javascript
     var x = document.getElementById("th-id2");
-    //document.getElementById("test").innerHTML = x.length;
     var i = 10;
     var j = document.getElementById("whatbox").value;
+    // alert("whatbox is "+j);
     i = Number(j);
-    x.elements[i].focus();
-    if( i < x.length-1 ) {
-        x.elements[i].value="";
+    x.elements[i].focus(); // set focus to whatbox
+    if( x != document.getElementById("rst") ) {
+        x.elements[i].value=""; // blank it out unless it is "restarted" box
     }
+    var w = document.getElementById("dpPos").value;
+    chooseThis( w );
 }
 </script>
-<!-- doesn't want to start again when btmOpDgts = 1 fixit -->
-<script>
-function startAgain() {
-    
-    var x = document.getElementById("th-id2");
-     x.elements[0].value="";
-     x.elements[1].value="";
-     x.elements[2].value="";
-    // set every box but the rst box blank
-    for( i = 0; i < x.length-2; i++ ) {
-        x.elements[i].value="";
-        x.elements[i].setAttribute('value','');
-    }
-    var elem = document.getElementById("rst");
-    elem.setAttribute('value','Click Enter ->'); // client changes value
-    x.submit();
-}
+<script type="text/javascript">
+// this should disable the user being able to click and select textboxes
+/* This script and many more are available free online at
+The JavaScript Source :: http://www.javascriptsource.com
+Created by: James Nisbet (morBandit) :: http://www.bandit.co.nz/ */      
+//window.onload = function() {
+//  document.onselectstart = function() {return false;} // ie
+//  document.onmousedown = function() {return false;} // mozilla
+//}
 </script>
 </head>
-<!-- need to think through how to make it expandable before I put too much
-    detail in -->
+<!-- tell me button, set difficulty slider, random distribution, decimal points
+is there anything to be done about blanks where user accidentally hits enter 
+without entering anything? 
+tie to database and track #consecutive right (days without accident)
+#problems without help, problems per minute, difficulty level, cleanup 
+add timed multiple choice questions -->
 <!-- This is what actually gets displayed on the page //-->
-<body onload="setFocus();">
+<body onload="setFocus();" onmousedown="javascript:return false;"   
+        onselectstart="javascript:return false;">
 
 <!-- multi-checker.jsp (or  should it be a java class?) remains to be written
 and is what will take the user's input and display it red if incorrect
 //-->
 <%
-    String restarted = "Click Enter ->";
+    // would be nice if I could just check what has just been entered
+    // might operate faster
+    // if i have mouse selection turned off, if someone accidently hits enter
+    // it assumes 0 for that blank space and throws the rest of the calculations
+    // off
+    // if I use the actual values instead of what people entered, it will back
+    // up when a subsequent wrong answer is entered, but it won't let me 
+    // back up to the original blank
+    // sometimes people want to carry in their head. is there a way to let them?
+    // i would have to compare to actual values
+    // i would have to check whatBx[bdx] and only ignore blanks if they are
+    // carries
+    String restarted = "Restart Now";
     String tmp = "";        // temporary storage for newly gotten 
                             // session attribute or request parameter
     final int SZ2_MX = 6;   // maximum answer size
@@ -76,11 +133,17 @@ and is what will take the user's input and display it red if incorrect
     int[][] op;             // operands first index is what operand
                             // second index is what digit of that operand
     
+    //String isChecked[];
+    //isChecked = new String[SZ2_MX+1];
+    
     int operand0 = 0;
     int operand1 = 0;
 
     int topOpDgts = 0; //SZ2_MX + 1 - 3;      // how many digits dows the top operand have  
     int btmOpDgts = 0; //SZ2_MX - topOpDgts;  // how many digits does the bottom operand have
+    int topDp = 0;
+    int btmDp = 0;
+    //String dotclr = "green";
     
     int nmcarries = 0; //topOpDgts - 1;
     
@@ -120,7 +183,7 @@ and is what will take the user's input and display it red if incorrect
     int max = 0;    // loop counter maximum
     
     // thought I was having threading issues so I gave up on oo
-    // probably not the case, but this is faster anyway
+    // probably not the case, but this is faster  
     int[][] ain;        // intermediate answer numeric
     String[][] ais;     // intermediate answer string
     String[][] aiclr;   // intermediate answer text color
@@ -132,14 +195,27 @@ and is what will take the user's input and display it red if incorrect
     int[] can;      // additive carry numeric
     String[] cas;   // additive carry string
     String[] caclr; // additive color text  color
-     if(( tmp = request.getParameter("rstind")) != null) {
+    
+    int dpPos = SZ2_MX + 1; // has to be initiallized or gives compile error
+    
+    if(( tmp = request.getParameter("rstind")) != null) {
         restarted = tmp.toString();
+    }
+    
+    if(( tmp = request.getParameter("dpPos")) != null ) {
+        dpPos = (new Integer( tmp.toString() )).intValue();
     }
     //System.out.println("restarted = " + restarted );
     
-    if( restarted.equals("Click Enter ->") ) {   
+    if( restarted.equals("Restart Now") ) {   
+        
+        
         // Math.random() generates x, 0<=x<1
         topOpDgts = (new Double(2+(SZ2_MX-3)*Math.random())).intValue();
+        topDp = (new Double(topOpDgts*Math.random())).intValue();
+        //topOpDgts = 4; // fixit 9.710 x 11 != 006.810
+        //topDp = 3; // fixit 
+        //System.out.println("topDp = " + topDp );
         //topOpDgts = 4;
         //System.out.println("topOpDgts = " + topOpDgts );
         nmcarries = topOpDgts - 1;
@@ -150,8 +226,12 @@ and is what will take the user's input and display it red if incorrect
         // don't want to overflow final answer fixit
         //btmOpDgts = (new Double((SZ2_MX-topOpDgts)*Math.random())).intValue();
         // don't want bottom op to be bigger than top op
-        //btmOpDgts = (new Double(1+(topOpDgts)*Math.random())).intValue();
+        //btmOpDgts = (new  Double(1+(topOpDgts)*Math.random())).intValue();
         btmOpDgts = (new Double(1+(maxBtmDgts)*Math.random())).intValue();
+        btmDp = (new Double(btmOpDgts*Math.random())).intValue();
+        //btmOpDgts = 2;
+        //btmDp = 0; // fixit
+        //System.out.println("btmDp = " + btmDp );
         //btmOpDgts = 3;
         //System.out.println("generated btmOpDgts = " + btmOpDgts );
         op = new int[2][SZ2_MX];
@@ -174,10 +254,14 @@ and is what will take the user's input and display it red if incorrect
 
         restarted = "no";
         bdx = 0;
+        
+        //for( int idx = 0; idx <= SZ2_MX; idx++ ) {
+        //    isChecked[idx] = "S";
+        //}
 
         for( int idx = 0; idx < SZ2_MX; idx++ ) {
             op[0][idx] = 9;
-            op[1][idx] = 9;
+            op[1][idx] = 9;   
             for( int jdx = 0; jdx < btmOpDgts; jdx++ ) { 
                 cms[jdx][idx] = "";
                 cmn[jdx][idx] = 0;
@@ -213,9 +297,19 @@ and is what will take the user's input and display it red if incorrect
         op[1][kdx] = (new Double(1+9*Math.random())).intValue();
         //op[1][kdx] = 1;
         operand1 = operand1 + op[1][kdx]*(int)(Math.pow(10.,(double)kdx));
+
         att = new String("op2" + kdx);
         session.setAttribute(att, op[1][kdx]);
-        
+        session.setAttribute("topDp", topDp);
+        //op[1][3] = 9; // fixit
+        //op[1][2] = 7;
+        //op[1][1] = 1;
+        //op[1][0] = 0;
+        //operand1 = 9710; // fixit
+        //session.setAttribute("op23", op[1][3]);
+        //session.setAttribute("op22", op[1][2]);
+        //session.setAttribute("op21", op[1][1]);
+        //session.setAttribute("op20", op[1][0]); // fixit
         session.setAttribute("btmOpDgts", btmOpDgts);
         //op[0][0] = 0;
         //session.setAttribute("op10", op[0][0]);
@@ -237,6 +331,13 @@ and is what will take the user's input and display it red if incorrect
                 op[0][kdx] = 0;
             }
         }
+
+        //op[0][1] = 1; // fixit
+        //op[0][0] = 1;
+        //operand0 = 11; // fixit
+        //session.setAttribute("op11", op[0][1]);
+        //session.setAttribute("op10", op[0][0]); // fixit
+        session.setAttribute("btmDp", btmDp);
         
     } else {
         maxBx = (new Integer(session.getAttribute("maxBx").toString())).intValue();
@@ -248,6 +349,8 @@ and is what will take the user's input and display it red if incorrect
         //System.out.println("retrieved topOpDgts = " + topOpDgts );
         btmOpDgts = (new Integer(session.getAttribute("btmOpDgts").toString())).intValue();
         //System.out.println("retrieved btmOpDgts = " + btmOpDgts );
+        topDp = (new Integer(session.getAttribute("topDp").toString())).intValue();
+        btmDp = (new Integer(session.getAttribute("btmDp").toString())).intValue();
         op = new int[2][SZ2_MX];
         cms = new String[btmOpDgts][SZ2_MX];
         cmn = new int[btmOpDgts][SZ2_MX];
@@ -311,16 +414,6 @@ and is what will take the user's input and display it red if incorrect
     // if they are both 2 less than SZ2_MX + 1, there is a space
     //int spacesb4ca = 0;
     int spacesb4ca = SZ2_MX - 1 - nacarries;
-    //if( maxAdig[1] < SZ2_MX ) {
-        //if( maxAdig[0] > maxAdig[1] - 1 ) {
-      //      spacesb4ca = SZ2_MX - maxAdig[1];
-        //} else {
-          //  spacesb4ca = SZ2_MX - maxAdig[0];
-        //}
-    //} 
-    //System.out.println("A0: " + maxAdig[0] + " A1: " + maxAdig[1] +
-    //        " An: " + maxAndig );
-    //System.out.println("op[0][2] op[0][1] op[0][0] = " + op[0][2] + " " + op[0][1] + " " + op[0][0]);
     int te = op[0][2] <= 1? 0 : nmcarries;
     int pe = te;
     pe += (op[0][1] <= 1? 0 : nmcarries);  // box after first multiplicative carry box for 2nd intermediate answer
@@ -536,7 +629,7 @@ and is what will take the user's input and display it red if incorrect
                 if( jdx > 2 ) {
                     ca_in = can[jdx-3];
                 }
-                //System.out.println("checking last digit");
+                System.out.println("checking last digit");
                 if( (anclr[idx] = 
                         ProcessAns.checkAddCarry( ann[idx], ain[0][idx-1], 
                                         ain[1][idx-1], ain[2][idx-1], ca_in)).equals("red") ) {
@@ -559,14 +652,31 @@ and is what will take the user's input and display it red if incorrect
             }
         }
     }
- 
+    //for( int idx = 0; idx <= SZ2_MX; idx++  ) {
+        //att = new String("andsp" + idx);
+        // = new String("dpPos");
+        //<String> pnames = request.getParameterNames();
+        //while ( pnames.hasMoreElements() ) {
+        //    System.out.println( "one name is " + pnames.nextElement());
+        //}
+        //System.out.println("checking parameter " + att);
+        //if((tmp = request.getParameter(att)) != null ) {
+        //    System.out.println("tmp = " + tmp);
+        //    int ntmp = ProcessAns.string2int(tmp);
+            //isChecked[SZ2_MX - ntmp] = "Y";
+        //    System.out.println("ansdp is " + tmp);
+        //    if( !(btmDp + topDp == SZ2_MX + 1 - ntmp)) {
+        //        dotclr = "red";
+        //        System.out.println("decimal point is wrong");
+        //    }
+        //}
+    //}
 %>
 <div class="d1" >
 <form id="th-id2" method="get" action="Multiplier.jsp">
 
 <table class="t1">
 
-<!-- colspan="<%=colspan%>" is worst case for 3 digit x 2 digit with carries //-->
 <tr><th id="F1" colspan="<%=colspan%>">Multiplication Problem</th></tr>
 <%  for( int ndx = 0; ndx < btmOpDgts; ndx++ ) { 
         int row = btmOpDgts - 1 - ndx; 
@@ -596,8 +706,9 @@ and is what will take the user's input and display it red if incorrect
     } %>
 
 <tr>
-<%  for( int idx = 0; idx <= SZ2_MX; idx++ ) { %>
-        <td class="s2"></td>
+<%  for( int idx = 0; idx <= SZ2_MX; idx++ ) {  
+        String possDp = (SZ2_MX - idx + 1 == topDp && topDp > 0)? ".":""; %>
+        <td class="s2"><%=possDp%></td>
 <%      if( idx < spacesb4cm ) { %>
             <td class="n1"></td>
 <%      } else { 
@@ -624,9 +735,11 @@ and is what will take the user's input and display it red if incorrect
 </tr>
 
 <tr>
-<%  for( int idx = 0; idx <= SZ2_MX; idx++ ) { %>
-        <td class="s2"></td>
-<%      if( idx < spacesb4btmOp ) { %>
+<%  for( int idx = 0; idx <= SZ2_MX; idx++ ) { 
+        String possDp = (SZ2_MX - idx + 1 == btmDp && btmDp > 0)? ".":"";
+%>
+        <td class="s2"><%=possDp%></td>
+<%      if( idx < spacesb4btmOp ) { %>            
             <td class="n1"></td>
 <%      } else if ( idx == spacesb4btmOp ){ %>
             <td class="n1"> x </td>
@@ -645,28 +758,13 @@ and is what will take the user's input and display it red if incorrect
                 default: //System.out.println("case default");%>
                     <td class="n1">Y</td>
                     <% break;
-            }       
+            }
         }
     } %>
 </tr> 
-<!--
- <tr>
-    <td class="s2"></td><td class="n1"></td>
-    <td class="s2"></td><td class="n1"></td>
-    <td class="s2"></td><td class="n1"><%=op[1][2]%></td>
-    <td class="s2"></td><td class="n1"><%=op[1][1]%></td>
-    <td class="s2"></td><td class="n1"><%=op[1][0]%></td>
-</tr> 
-<tr>
-    <td class="s2"></td><td class="n1"></td>
-    <td class="s2"></td><td class="n1"></td>
-    <td class="s2"></td><td class="n1"> x </td>
-    <td class="s2"></td><td class="n1"><%=op[0][1]%></td>
-    <td class="s2"></td><td class="n1"><%=op[0][0]%></td>
-</tr> 
-//-->
+
 <!-- cleaner if whatBx, ca boxes and ai boxes took into account that not all boxes are always used
-and should not be displayed -->
+and should not be displayed //-->
 <tr><th class="th-id1" colspan="<%=colspan%>"></th></tr>
 <tr class="r1">
 <%  for( int idx = 0; idx <= SZ2_MX; idx++ ) {
@@ -698,7 +796,7 @@ and should not be displayed -->
                 int col = SZ2_MX - idx; 
                 String name = "ai" + row + "" + col; 
                 //System.out.println( "row = " + row + " col = " + col ); %>
-                <td><input type="text" name="<%=name%>" class="a1"
+                <td><input type="text" name="<%=name%>" class="a1" size="1"
                style="color:<%=aiclr[row][col]%>" value="<%=ais[row][col]%>"></td>
 <%          } else { %>
                 <td class="n1"></td>
@@ -711,37 +809,19 @@ if( btmOpDgts > 1 ) { %>
     <tr>
 <%  
     int spacesb4an = SZ2_MX + 1 - maxAndig;
-    for( int idx = 0; idx <= SZ2_MX; idx++ ) { %>
-        <td class="s2"></td>
+    for( int idx = 0; idx <= SZ2_MX; idx++ ) { 
+        //String whatBtn = "andsp" + idx;%>
+        <td class="p2"><span name="dec-pt" onclick="chooseThis( <%=idx%> )" class="dp" >_</span></td>
 <%      if( idx >= spacesb4an ) { 
             int col = SZ2_MX - idx; 
-            String name = "an" + col; 
-            //System.out.println( "col = " + col ); %>
-            <td><input type="text" name="<%=name%>" class="a1"
-            style="color:<%=anclr[col]%>" value="<%=ans[col]%>"></td>
+            String name = "an" + col;  %>
+            <td><input type="text" name="<%=name%>" class="a1" size="1" style="color:<%=anclr[col]%>" value="<%=ans[col]%>"></td>
 <%      } else { %>
             <td class="n1"></td>
 <%      } 
     } 
 }   %>  
-</tr>
-<!-- <tr>
-    <td class="s2"></td>
-    <td><input type="text" name="an4" class="a1"
-               style="color:<%=anclr[4]%>" value="<%=ans[4]%>"></td>
-    <td class="s2"></td>
-    <td><input type="text" name="an3" class="a1"
-               style="color:<%=anclr[3]%>" value="<%=ans[3]%>"></td>
-    <td class="s2"></td>
-    <td><input type="text" name="an2" class="a1"
-               style="color:<%=anclr[2]%>" value="<%=ans[2]%>"></td>
-    <td class="s2"></td>
-    <td><input type="text" name="an1" class="a1"
-               style="color:<%=anclr[1]%>" value="<%=ans[1]%>"></td>
-    <td class="s2"></td>
-    <td><input type="text" name="an0" class="a1"
-               style="color:<%=anclr[0]%>" value="<%=ans[0]%>"></td>
-</tr> //-->
+    </tr>
 
 </table>
 
@@ -749,7 +829,7 @@ if( btmOpDgts > 1 ) { %>
 
 <div class="d2">
 <!--<label>What Box </label>//-->
-<input id="whatbox" type="hidden" value="<%=whatBx[bdx]%>" class="shortbox">
+<input type="hidden" id="whatbox" value="<%=whatBx[bdx]%>" class="shortbox">
 <br>
 </div>
 <div class="d2">
@@ -760,9 +840,12 @@ if( btmOpDgts > 1 ) { %>
 <br>
 </div>
 <div class="d2">
-<button type="reset" value="Reset" onclick="startAgain()">Start again</button>
+<button type="reset" value="Reset" onclick="startAgain()" >Start again</button>
 <!--<input type="text" id="rst" name="rstind" value="<%=restarted%>" class="shortbox">//-->
 <input type="hidden" id="rst" name="rstind" value="<%=restarted%>" class="shortbox">
+<input type="hidden" id="dpPos" name="dpPos" value="<%=dpPos%>" class="shortbox">
+<input type="hidden" id="topDec" value="<%=topDp%>" class="shortbox">
+<input type="hidden" id="btmDec" value="<%=btmDp%>" class="shortbox">
 <input type="submit" style="visibility: hidden;">
 </div>
 </form>

@@ -4,7 +4,7 @@ To change this template file, choose Tools | Templates
 and open the template in the editor.
 */
 /* 
-    Created on : Oct 15, 2014, 7:27:38 AM
+    Created on : Jul 4, 2015, 1:57:20 PM
     Author     : irene
 */
 
@@ -52,7 +52,7 @@ table, th {
   width: 8px;
   background-color: #E6EAE8;
   text-align: center;
-  border:1px solid black;
+  border:1px solid black
 }
 /* blanks between carry boxes */
 .b1 {
@@ -65,7 +65,33 @@ table, th {
 .r1 {
   height: 14px;
 }
-/* spaces between operands */
+/* spaces between final answer with potential decimal point*/
+.p2 {
+  width: 8px;
+  //background-color: #cf0f0f; 
+  //color: #c0a000; 
+  height: 28px;
+  text-align: center;
+  //border:1px solid black
+}
+
+/* space above answer decimal point */
+.x1 {
+  width: 8px;
+  height: 22px;
+  //background-color: #cfaf6f; 
+  //color: #c0a060; 
+}
+.dp{
+    width: 4px;
+    height: 28px;
+    max-height: 4px;
+    text-align: center;
+    //background-color: white;
+    //border: 1px solid black;
+    //border-radius: 4px;
+}
+/* spaces between intermediate answers */
 .s2 {
   width: 8px;
   //background-color: #cfaf6f; 
@@ -102,3 +128,9 @@ table, th {
   //text-align: center;
   columns: 2 auto;
 }
+
+
+
+
+
+
