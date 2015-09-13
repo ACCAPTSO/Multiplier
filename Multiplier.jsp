@@ -221,10 +221,9 @@ and is what will take the user's input and display it red if incorrect
         // Math.random() generates x, 0<=x<1
         topOpDgts = (new Double(2+(SZ2_MX-3)*Math.random())).intValue();
         topDp = (new Double(topOpDgts*Math.random())).intValue();
-        //topOpDgts = 4; // fixit 9.710 x 11 != 006.810
-        //topDp = 3; // fixit 
+        //topOpDgts = 3; // fixit 9.710 x 11 != 006.810
+        //topDp = 0; // fixit 
         //System.out.println("topDp = " + topDp );
-        //topOpDgts = 4;
         //System.out.println("topOpDgts = " + topOpDgts );
         nmcarries = topOpDgts - 1;
         int maxBtmDgts = SZ2_MX-topOpDgts;
@@ -240,7 +239,6 @@ and is what will take the user's input and display it red if incorrect
         //btmOpDgts = 2;
         //btmDp = 0; // fixit
         //System.out.println("btmDp = " + btmDp );
-        //btmOpDgts = 3;
         //System.out.println("generated btmOpDgts = " + btmOpDgts );
         op = new int[2][SZ2_MX];
         cms = new String[btmOpDgts][SZ2_MX];
@@ -309,16 +307,16 @@ and is what will take the user's input and display it red if incorrect
         att = new String("op2" + kdx);
         session.setAttribute(att, op[1][kdx]);
         session.setAttribute("topDp", topDp);
-        //op[1][3] = 9; // fixit
-        //op[1][2] = 7;
-        //op[1][1] = 1;
-        //op[1][0] = 0;
-        //operand1 = 9710; // fixit
+        //[1][3] = 9; // fixit
+        //op[1][2] = 4;
+        //op[1][1] = 5;
+        //op[1][0] = 4;
+        //operand1 = 454; // fixit
         //session.setAttribute("op23", op[1][3]);
         //session.setAttribute("op22", op[1][2]);
         //session.setAttribute("op21", op[1][1]);
         //session.setAttribute("op20", op[1][0]); // fixit
-        session.setAttribute("btmOpDgts", btmOpDgts);
+        //session.setAttribute("btmOpDgts", btmOpDgts);
         //op[0][0] = 0;
         //session.setAttribute("op10", op[0][0]);
         //for (kdx = 1; kdx < btmOpDgts - 1; kdx++){
@@ -340,9 +338,9 @@ and is what will take the user's input and display it red if incorrect
             }
         }
 
-        //op[0][1] = 1; // fixit
+        //op[0][1] = 6; // fixit
         //op[0][0] = 1;
-        //operand0 = 11; // fixit
+        //operand0 = 61; // fixit
         //session.setAttribute("op11", op[0][1]);
         //session.setAttribute("op10", op[0][0]); // fixit
         session.setAttribute("btmDp", btmDp);
@@ -415,6 +413,7 @@ and is what will take the user's input and display it red if incorrect
             || maxAdig[1] != 0 && maxAdig[2] != 0 ) {
         nacarries += (maxAdig[2] + 1 > maxAdig[1]?  maxAdig[2]: 
                 maxAdig[1] + 1 > maxAdig[0]? maxAdig[1]-1: maxAdig[0] - 2 );
+        //nacarries = maxAndig - 2;
     }
     
     int spacesb4cm = SZ2_MX + 1 - topOpDgts;
@@ -466,7 +465,7 @@ and is what will take the user's input and display it red if incorrect
             }
         }
     }
-    // make it skip carry if adding 454 + 27240 fixit
+    // make it skip carry if adding 454 + 27240 fixit -no good way to do this 999 + 99900 has carries all the way 
     if( btmOpDgts > 1 ) {
         for( int idx = 0; idx < maxAndig; idx++ ) {
             if( idx > 1 && (btmOpDgts == 2 && idx <= maxAdig[1] && maxAdig[0] != 0
@@ -634,8 +633,8 @@ and is what will take the user's input and display it red if incorrect
             // last digit, what would normally be a carry
             if( idx == maxAndig - 1 && (maxAndig > nacarries + 2) && nacarries > 0 ){
                 ca_in = 0;
-                if( jdx > 2 ) {
-                    ca_in = can[jdx-3];
+                if( jdx > 0 ) {
+                    ca_in = can[jdx-1];
                 }
                 System.out.println("checking last digit");
                 if( (anclr[idx] = 
