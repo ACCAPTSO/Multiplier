@@ -46,8 +46,9 @@ function startAgain() {
 </script>
 <script> 
 // this script should imitate radio buttons, selecting only one at a time
-function chooseThis( which_one ) {   
+function chooseThis( which_one ) { 
     var btns = document.getElementsByName('dec-pt');
+    var totDec = Number(document.getElementById("btmDec").value) + Number(document.getElementById("topDec").value);
     //alert("in chooseThis btns.length = " + btns.length + " which_one = " + which_one);
     for( i = 0; i < btns.length; i++ ) {
         var att = "andsp" + i;
@@ -55,7 +56,6 @@ function chooseThis( which_one ) {
         if( i == which_one ) {
             btns[i].childNodes[0].nodeValue=".";
             btns[i].setAttribute( att,'.');
-            var totDec = Number(document.getElementById("btmDec").value) + Number(document.getElementById("topDec").value);
             var markedDec = 7 - i;
             //alert("totDec = " + totDec + " markedDec = " + markedDec);
             if( totDec == markedDec ) { 
@@ -69,6 +69,14 @@ function chooseThis( which_one ) {
             btns[i].setAttribute( att,'');
             btns[i].style.color="#FAF3E4";
         }
+    }
+            //alert("bdx = " + document.getElementById("bdx").value + " lastbox = " + document.getElementById("lastbox").value );
+
+    if( totDec == 0 || ( which_one != 7 && btns[which_one].style.color == "black") ||
+        Number(document.getElementById("bdx").value) < Number(document.getElementById("lastbox").value - 1 ))  { 
+        document.getElementById("decRmdr").style.color="#FAF3E4";
+    } else {
+        document.getElementById("decRmdr").style.color = "red";
     }
 }
 </script>
@@ -790,9 +798,13 @@ and should not be displayed //-->
         <tr>
 <%      int spacesb4ai = SZ2_MX - maxAdig[row] + 1 - row;
         int aispaces = spacesb4ai + maxAdig[row];
-        for( int idx = 0; idx <= SZ2_MX; idx++ ) { %>
-            <td class="s2"></td>
-<%          if( idx >= spacesb4ai && idx < aispaces ) { 
+        for( int idx = 0; idx <= SZ2_MX; idx++ ) { 
+            if( btmOpDgts == 1 ) { %>
+                <td class="p2"><span name="dec-pt" onclick="chooseThis( <%=idx%> )" class="dp" >_</span></td>
+<%          } else { %>
+                <td class="s2"></td>
+<%          }
+            if( idx >= spacesb4ai && idx < aispaces ) { 
                 int col = SZ2_MX - idx; 
                 String name = "ai" + row + "" + col; 
                 //System.out.println( "row = " + row + " col = " + col ); %>
@@ -825,11 +837,16 @@ if( btmOpDgts > 1 ) { %>
 
 </table>
 
-
-
+<div class="d2">
+    <label id="decRmdr">Click where the decimal point should be</label>
+</div>
 <div class="d2">
 <!--<label>What Box </label>//-->
 <input type="hidden" id="whatbox" value="<%=whatBx[bdx]%>" class="shortbox">
+<br>
+<input type="hidden" id="bdx" value="<%=bdx%>" class="shortbox">
+<br>
+<input type="hidden" id="lastbox" value="<%=maxBx%>" class="shortbox">
 <br>
 </div>
 <div class="d2">

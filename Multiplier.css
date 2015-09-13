@@ -27,20 +27,23 @@ table, th {
   border:2px solid black;
   //text-align: center;
 }
+button {
+    font: inherit;
+}
 /* classes -can be used more than once */
 .d1{
     -webkit-column-count: 2;
-    -webkit-column-gap: 20px;
+    -webkit-column-gap: 3em;
     
     -moz-column-count:2;
-    -moz-column-gap: 20px;
+    -moz-column-gap: 3em;
     
     column-count: 2;
-    column-gap: 20px;
+    column-gap: 3em;
 }
 .d2{
-    padding-top: 40px;
-    height: 80px;
+    padding-top: 3em;
+    height: 4em;
     text-align: left;
 }
 .t1 {
@@ -49,79 +52,103 @@ table, th {
 }
 /* carry boxes */
 .c2 {
-  width: 8px;
+  width: .7em;
+  min-width: 0.7em;
   background-color: #E6EAE8;
+  //background-color: #ccccE8;
   text-align: center;
-  border:1px solid black
+  border:1px solid black;
+  margin-left: 0px;
+  margin-right: 0px;
+  font: inherit;
 }
 /* blanks between carry boxes */
 .b1 {
-  width: 18px; 
+  width: 1em; 
+  margin-left: 0px;
+  margin-right: 0px;
   //background-color: #f7eaa7; 
   //color: #e7da97; 
   //border:1px solid brown;
 }
 /* height of carry row */
 .r1 {
-  height: 14px;
+  //height: 1.2em;
 }
 /* spaces between final answer with potential decimal point*/
 .p2 {
-  width: 8px;
+  width: .7em;
   //background-color: #cf0f0f; 
   //color: #c0a000; 
-  height: 28px;
+  height: 1.7em;
   text-align: center;
+  margin-left: 0px;
+  margin-right: 0px;
   //border:1px solid black
 }
 
 /* space above answer decimal point */
-.x1 {
-  width: 8px;
-  height: 22px;
+//.x1 {
+//  width: 8px;
+//  height: 22px;
   //background-color: #cfaf6f; 
   //color: #c0a060; 
-}
+//}
 .dp{
-    width: 4px;
-    height: 28px;
-    max-height: 4px;
+    width: .5em;
+    height: 1.7em;
+    //max-height: 4px;
     text-align: center;
-    //background-color: white;
+    //background-color: orange;
+    margin-left: 0px;
+    margin-right: 0px;
     //border: 1px solid black;
     //border-radius: 4px;
 }
-/* spaces between intermediate answers */
+/* spaces between intermediate answers and between operands */
 .s2 {
-  width: 8px;
+  width: .6em;
+  text-align: center;
+  margin-left: 0px;
+  margin-right: 0px;
   //background-color: #cfaf6f; 
   //color: #c0a060; 
 }
 /* operands */
 .n1 {
-  width: 18px;
+  width: 1em;
   //background-color: #e7caa7; 
   color: black; 
   text-align: center;
   //border:1px solid orange;
-  height: 28px;
+  height: 1.5em;
+  margin-left: 0px;
+  margin-right: 0px;
 }
 /* answer boxes */
 .a1 {
-  width: 18px;
+  width: 1.2em;
   background-color: #E6EAE8; 
   color: black; 
   text-align: center;
-  border:2px solid black;
-  height: 28px;
+  border: 1px solid black;
+  font: inherit;
+  height: 1.7em;
+  margin-left: 0px;
+  margin-right: 0px;
 }
 .shortbox{
-    width: 70px;
+    width: 5em;
     text-align: center;
     color: red;
+    font: inherit;
 }
 .th-id1 {
   background-color: #2E7FA7;
+}
+#decRmdr{
+    color: #FAF3E4;
+    padding: 2em;
 }
 #th-id2 {
   background-color: #FAF3E4;
