@@ -8,7 +8,7 @@
 <%@page import="process.*,javax.servlet.http.*, java.io.*,java.util.*" %>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!--
-this is a comment -the // is for javascript 
+this is a comment -the // is for javascript
 //-->
 <!-- Document Type Definition -don't muck with it //-->
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
@@ -32,18 +32,24 @@ function startAgain() {
     var x = document.getElementsByTagName("input");
     //alert("in startAgain number of inputs is " + x.length)
     // set every box but the rst box blank
-    for( i = 0; i < x.length-5; i++ ) {
-        if(x[i].getAttribute('type')=='text')  {
+    var max = Number(document.getElementById('lastbox').value);
+    for( i = 0; i < max; i++ ) {
+        if(x[i].getAttribute('type')==='text')  {
             //alert("i = " + i); 
-            x[i].nodeValue="";
-            x[i].setAttribute('value','');
+            //x[i].nodeValue="";
+            //x[i].setAttribute('value','');
+            x[i].value = '';
         }
     }
     var elem = document.getElementById("rst"); // set hidden button for server
     elem.setAttribute('value','Restart Now');  // to read in java
+    //document.getElementById('whatbox').value = 0;
+    //alert("ready?");
     document.getElementById('th-id2').submit();
+    setFocus();
 }
 </script>
+<script src="check_boxes.js"></script>
 <script> 
 // this script should imitate radio buttons, selecting only one at a time
 function chooseThis( which_one ) { 
@@ -53,12 +59,12 @@ function chooseThis( which_one ) {
     for( i = 0; i < btns.length; i++ ) {
         var att = "andsp" + i;
         //alert("attribute is " + att + " i = " + i + " innerHTML = " + btns[i].innerHTML + " name = " + btns[i].getAttribute("name") + " class = " + btns[i].getAttribute("class") + " nodeValue = " + btns[i].childNodes[0].nodeValue);
-        if( i == which_one ) {
+        if( i === which_one ) {
             btns[i].childNodes[0].nodeValue=".";
             btns[i].setAttribute( att,'.');
             var markedDec = 7 - i;
             //alert("totDec = " + totDec + " markedDec = " + markedDec);
-            if( totDec == markedDec ) { 
+            if( totDec === markedDec ) { 
                 btns[i].style.color="black";
             } else {
                 btns[i].style.color="red";
@@ -72,7 +78,7 @@ function chooseThis( which_one ) {
     }
             //alert("bdx = " + document.getElementById("bdx").value + " lastbox = " + document.getElementById("lastbox").value );
 
-    if( totDec == 0 || ( which_one != 7 && btns[which_one].style.color == "black") ||
+    if( totDec === 0 || ( which_one !== 7 && btns[which_one].style.color === "black") ||
         Number(document.getElementById("bdx").value) < Number(document.getElementById("lastbox").value - 1 ))  { 
         document.getElementById("decRmdr").style.color="#FAF3E4";
     } else {
@@ -89,11 +95,11 @@ function setFocus() { // this part is javascript
     // alert("whatbox is "+j);
     i = Number(j);
     x.elements[i].focus(); // set focus to whatbox
-    if( x != document.getElementById("rst") ) {
+    if( x !== document.getElementById("rst") ) {
         x.elements[i].value=""; // blank it out unless it is "restarted" box
     }
-    var w = document.getElementById("dpPos").value;
-    chooseThis( w );
+    //var w = document.getElementById("dpPos").value;
+    //chooseThis( w );
 }
 </script>
 <script type="text/javascript">
@@ -112,10 +118,12 @@ is there anything to be done about blanks where user accidentally hits enter
 without entering anything? 
 tie to database and track #consecutive right (days without accident)
 #problems without help, problems per minute, difficulty level, cleanup 
-add timed multiple choice questions -->
+add timed multiple choice questions, put error checking in javascript? try is on
+a simpler program first, if you click the decimal point early it still prompts fixit,
+clean out java error checking -->
 <!-- This is what actually gets displayed on the page //-->
-<body onload="setFocus();" onmousedown="javascript:return false;"   
-        onselectstart="javascript:return false;">
+<body onload="setFocus();" onmousedown="javascript:return false;"
+      onselctstart="javascript:return false;">
 
 <!-- multi-checker.jsp (or  should it be a java class?) remains to be written
 and is what will take the user's input and display it red if incorrect
@@ -316,7 +324,7 @@ and is what will take the user's input and display it red if incorrect
         //session.setAttribute("op22", op[1][2]);
         //session.setAttribute("op21", op[1][1]);
         //session.setAttribute("op20", op[1][0]); // fixit
-        //session.setAttribute("btmOpDgts", btmOpDgts);
+        session.setAttribute("btmOpDgts", btmOpDgts);
         //op[0][0] = 0;
         //session.setAttribute("op10", op[0][0]);
         //for (kdx = 1; kdx < btmOpDgts - 1; kdx++){
@@ -704,7 +712,8 @@ and is what will take the user's input and display it red if incorrect
                     //System.out.println(" cm = " + cms[row][col]); %>
                     <td><input type="text" name="<%=name%>" class="c2" 
                             style="color:<%=cmclr[row][col]%>" 
-                            value="<%=cms[row][col]%>"></td>
+                            value="<%=cms[row][col]%>"
+                            onkeyup="checkCarry( <%=row%>, <%=col%> )"></td>
 <%              } %>
                 <td class="b1"></td>
 <%          }%>
@@ -720,18 +729,19 @@ and is what will take the user's input and display it red if incorrect
             <td class="n1"></td>
 <%      } else { 
             int col = topOpDgts - idx + spacesb4cm - 1;
+            String name = "op1" + col;
             switch(col) {
-                case 0: //System.out.println("case 0");%>
-                    <td class="n1"><%=op[1][0]%></td>
+                case 0: //System.out.println("case 0"); %>
+                    <td class="n1" name="<%=name%>"><%=op[1][0]%></td>
                     <% break;
-                case 1: //System.out.println("case 1");%>
-                    <td class="n1"><%=op[1][1]%></td>
+                case 1: //System.out.println("case 1"); %>
+                    <td class="n1" name="<%=name%>"><%=op[1][1]%></td>
                     <% break;
-                case 2: //System.out.println("case 2"); %>
-                    <td class="n1"><%=op[1][2]%></td>
+                case 2: //System.out.println("case 2");  %>
+                    <td class="n1" name="<%=name%>"><%=op[1][2]%></td>
                     <% break;
                 case 3: //System.out.println("case 2"); %>
-                    <td class="n1"><%=op[1][3]%></td>
+                    <td class="n1" name="<%=name%>"><%=op[1][3]%></td>
                     <% break;
                 default: //System.out.println("case default");%>
                     <td class="n1">Y</td>
@@ -752,15 +762,16 @@ and is what will take the user's input and display it red if incorrect
             <td class="n1"> x </td>
 <%      } else {
             int col = btmOpDgts - idx + spacesb4btmOp; 
+            String name = "op0" + col;
             switch(col) {
                 case 0: //System.out.println("case 0");%>
-                    <td class="n1"><%=op[0][0]%></td>
+                    <td class="n1" name="<%=name%>"><%=op[0][0]%></td>
                     <% break; 
                 case 1: //System.out.println("case 1");%>
-                    <td class="n1"><%=op[0][1]%></td>
+                    <td class="n1" name="<%=name%>"><%=op[0][1]%></td>
                     <% break;
                 case 2: //System.out.println("case 2"); %>
-                    <td class="n1"><%=op[0][2]%></td>
+                    <td class="n1" name="<%=name%>"><%=op[0][2]%></td>
                     <% break;
                 default: //System.out.println("case default");%>
                     <td class="n1">Y</td>
@@ -785,7 +796,8 @@ and should not be displayed //-->
                  col = 0;
             } %>
             <td><input type="text" name="<%=name%>" class="c2"
-                style="color:<%=caclr[col]%>" value="<%=cas[col]%>"></td>
+                style="color:<%=caclr[col]%>" value="<%=cas[col]%>"
+                onkeyup="checkAddCarry(<%=col%>)"></td>
 <%      } else { %>
             <td class="s2"></td>
 <%      } %>
@@ -808,7 +820,8 @@ and should not be displayed //-->
                 String name = "ai" + row + "" + col; 
                 //System.out.println( "row = " + row + " col = " + col ); %>
                 <td><input type="text" name="<%=name%>" class="a1" size="1"
-               style="color:<%=aiclr[row][col]%>" value="<%=ais[row][col]%>"></td>
+               style="color:<%=aiclr[row][col]%>" value="<%=ais[row][col]%>" 
+               onkeyup="checkMult( <%=row%>, <%=col%> )"></td>
 <%          } else { %>
                 <td class="n1"></td>
 <%          } 
@@ -826,7 +839,9 @@ if( btmOpDgts > 1 ) { %>
 <%      if( idx >= spacesb4an ) { 
             int col = SZ2_MX - idx; 
             String name = "an" + col;  %>
-            <td><input type="text" name="<%=name%>" class="a1" size="1" style="color:<%=anclr[col]%>" value="<%=ans[col]%>"></td>
+            <td><input type="text" name="<%=name%>" class="a1" size="1" 
+                       style="color:<%=anclr[col]%>" value="<%=ans[col]%>"
+                       onkeyup="checkAdd(<%=col%>)"></td>
 <%      } else { %>
             <td class="n1"></td>
 <%      } 
@@ -841,11 +856,15 @@ if( btmOpDgts > 1 ) { %>
 </div>
 <div class="d2">
 <!--<label>What Box </label>//-->
-<input type="hidden" id="whatbox" value="<%=whatBx[bdx]%>" class="shortbox">
+<input type="hidden" id="whatbox" value="<%=whatBx[bdx]%>" class="shortbox"><!--<label>whatBx[bdx]</label>//-->
 <br>
-<input type="hidden" id="bdx" value="<%=bdx%>" class="shortbox">
+<% for( int idx = 0; idx <= maxBx; idx++ ) { %>
+    <input type="hidden" name="nextbox" value="<%=whatBx[idx]%>" class="shortbox">
+<% } %>
 <br>
-<input type="hidden" id="lastbox" value="<%=maxBx%>" class="shortbox">
+<input type="hidden" id="bdx" value="<%=bdx%>" class="shortbox"><!--<label>box index bdx</label>//-->
+<br>
+<input type="hidden" id="lastbox" value="<%=maxBx%>" class="shortbox"><!--<label>lastbox</label>//-->
 <br>
 </div>
 <div class="d2">

@@ -86,14 +86,7 @@ button {
   margin-right: 0px;
   //border:1px solid black
 }
-
-/* space above answer decimal point */
-//.x1 {
-//  width: 8px;
-//  height: 22px;
-  //background-color: #cfaf6f; 
-  //color: #c0a060; 
-//}
+/* decimal point */
 .dp{
     width: .5em;
     height: 1.7em;
@@ -102,6 +95,7 @@ button {
     //background-color: orange;
     margin-left: 0px;
     margin-right: 0px;
+    color: #FAF3E4;
     //border: 1px solid black;
     //border-radius: 4px;
 }
