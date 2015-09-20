@@ -90,6 +90,8 @@ function setFocus() { // this part is javascript
     var j = document.getElementById("whatbox").value;
     i = Number(j);
     x.elements[i].focus(); // set focus to whatbox
+    x.elements[i].style.backgroundColor = "white";
+    x.elements[i].style.color = "red";
     if( x !== document.getElementById("rst") ) {
         x.elements[i].value=""; // blank it out unless it is "restarted" box
     }
@@ -99,9 +101,9 @@ function setFocus() { // this part is javascript
 <!-- to do: tell me button, set difficulty level setting, better random distribution, 
 tie to database and track #consecutive right (days without accident)
 #problems without help, problems per minute, add timed multiple choice questions,
-if you click the decimal point early it still prompts fixit, allow leading 0
-if there's a decimal point
-clean out java error checking -->
+allow leading 0 if there's a decimal , skip the addition bar if only one digit
+in bomOp is not 0 1234 x 400 = 493600, no need to spell it out twice -->
+
 <!-- body is what actually gets displayed on the page //-->
 <!-- set focus to correct box and dis-allow user selection of boxes //-->
 <body onload="setFocus();" onmousedown="javascript:return false;"
@@ -438,16 +440,20 @@ incorrect //-->
             String name = "op1" + col;
             switch(col) {
                 case 0: //System.out.println("case 0"); %>
-                    <td class="n1" name="<%=name%>"><%=op[1][0]%></td>
+                    <td><label class="n1" name="<%=name%>"><%=op[1][0]%></label>
+                    </td>
                     <% break;
                 case 1: //System.out.println("case 1"); %>
-                    <td class="n1" name="<%=name%>"><%=op[1][1]%></td>
+                    <td><label class="n1" name="<%=name%>"><%=op[1][1]%></label>
+                    </td>
                     <% break;
                 case 2: //System.out.println("case 2");  %>
-                    <td class="n1" name="<%=name%>"><%=op[1][2]%></td>
+                    <td><label class="n1" name="<%=name%>"><%=op[1][2]%></label>
+                    </td>
                     <% break;
                 case 3: //System.out.println("case 2"); %>
-                    <td class="n1" name="<%=name%>"><%=op[1][3]%></td>
+                    <td><label class="n1" name="<%=name%>"><%=op[1][3]%></label>
+                    </td>
                     <% break;
                 default: //System.out.println("case default");%>
                     <td class="n1">Y</td>
@@ -471,13 +477,16 @@ incorrect //-->
             String name = "op0" + col;
             switch(col) {
                 case 0: //System.out.println("case 0");%>
-                    <td class="n1" name="<%=name%>"><%=op[0][0]%></td>
+                    <td><label class="n1" name="<%=name%>"><%=op[0][0]%></label>
+                    </td>
                     <% break; 
                 case 1: //System.out.println("case 1");%>
-                    <td class="n1" name="<%=name%>"><%=op[0][1]%></td>
+                    <td><label class="n1" name="<%=name%>"><%=op[0][1]%></label>
+                    </td>
                     <% break;
                 case 2: //System.out.println("case 2"); %>
-                    <td class="n1" name="<%=name%>"><%=op[0][2]%></td>
+                    <td><label class="n1" name="<%=name%>"><%=op[0][2]%></label>
+                    </td>
                     <% break;
                 default: //System.out.println("case default");%>
                     <td class="n1">Y</td>
@@ -574,10 +583,10 @@ if( btmOpDgts > 1 ) { %>
 <br>
 </div>
 <div class="d2">
-<% if (lastans != "" ) { %>
-<input  type="text" value="<%=lastans%>" class="shortbox">
-<label> was a wrong answer </label>
-<% } %>
+<!--//<% //if (lastans != "" ) { %>
+<input  type="text" value="<%=lastans%>" class="shortbox">//-->
+<label id="wrongans"></label>
+<!--<% //} %>//-->
 <br>
 </div>
 <div class="d2">

@@ -54,7 +54,8 @@ button {
 .c2 {
   width: .7em;
   min-width: 0.7em;
-  background-color: #E6EAE8;
+  //background-color: black;
+  background-color: #968C72;
   //background-color: #ccccE8;
   text-align: center;
   border:1px solid black;
@@ -122,7 +123,8 @@ button {
 /* answer boxes */
 .a1 {
   width: 1.2em;
-  background-color: #E6EAE8; 
+  //background-color: black; 
+  background-color: #968C72;
   color: black; 
   text-align: center;
   border: 1px solid black;
