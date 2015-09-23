@@ -40,8 +40,8 @@ function startAgain() {
             x[i].value = '';
         }
     }
-    var elem = document.getElementById("rst"); // set hidden button for server
-    elem.setAttribute('value','Restart Now');  // to read in java
+    //var elem = document.getElementById("rst"); // set hidden button for server
+    //elem.setAttribute('value','Restart Now');  // to read in java
     document.getElementById('th-id2').submit();
     setFocus();
 }
@@ -102,8 +102,8 @@ function setFocus() { // this part is javascript
 tie to database and track #consecutive right (days without accident)
 #problems without help, problems per minute, add timed multiple choice questions,
 remove or fix else, only submitting once per problem, can't seem to reload
-allow leading 0 if there's a decimal , skip the addition bar if only one digit
-in btmOp is not 0 1234 x 400 = 493600, no need to spell it out twice -->
+allow leading 0 if there's a decimal, 
+make a box for leading zero in final answer e.g. 0.402 -->
 
 <!-- body is what actually gets displayed on the page //-->
 <!-- set focus to correct box and dis-allow user selection of boxes //-->
@@ -125,8 +125,8 @@ incorrect //-->
     int operand0 = 0;
     int operand1 = 0;
 
-    int topOpDgts = 0; //SZ2_MX + 1 - 3;      // how many digits dows the top operand have  
-    int btmOpDgts = 0; //SZ2_MX - topOpDgts;  // how many digits does the bottom operand have
+    int topOpDgts = 0; // how many digits dows the top operand have  
+    int btmOpDgts = 0; // how many digits does the bottom operand have
     int topDp = 0;     // top decimal point position - initiallized to far right
     int btmDp = 0;     // bottom decimal point position
     
@@ -158,43 +158,36 @@ incorrect //-->
     
     int dpPos = SZ2_MX + 1; // has to be initiallized or gives compile error
     int nonZeros = 0;
+    int msDigit = 0;
     int strtRow = 0;
     int maxAndig = 0;
     
-    if(( tmp = request.getParameter("rstind")) != null) {
-        restarted = tmp.toString();
-    }
+    //if(( tmp = request.getParameter("rstind")) != null) {
+    //    restarted = tmp.toString();
+    //}
     
     if(( tmp = request.getParameter("dpPos")) != null ) {
         dpPos = (new Integer( tmp.toString() )).intValue();
     }
-    //System.out.println("restarted = " + restarted );
     
-    if( restarted.equals("Restart Now") ) {   
-        
+    //if( restarted.equals("Restart Now") ) {   
         
         // Math.random() generates x, 0<=x<1
         topOpDgts = (new Double(2+(SZ2_MX-3)*Math.random())).intValue();
         topDp = (new Double(topOpDgts*Math.random())).intValue();
-        //topOpDgts = 3; // fixit 9.710 x 11 != 006.810
-        //topDp = 0; // fixit 
-        //System.out.println("topDp = " + topDp );
-        //System.out.println("topOpDgts = " + topOpDgts );
         nmcarries = topOpDgts - 1;
+        
+        // don't want to overflow final answer 
         int maxBtmDgts = SZ2_MX-topOpDgts;
+        
+        // don't want bottom op to be bigger than top op
         if( topOpDgts < maxBtmDgts ) {
             maxBtmDgts = topOpDgts;
         }
-        // don't want to overflow final answer fixit
-        //btmOpDgts = (new Double((SZ2_MX-topOpDgts)*Math.random())).intValue();
-        // don't want bottom op to be bigger than top op
-        //btmOpDgts = (new  Double(1+(topOpDgts)*Math.random())).intValue();
+
+        
         btmOpDgts = (new Double(1+(maxBtmDgts)*Math.random())).intValue();
         btmDp = (new Double(btmOpDgts*Math.random())).intValue();
-        //btmOpDgts = 2; // fixit
-        //btmDp = 0; // fixit
-        //System.out.println("btmDp = " + btmDp );
-        //System.out.println("generated btmOpDgts = " + btmOpDgts );
         op = new int[2][SZ2_MX];
         cms = new String[btmOpDgts][SZ2_MX];
         cas = new String[SZ2_MX];
@@ -229,29 +222,16 @@ incorrect //-->
         }
         // msb cannot be 0
         op[1][kdx] = (new Double(1+9*Math.random())).intValue();
-        //op[1][kdx] = 1;
         operand1 = operand1 + op[1][kdx]*(int)(Math.pow(10.,(double)kdx));
 
         att = new String("op2" + kdx);
         session.setAttribute(att, op[1][kdx]);
         session.setAttribute("topDp", topDp);
-        //[1][3] = 9; // fixit
-        //op[1][2] = 4;
-        //op[1][1] = 5;
-        //op[1][0] = 4;
-        //operand1 = 454; // fixit
-        //session.setAttribute("op23", op[1][3]);
-        //session.setAttribute("op22", op[1][2]);
-        //session.setAttribute("op21", op[1][1]);
-        //session.setAttribute("op20", op[1][0]); // fixit
         session.setAttribute("btmOpDgts", btmOpDgts);
-        //op[0][0] = 0;
-        //session.setAttribute("op10", op[0][0]);
-        //for (kdx = 1; kdx < btmOpDgts - 1; kdx++){
         for( kdx = 0; kdx < SZ2_MX; kdx++ ) {
-            if( kdx < btmOpDgts - 1 ) {
+            if( kdx < btmOpDgts - 1 || 
+                    (kdx == btmDp && nonZeros > 0 ) ) { // leading zero visible in front of a decimal point
                 op[0][kdx] = (new Double(10*Math.random())).intValue();
-                //if( kdx == 0 ) { op[0][kdx] = 0; } // fixit
                 operand0 = operand0 + op[0][kdx]*(int)(Math.pow(10.,(double)kdx));
                 att = new String("op1" + kdx);
                 session.setAttribute(att, op[0][kdx]);
@@ -264,23 +244,16 @@ incorrect //-->
                 att = new String("op1" + kdx);
                 session.setAttribute(att, op[0][kdx]);
             } else {
-                op[0][kdx] = 0;
+                op[0][kdx] = 0; // leading zeros will not be visible
             }
-            nonZeros += op[0][kdx] > 0? 1: 0;
-
-            //System.out.println("kdx = " + kdx + " op0kdx = " + op[0][kdx] + " nonZeros = " + nonZeros + " strtRow = " + strtRow);
+            if( op[0][kdx] > 0 ) {
+                nonZeros += 1;
+                msDigit = kdx + 1;
+            }
         }
-
-        //op[0][1] = 6; // fixit
-        //op[0][0] = 0;
-        //operand0 = 60; // fixit
-        //nonZeros = 1; // fixit
-        //strtRow = 1; //fixit
-        //session.setAttribute("op11", op[0][1]);
-        //session.setAttribute("op10", op[0][0]); // fixit
-        session.setAttribute("btmDp", btmDp);
-        
-    } else {
+        session.setAttribute("btmDp", btmDp);       
+    /*} else {
+        System.out.println("in the else clause");
         maxBx = (new Integer(session.getAttribute("maxBx").toString())).intValue();
         bdx = (new Integer(session.getAttribute("bdx").toString())).intValue();
         if( bdx < maxBx )
@@ -309,14 +282,16 @@ incorrect //-->
                 att = new String("op1" + idx);
                 op[0][idx] = (new Integer(session.getAttribute(att).toString())).intValue(); 
                 operand0 = operand0 + op[0][idx]*(int)(Math.pow(10.,(double)idx));
-                nonZeros += op[0][idx] > 0? 1: 0;
-                
+                if( op[0][idx] > 0 ) {
+                    nonZeros += 1;
+                    msDigit = idx + 1;
+                }
             } else {
                 op[0][idx] = 0;
             }
         }
-        nmcarries = topOpDgts - 1;
-    }
+        nmcarries = topOpDgts - 1;*/
+   // }
     
     session.setAttribute("bdx", bdx);
     
@@ -342,26 +317,23 @@ incorrect //-->
         nacarries += (maxAdig[2] + 1 > maxAdig[1]?  maxAdig[2]: 
                 maxAdig[1] + 1 > maxAdig[0]? maxAdig[1]-1: maxAdig[0] - 2 );
     }
-    //System.out.println("maxAdig[0] = " + maxAdig[0] + " maxAdig[1] = " + maxAdig[1] + " maxAdig[2] = " + maxAdig[2]);
+    
     if( nonZeros == 1 ) {
-        maxAdig[strtRow] += strtRow;
+        maxAdig[strtRow] += strtRow; // add boxes for the trailing zeros
     }
     int spacesb4cm = SZ2_MX + 1 - topOpDgts;
     int spacesb4btmOp = SZ2_MX - btmOpDgts; // "x" takes up one space
-    // if they are both 2 less than SZ2_MX + 1, there is a space
-    //int spacesb4ca = 0;
     int spacesb4ca = SZ2_MX - 1 - nacarries;
     int te = op[0][2] <= 1? 0 : nmcarries;
     int pe = te;
     pe += (op[0][1] <= 1? 0 : nmcarries);  // box after first multiplicative carry box for 2nd intermediate answer
     int em = pe;
     em += (op[0][0] <= 1? 0 : nmcarries); 
-    //System.out.println("t, p, m = " + te + " " + pe + " " + em );
         
-    int el = em + nacarries + maxAdig[0] - 1; // lsb of first/top intermediate answer
-    int en = el + maxAdig[1]; // lsb of 2nd intermediate answer
-    int es = en + maxAdig[2]; // lsb of 3rd intermediate answer
-    int qu = es + maxAndig; // lsb of final answer
+    int el = em + nacarries + maxAdig[0] - 1; // lsb of first/top intermediate answer box
+    int en = el + maxAdig[1]; // lsb of 2nd intermediate answer box
+    int es = en + maxAdig[2]; // lsb of 3rd intermediate answer box
+    int qu = es + maxAndig; // lsb of final answer box
     int ar = em + nacarries + 1;  // box after first additive carry - no carries for first two digits added
     ldx = 0;
     //System.out.println("op1 = " + operand1 + " op0 = " + operand0);
@@ -401,17 +373,19 @@ incorrect //-->
  
     if( nonZeros > 1 ) {
         for( int idx = 0; idx < maxAndig; idx++ ) {
-            if( idx > 1 && (btmOpDgts == 2 && idx <= maxAdig[1] && maxAdig[0] != 0
-                || btmOpDgts == 3 && idx <= maxAdig[2]+1 && (maxAdig[1] != 0 || maxAdig[0] != 0) )) {
-                whatBx[ldx] = ar - idx + inc; // additive carry
+            if( idx > 1 && (msDigit == 2 && idx <= maxAdig[1] && maxAdig[0] != 0
+                || msDigit == 3 && idx <= maxAdig[2]+1 && (maxAdig[1] != 0 || maxAdig[0] != 0) )) {
+                whatBx[ldx] = ar - idx + inc; // additive carry boxes
                 ldx++;
             }
-            whatBx[ldx] = qu - idx; // final answer
+            whatBx[ldx] = qu - idx; // final answer boxes
             ldx++;
         }
         whatBx[ldx] = qu + 1;
-    } else {
-        whatBx[ldx] = strtRow == 0? el + 1 : strtRow == 1? en + 1 : es + 1; // fixit -it depends on whether multiplying x1, x10 or x100 this is x10
+    } else { // one row of intermediate answers which in this case is the final answer
+        // last box depends on whether second operand was even multiple of 10 or 100
+        // it won't be a multiple of 1000 unless this program is expanded
+        whatBx[ldx] = strtRow == 0? el + 1 : strtRow == 1? en + 1 : es + 1; 
     }
     maxBx = ldx + 1;
     session.setAttribute("maxBx", maxBx);
@@ -436,8 +410,7 @@ incorrect //-->
                     if( col < 0 || col >= SZ2_MX ) {
                         System.out.println("cm col = " + col + "being set to 0");
                         col = 0;
-                    } 
-                    //System.out.println(" cm = " + cms[row][col]); %>
+                    }  %>
                     <td><input type="text" name="<%=name%>" class="c2" 
                             value="<%=cms[row][col]%>"
                             onkeyup="checkCarry( <%=row%>, <%=col%> )"></td>
@@ -458,23 +431,23 @@ incorrect //-->
             int col = topOpDgts - idx + spacesb4cm - 1;
             String name = "op1" + col;
             switch(col) {
-                case 0: //System.out.println("case 0"); %>
+                case 0: %>
                     <td><label class="n1" name="<%=name%>"><%=op[1][0]%></label>
                     </td>
                     <% break;
-                case 1: //System.out.println("case 1"); %>
+                case 1: %>
                     <td><label class="n1" name="<%=name%>"><%=op[1][1]%></label>
                     </td>
                     <% break;
-                case 2: //System.out.println("case 2");  %>
+                case 2: %>
                     <td><label class="n1" name="<%=name%>"><%=op[1][2]%></label>
                     </td>
                     <% break;
-                case 3: //System.out.println("case 2"); %>
+                case 3: %>
                     <td><label class="n1" name="<%=name%>"><%=op[1][3]%></label>
                     </td>
                     <% break;
-                default: //System.out.println("case default");%>
+                default: %>
                     <td class="n1">Y</td>
                     <% break;
             }       
@@ -495,19 +468,19 @@ incorrect //-->
             int col = btmOpDgts - idx + spacesb4btmOp; 
             String name = "op0" + col;
             switch(col) {
-                case 0: //System.out.println("case 0");%>
+                case 0: %>
                     <td><label class="n1" name="<%=name%>"><%=op[0][0]%></label>
                     </td>
                     <% break; 
-                case 1: //System.out.println("case 1");%>
+                case 1: %>
                     <td><label class="n1" name="<%=name%>"><%=op[0][1]%></label>
                     </td>
                     <% break;
-                case 2: //System.out.println("case 2"); %>
+                case 2:  %>
                     <td><label class="n1" name="<%=name%>"><%=op[0][2]%></label>
                     </td>
                     <% break;
-                default: //System.out.println("case default");%>
+                default: %>
                     <td class="n1">Y</td>
                     <% break;
             }
@@ -519,10 +492,8 @@ incorrect //-->
 <tr class="r1">
 <%  for( int idx = 0; idx <= SZ2_MX; idx++ ) {
         if( idx >= spacesb4ca && idx < nacarries + spacesb4ca && nacarries > 0 ) { 
-            //int col = SZ2_MX - 2 - idx + spacesb4ca;
             int col = SZ2_MX - 2 - idx;
             String name = "ca" + col; 
-            //System.out.println("ca col = " + col);
             if( col < 0 || col >= SZ2_MX ) {
                  System.out.println("ca col = " + col + "being reduced to 0");
                  col = 0;
@@ -537,16 +508,14 @@ incorrect //-->
 <%  } %>
 </tr>
 
-<%  for( int row = strtRow; row < btmOpDgts; row++ ) { %>
+<%  for( int row = strtRow; row < msDigit; row++ ) { %>
         <tr>
 <%      int spacesb4ai = SZ2_MX - maxAdig[row] + 1 - row;  // needs commenting
         int aispaces = spacesb4ai + maxAdig[row];
         if( nonZeros == 1 ) {
             spacesb4ai = spacesb4ai + strtRow;
-            //aispaces = aispaces - strtRow;
         }
 
-        //System.out.println("aispaces = " + aispaces + " spacesb4ai = " + spacesb4ai);
         for( int idx = 0; idx <= SZ2_MX; idx++ ) { 
             if( nonZeros == 1 ) { %>
                 <td class="p2">
@@ -557,8 +526,7 @@ incorrect //-->
 <%          }
             int col = SZ2_MX - idx; 
             String name = "ai" + row + "" + col; 
-            if( idx >= spacesb4ai && idx < aispaces ) { 
-                //System.out.println( "row = " + row + " col = " + col ); %>
+            if( idx >= spacesb4ai && idx < aispaces ) {  %>
                 <td><input type="text" name="<%=name%>" class="a1" size="1"
                     value="<%=ais[row][col]%>" 
                     onkeyup="checkMult( <%=row%>, <%=col%> )"></td>
@@ -617,7 +585,7 @@ if( nonZeros > 1 ) { %>
 <div class="d2">
 <button type="reset" value="Reset" onclick="startAgain()" >Start again</button>
 
-<input type="hidden" id="rst" name="rstind" value="<%=restarted%>" class="shortbox">
+<!--<input type="hidden" id="rst" name="rstind" value="<%=restarted%>" class="shortbox">//-->
 <input type="hidden" id="dpPos" name="dpPos" value="<%=dpPos%>" class="shortbox">
 <input type="hidden" id="topDec" value="<%=topDp%>" class="shortbox">
 <input type="hidden" id="btmDec" value="<%=btmDp%>" class="shortbox">
