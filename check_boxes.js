@@ -4,6 +4,42 @@
  * and open the template in the editor.
  */
 
+function checkZero( row, col ) {
+    var ansBx = document.getElementsByName("ai" + row + col)[0];
+    var ans = ansBx.value;
+    var errString = "";  
+        var errBx = document.getElementById("wrongans");
+    if( ans == "0" ) {
+        errBx.style.color = "#FAF3E4";
+        //op1Bx.style.color = "black";
+        //op2Bx.style.color = "black";
+        //if( cinBx.length > 0 ) {
+        //    cinBx[0].style.color = "black";
+        //}
+        ansBx.style.backgroundColor =  "#E6EAE8";
+        ansBx.style.color = "black";
+        // advance the box
+        var bdx = Number(document.getElementById('bdx').value) + 1;
+        document.getElementById('bdx').value = bdx;
+        var nextbox = document.getElementsByName("nextbox")[bdx].value;
+        document.getElementById("whatbox").value = nextbox;
+        promptForDp( bdx );
+    } else {
+        errString = "not " + ans;
+        errBx.innerHTML = "";
+        errBx.innerHTML = errString;
+        errBx.style.color = "red";
+        //op1Bx.style.color = "red";
+        //op2Bx.style.color = "red";
+        //if( cinBx.length > 0 ) {
+        //    cinBx[0].style.color = "red";
+        //}
+        ansBx.style.color = "red";
+        ansBx.value = "";
+    }
+    setFocus();
+}
+
 function checkMult( row, col ) {
     var opcol = col - row;
     var crcol = opcol - 1;
@@ -31,7 +67,6 @@ function checkMult( row, col ) {
         // use math.floor to do integer division - doesn't work for negative numbers
         corrAns = Math.floor((Number(op1)*Number(op2) + Number(cin))/10);
         //alert( "checking msd ans = " + ans + " corrAns = " + corrAns );
-        errString = "most significant digit of ";
     } else {
         if( cinBx.length !== 0 ) {
             cin = cinBx[0].value;
@@ -42,7 +77,6 @@ function checkMult( row, col ) {
         //alert("in checkmult answer is " + ans + " op1 is " + op1 + " op2 is " + op2 + " cin is " + cin);
         corrAns = (Number(op1)*Number(op2) + Number(cin))%10;
         //alert( "checking ans = " + ans + " corrAns = " + corrAns );
-        errString = "least significant digit of ";
     }
     var errBx = document.getElementById("wrongans");
     if( ans == corrAns ) {

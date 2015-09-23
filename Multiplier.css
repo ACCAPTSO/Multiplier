@@ -29,6 +29,11 @@ table, th {
 }
 button {
     font: inherit;
+    background-color: #E6EAE8;
+    border-bottom-color: #2E7FA7;
+    border-right-color: #2E7FA7;
+    border-top-color: #D6DAD8;
+    border-left-color: #D6DAD8
 }
 /* classes -can be used more than once */
 .d1{
@@ -55,7 +60,7 @@ button {
   width: .7em;
   min-width: 0.7em;
   //background-color: black;
-  background-color: #968C72;
+  background-color: #969C82;
   //background-color: #ccccE8;
   text-align: center;
   border:1px solid black;
@@ -124,7 +129,7 @@ button {
 .a1 {
   width: 1.2em;
   //background-color: black; 
-  background-color: #968C72;
+  background-color: #969C82;
   color: black; 
   text-align: center;
   border: 1px solid black;
