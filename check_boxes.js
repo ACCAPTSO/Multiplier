@@ -25,6 +25,7 @@ function checkZero( row, col ) {
         document.getElementById("whatbox").value = nextbox;
         promptForDp( bdx );
     } else {
+        upDateErrCount();
         errString = "not " + ans;
         errBx.innerHTML = "";
         errBx.innerHTML = errString;
@@ -95,6 +96,7 @@ function checkMult( row, col ) {
         document.getElementById("whatbox").value = nextbox;
         promptForDp( bdx );
     } else {
+        upDateErrCount();
         errString = "not " + ans;
         errBx.innerHTML = "";
         errBx.innerHTML = errString;
@@ -142,6 +144,7 @@ function checkCarry( row, col ) {
         var nextbox = document.getElementsByName("nextbox")[bdx].value;
         document.getElementById("whatbox").value = nextbox;
     } else {
+        upDateErrCount();
         var errString = "not " + ans;
         errBx.innerHTML = "";
         errBx.innerHTML = errString;
@@ -211,6 +214,7 @@ function checkAddCarry( col ) {
         var nextbox = document.getElementsByName("nextbox")[bdx].value;
         document.getElementById("whatbox").value = nextbox;
     } else {  
+        upDateErrCount();
         errString = "not " + ans;
         errBx.innerHTML = "";
         errBx.innerText = errString;
@@ -318,6 +322,7 @@ function checkAdd( col ) {
         document.getElementById("whatbox").value = nextbox;
         promptForDp( bdx );
     } else {  
+        upDateErrCount();
         errString = "not " + ans;
         errBx.innerHTML = "";
         errBx.innerHTML = errString;
@@ -355,6 +360,47 @@ function promptForDp( bdx ) {
         bdx < Number(document.getElementById("lastbox").value - 1 ) ||
         isSetAlready )  { 
         //alert("in promptForDp btmDec = " + document.getElementById("btmDec").value + " topDec = " + document.getElementById("topDec").value + " lastbox = " + Number(document.getElementById("lastbox").value - 1 ));
+        document.getElementById("decRmdr").style.color="#FAF3E4";
+    } else {
+        document.getElementById("decRmdr").style.color = "red";
+    }
+}
+
+function upDateErrCount() {
+    if( document.getElementById("errs").value == "" ) {
+        document.getElementById("errs").value = '1';
+    } else {
+        document.getElementById("errs").value =
+                Number(document.getElementById("errs").value) + 1;
+    }
+}
+
+// imitate radio buttons, selecting only one decimal point at a time
+function chooseThis( which_one ) { 
+    var btns = document.getElementsByName('dec-pt');
+    var totDec = Number(document.getElementById("btmDec").value) + Number(document.getElementById("topDec").value);
+    for( i = 0; i < btns.length; i++ ) {
+        var att = "andsp" + i;
+        if( i === which_one ) {
+            btns[i].childNodes[0].nodeValue=".";
+            btns[i].setAttribute( att,'.');
+            var markedDec = 7 - i;
+            if( totDec === markedDec ) {
+                btns[i].style.color="black";
+            } else {
+                btns[i].style.color="red";
+                upDateErrCount();
+            }
+            document.getElementById("dpPos").setAttribute('value', i );
+        } else {
+            btns[i].childNodes[0].nodeValue="_";
+            btns[i].setAttribute( att,'');
+            btns[i].style.color="#FAF3E4"; // hide "_" with background color
+        }
+    }
+
+    if( totDec === 0 || ( which_one !== 7 && btns[which_one].style.color === "black") ||
+        Number(document.getElementById("bdx").value) < Number(document.getElementById("lastbox").value - 1 ))  { 
         document.getElementById("decRmdr").style.color="#FAF3E4";
     } else {
         document.getElementById("decRmdr").style.color = "red";

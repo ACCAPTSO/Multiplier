@@ -27,94 +27,70 @@ this is a comment -the // is for javascript
 
 <script>
 function startAgain() {
-    
-    // blank out the decimal point
-    document.getElementById("dpPos").setAttribute('value', 7 );
-    chooseThis( 7 );
-    
+    var max = Number(document.getElementById('lastbox').value);
+        
+    // update problem counts
+    document.getElementById("numAttmptd").value = 
+            Number(document.getElementById("numAttmptd").value) + 1;
+    if( document.getElementById("errs").value == '0' &&
+        Number(document.getElementById("bdx").value) + 1 == max &&
+        document.getElementById("decRmdr").style.color != "red" ) {     
+            document.getElementById("numWoErr").value =
+                Number(document.getElementById("numWoErr").value) + 1;
+    }
+
     // blank out the number inputs
     var x = document.getElementsByTagName("input");
-    var max = Number(document.getElementById('lastbox').value);
+
     for( i = 0; i < max; i++ ) {
         if(x[i].getAttribute('type')==='text')  {
             x[i].value = '';
         }
     }
-    //var elem = document.getElementById("rst"); // set hidden button for server
-    //elem.setAttribute('value','Restart Now');  // to read in java
+    
+    // blank out the decimal point
+    document.getElementById("dpPos").setAttribute('value', 7 );
+    chooseThis( 7 );
+    // keep the reminder blanked out
+    //document.getElementById("decRmdr").style.color="#FAF3E4";
+
     document.getElementById('th-id2').submit();
     setFocus();
 }
 </script>
 <script src="check_boxes.js"></script>
-<script> 
-// imitate radio buttons, selecting only one decimal point at a time
-function chooseThis( which_one ) { 
-    var btns = document.getElementsByName('dec-pt');
-    var totDec = Number(document.getElementById("btmDec").value) + Number(document.getElementById("topDec").value);
-    //alert("in chooseThis btns.length = " + btns.length + " which_one = " + which_one);
-    for( i = 0; i < btns.length; i++ ) {
-        var att = "andsp" + i;
-        //alert("attribute is " + att + " i = " + i + " innerHTML = " + btns[i].innerHTML + " name = " + btns[i].getAttribute("name") + " class = " + btns[i].getAttribute("class") + " nodeValue = " + btns[i].childNodes[0].nodeValue);
-        if( i === which_one ) {
-            btns[i].childNodes[0].nodeValue=".";
-            btns[i].setAttribute( att,'.');
-            var markedDec = 7 - i;
-            //alert("totDec = " + totDec + " markedDec = " + markedDec);
-            if( totDec === markedDec ) { 
-                btns[i].style.color="black";
-            } else {
-                btns[i].style.color="red";
-            }
-            document.getElementById("dpPos").setAttribute('value', i );
-        } else {
-            btns[i].childNodes[0].nodeValue="_"; // can't click on a . perhaps you can hide it with color ? is there a min-width property?
-            btns[i].setAttribute( att,'');
-            btns[i].style.color="#FAF3E4"; // hide "_" with background color
-        }
-    }
 
-    if( totDec === 0 || ( which_one !== 7 && btns[which_one].style.color === "black") ||
-        Number(document.getElementById("bdx").value) < Number(document.getElementById("lastbox").value - 1 ))  { 
-        document.getElementById("decRmdr").style.color="#FAF3E4";
-    } else {
-        document.getElementById("decRmdr").style.color = "red";
-    }
-}
-</script>
 <!-- code to set the default input focus //-->
 <script>
 function setFocus() { // this part is javascript
     var x = document.getElementById("th-id2");
-    var i = 10;
     var j = document.getElementById("whatbox").value;
-    i = Number(j);
+    var i = Number(j);
     x.elements[i].focus(); // set focus to whatbox
     x.elements[i].style.backgroundColor = "white";
     x.elements[i].style.color = "red";
-    if( x !== document.getElementById("rst") ) {
-        x.elements[i].value=""; // blank it out unless it is "restarted" box
-    }
+    x.elements[i].value="";
 }
 </script>
 </head>
 <!-- to do: tell me button, set difficulty level setting, better random distribution, 
 tie to database and track #consecutive right (days without accident)
 #problems without help, problems per minute, add timed multiple choice questions,
-remove or fix else, only submitting once per problem, can't seem to reload
 allow leading 0 if there's a decimal, 
-make a box for leading zero in final answer e.g. 0.402 -->
+make a box for leading zero in final answer e.g. 0.402,
+can remove most of the session.setAttribute stuff since no longer checking on 
+make is so you can click a red decimal point to turn it off -->
 
 <!-- body is what actually gets displayed on the page //-->
 <!-- set focus to correct box and dis-allow user selection of boxes //-->
 <body onload="setFocus();" onmousedown="javascript:return false;"
       onselctstart="javascript:return false;">
 
-<!-- multi-checker.jsp is what will take the user's input and display it red if 
+<!-- Multiplier.jsp is what will take the user's input and display it red if 
 incorrect //-->
 <%
 
-    String restarted = "Restart Now";
+    //String restarted = "Restart Now";
     String tmp = "";      // temporary storage for newly gotten 
                           // session attribute or request parameter
     final int SZ2_MX = 6; // maximum answer size
@@ -162,138 +138,98 @@ incorrect //-->
     int strtRow = 0;
     int maxAndig = 0;
     
-    //if(( tmp = request.getParameter("rstind")) != null) {
-    //    restarted = tmp.toString();
-    //}
+    String numAttmptd = "0";
+    String numWoErr = "0";
+    String errs = "0";
     
-    if(( tmp = request.getParameter("dpPos")) != null ) {
-        dpPos = (new Integer( tmp.toString() )).intValue();
+    if(( tmp = request.getParameter("numAttmptd")) != null) {
+        numAttmptd = tmp.toString();
     }
     
-    //if( restarted.equals("Restart Now") ) {   
+    if(( tmp = request.getParameter("numWoErr")) != null) {
+        numWoErr = tmp.toString();
+    } 
         
-        // Math.random() generates x, 0<=x<1
-        topOpDgts = (new Double(2+(SZ2_MX-3)*Math.random())).intValue();
-        topDp = (new Double(topOpDgts*Math.random())).intValue();
-        nmcarries = topOpDgts - 1;
+    // Math.random() generates x, 0<=x<1
+    topOpDgts = (new Double(2+(SZ2_MX-3)*Math.random())).intValue();
+    topDp = (new Double(topOpDgts*Math.random())).intValue();
+    nmcarries = topOpDgts - 1;
         
-        // don't want to overflow final answer 
-        int maxBtmDgts = SZ2_MX-topOpDgts;
+    // don't want to overflow final answer 
+    int maxBtmDgts = SZ2_MX-topOpDgts;
         
-        // don't want bottom op to be bigger than top op
-        if( topOpDgts < maxBtmDgts ) {
-            maxBtmDgts = topOpDgts;
-        }
-
+    // don't want bottom op to be bigger than top op
+    if( topOpDgts < maxBtmDgts ) {
+        maxBtmDgts = topOpDgts;
+    }
         
-        btmOpDgts = (new Double(1+(maxBtmDgts)*Math.random())).intValue();
-        btmDp = (new Double(btmOpDgts*Math.random())).intValue();
-        op = new int[2][SZ2_MX];
-        cms = new String[btmOpDgts][SZ2_MX];
-        cas = new String[SZ2_MX];
-        ais = new String[3][SZ2_MX+2];
-        ans = new String[SZ2_MX+2];
+    btmOpDgts = (new Double(1+(maxBtmDgts)*Math.random())).intValue();
+    btmDp = (new Double(btmOpDgts*Math.random())).intValue();
+    op = new int[2][SZ2_MX];
+    cms = new String[btmOpDgts][SZ2_MX];
+    cas = new String[SZ2_MX];
+    ais = new String[3][SZ2_MX+2];
+    ans = new String[SZ2_MX+2];
 
-        restarted = "no";
-        bdx = 0;
+        //restarted = "no";
+    bdx = 0;
 
-        for( int idx = 0; idx < SZ2_MX; idx++ ) {
-            op[0][idx] = 9;
-            op[1][idx] = 9;   
-            for( int jdx = 0; jdx < btmOpDgts; jdx++ ) { 
-                cms[jdx][idx] = "";
-            }
-            cas[idx] = "";
+    for( int idx = 0; idx < SZ2_MX; idx++ ) {
+        op[0][idx] = 9;
+        op[1][idx] = 9;   
+        for( int jdx = 0; jdx < btmOpDgts; jdx++ ) { 
+            cms[jdx][idx] = "";
         }
-        max = SZ2_MX + 2;
-        for ( int idx = 0; idx < max; idx++ ) {
-            ans[idx] = "";
-            for ( int jdx = 0; jdx < 3; jdx++ ) {
-                ais[jdx][idx] = "";
-            }
+        cas[idx] = "";
+    }
+    max = SZ2_MX + 2;
+    for ( int idx = 0; idx < max; idx++ ) {
+        ans[idx] = "";
+        for ( int jdx = 0; jdx < 3; jdx++ ) {
+            ais[jdx][idx] = "";
         }
+    }
 
-        session.setAttribute("topOpDgts", topOpDgts);
-        for (kdx = 0; kdx < topOpDgts - 1; kdx++){
-            op[1][kdx] = (new Double(10*Math.random())).intValue();
-            operand1 = operand1 + op[1][kdx]*(int)(Math.pow(10.,(double)kdx));
-            att = new String("op2" + kdx);
-            session.setAttribute(att, op[1][kdx]);
-        }
-        // msb cannot be 0
-        op[1][kdx] = (new Double(1+9*Math.random())).intValue();
+    //session.setAttribute("topOpDgts", topOpDgts);
+    for (kdx = 0; kdx < topOpDgts - 1; kdx++){
+        op[1][kdx] = (new Double(10*Math.random())).intValue();
         operand1 = operand1 + op[1][kdx]*(int)(Math.pow(10.,(double)kdx));
-
         att = new String("op2" + kdx);
-        session.setAttribute(att, op[1][kdx]);
-        session.setAttribute("topDp", topDp);
-        session.setAttribute("btmOpDgts", btmOpDgts);
-        for( kdx = 0; kdx < SZ2_MX; kdx++ ) {
-            if( kdx < btmOpDgts - 1 || 
-                    (kdx == btmDp && nonZeros > 0 ) ) { // leading zero visible in front of a decimal point
-                op[0][kdx] = (new Double(10*Math.random())).intValue();
-                operand0 = operand0 + op[0][kdx]*(int)(Math.pow(10.,(double)kdx));
-                att = new String("op1" + kdx);
-                session.setAttribute(att, op[0][kdx]);
-                strtRow = (op[0][kdx] == 0 && strtRow == kdx)? kdx + 1 : strtRow;
-            } else if( kdx == btmOpDgts - 1 ) {
-                // msb cannot be 0
-                op[0][kdx] = (new Double(1+9*Math.random())).intValue();
-                //op[0][kdx] = 1;
-                operand0 = operand0 + op[0][kdx]*(int)(Math.pow(10.,(double)kdx));
-                att = new String("op1" + kdx);
-                session.setAttribute(att, op[0][kdx]);
-            } else {
-                op[0][kdx] = 0; // leading zeros will not be visible
-            }
-            if( op[0][kdx] > 0 ) {
-                nonZeros += 1;
-                msDigit = kdx + 1;
-            }
+        //session.setAttribute(att, op[1][kdx]);
+    }
+    // msb cannot be 0
+    op[1][kdx] = (new Double(1+9*Math.random())).intValue();
+    operand1 = operand1 + op[1][kdx]*(int)(Math.pow(10.,(double)kdx));
+
+    att = new String("op2" + kdx);
+    //session.setAttribute(att, op[1][kdx]);
+    //session.setAttribute("topDp", topDp);
+    //session.setAttribute("btmOpDgts", btmOpDgts);
+    for( kdx = 0; kdx < SZ2_MX; kdx++ ) {
+        if( kdx < btmOpDgts - 1 || 
+                (kdx == btmDp && nonZeros > 0 ) ) { // leading zero visible in front of a decimal point
+            op[0][kdx] = (new Double(10*Math.random())).intValue();
+            operand0 = operand0 + op[0][kdx]*(int)(Math.pow(10.,(double)kdx));
+            att = new String("op1" + kdx);
+            //session.setAttribute(att, op[0][kdx]);
+            strtRow = (op[0][kdx] == 0 && strtRow == kdx)? kdx + 1 : strtRow;
+        } else if( kdx == btmOpDgts - 1 ) {
+            // msb cannot be 0
+            op[0][kdx] = (new Double(1+9*Math.random())).intValue();
+            operand0 = operand0 + op[0][kdx]*(int)(Math.pow(10.,(double)kdx));
+            att = new String("op1" + kdx);
+            //session.setAttribute(att, op[0][kdx]);
+        } else {
+            op[0][kdx] = 0; // leading zeros will not be visible
         }
-        session.setAttribute("btmDp", btmDp);       
-    /*} else {
-        System.out.println("in the else clause");
-        maxBx = (new Integer(session.getAttribute("maxBx").toString())).intValue();
-        bdx = (new Integer(session.getAttribute("bdx").toString())).intValue();
-        if( bdx < maxBx )
-            bdx = bdx + 1;
-        
-        topOpDgts = (new Integer(session.getAttribute("topOpDgts").toString())).intValue();
-        //System.out.println("retrieved topOpDgts = " + topOpDgts );
-        btmOpDgts = (new Integer(session.getAttribute("btmOpDgts").toString())).intValue();
-        //System.out.println("retrieved btmOpDgts = " + btmOpDgts );
-        topDp = (new Integer(session.getAttribute("topDp").toString())).intValue();
-        btmDp = (new Integer(session.getAttribute("btmDp").toString())).intValue();
-        op = new int[2][SZ2_MX];
-        cms = new String[btmOpDgts][SZ2_MX];
-        cas = new String[SZ2_MX];
+        if( op[0][kdx] > 0 ) {
+            nonZeros += 1;
+            msDigit = kdx + 1;
+        }
+    }
+    //session.setAttribute("btmDp", btmDp);       
     
-        ais = new String[3][SZ2_MX+2];
-        ans = new String[SZ2_MX+2];
-        for( int idx = 0; idx < topOpDgts; idx++ ){
-            att = new String("op2" + idx);
-            op[1][idx] = (new Integer(session.getAttribute(att).toString())).intValue(); 
-            operand1 = operand1 + op[1][idx]*(int)(Math.pow(10.,(double)idx));
-        }
-        
-        for( int idx = 0; idx < SZ2_MX; idx++ ){
-            if( idx < btmOpDgts ) {
-                att = new String("op1" + idx);
-                op[0][idx] = (new Integer(session.getAttribute(att).toString())).intValue(); 
-                operand0 = operand0 + op[0][idx]*(int)(Math.pow(10.,(double)idx));
-                if( op[0][idx] > 0 ) {
-                    nonZeros += 1;
-                    msDigit = idx + 1;
-                }
-            } else {
-                op[0][idx] = 0;
-            }
-        }
-        nmcarries = topOpDgts - 1;*/
-   // }
-    
-    session.setAttribute("bdx", bdx);
+    //session.setAttribute("bdx", bdx);
     
     int maxAdig[] = { 0, 0, 0 };
     // maximum digits in top/first intermediate answer
@@ -388,12 +324,12 @@ incorrect //-->
         whatBx[ldx] = strtRow == 0? el + 1 : strtRow == 1? en + 1 : es + 1; 
     }
     maxBx = ldx + 1;
-    session.setAttribute("maxBx", maxBx);
+    //session.setAttribute("maxBx", maxBx);
 %>
 <div class="d1" >
 <form id="th-id2" method="get" action="Multiplier.jsp">
-
-<table class="t1">
+<div class="d3">
+<table class="tbl">
 
 <tr><th id="F1" colspan="<%=colspan%>">Multiplication Problem</th></tr>
 <%  for( int ndx = 0; ndx < btmOpDgts; ndx++ ) { 
@@ -402,7 +338,7 @@ incorrect //-->
             <tr class="r1">
 <%          for( int idx = 0; idx <= SZ2_MX; idx++ ) {
                 if( idx < spacesb4cm || idx == SZ2_MX ) { %>
-                    <td class="s2"></td>
+                    <td class="t2"></td>
 <%              } else { 
                     int col = SZ2_MX - 1 - idx;
                     String name = "cr" + row + "" + col; 
@@ -411,11 +347,11 @@ incorrect //-->
                         System.out.println("cm col = " + col + "being set to 0");
                         col = 0;
                     }  %>
-                    <td><input type="text" name="<%=name%>" class="c2" 
+                    <td class="t2"><input type="text" name="<%=name%>" class="c2" 
                             value="<%=cms[row][col]%>"
                             onkeyup="checkCarry( <%=row%>, <%=col%> )"></td>
 <%              } %>
-                <td class="b1"></td>
+                <td class="t1"></td>
 <%          }%>
             </tr>
 <%      } 
@@ -424,31 +360,31 @@ incorrect //-->
 <tr>
 <%  for( int idx = 0; idx <= SZ2_MX; idx++ ) {  
         String possDp = (SZ2_MX - idx + 1 == topDp && topDp > 0)? ".":""; %>
-        <td class="s2"><%=possDp%></td>
+        <td class="t2"><%=possDp%></td>
 <%      if( idx < spacesb4cm ) { %>
-            <td class="n1"></td>
+            <td class="t1"></td>
 <%      } else { 
             int col = topOpDgts - idx + spacesb4cm - 1;
             String name = "op1" + col;
             switch(col) {
                 case 0: %>
-                    <td><label class="n1" name="<%=name%>"><%=op[1][0]%></label>
+                    <td class="t1" name="<%=name%>"><%=op[1][0]%>
                     </td>
                     <% break;
                 case 1: %>
-                    <td><label class="n1" name="<%=name%>"><%=op[1][1]%></label>
+                    <td class="t1" name="<%=name%>"><%=op[1][1]%>
                     </td>
                     <% break;
                 case 2: %>
-                    <td><label class="n1" name="<%=name%>"><%=op[1][2]%></label>
+                    <td class="t1" name="<%=name%>"><%=op[1][2]%>
                     </td>
                     <% break;
                 case 3: %>
-                    <td><label class="n1" name="<%=name%>"><%=op[1][3]%></label>
+                    <td class="t1" name="<%=name%>"><%=op[1][3]%>
                     </td>
                     <% break;
                 default: %>
-                    <td class="n1">Y</td>
+                    <td class="t1">Y</td>
                     <% break;
             }       
         }
@@ -459,29 +395,29 @@ incorrect //-->
 <%  for( int idx = 0; idx <= SZ2_MX; idx++ ) { 
         String possDp = (SZ2_MX - idx + 1 == btmDp && btmDp > 0)? ".":"";
 %>
-        <td class="s2"><%=possDp%></td>
+        <td class="t2"><%=possDp%></td>
 <%      if( idx < spacesb4btmOp ) { %>            
-            <td class="n1"></td>
+            <td class="t1"></td>
 <%      } else if ( idx == spacesb4btmOp ){ %>
-            <td class="n1"> x </td>
+            <td class="t1"> x </td>
 <%      } else {
             int col = btmOpDgts - idx + spacesb4btmOp; 
             String name = "op0" + col;
             switch(col) {
                 case 0: %>
-                    <td><label class="n1" name="<%=name%>"><%=op[0][0]%></label>
+                    <td class="t1" name="<%=name%>"><%=op[0][0]%>
                     </td>
                     <% break; 
                 case 1: %>
-                    <td><label class="n1" name="<%=name%>"><%=op[0][1]%></label>
+                    <td class="t1" name="<%=name%>"><%=op[0][1]%>
                     </td>
                     <% break;
                 case 2:  %>
-                    <td><label class="n1" name="<%=name%>"><%=op[0][2]%></label>
+                    <td class="t1" name="<%=name%>"><%=op[0][2]%>
                     </td>
                     <% break;
                 default: %>
-                    <td class="n1">Y</td>
+                    <td class="t1">Y</td>
                     <% break;
             }
         }
@@ -498,13 +434,13 @@ incorrect //-->
                  System.out.println("ca col = " + col + "being reduced to 0");
                  col = 0;
             } %>
-            <td><input type="text" name="<%=name%>" class="c2" 
+            <td class="t2"><input type="text" name="<%=name%>" class="c2" 
                  value="<%=cas[col]%>"
                  onkeyup="checkAddCarry(<%=col%>)"></td>
 <%      } else { %>
-            <td class="s2"></td>
+            <td class="t2"></td>
 <%      } %>
-    <td class="b1"></td>
+    <td class="t1"></td>
 <%  } %>
 </tr>
 
@@ -518,24 +454,24 @@ incorrect //-->
 
         for( int idx = 0; idx <= SZ2_MX; idx++ ) { 
             if( nonZeros == 1 ) { %>
-                <td class="p2">
+                <td class="t2">
                 <span name="dec-pt"
                 onclick="chooseThis( <%=idx%> )" class="dp" >_</span></td>
 <%          } else { %>
-                <td class="s2"></td>
+                <td class="t2"></td>
 <%          }
             int col = SZ2_MX - idx; 
             String name = "ai" + row + "" + col; 
             if( idx >= spacesb4ai && idx < aispaces ) {  %>
-                <td><input type="text" name="<%=name%>" class="a1" size="1"
+                <td class="t1"><input type="text" name="<%=name%>" class="a1" size="1"
                     value="<%=ais[row][col]%>" 
                     onkeyup="checkMult( <%=row%>, <%=col%> )"></td>
 <%          } else if( idx >= spacesb4ai && nonZeros == 1 ) { %>
-                <td><input type="text" name="<%=name%>" class="a1" size="1"
+                <td class="t1"><input type="text" name="<%=name%>" class="a1" size="1"
                     value="<%=ais[row][col]%>" 
                     onkeyup="checkZero( <%=row%>, <%=col%> )"></td>
 <%          } else { %>
-                <td class="n1"></td>
+                <td class="t1"></td>
 <%          } 
         } %>        
         </tr>
@@ -547,49 +483,71 @@ if( nonZeros > 1 ) { %>
     int spacesb4an = SZ2_MX + 1 - maxAndig;
     for( int idx = 0; idx <= SZ2_MX; idx++ ) { 
         //String whatBtn = "andsp" + idx;%>
-        <td class="p2"><span name="dec-pt" onclick="chooseThis( <%=idx%> )" class="dp" >_</span></td>
+        <td class="t2"><span name="dec-pt" onclick="chooseThis( <%=idx%> )" class="dp" >_</span></td>
 <%      if( idx >= spacesb4an ) { 
             int col = SZ2_MX - idx; 
             String name = "an" + col;  %>
-            <td><input type="text" name="<%=name%>" class="a1" size="1" 
+            <td class="t1"><input type="text" name="<%=name%>" class="a1" size="1" 
             value="<%=ans[col]%>"
             onkeyup="checkAdd(<%=col%>)"></td>
 <%      } else { %>
-            <td class="n1"></td>
+            <td class="t1"></td>
 <%      } 
     } 
 }   %>  
     </tr>
 
 </table>
-
-<div class="d2">
-    <label id="decRmdr">Click where the decimal point should be</label>
+</div>
+    
+<div class="d4">
+<label id="decRmdr" class="msg">Click where the decimal point should be</label>
 </div>
 <div class="d2">
-<input type="hidden" id="whatbox" value="<%=whatBx[bdx]%>" class="shortbox">
-<br>
+<!--this is where error messages get displayed//-->
+<label id="wrongans" class="msg"></label>
+</div>
+
+    <input type="hidden" id="whatbox" value="<%=whatBx[bdx]%>" class="shortbox">
+<div class="d2">
+<table>
+<tr>    
+    <td><label>Problems Attempted</label></td>
+    <td>
+    <input type="text" id="numAttmptd" name="numAttmptd" value="<%=numAttmptd%>"
+           class="blackbox">
+    </td>
+</tr>
+<tr>
+    <td><label>Completed Without Error</label></td>   
+    <td>
+    <input type="text" id="numWoErr" name="numWoErr" value="<%=numWoErr%>"
+           class="blackbox">
+    </td>
+</tr>
+<tr>
+    <td><label>Errors This Problem</label></td>
+    <td><input type="text" id="errs" name="errs" value="<%=errs%>"
+               class="blackbox"></td>
+</tr>
+<tr>
+    <td></td>
+    <td>
+<button type="reset" value="Reset" onclick="startAgain()" >Start again</button>
+</td>
+</tr>
+</table>
+</div>
+
+<input type="hidden" id="dpPos" name="dpPos" value="<%=dpPos%>" class="shortbox">
+<input type="hidden" id="topDec" value="<%=topDp%>" class="shortbox">
+<input type="hidden" id="btmDec" value="<%=btmDp%>" class="shortbox">    
 <% for( int idx = 0; idx <= maxBx; idx++ ) { %>
     <input type="hidden" name="nextbox" value="<%=whatBx[idx]%>" class="shortbox">
 <% } %>
-<br>
 <input type="hidden" id="bdx" value="<%=bdx%>" class="shortbox">
-<br>
 <input type="hidden" id="lastbox" value="<%=maxBx%>" class="shortbox">
-<br>
-</div>
-<div class="d2">
-<label id="wrongans"></label>
-<br>
-</div>
-<div class="d2">
-<button type="reset" value="Reset" onclick="startAgain()" >Start again</button>
 
-<!--<input type="hidden" id="rst" name="rstind" value="<%=restarted%>" class="shortbox">//-->
-<input type="hidden" id="dpPos" name="dpPos" value="<%=dpPos%>" class="shortbox">
-<input type="hidden" id="topDec" value="<%=topDp%>" class="shortbox">
-<input type="hidden" id="btmDec" value="<%=btmDp%>" class="shortbox">
-</div>
 </form>
 </div>
 </body>

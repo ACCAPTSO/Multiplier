@@ -23,9 +23,13 @@ body {
 header {
   background-color: #FFBBFF;
 }
-table, th {
+th {
   border:2px solid black;
   //text-align: center;
+}
+td {
+    margin: 0;
+    padding: 0;
 }
 button {
     font: inherit;
@@ -36,7 +40,7 @@ button {
     border-left-color: #D6DAD8
 }
 /* classes -can be used more than once */
-.d1{
+.d1 {
     -webkit-column-count: 2;
     -webkit-column-gap: 3em;
     
@@ -46,19 +50,55 @@ button {
     column-count: 2;
     column-gap: 3em;
 }
-.d2{
-    padding-top: 3em;
-    height: 4em;
+.d2 {
+    //margin-top: 7em;
+    padding-top: 5em;
+    margin-bottom: 0px;
+    padding-bottom: 0px;
+    height: 6em;
     text-align: left;
 }
-.t1 {
-  margin: 0 auto;
+.d3{
+    //min-height: 11em;
+}
+.d4 {
+    padding-top: 1em;
+    padding-bottom: 11em;
+}
+.tbl {
+  border: 2px solid black;
+  margin: .02em;
+  //min-width: 19em;
+  //max-width: 19em;
 /*  width: 192px; */
+}
+/* table cell with space, carry, or decimal point */
+.t2 {
+  text-align: center;
+  width: 1em;
+  min-width: 1em;
+  max-width: 1em;
+  margin-left: 0px;
+  margin-right: 0px;
+  border: 0px;
+  padding: 0px;
+}
+/* table cell with operand or answer digit */
+.t1{
+  text-align: center;
+  width: 1.5em;
+  min-width: 1.5em;
+  max-width: 1.5em;
+  margin-left: 0px;
+  margin-right: 0px;
+  border: 0px;
+  padding: 0px;
 }
 /* carry boxes */
 .c2 {
-  width: .7em;
+  width: 0.7em;
   min-width: 0.7em;
+  max-width: 0.7em;
   //background-color: black;
   background-color: #969C82;
   //background-color: #ccccE8;
@@ -70,9 +110,12 @@ button {
 }
 /* blanks between carry boxes */
 .b1 {
-  width: 1em; 
+  width: 1.2em;
+  min-width: 1.2em;
+  max-width: 1.2em;
   margin-left: 0px;
   margin-right: 0px;
+  border:1px;
   //background-color: #f7eaa7; 
   //color: #e7da97; 
   //border:1px solid brown;
@@ -83,18 +126,21 @@ button {
 }
 /* spaces between final answer with potential decimal point*/
 .p2 {
-  width: .7em;
+  width: 0.7em;
+  min-width: 0.7em;
+  max-height: 0.7em;
   //background-color: #cf0f0f; 
   //color: #c0a000; 
   height: 1.7em;
   text-align: center;
+  border: 1px;
   margin-left: 0px;
   margin-right: 0px;
   //border:1px solid black
 }
 /* decimal point */
 .dp{
-    width: .5em;
+    width: 0.7em;
     height: 1.7em;
     //max-height: 4px;
     text-align: center;
@@ -107,8 +153,11 @@ button {
 }
 /* spaces between intermediate answers and between operands */
 .s2 {
-  width: .6em;
+  width: 0.9em;
+  min-width: 0.9em;
+  max-width: 0.9em;
   text-align: center;
+  border:1px;
   margin-left: 0px;
   margin-right: 0px;
   //background-color: #cfaf6f; 
@@ -116,18 +165,22 @@ button {
 }
 /* operands */
 .n1 {
-  width: 1em;
+  width: 1.2em;
+  min-width: 1.2em;
+  max-width: 1.2em;
   //background-color: #e7caa7; 
   color: black; 
   text-align: center;
-  //border:1px solid orange;
-  height: 1.5em;
+  border:1px;
+  height: 1.7em;
   margin-left: 0px;
   margin-right: 0px;
 }
 /* answer boxes */
 .a1 {
-  width: 1.2em;
+  width: 1.1em;
+  min-width: 1.1em;
+  max-width: 1.1em;
   //background-color: black; 
   background-color: #969C82;
   color: black; 
@@ -144,12 +197,27 @@ button {
     color: red;
     font: inherit;
 }
+.blackbox{
+    width: 5em;
+    text-align: center;
+    color: black;
+    background-color: #E6EAE8;
+    border-top-color: #2E7FA7;
+    border-left-color: #2E7FA7;
+    border-bottom-color: #D6DAD8;
+    border-right-color: #D6DAD8;
+    font: inherit;
+}
+.msg {
+    text-align: center;
+    margin-left: 1em;
+}
 .th-id1 {
   background-color: #2E7FA7;
 }
 #decRmdr{
     color: #FAF3E4;
-    padding: 2em;
+    margin-left: 1em;
 }
 #th-id2 {
   background-color: #FAF3E4;
