@@ -24,62 +24,13 @@ this is a comment -the // is for javascript
      format a table, a body a header etc. and define a class or id //-->
 <link rel="stylesheet" href="Multiplier.css" type="text/css">
 
+<script src="Multiplier.js"></script>
 
-<script>
-function startAgain() {
-    var max = Number(document.getElementById('lastbox').value);
-        
-    // update problem counts
-    document.getElementById("numAttmptd").value = 
-            Number(document.getElementById("numAttmptd").value) + 1;
-    if( document.getElementById("errs").value == '0' &&
-        Number(document.getElementById("bdx").value) + 1 == max &&
-        document.getElementById("decRmdr").style.color != "red" ) {     
-            document.getElementById("numWoErr").value =
-                Number(document.getElementById("numWoErr").value) + 1;
-    }
-
-    // blank out the number inputs
-    var x = document.getElementsByTagName("input");
-
-    for( i = 0; i < max; i++ ) {
-        if(x[i].getAttribute('type')==='text')  {
-            x[i].value = '';
-        }
-    }
-    
-    // blank out the decimal point
-    document.getElementById("dpPos").setAttribute('value', 7 );
-    chooseThis( 7 );
-    // keep the reminder blanked out
-    //document.getElementById("decRmdr").style.color="#FAF3E4";
-
-    document.getElementById('th-id2').submit();
-    setFocus();
-}
-</script>
-<script src="check_boxes.js"></script>
-
-<!-- code to set the default input focus //-->
-<script>
-function setFocus() { // this part is javascript
-    var x = document.getElementById("th-id2");
-    var j = document.getElementById("whatbox").value;
-    var i = Number(j);
-    x.elements[i].focus(); // set focus to whatbox
-    x.elements[i].style.backgroundColor = "white";
-    x.elements[i].style.color = "red";
-    x.elements[i].value="";
-}
-</script>
 </head>
-<!-- to do: tell me button, set difficulty level setting, better random distribution, 
+<!-- to do: set difficulty level setting, better random distribution, 
 tie to database and track #consecutive right (days without accident)
-#problems without help, problems per minute, add timed multiple choice questions,
-allow leading 0 if there's a decimal, 
-make a box for leading zero in final answer e.g. 0.402,
-can remove most of the session.setAttribute stuff since no longer checking on 
-make is so you can click a red decimal point to turn it off -->
+problems per minute, add timed multiple choice questions,
+make a box for leading zero in final answer e.g. 0.402 -->
 
 <!-- body is what actually gets displayed on the page //-->
 <!-- set focus to correct box and dis-allow user selection of boxes //-->
@@ -89,10 +40,10 @@ make is so you can click a red decimal point to turn it off -->
 <!-- Multiplier.jsp is what will take the user's input and display it red if 
 incorrect //-->
 <%
-
-    //String restarted = "Restart Now";
+    
     String tmp = "";      // temporary storage for newly gotten 
-                          // session attribute or request parameter
+                          // request parameter
+    
     final int SZ2_MX = 6; // maximum answer size
     int colspan = 2*(SZ2_MX + 1);
     int[][] op;           // operand's first index is what operand (top/bottom)
@@ -108,8 +59,6 @@ incorrect //-->
     
     int nmcarries = 0; // multiplication carries
     
-    String att;             // temporary storage for an attribute name that you
-                            // are about to get or set
     int kdx;
     int ldx;
     
@@ -117,10 +66,10 @@ incorrect //-->
     
     // array with input box order for a 3 digit number times a 2 digit number
     int[] whatBx = { 10,  3,  9,  2, 8,  7, 
-                        14,  1, 13, 0, 12, 11, 
-                        19, 18, 6, 17,  5, 16, 4, 15, 20, 20, 20, 20, 20, 
-                        20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20,
-                        20, 20, 20, 20, 20, 20 };
+                     14,  1, 13, 0, 12, 11, 
+                     19, 18, 6, 17,  5, 16, 4, 15, 20, 20, 20, 20, 20, 
+                     20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20,
+                     20, 20, 20, 20, 20, 20 };
     
     int maxBx = 20;
                       
@@ -140,6 +89,9 @@ incorrect //-->
     
     String numAttmptd = "0";
     String numWoErr = "0";
+    String consWoErr = "0";
+    String corrPerHr = "0";
+    String strtTime = String.valueOf(System.currentTimeMillis());
     String errs = "0";
     
     if(( tmp = request.getParameter("numAttmptd")) != null) {
@@ -148,6 +100,18 @@ incorrect //-->
     
     if(( tmp = request.getParameter("numWoErr")) != null) {
         numWoErr = tmp.toString();
+    } 
+    
+    if(( tmp = request.getParameter("consWoErr")) != null) {
+        consWoErr = tmp.toString();
+    } 
+    
+    if(( tmp = request.getParameter("corrPerHr")) != null) {
+        corrPerHr = tmp.toString();
+    } 
+    
+    if(( tmp = request.getParameter("strtTime")) != null) {
+        strtTime = tmp.toString();
     } 
         
     // Math.random() generates x, 0<=x<1
@@ -171,7 +135,6 @@ incorrect //-->
     ais = new String[3][SZ2_MX+2];
     ans = new String[SZ2_MX+2];
 
-        //restarted = "no";
     bdx = 0;
 
     for( int idx = 0; idx < SZ2_MX; idx++ ) {
@@ -190,35 +153,24 @@ incorrect //-->
         }
     }
 
-    //session.setAttribute("topOpDgts", topOpDgts);
     for (kdx = 0; kdx < topOpDgts - 1; kdx++){
         op[1][kdx] = (new Double(10*Math.random())).intValue();
         operand1 = operand1 + op[1][kdx]*(int)(Math.pow(10.,(double)kdx));
-        att = new String("op2" + kdx);
-        //session.setAttribute(att, op[1][kdx]);
     }
     // msb cannot be 0
     op[1][kdx] = (new Double(1+9*Math.random())).intValue();
     operand1 = operand1 + op[1][kdx]*(int)(Math.pow(10.,(double)kdx));
 
-    att = new String("op2" + kdx);
-    //session.setAttribute(att, op[1][kdx]);
-    //session.setAttribute("topDp", topDp);
-    //session.setAttribute("btmOpDgts", btmOpDgts);
     for( kdx = 0; kdx < SZ2_MX; kdx++ ) {
         if( kdx < btmOpDgts - 1 || 
                 (kdx == btmDp && nonZeros > 0 ) ) { // leading zero visible in front of a decimal point
             op[0][kdx] = (new Double(10*Math.random())).intValue();
             operand0 = operand0 + op[0][kdx]*(int)(Math.pow(10.,(double)kdx));
-            att = new String("op1" + kdx);
-            //session.setAttribute(att, op[0][kdx]);
             strtRow = (op[0][kdx] == 0 && strtRow == kdx)? kdx + 1 : strtRow;
         } else if( kdx == btmOpDgts - 1 ) {
             // msb cannot be 0
             op[0][kdx] = (new Double(1+9*Math.random())).intValue();
             operand0 = operand0 + op[0][kdx]*(int)(Math.pow(10.,(double)kdx));
-            att = new String("op1" + kdx);
-            //session.setAttribute(att, op[0][kdx]);
         } else {
             op[0][kdx] = 0; // leading zeros will not be visible
         }
@@ -227,9 +179,6 @@ incorrect //-->
             msDigit = kdx + 1;
         }
     }
-    //session.setAttribute("btmDp", btmDp);       
-    
-    //session.setAttribute("bdx", bdx);
     
     int maxAdig[] = { 0, 0, 0 };
     // maximum digits in top/first intermediate answer
@@ -324,7 +273,6 @@ incorrect //-->
         whatBx[ldx] = strtRow == 0? el + 1 : strtRow == 1? en + 1 : es + 1; 
     }
     maxBx = ldx + 1;
-    //session.setAttribute("maxBx", maxBx);
 %>
 <div class="d1" >
 <form id="th-id2" method="get" action="Multiplier.jsp">
@@ -368,20 +316,16 @@ incorrect //-->
             String name = "op1" + col;
             switch(col) {
                 case 0: %>
-                    <td class="t1" name="<%=name%>"><%=op[1][0]%>
-                    </td>
+                    <td class="t1" name="<%=name%>"><%=op[1][0]%></td>
                     <% break;
                 case 1: %>
-                    <td class="t1" name="<%=name%>"><%=op[1][1]%>
-                    </td>
+                    <td class="t1" name="<%=name%>"><%=op[1][1]%></td>
                     <% break;
                 case 2: %>
-                    <td class="t1" name="<%=name%>"><%=op[1][2]%>
-                    </td>
+                    <td class="t1" name="<%=name%>"><%=op[1][2]%></td>
                     <% break;
                 case 3: %>
-                    <td class="t1" name="<%=name%>"><%=op[1][3]%>
-                    </td>
+                    <td class="t1" name="<%=name%>"><%=op[1][3]%></td>
                     <% break;
                 default: %>
                     <td class="t1">Y</td>
@@ -405,16 +349,13 @@ incorrect //-->
             String name = "op0" + col;
             switch(col) {
                 case 0: %>
-                    <td class="t1" name="<%=name%>"><%=op[0][0]%>
-                    </td>
+                    <td class="t1" name="<%=name%>"><%=op[0][0]%></td>
                     <% break; 
                 case 1: %>
-                    <td class="t1" name="<%=name%>"><%=op[0][1]%>
-                    </td>
+                    <td class="t1" name="<%=name%>"><%=op[0][1]%></td>
                     <% break;
                 case 2:  %>
-                    <td class="t1" name="<%=name%>"><%=op[0][2]%>
-                    </td>
+                    <td class="t1" name="<%=name%>"><%=op[0][2]%></td>
                     <% break;
                 default: %>
                     <td class="t1">Y</td>
@@ -526,6 +467,20 @@ if( nonZeros > 1 ) { %>
     </td>
 </tr>
 <tr>
+    <td><label>Consecutive Without Error</label></td>   
+    <td>
+    <input type="text" id="consWoErr" name="consWoErr" value="<%=consWoErr%>"
+           class="blackbox">
+    </td>
+</tr>
+<tr>
+    <td><label>Correct Per Hour</label></td>   
+    <td>
+    <input type="text" id="corrPerHr" name="corrPerHr" value="<%=corrPerHr%>"
+           class="blackbox">
+    </td>
+</tr>
+<tr>
     <td><label>Errors This Problem</label></td>
     <td><input type="text" id="errs" name="errs" value="<%=errs%>"
                class="blackbox"></td>
@@ -539,6 +494,7 @@ if( nonZeros > 1 ) { %>
 </table>
 </div>
 
+<input type="hidden" id="strtTime" name="strtTime" value="<%=strtTime%>" class="shortbox">
 <input type="hidden" id="dpPos" name="dpPos" value="<%=dpPos%>" class="shortbox">
 <input type="hidden" id="topDec" value="<%=topDp%>" class="shortbox">
 <input type="hidden" id="btmDec" value="<%=btmDp%>" class="shortbox">    
