@@ -39,36 +39,33 @@ function startAgain() {
         Math.floor(3600000*document.getElementById("numWoErr").value/timediff);
         
     // blank out the number inputs
-    var x = document.getElementsByTagName("input");
+    //var x = document.getElementsByTagName("input");
 
-    for( i = 0; i < max; i++ ) {
-        if(x[i].getAttribute('type')==='text')  {
-            x[i].value = '';
-        }
-    }
+   // for( i = 0; i < max; i++ ) {
+   //     if(x[i].getAttribute('type')==='text')  {
+            //x[i].value = '';
+   //     }
+   // }
     
     // blank out the decimal point
-    document.getElementById("dpPos").setAttribute('value', 7 );
-    chooseThis( 7 );
+    //document.getElementById("dpPos").setAttribute('value', 7 );
+    //chooseThis( 7 );
     // keep the reminder blanked out
-    document.getElementById("decRmdr").style.color="#FAF3E4";
+    //document.getElementById("decRmdr").style.color="#FAF3E4";
 
     document.getElementById('th-id2').submit();
     setFocus();
 }
 
 function checkZero( row, col ) {
+    var op1Bx = document.getElementsByName("op0" + col )[0];
     var ansBx = document.getElementsByName("ai" + row + col)[0];
     var ans = ansBx.value;
     var errString = "";  
         var errBx = document.getElementById("wrongans");
     if( ans == "0" ) {
         errBx.style.color = "#FAF3E4";
-        //op1Bx.style.color = "black";
-        //op2Bx.style.color = "black";
-        //if( cinBx.length > 0 ) {
-        //    cinBx[0].style.color = "black";
-        //}
+        op1Bx.style.color = "black";
         ansBx.style.backgroundColor =  "#E6EAE8";
         ansBx.style.color = "black";
         // advance the box
@@ -83,11 +80,7 @@ function checkZero( row, col ) {
         errBx.innerHTML = "";
         errBx.innerHTML = errString;
         errBx.style.color = "red";
-        //op1Bx.style.color = "red";
-        //op2Bx.style.color = "red";
-        //if( cinBx.length > 0 ) {
-        //    cinBx[0].style.color = "red";
-        //}
+        op1Bx.style.color = "red";
         ansBx.style.color = "red";
         ansBx.value = "";
     }
@@ -113,7 +106,6 @@ function checkMult( row, col ) {
     if( cinBx.length === 0 && isEnd.length === 0 ) {
         opcol = opcol - 1;
         crcol = crcol - 1;
-        //alert("previous col is " + opcol);
         op2Bx =  document.getElementsByName("op1" + opcol)[0]; 
         op2 =  op2Bx.childNodes[0].nodeValue; 
         cinBx = document.getElementsByName("cr" + row + crcol);
@@ -408,8 +400,9 @@ function promptForDp( bdx ) {
             isSetAlready = 1;
         }
     }
-    if( Number(document.getElementById("btmDec").value) + 
-        Number(document.getElementById("topDec").value) === 0 || 
+    //if( Number(document.getElementById("btmDec").value) + 
+        //Number(document.getElementById("topDec").value) === 0 || 
+    if( Number(document.getElementById("ansDp").value) === 0 ||
         bdx < Number(document.getElementById("lastbox").value - 1 ) ||
         isSetAlready )  { 
         //alert("in promptForDp btmDec = " + document.getElementById("btmDec").value + " topDec = " + document.getElementById("topDec").value + " lastbox = " + Number(document.getElementById("lastbox").value - 1 ));
@@ -431,7 +424,8 @@ function upDateErrCount() {
 // imitate radio buttons, selecting only one decimal point at a time
 function chooseThis( which_one ) { 
     var btns = document.getElementsByName('dec-pt');
-    var totDec = Number(document.getElementById("btmDec").value) + Number(document.getElementById("topDec").value);
+    //var totDec = Number(document.getElementById("btmDec").value) + Number(document.getElementById("topDec").value);
+    var totDec = Number(document.getElementById("ansDp").value);
     for( i = 0; i < btns.length; i++ ) {
         var att = "andsp" + i;
         if( i === which_one ) {
@@ -440,8 +434,15 @@ function chooseThis( which_one ) {
             var markedDec = 7 - i;
             if( totDec === markedDec ) {
                 btns[i].style.color="black";
+                var leadZeros = document.getElementsByName("yesThis");
+                var max = leadZeros.length;
+                for( j = 0; j < max; j++ ) {
+                    //alert("found a zero j = " + j + " length = " + max);
+                    leadZeros[j].style.color = "black";
+                }
             } else {
-                if( btns[i].style.color == "red") {
+                // turn it back off if it's already on
+                if( btns[i].style.color == "red") { 
                     btns[i].childNodes[0].nodeValue="_";
                     btns[i].setAttribute( att,'');
                     btns[i].style.color="#FAF3E4"; // hide "_" with background color

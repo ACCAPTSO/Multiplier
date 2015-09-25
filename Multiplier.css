@@ -25,6 +25,7 @@ header {
 }
 th {
   border:2px solid black;
+  background-color: #FAF3E4;
   //text-align: center;
 }
 td {
@@ -68,6 +69,7 @@ button {
 .tbl {
   border: 2px solid black;
   margin: .02em;
+  background-color: #FFFBEC;
   //min-width: 19em;
   //max-width: 19em;
 /*  width: 192px; */
@@ -80,7 +82,7 @@ button {
   max-width: 1em;
   margin-left: 0px;
   margin-right: 0px;
-  border: 0px;
+  background-color: #FAF3E4;
   padding: 0px;
 }
 /* table cell with operand or answer digit */
@@ -91,7 +93,7 @@ button {
   max-width: 1.5em;
   margin-left: 0px;
   margin-right: 0px;
-  border: 0px;
+  background-color: #FAF3E4;
   padding: 0px;
 }
 /* carry boxes */
@@ -108,17 +110,22 @@ button {
   margin-right: 0px;
   font: inherit;
 }
-/* blanks between carry boxes */
+/* blanks that may become 0 */
 .b1 {
-  width: 1.2em;
-  min-width: 1.2em;
-  max-width: 1.2em;
+  width: 1.1em;
+  min-width: 1.1em;
+  max-width: 1.1em;
   margin-left: 0px;
   margin-right: 0px;
   border:1px;
-  //background-color: #f7eaa7; 
-  //color: #e7da97; 
-  //border:1px solid brown;
+  background-color: #FAF3E4;
+  color: #FAF3E4;
+  text-align: center;
+  border: 1px;
+  font: inherit;
+  height: 1.7em;
+  margin-left: 0px;
+  margin-right: 0px;
 }
 /* height of carry row */
 .r1 {

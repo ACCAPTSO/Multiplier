@@ -28,8 +28,7 @@ this is a comment -the // is for javascript
 
 </head>
 <!-- to do: set difficulty level setting, better random distribution, 
-tie to database and track #consecutive right (days without accident)
-problems per minute, add timed multiple choice questions,
+tie to database, add timed multiple choice questions,
 make a box for leading zero in final answer e.g. 0.402 -->
 
 <!-- body is what actually gets displayed on the page //-->
@@ -56,6 +55,7 @@ incorrect //-->
     int btmOpDgts = 0; // how many digits does the bottom operand have
     int topDp = 0;     // top decimal point position - initiallized to far right
     int btmDp = 0;     // bottom decimal point position
+    int ansDp = 0;
     
     int nmcarries = 0; // multiplication carries
     
@@ -81,7 +81,6 @@ incorrect //-->
     String[] ans;   // final answer string   
     String[] cas;   // additive carry string
     
-    int dpPos = SZ2_MX + 1; // has to be initiallized or gives compile error
     int nonZeros = 0;
     int msDigit = 0;
     int strtRow = 0;
@@ -129,6 +128,7 @@ incorrect //-->
         
     btmOpDgts = (new Double(1+(maxBtmDgts)*Math.random())).intValue();
     btmDp = (new Double(btmOpDgts*Math.random())).intValue();
+    ansDp = topDp + btmDp;
     op = new int[2][SZ2_MX];
     cms = new String[btmOpDgts][SZ2_MX];
     cas = new String[SZ2_MX];
@@ -273,6 +273,7 @@ incorrect //-->
         whatBx[ldx] = strtRow == 0? el + 1 : strtRow == 1? en + 1 : es + 1; 
     }
     maxBx = ldx + 1;
+
 %>
 <div class="d1" >
 <form id="th-id2" method="get" action="Multiplier.jsp">
@@ -387,14 +388,21 @@ incorrect //-->
 
 <%  for( int row = strtRow; row < msDigit; row++ ) { %>
         <tr>
-<%      int spacesb4ai = SZ2_MX - maxAdig[row] + 1 - row;  // needs commenting
-        int aispaces = spacesb4ai + maxAdig[row];
-        if( nonZeros == 1 ) {
-            spacesb4ai = spacesb4ai + strtRow;
+<%      int spacesb4ai = SZ2_MX + 1; // start with entire width of table
+        spacesb4ai = spacesb4ai - maxAdig[row]; // subtract off width of
+                                                // intermediate answer
+        spacesb4ai = spacesb4ai - row;  // subtract off offset for x10 or x100
+        
+        int aispaces = spacesb4ai + maxAdig[row]; // combined spaces before and 
+                                                  // answer spaces
+        
+        if( nonZeros == 1 ) {                  // maxAdig is padded with
+            spacesb4ai = spacesb4ai + strtRow; // zeros, you subtracted them
+                                               // off, so add them back in
         }
 
-        for( int idx = 0; idx <= SZ2_MX; idx++ ) { 
-            if( nonZeros == 1 ) { %>
+        for( int idx = 0; idx <= SZ2_MX; idx++ ) {
+            if( nonZeros == 1 ) { // this -is- the final answer %>
                 <td class="t2">
                 <span name="dec-pt"
                 onclick="chooseThis( <%=idx%> )" class="dp" >_</span></td>
@@ -411,28 +419,42 @@ incorrect //-->
                 <td class="t1"><input type="text" name="<%=name%>" class="a1" size="1"
                     value="<%=ais[row][col]%>" 
                     onkeyup="checkZero( <%=row%>, <%=col%> )"></td>
-<%          } else { %>
-                <td class="t1"></td>
+<%          } else { 
+                String possZero; 
+                if( nonZeros == 1 && ansDp >= maxAdig[row] && idx > SZ2_MX - ansDp -1 ) {
+                    possZero = "yesThis";
+                } else {
+                    possZero = "notThis";
+                } %>
+            <td class="t1"><label class="b1" name="<%=possZero%>">0</label></td>
 <%          } 
         } %>        
         </tr>
 <%   }
-if( nonZeros > 1 ) { %>
+if( nonZeros > 1 ) { // more than one intermediate answer => need to add%>
     <tr><th class="th-id1" colspan="<%=colspan%>"></th></tr>
     <tr>
 <%  
-    int spacesb4an = SZ2_MX + 1 - maxAndig;
-    for( int idx = 0; idx <= SZ2_MX; idx++ ) { 
-        //String whatBtn = "andsp" + idx;%>
-        <td class="t2"><span name="dec-pt" onclick="chooseThis( <%=idx%> )" class="dp" >_</span></td>
+    int spacesb4an = SZ2_MX + 1 - maxAndig; // entire width of table minus 
+                                            // answer spaces
+    for( int idx = 0; idx <= SZ2_MX; idx++ ) { %>
+        <td class="t2">
+        <span name="dec-pt" onclick="chooseThis( <%=idx%> )" class="dp" >_</span>
+        </td>
 <%      if( idx >= spacesb4an ) { 
             int col = SZ2_MX - idx; 
             String name = "an" + col;  %>
             <td class="t1"><input type="text" name="<%=name%>" class="a1" size="1" 
             value="<%=ans[col]%>"
             onkeyup="checkAdd(<%=col%>)"></td>
-<%      } else { %>
-            <td class="t1"></td>
+<%      } else { 
+            String possZero; 
+            if( ansDp >= maxAndig && idx > SZ2_MX - ansDp - 1 ) {
+                possZero = "yesThis";
+            } else {
+                possZero = "notThis";
+            }%>
+            <td class="t1"><label class="b1" name="<%=possZero%>">0</label></td>
 <%      } 
     } 
 }   %>  
@@ -495,9 +517,7 @@ if( nonZeros > 1 ) { %>
 </div>
 
 <input type="hidden" id="strtTime" name="strtTime" value="<%=strtTime%>" class="shortbox">
-<input type="hidden" id="dpPos" name="dpPos" value="<%=dpPos%>" class="shortbox">
-<input type="hidden" id="topDec" value="<%=topDp%>" class="shortbox">
-<input type="hidden" id="btmDec" value="<%=btmDp%>" class="shortbox">    
+<input type="hidden" id="ansDp" value="<%=ansDp%>" class="shortbox">
 <% for( int idx = 0; idx <= maxBx; idx++ ) { %>
     <input type="hidden" name="nextbox" value="<%=whatBx[idx]%>" class="shortbox">
 <% } %>
