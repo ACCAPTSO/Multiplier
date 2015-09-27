@@ -60,19 +60,26 @@ button {
     text-align: left;
 }
 .d3{
-    //min-height: 11em;
+    padding-top: 1em;
+    padding-bottom: 1em;
+    text-align: center;
 }
 .d4 {
     padding-top: 1em;
-    padding-bottom: 11em;
+    padding-bottom: 9em;
+    text-align: center;
 }
 .tbl {
   border: 2px solid black;
-  margin: .02em;
+  margin-top: 0.2em;
+  margin-left: 10%;
   background-color: #FFFBEC;
   //min-width: 19em;
   //max-width: 19em;
 /*  width: 192px; */
+}
+.dff {
+
 }
 /* table cell with space, carry, or decimal point */
 .t2 {
@@ -229,7 +236,7 @@ button {
 #th-id2 {
   background-color: #FAF3E4;
   //text-align: center;
-  columns: 2 auto;
+  columns: 3 auto;
 }
 
 

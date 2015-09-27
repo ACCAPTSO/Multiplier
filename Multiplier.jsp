@@ -27,9 +27,8 @@ this is a comment -the // is for javascript
 <script src="Multiplier.js"></script>
 
 </head>
-<!-- to do: set difficulty level setting, better random distribution, 
-tie to database, add timed multiple choice questions,
-make a box for leading zero in final answer e.g. 0.402 -->
+<!-- to do: better random distribution, 
+tie to database, add timed multiple choice questions -->
 
 <!-- body is what actually gets displayed on the page //-->
 <!-- set focus to correct box and dis-allow user selection of boxes //-->
@@ -86,37 +85,64 @@ incorrect //-->
     int strtRow = 0;
     int maxAndig = 0;
     
-    String numAttmptd = "0";
+    boolean singlCk = false;
+    boolean tenshCk = false;
+    boolean tripldCk = false;
+    boolean decsCk = false;
+    String isSingl = "";
+    String isTensh = "";
+    String isTripl = "";
+    String isDecs = "";
+    String whatlvl = "";
+    if(( tmp = request.getParameter("difflvl")) != null ) {
+        whatlvl = tmp;
+        if( whatlvl.equals("Single Digits") ) {
+            singlCk = true;
+            isSingl = "checked";
+        } else if( whatlvl.equals("Tens and Hundreds")) {
+            tenshCk = true;
+            isTensh = "checked";
+        } else if( whatlvl.equals("Double and Triple Digits")) {
+            tripldCk = true;
+            isTripl = "checked";
+        } else if( whatlvl.equals("Decimals")) {
+            decsCk = true;
+            isDecs = "checked";
+        }
+    }
+
+    String numAttmptdV = "0";
     String numWoErr = "0";
     String consWoErr = "0";
     String corrPerHr = "0";
     String strtTime = String.valueOf(System.currentTimeMillis());
     String errs = "0";
-    
-    if(( tmp = request.getParameter("numAttmptd")) != null) {
-        numAttmptd = tmp.toString();
+
+
+    //retrieves the value of the DOM object with name="numAttmptdP"
+    if(( tmp = request.getParameter("numAttmptdP")) != null) {
+        numAttmptdV = tmp.toString();
     }
     
-    if(( tmp = request.getParameter("numWoErr")) != null) {
+    if(( tmp = request.getParameter("numWoErrP")) != null) {
         numWoErr = tmp.toString();
     } 
     
-    if(( tmp = request.getParameter("consWoErr")) != null) {
+    if(( tmp = request.getParameter("consWoErrP")) != null) {
         consWoErr = tmp.toString();
     } 
     
-    if(( tmp = request.getParameter("corrPerHr")) != null) {
+    if(( tmp = request.getParameter("corrPerHrP")) != null) {
         corrPerHr = tmp.toString();
     } 
     
-    if(( tmp = request.getParameter("strtTime")) != null) {
+    if(( tmp = request.getParameter("strtTimeP")) != null) {
         strtTime = tmp.toString();
     } 
-        
+
     // Math.random() generates x, 0<=x<1
     topOpDgts = (new Double(2+(SZ2_MX-3)*Math.random())).intValue();
-    topDp = (new Double(topOpDgts*Math.random())).intValue();
-    nmcarries = topOpDgts - 1;
+    nmcarries = topOpDgts - 1; // number of multiplicative carries
         
     // don't want to overflow final answer 
     int maxBtmDgts = SZ2_MX-topOpDgts;
@@ -125,10 +151,20 @@ incorrect //-->
     if( topOpDgts < maxBtmDgts ) {
         maxBtmDgts = topOpDgts;
     }
-        
-    btmOpDgts = (new Double(1+(maxBtmDgts)*Math.random())).intValue();
-    btmDp = (new Double(btmOpDgts*Math.random())).intValue();
-    ansDp = topDp + btmDp;
+    
+    if( singlCk ) {
+        btmOpDgts = 1;
+    } else {
+        btmOpDgts = (new Double(1+(maxBtmDgts)*Math.random())).intValue();
+    }
+    
+    // generate decimal places for operands and answer
+    if( decsCk ) {
+        topDp = (new Double(topOpDgts*Math.random())).intValue();
+        btmDp = (new Double(btmOpDgts*Math.random())).intValue();
+        ansDp = topDp + btmDp;
+    }
+
     op = new int[2][SZ2_MX];
     cms = new String[btmOpDgts][SZ2_MX];
     cas = new String[SZ2_MX];
@@ -138,8 +174,8 @@ incorrect //-->
     bdx = 0;
 
     for( int idx = 0; idx < SZ2_MX; idx++ ) {
-        op[0][idx] = 9;
-        op[1][idx] = 9;   
+        op[0][idx] = 0;
+        op[1][idx] = 0;   
         for( int jdx = 0; jdx < btmOpDgts; jdx++ ) { 
             cms[jdx][idx] = "";
         }
@@ -163,8 +199,11 @@ incorrect //-->
 
     for( kdx = 0; kdx < SZ2_MX; kdx++ ) {
         if( kdx < btmOpDgts - 1 || 
-                (kdx == btmDp && nonZeros > 0 ) ) { // leading zero visible in front of a decimal point
-            op[0][kdx] = (new Double(10*Math.random())).intValue();
+                (kdx == btmDp && nonZeros > 0 ) ) { // possible leading zero 
+                                       // visible in front of a decimal point
+            if( !tenshCk ) {
+                op[0][kdx] = (new Double(10*Math.random())).intValue();
+            }
             operand0 = operand0 + op[0][kdx]*(int)(Math.pow(10.,(double)kdx));
             strtRow = (op[0][kdx] == 0 && strtRow == kdx)? kdx + 1 : strtRow;
         } else if( kdx == btmOpDgts - 1 ) {
@@ -463,42 +502,64 @@ if( nonZeros > 1 ) { // more than one intermediate answer => need to add%>
 </table>
 </div>
     
-<div class="d4">
+<div class="d3">
 <label id="decRmdr" class="msg">Click where the decimal point should be</label>
 </div>
-<div class="d2">
+
+<div class="d4">
 <!--this is where error messages get displayed//-->
 <label id="wrongans" class="msg"></label>
 </div>
+<input type="hidden" id="whatbox" value="<%=whatBx[bdx]%>" class="shortbox">   
+<table class="dff">
+    <tr><th colspan="1">Highest Difficulty Level</th></tr>
+    <tr><td>
+    </td></tr>
+    <tr><td>
+        <input type="radio" name="difflvl" value="Single Digits" <%=isSingl%>>
+        <label>Single Digits</label>
+    </td></tr>
+    <tr><td>
+        <input type="radio" name="difflvl" value="Tens and Hundreds" <%=isTensh%>>
+        <label>Tens and Hundreds</label>
+    </td></tr>
+    <tr><td>
+        <input type="radio" name="difflvl" value="Double and Triple Digits" <%=isTripl%>> 
+        <label>Double and Triple Digits</label>
+    </td></tr>
+    <tr><td>
+        <input type="radio" name="difflvl" value="Decimals" <%=isDecs%>>
+        <label>Decimals</label>
+    </td></tr>
+</table>
 
-    <input type="hidden" id="whatbox" value="<%=whatBx[bdx]%>" class="shortbox">
 <div class="d2">
 <table>
 <tr>    
     <td><label>Problems Attempted</label></td>
     <td>
-    <input type="text" id="numAttmptd" name="numAttmptd" value="<%=numAttmptd%>"
+    <input type="text" id="numAttmptd" name="numAttmptdP" value="<%=numAttmptdV%>"
            class="blackbox">
     </td>
 </tr>
 <tr>
     <td><label>Completed Without Error</label></td>   
     <td>
-    <input type="text" id="numWoErr" name="numWoErr" value="<%=numWoErr%>"
+    <input type="text" id="numWoErr" name="numWoErrP" value="<%=numWoErr%>"
            class="blackbox">
     </td>
 </tr>
 <tr>
     <td><label>Consecutive Without Error</label></td>   
     <td>
-    <input type="text" id="consWoErr" name="consWoErr" value="<%=consWoErr%>"
+    <input type="text" id="consWoErr" name="consWoErrP" value="<%=consWoErr%>"
            class="blackbox">
     </td>
 </tr>
 <tr>
     <td><label>Correct Per Hour</label></td>   
     <td>
-    <input type="text" id="corrPerHr" name="corrPerHr" value="<%=corrPerHr%>"
+    <input type="text" id="corrPerHr" name="corrPerHrP" value="<%=corrPerHr%>"
            class="blackbox">
     </td>
 </tr>
@@ -516,7 +577,7 @@ if( nonZeros > 1 ) { // more than one intermediate answer => need to add%>
 </table>
 </div>
 
-<input type="hidden" id="strtTime" name="strtTime" value="<%=strtTime%>" class="shortbox">
+<input type="hidden" id="strtTime" name="strtTimeP" value="<%=strtTime%>" class="shortbox">
 <input type="hidden" id="ansDp" value="<%=ansDp%>" class="shortbox">
 <% for( int idx = 0; idx <= maxBx; idx++ ) { %>
     <input type="hidden" name="nextbox" value="<%=whatBx[idx]%>" class="shortbox">

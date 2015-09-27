@@ -37,21 +37,6 @@ function startAgain() {
     var timediff = jstime - jatime;
     document.getElementById("corrPerHr").value = 
         Math.floor(3600000*document.getElementById("numWoErr").value/timediff);
-        
-    // blank out the number inputs
-    //var x = document.getElementsByTagName("input");
-
-   // for( i = 0; i < max; i++ ) {
-   //     if(x[i].getAttribute('type')==='text')  {
-            //x[i].value = '';
-   //     }
-   // }
-    
-    // blank out the decimal point
-    //document.getElementById("dpPos").setAttribute('value', 7 );
-    //chooseThis( 7 );
-    // keep the reminder blanked out
-    //document.getElementById("decRmdr").style.color="#FAF3E4";
 
     document.getElementById('th-id2').submit();
     setFocus();
@@ -112,17 +97,13 @@ function checkMult( row, col ) {
         cin = cinBx[0].value;
         // use math.floor to do integer division - doesn't work for negative numbers
         corrAns = Math.floor((Number(op1)*Number(op2) + Number(cin))/10);
-        //alert( "checking msd ans = " + ans + " corrAns = " + corrAns );
     } else {
         if( cinBx.length !== 0 ) {
             cin = cinBx[0].value;
         }
         op2Bx =  document.getElementsByName("op1" + opcol)[0]; 
         op2 =  op2Bx.childNodes[0].nodeValue; 
-        //op2 =  document.getElementsByName("op1" + opcol)[0].childNodes[0].nodeValue; 
-        //alert("in checkmult answer is " + ans + " op1 is " + op1 + " op2 is " + op2 + " cin is " + cin);
         corrAns = (Number(op1)*Number(op2) + Number(cin))%10;
-        //alert( "checking ans = " + ans + " corrAns = " + corrAns );
     }
     var errBx = document.getElementById("wrongans");
     if( ans == corrAns ) {
@@ -173,7 +154,6 @@ function checkCarry( row, col ) {
     }
     var errBx = document.getElementById("wrongans");
     corrAns = Math.floor((Number(op1)*Number(op2) + Number(cin))/10);
-    //alert( "checking carry = " + ans + " corrAns = " + corrAns );
     if( ans == corrAns ) {
         errBx.style.color = "#FAF3E4";
         op1Bx.style.color = "black";
@@ -234,7 +214,6 @@ function checkAddCarry( col ) {
     }
     var errBx = document.getElementById("wrongans");
     var corrAns = Math.floor((ai1+ai2+ai3+prevCarry)/10); 
-    //alert( "checking additive carry = " + ans + " corrAns = " + corrAns );
     if(ans == corrAns ){
         errBx.style.color = "#FAF3E4";
         if( ai1Bx.length !== 0 ) {
@@ -312,7 +291,6 @@ function checkAdd( col ) {
             prevCarry = Number(pcBx[0].value);
         }
     }
-    //alert("in checkAdd ai1 = " + ai1 + " 
     var corrAns = -1;
     // if this is not an add at all but a carry to the last digit...
     if( ai3Bx.length === 0 && ai2Bx.length === 0 && ai1Bx.length === 0 ) {
@@ -336,7 +314,6 @@ function checkAdd( col ) {
                 prevCarry = Number(pcBx[0].value);
             }
         }
-        //alert( "checking add ans = " + ans + " ai1 = " + ai1 + " ai2 = " + ai2 + " ai3 = " + ai3 + " prevcarry = " + prevCarry);
         corrAns = Math.floor((ai1+ai2+ai3+prevCarry)/10);
         errString = "most significant digit of " + errString;
     } else {
@@ -400,12 +377,9 @@ function promptForDp( bdx ) {
             isSetAlready = 1;
         }
     }
-    //if( Number(document.getElementById("btmDec").value) + 
-        //Number(document.getElementById("topDec").value) === 0 || 
     if( Number(document.getElementById("ansDp").value) === 0 ||
         bdx < Number(document.getElementById("lastbox").value - 1 ) ||
         isSetAlready )  { 
-        //alert("in promptForDp btmDec = " + document.getElementById("btmDec").value + " topDec = " + document.getElementById("topDec").value + " lastbox = " + Number(document.getElementById("lastbox").value - 1 ));
         document.getElementById("decRmdr").style.color="#FAF3E4";
     } else {
         document.getElementById("decRmdr").style.color = "red";
@@ -424,7 +398,6 @@ function upDateErrCount() {
 // imitate radio buttons, selecting only one decimal point at a time
 function chooseThis( which_one ) { 
     var btns = document.getElementsByName('dec-pt');
-    //var totDec = Number(document.getElementById("btmDec").value) + Number(document.getElementById("topDec").value);
     var totDec = Number(document.getElementById("ansDp").value);
     for( i = 0; i < btns.length; i++ ) {
         var att = "andsp" + i;
@@ -437,7 +410,6 @@ function chooseThis( which_one ) {
                 var leadZeros = document.getElementsByName("yesThis");
                 var max = leadZeros.length;
                 for( j = 0; j < max; j++ ) {
-                    //alert("found a zero j = " + j + " length = " + max);
                     leadZeros[j].style.color = "black";
                 }
             } else {
@@ -451,7 +423,6 @@ function chooseThis( which_one ) {
                     upDateErrCount();
                 }
             }
-            //document.getElementById("dpPos").setAttribute('value', i );
         } else {
             btns[i].childNodes[0].nodeValue="_";
             btns[i].setAttribute( att,'');
