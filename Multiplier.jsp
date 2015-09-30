@@ -27,8 +27,7 @@ this is a comment -the // is for javascript
 <script src="Multiplier.js"></script>
 
 </head>
-<!-- to do: better random distribution, 
-tie to database, add timed multiple choice questions -->
+<!-- to do: tie to database, add timed multiple choice questions -->
 
 <!-- body is what actually gets displayed on the page //-->
 <!-- set focus to correct box and dis-allow user selection of boxes //-->
@@ -85,9 +84,10 @@ incorrect //-->
     int strtRow = 0;
     int maxAndig = 0;
     
+    final double EXP = 2.4;
     boolean singlCk = false;
     boolean tenshCk = false;
-    boolean tripldCk = false;
+    boolean triplsCk = false;
     boolean decsCk = false;
     String isSingl = "";
     String isTensh = "";
@@ -103,7 +103,7 @@ incorrect //-->
             tenshCk = true;
             isTensh = "checked";
         } else if( whatlvl.equals("Double and Triple Digits")) {
-            tripldCk = true;
+            triplsCk = true;
             isTripl = "checked";
         } else if( whatlvl.equals("Decimals")) {
             decsCk = true;
@@ -154,14 +154,14 @@ incorrect //-->
     
     if( singlCk ) {
         btmOpDgts = 1;
-    } else {
-        btmOpDgts = (new Double(1+(maxBtmDgts)*Math.random())).intValue();
+    } else { // more likely to have more digits than less
+        btmOpDgts = (new Double(1+(maxBtmDgts)*(1 - Math.pow(Math.random(),EXP)))).intValue();
     }
     
     // generate decimal places for operands and answer
-    if( decsCk ) {
-        topDp = (new Double(topOpDgts*Math.random())).intValue();
-        btmDp = (new Double(btmOpDgts*Math.random())).intValue();
+    if( decsCk ) { // decimal points more likely to be to the left than the right
+        topDp = (new Double(topOpDgts*(1-Math.pow(Math.random(), EXP)))).intValue();
+        btmDp = (new Double(btmOpDgts*(1-Math.pow(Math.random(), EXP)))).intValue();
         ansDp = topDp + btmDp;
     }
 
@@ -190,7 +190,13 @@ incorrect //-->
     }
 
     for (kdx = 0; kdx < topOpDgts - 1; kdx++){
-        op[1][kdx] = (new Double(10*Math.random())).intValue();
+        if( decsCk ) { // generate more small digit decimals
+            op[1][kdx] = (new Double(10*(Math.pow(Math.random(),EXP)))).intValue();
+        } else if( triplsCk ) { // generate more large digit 2 and 3 digit numbers
+            op[1][kdx] = (new Double(10*(1-Math.pow(Math.random(),EXP)))).intValue();
+        } else { // generate uniform distribution of digits
+            op[1][kdx] = (new Double(10*Math.random())).intValue();
+        }
         operand1 = operand1 + op[1][kdx]*(int)(Math.pow(10.,(double)kdx));
     }
     // msb cannot be 0
@@ -201,8 +207,14 @@ incorrect //-->
         if( kdx < btmOpDgts - 1 || 
                 (kdx == btmDp && nonZeros > 0 ) ) { // possible leading zero 
                                        // visible in front of a decimal point
-            if( !tenshCk ) {
-                op[0][kdx] = (new Double(10*Math.random())).intValue();
+            if( !tenshCk ) { // not tens or hundreds => generate random lower digits
+                if( decsCk ) { // generate more small digit decimals
+                    op[0][kdx] = (new Double(10*(Math.pow(Math.random(),EXP)))).intValue();
+                } else if ( triplsCk ) { // generate more large digit 2 and 3 digit numbers
+                    op[0][kdx] = (new Double(10*(1-Math.pow(Math.random(),EXP)))).intValue();
+                } else { // generate a uniform distribution of single digit, tens and hundreds
+                    op[0][kdx] = (new Double(10*Math.random())).intValue();
+                }
             }
             operand0 = operand0 + op[0][kdx]*(int)(Math.pow(10.,(double)kdx));
             strtRow = (op[0][kdx] == 0 && strtRow == kdx)? kdx + 1 : strtRow;
