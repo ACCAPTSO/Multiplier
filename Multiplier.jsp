@@ -335,7 +335,7 @@ incorrect //-->
 <%  for( int ndx = 0; ndx < btmOpDgts; ndx++ ) { 
         int row = btmOpDgts - 1 - ndx; 
         if( op[0][row] > 1 ) { %>
-            <tr class="r1">
+            <tr>
 <%          for( int idx = 0; idx <= SZ2_MX; idx++ ) {
                 if( idx < spacesb4cm || idx == SZ2_MX ) { %>
                     <td class="t2"></td>
@@ -418,7 +418,7 @@ incorrect //-->
 </tr> 
 
 <tr><th class="th-id1" colspan="<%=colspan%>"></th></tr>
-<tr class="r1">
+<tr>
 <%  for( int idx = 0; idx <= SZ2_MX; idx++ ) {
         if( idx >= spacesb4ca && idx < nacarries + spacesb4ca && nacarries > 0 ) { 
             int col = SZ2_MX - 2 - idx;
@@ -523,7 +523,7 @@ if( nonZeros > 1 ) { // more than one intermediate answer => need to add%>
 <label id="wrongans" class="msg"></label>
 </div>
 <input type="hidden" id="whatbox" value="<%=whatBx[bdx]%>" class="shortbox">   
-<table class="dff">
+<table>
     <tr><th colspan="1">Highest Difficulty Level</th></tr>
     <tr><td>
     </td></tr>

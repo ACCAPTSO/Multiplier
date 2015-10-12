@@ -78,9 +78,6 @@ button {
   //max-width: 19em;
 /*  width: 192px; */
 }
-.dff {
-
-}
 /* table cell with space, carry, or decimal point */
 .t2 {
   text-align: center;
@@ -134,24 +131,6 @@ button {
   margin-left: 0px;
   margin-right: 0px;
 }
-/* height of carry row */
-.r1 {
-  //height: 1.2em;
-}
-/* spaces between final answer with potential decimal point*/
-.p2 {
-  width: 0.7em;
-  min-width: 0.7em;
-  max-height: 0.7em;
-  //background-color: #cf0f0f; 
-  //color: #c0a000; 
-  height: 1.7em;
-  text-align: center;
-  border: 1px;
-  margin-left: 0px;
-  margin-right: 0px;
-  //border:1px solid black
-}
 /* decimal point */
 .dp{
     width: 0.7em;
@@ -164,31 +143,6 @@ button {
     color: #FAF3E4;
     //border: 1px solid black;
     //border-radius: 4px;
-}
-/* spaces between intermediate answers and between operands */
-.s2 {
-  width: 0.9em;
-  min-width: 0.9em;
-  max-width: 0.9em;
-  text-align: center;
-  border:1px;
-  margin-left: 0px;
-  margin-right: 0px;
-  //background-color: #cfaf6f; 
-  //color: #c0a060; 
-}
-/* operands */
-.n1 {
-  width: 1.2em;
-  min-width: 1.2em;
-  max-width: 1.2em;
-  //background-color: #e7caa7; 
-  color: black; 
-  text-align: center;
-  border:1px;
-  height: 1.7em;
-  margin-left: 0px;
-  margin-right: 0px;
 }
 /* answer boxes */
 .a1 {
