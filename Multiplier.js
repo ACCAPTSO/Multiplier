@@ -43,14 +43,14 @@ function startAgain() {
 }
 
 function checkZero( row, col ) {
-    var op1Bx = document.getElementsByName("op0" + col )[0];
+    var op0Bx = document.getElementsByName("op0" + col )[0];
     var ansBx = document.getElementsByName("ai" + row + col)[0];
     var ans = ansBx.value;
     var errString = "";  
         var errBx = document.getElementById("wrongans");
     if( ans == "0" ) {
         errBx.style.color = "#FAF3E4";
-        op1Bx.style.color = "black";
+        op0Bx.style.color = "black";
         ansBx.style.backgroundColor =  "#E6EAE8";
         ansBx.style.color = "black";
         // advance the box
@@ -65,7 +65,7 @@ function checkZero( row, col ) {
         errBx.innerHTML = "";
         errBx.innerHTML = errString;
         errBx.style.color = "red";
-        op1Bx.style.color = "red";
+        op0Bx.style.color = "red";
         ansBx.style.color = "red";
         ansBx.value = "";
     }
@@ -79,10 +79,10 @@ function checkMult( row, col ) {
     var cinBx = document.getElementsByName("cr" + row + crcol); 
     //alert("isEnd = " + isEnd.length + " cinBx = " + cinBx.length );
     var cin = "0";
-    var op2Bx;
-    var op2 = "0";
-    var op1Bx = document.getElementsByName("op0" + row )[0];
-    var op1 = op1Bx.childNodes[0].nodeValue;
+    var op1Bx;
+    var op1 = "0";
+    var op0Bx = document.getElementsByName("op0" + row )[0];
+    var op0 = op0Bx.childNodes[0].nodeValue;
     var ansBx = document.getElementsByName("ai" + row + col)[0];
     var ans = ansBx.value;
     var errString = "";
@@ -91,25 +91,25 @@ function checkMult( row, col ) {
     if( cinBx.length === 0 && isEnd.length === 0 ) {
         opcol = opcol - 1;
         crcol = crcol - 1;
-        op2Bx =  document.getElementsByName("op1" + opcol)[0]; 
-        op2 =  op2Bx.childNodes[0].nodeValue; 
+        op1Bx =  document.getElementsByName("op1" + opcol)[0]; 
+        op1 =  op1Bx.childNodes[0].nodeValue; 
         cinBx = document.getElementsByName("cr" + row + crcol);
         cin = cinBx[0].value;
         // use math.floor to do integer division - doesn't work for negative numbers
-        corrAns = Math.floor((Number(op1)*Number(op2) + Number(cin))/10);
+        corrAns = Math.floor((Number(op0)*Number(op1) + Number(cin))/10);
     } else {
         if( cinBx.length !== 0 ) {
             cin = cinBx[0].value;
         }
-        op2Bx =  document.getElementsByName("op1" + opcol)[0]; 
-        op2 =  op2Bx.childNodes[0].nodeValue; 
-        corrAns = (Number(op1)*Number(op2) + Number(cin))%10;
+        op1Bx =  document.getElementsByName("op1" + opcol)[0]; 
+        op1 =  op1Bx.childNodes[0].nodeValue; 
+        corrAns = (Number(op0)*Number(op1) + Number(cin))%10;
     }
     var errBx = document.getElementById("wrongans");
     if( ans == corrAns ) {
         errBx.style.color = "#FAF3E4";
+        op0Bx.style.color = "black";
         op1Bx.style.color = "black";
-        op2Bx.style.color = "black";
         if( cinBx.length > 0 ) {
             cinBx[0].style.color = "black";
         }
@@ -127,8 +127,8 @@ function checkMult( row, col ) {
         errBx.innerHTML = "";
         errBx.innerHTML = errString;
         errBx.style.color = "red";
+        op0Bx.style.color = "red";
         op1Bx.style.color = "red";
-        op2Bx.style.color = "red";
         if( cinBx.length > 0 ) {
             cinBx[0].style.color = "red";
         }
@@ -142,22 +142,22 @@ function checkCarry( row, col ) {
     var ansBx = document.getElementsByName("cr" + row + col)[0];
     var ans = ansBx.value;
     var cin = 0;
-    var op1Bx = document.getElementsByName("op0" + row )[0];
-    var op1 = op1Bx.childNodes[0].nodeValue;
+    var op0Bx = document.getElementsByName("op0" + row )[0];
+    var op0 = op0Bx.childNodes[0].nodeValue;
     //alert("in checkCarry opcol for top is " + col);
-    var op2Bx =  document.getElementsByName("op1" + col)[0]; 
-    var op2 =  op2Bx.childNodes[0].nodeValue;
+    var op1Bx =  document.getElementsByName("op1" + col)[0]; 
+    var op1 =  op1Bx.childNodes[0].nodeValue;
     var crcol = col - 1;
     var cinBx = document.getElementsByName("cr" + row + crcol);
     if( cinBx.length > 0 ) {
         cin = cinBx[0].value;
     }
     var errBx = document.getElementById("wrongans");
-    corrAns = Math.floor((Number(op1)*Number(op2) + Number(cin))/10);
+    corrAns = Math.floor((Number(op0)*Number(op1) + Number(cin))/10);
     if( ans == corrAns ) {
         errBx.style.color = "#FAF3E4";
+        op0Bx.style.color = "black";
         op1Bx.style.color = "black";
-        op2Bx.style.color = "black";
         if( cinBx.length > 0 ) {
             cinBx[0].style.color = "black";
         }
@@ -174,8 +174,8 @@ function checkCarry( row, col ) {
         errBx.innerHTML = "";
         errBx.innerHTML = errString;
         errBx.style.color = "red";
+        op0Bx.style.color = "red";
         op1Bx.style.color = "red";
-        op2Bx.style.color = "red";
         if( cinBx.length > 0 ) {
             cinBx[0].style.color = "red";
         }
@@ -190,22 +190,22 @@ function checkAddCarry( col ) {
     var ansBx = document.getElementsByName("ca" + col)[0];
     var ans = ansBx.value;
     var errString = "";
+    var ai0 = 0;
     var ai1 = 0;
     var ai2 = 0;
-    var ai3 = 0;
     var prevCarry = 0;
-    var ai1Bx = document.getElementsByName("ai0" + aicol);
-    var ai2Bx = document.getElementsByName("ai1" + aicol);
-    var ai3Bx = document.getElementsByName("ai2" + aicol);
+    var ai0Bx = document.getElementsByName("ai0" + aicol);
+    var ai1Bx = document.getElementsByName("ai1" + aicol);
+    var ai2Bx = document.getElementsByName("ai2" + aicol);
     var pcBx;
+    if( ai0Bx.length !== 0 ) {
+        ai0 = Number(ai0Bx[0].value);
+    }
     if( ai1Bx.length !== 0 ) {
         ai1 = Number(ai1Bx[0].value);
     }
     if( ai2Bx.length !== 0 ) {
         ai2 = Number(ai2Bx[0].value);
-    }
-    if( ai3Bx.length !== 0 ) {
-        ai3 = Number(ai3Bx[0].value);
     }
     if( col > 0 ) {
         var prevCol = col - 1;
@@ -213,17 +213,17 @@ function checkAddCarry( col ) {
         prevCarry = Number(pcBx.value);
     }
     var errBx = document.getElementById("wrongans");
-    var corrAns = Math.floor((ai1+ai2+ai3+prevCarry)/10); 
+    var corrAns = Math.floor((ai0+ai1+ai2+prevCarry)/10); 
     if(ans == corrAns ){
         errBx.style.color = "#FAF3E4";
+        if( ai0Bx.length !== 0 ) {
+            ai0Bx[0].style.color = "black";
+        }
         if( ai1Bx.length !== 0 ) {
             ai1Bx[0].style.color = "black";
         }
         if( ai2Bx.length !== 0 ) {
             ai2Bx[0].style.color = "black";
-        }
-        if( ai3Bx.length !== 0 ) {
-            ai3Bx[0].style.color = "black";
         }
         if( pcBx != null ) {
             if( pcBx.length > 0 ) {
@@ -243,14 +243,14 @@ function checkAddCarry( col ) {
         errBx.innerHTML = "";
         errBx.innerText = errString;
         errBx.style.color = "red";
+        if( ai0Bx.length !== 0 ) {
+            ai0Bx[0].style.color = "red";
+        }
         if( ai1Bx.length !== 0 ) {
             ai1Bx[0].style.color = "red";
         }
         if( ai2Bx.length !== 0 ) {
             ai2Bx[0].style.color = "red";
-        }
-        if( ai3Bx.length !== 0 ) {
-            ai3Bx[0].style.color = "red";
         }
         if( pcBx != null ) {
             if( pcBx.length > 0 ) {
@@ -267,22 +267,22 @@ function checkAdd( col ) {
     var ansBx = document.getElementsByName("an" + col)[0];
     var ans = ansBx.value;
     var errString = "";
+    var ai0 = 0;
     var ai1 = 0;
     var ai2 = 0;
-    var ai3 = 0;
     var prevCarry = 0;
-    var ai1Bx = document.getElementsByName("ai0" + col);
-    var ai2Bx = document.getElementsByName("ai1" + col);
-    var ai3Bx = document.getElementsByName("ai2" + col);
+    var ai0Bx = document.getElementsByName("ai0" + col);
+    var ai1Bx = document.getElementsByName("ai1" + col);
+    var ai2Bx = document.getElementsByName("ai2" + col);
     var pcBx;
+    if( ai0Bx.length !== 0 ) {
+        ai0 = Number(ai0Bx[0].value);
+    }
     if( ai1Bx.length !== 0 ) {
         ai1 = Number(ai1Bx[0].value);
     }
     if( ai2Bx.length !== 0 ) {
         ai2 = Number(ai2Bx[0].value);
-    }
-    if( ai3Bx.length !== 0 ) {
-        ai3 = Number(ai3Bx[0].value);
     }
     if( col > 1 ) {
         var prevCol = col - 2;
@@ -293,19 +293,19 @@ function checkAdd( col ) {
     }
     var corrAns = -1;
     // if this is not an add at all but a carry to the last digit...
-    if( ai3Bx.length === 0 && ai2Bx.length === 0 && ai1Bx.length === 0 ) {
+    if( ai2Bx.length === 0 && ai1Bx.length === 0 && ai0Bx.length === 0 ) {
         col = col - 1;
-        ai1Bx = document.getElementsByName("ai0" + col);
-        ai2Bx = document.getElementsByName("ai1" + col);
-        ai3Bx = document.getElementsByName("ai2" + col);
+        ai0Bx = document.getElementsByName("ai0" + col);
+        ai1Bx = document.getElementsByName("ai1" + col);
+        ai2Bx = document.getElementsByName("ai2" + col);
+        if( ai0Bx.length !== 0 ) {
+            ai0 = Number(ai0Bx[0].value);
+        }
         if( ai1Bx.length !== 0 ) {
             ai1 = Number(ai1Bx[0].value);
         }
         if( ai2Bx.length !== 0 ) {
             ai2 = Number(ai2Bx[0].value);
-        }
-        if( ai3Bx.length !== 0 ) {
-            ai3 = Number(ai3Bx[0].value);
         }
         if( prevCol > 0 ) {
             prevCol = prevCol - 1;
@@ -314,23 +314,23 @@ function checkAdd( col ) {
                 prevCarry = Number(pcBx[0].value);
             }
         }
-        corrAns = Math.floor((ai1+ai2+ai3+prevCarry)/10);
+        corrAns = Math.floor((ai0+ai1+ai2+prevCarry)/10);
         errString = "most significant digit of " + errString;
     } else {
-        corrAns = (ai1+ai2+ai3+prevCarry)%10;
+        corrAns = (ai0+ai1+ai2+prevCarry)%10;
         errString = "least significant digit of " + errString;
     }
     var errBx = document.getElementById("wrongans");
     if(ans == corrAns ){
         errBx.style.color = "#FAF3E4";
+        if( ai0Bx.length !== 0 ) {
+            ai0Bx[0].style.color = "black";
+        }
         if( ai1Bx.length !== 0 ) {
             ai1Bx[0].style.color = "black";
         }
         if( ai2Bx.length !== 0 ) {
             ai2Bx[0].style.color = "black";
-        }
-        if( ai3Bx.length !== 0 ) {
-            ai3Bx[0].style.color = "black";
         }
         if( pcBx != null && pcBx.length > 0 ) {
             pcBx[0].style.color = "black";
@@ -349,14 +349,14 @@ function checkAdd( col ) {
         errBx.innerHTML = "";
         errBx.innerHTML = errString;
         errBx.style.color = "red";
+        if( ai0Bx.length !== 0 ) {
+            ai0Bx[0].style.color = "red";
+        }
         if( ai1Bx.length !== 0 ) {
             ai1Bx[0].style.color = "red";
         }
         if( ai2Bx.length !== 0 ) {
             ai2Bx[0].style.color = "red";
-        }
-        if( ai3Bx.length !== 0 ) {
-            ai3Bx[0].style.color = "red";
         }
         if( pcBx != null ) {
             if( pcBx.length > 0 ) {
@@ -432,7 +432,7 @@ function chooseThis( which_one ) {
 
     if( totDec === 0 || ( which_one !== 7 && btns[which_one].style.color === "black") ||
         Number(document.getElementById("bdx").value) < Number(document.getElementById("lastbox").value - 1 ))  { 
-        document.getElementById("decRmdr").style.color="#FAF3E4";
+        document.getElementById("decRmdr").style.color=document.getElementById("decRmdr").style.backgroundColor;
     } else {
         document.getElementById("decRmdr").style.color = "red";
     }
