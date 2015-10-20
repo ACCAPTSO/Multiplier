@@ -34,14 +34,15 @@
     }
 
     int opDp[] = new int[maxOps]; // operand decimal point positions
-    int ansDp = 0;                // answer decimal point position
-    int maxDig[] = new int[maxOps]; // how many digits do operands have
+    int maxDp = (int)(SZ2_MX*Math.random()); // max decimal point 
+    int ansDp = 0;
+    int numDig[] = new int[maxOps]; // how many digits do operands have
     for( int idx = 0; idx < numOps; idx++ ) {
-        opDp[idx] = 2;
+        opDp[idx] = (int)((maxDp+1)*Math.random());
         if( opDp[idx] > ansDp ) {
             ansDp = opDp[idx];
         }
-        maxDig[idx] = 0;
+        numDig[idx] = 0;
     }
     
     op = new int[maxOps][SZ2_MX];
@@ -97,54 +98,65 @@
     } 
     
     for( jdx = numOps-1; jdx >= 0; jdx-- ) {
-        maxDig[jdx] = (int)((SZ2_MX-1)*Math.random()) + 1;
-        for (kdx = 0; kdx < maxDig[jdx]-1; kdx++){
+        // limit the size so it fits the table
+        int maxDig = SZ2_MX - 1 - ansDp + opDp[jdx]; 
+        numDig[jdx] = (int)(maxDig*Math.random()) + 1;
+        for (kdx = 0; kdx < numDig[jdx]-1; kdx++){
             // generate uniform distribution of digits
             op[jdx][kdx] = (new Double(10*Math.random())).intValue();
             operand[jdx] = operand[jdx] + op[jdx][kdx]*(int)(Math.pow(10.,(double)kdx));
-            System.out.println("op[" + jdx + "][" + kdx + "] = " + op[jdx][kdx]);
+            //System.out.println("op[" + jdx + "][" + kdx + "] = " + op[jdx][kdx]);
             
         }
     
         // msb cannot be 0
         op[jdx][kdx] = (new Double(1+9*Math.random())).intValue();
         operand[jdx] = operand[jdx] + op[jdx][kdx]*(int)(Math.pow(10.,(double)kdx));
-        System.out.println("op[" + jdx + "][" + kdx + "] = " + op[jdx][kdx]);
-        System.out.println("operand[" + jdx + "] = " + operand[jdx]);
+        //System.out.println("op[" + jdx + "][" + kdx + "] = " + op[jdx][kdx]);
+        //System.out.println("operand[" + jdx + "] = " + operand[jdx]);
     }
 
     double maxAns = 0;
     // more to it than this when there is a decimal point fixit
     for( int idx = 0; idx < numOps; idx++ ) {
         maxAns += operand[idx]/Math.pow(10,opDp[idx]);
-        System.out.println("partial answer is " + maxAns);
+        //System.out.println("partial answer is " + maxAns);
     }
-    maxAns *= Math.pow(10,ansDp);
-    System.out.print("answer is " + maxAns);
+    //maxAns *= Math.pow(10,ansDp);
+    //System.out.print("answer is " + maxAns);
     
     int maxAnDig = 0;
     if( maxAns > 0 ) {
         maxAnDig = 1 + (int)Math.log10(maxAns );
     }
-    //maxAnDig += ansDp;
-    System.out.print("digits in answer is " + maxAnDig);
+    maxAnDig += ansDp;
+    //System.out.print("digits in answer is " + maxAnDig);
 
     int nacarries = 0;
+    int trailingZeros = 0;
     int possCarries = 0;
     int spacesb4Op[] = new int[maxOps];
+    // all the decimal points need to be lined up
     for( int idx = numOps-1; idx >= 0; idx-- ) {
-        if( maxDig[idx] > opDp[idx] ) {
-            spacesb4Op[idx] = SZ2_MX + 1 - maxDig[idx];
+        if( numDig[idx] > opDp[idx] ) {
+            // digits in front of the decimal point
+            int digsInFront =  numDig[idx] - opDp[idx];
+            //System.out.println("idx = " + idx + " digsInFront = " + digsInFront );
+            spacesb4Op[idx] = SZ2_MX + 1 - ansDp - digsInFront;
         } else {
-            spacesb4Op[idx] = SZ2_MX - opDp[idx];
+            spacesb4Op[idx] = SZ2_MX - ansDp;
         }
-        possCarries = maxDig[idx] - 1;
+        trailingZeros = ansDp - opDp[idx];
+        possCarries = numDig[idx] - 1;
+        if( trailingZeros > 0 ) {
+            possCarries += trailingZeros;
+        }
         if( possCarries > nacarries ) {
             nacarries = possCarries; 
         }  
-        System.out.println("maxDig[" + idx + "] = " + maxDig[idx] + " opDp[" + idx + "] = " + opDp[idx] + " spacesb4Op[" + idx + "] = " + spacesb4Op[idx]);
+        //System.out.println("numDig[" + idx + "] = " + numDig[idx] + " opDp[" + idx + "] = " + opDp[idx] + " spacesb4Op[" + idx + "] = " + spacesb4Op[idx]);
     }
-    //int spacesb4btmOp = SZ2_MX - maxDig[0]; // "+" takes up one space
+    //int spacesb4btmOp = SZ2_MX - numDig[0]; // "+" takes up one space
     int spacesb4ca = SZ2_MX - nacarries;
 
     int ar = nacarries;  // first additive carry 
@@ -153,11 +165,11 @@
     for( int idx = 0; idx < maxAnDig; idx++ ) {
         if( nacarries > 0 && idx > 0 && ar >= idx ) {
             whatBx[ldx] = ar - idx; // additive carry 
-            System.out.println("whatBx[" + ldx + "] = " + whatBx[ldx]);
+            //System.out.println("whatBx[" + ldx + "] = " + whatBx[ldx]);
             ldx++;
         }
         whatBx[ldx] = qu - idx; // final answer boxes
-        System.out.println("whatBx[" + ldx + "] = " + whatBx[ldx]);
+        //System.out.println("whatBx[" + ldx + "] = " + whatBx[ldx]);
         ldx++;
     }
     whatBx[ldx] = qu + 1;
@@ -189,14 +201,15 @@
 <%  if( numOps > 3 ) { %>
 <tr>
 <%      for( int idx = 0; idx <= SZ2_MX; idx++ ) {  
-            String possDp = (SZ2_MX - idx + 1 == opDp[3] && opDp[3] > 0)? ".":""; %>
+            String possDp = (SZ2_MX - idx + 1 == ansDp && ansDp > 0 )? ".":""; %>
             <td class="t2"><%=possDp%></td>
 <%          if( idx < spacesb4Op[3] ) { %>
                 <td class="t1"></td>
 <%          } else { 
-                //int col = maxDig[3] - idx + spacesb4Op[3] - 1;
+                //int col = numDig[3] - idx + spacesb4Op[3] - 1;
                 int col = SZ2_MX - idx;
                 String name = "op3" + col;
+                col = col + opDp[3] - ansDp;
                 switch(col) {
                     case 0: %>
                         <td class="t1" name="<%=name%>"><%=op[3][0]%></td>
@@ -220,7 +233,7 @@
                         <td class="t1" name="<%=name%>"><%=op[3][6]%></td>
                         <% break;
                     default: %>
-                        <td class="t1">Y</td>
+                        <td class="t1">0</td>
                         <% break;
                 }       
             }
@@ -230,14 +243,15 @@
 <%  if( numOps > 2 ) { %>
 <tr>
 <%      for( int idx = 0; idx <= SZ2_MX; idx++ ) {  
-            String possDp = (SZ2_MX - idx + 1 == opDp[2] && opDp[2] > 0)? ".":""; %>
+            String possDp = (SZ2_MX - idx + 1 == ansDp && ansDp > 0 )? ".":""; %>
             <td class="t2"><%=possDp%></td>
 <%          if( idx < spacesb4Op[2] ) { %>
                 <td class="t1"></td>
 <%          } else { 
-                //int col = maxDig[2] - idx + spacesb4Op[2] - 1;
+                //int col = numDig[2] - idx + spacesb4Op[2] - 1;
                 int col = SZ2_MX - idx;
                 String name = "op2" + col;
+                col = col + opDp[2] - ansDp;
                 switch(col) {
                     case 0: %>
                         <td class="t1" name="<%=name%>"><%=op[2][0]%></td>
@@ -261,7 +275,7 @@
                         <td class="t1" name="<%=name%>"><%=op[2][6]%></td>
                         <% break;
                     default: %>
-                        <td class="t1">Y</td>
+                        <td class="t1">0</td>
                         <% break;
                 }       
             }
@@ -270,14 +284,15 @@
 <%  }    %>
 <tr>
 <%  for( int idx = 0; idx <= SZ2_MX; idx++ ) {  
-        String possDp = (SZ2_MX - idx + 1 == opDp[1] && opDp[1] > 0)? ".":""; %>
+        String possDp = (SZ2_MX - idx + 1 == ansDp && ansDp > 0 )? ".":""; %>
         <td class="t2"><%=possDp%></td>
 <%      if( idx < spacesb4Op[1] ) { %>
             <td class="t1"></td>
 <%      } else { 
-            //int col = maxDig[1] - idx + spacesb4Op[1] - 1;
+            //int col = numDig[1] - idx + spacesb4Op[1] - 1;
             int col = SZ2_MX - idx;
             String name = "op1" + col;
+            col = col + opDp[1] - ansDp;
             switch(col) {
                 case 0: %>
                     <td class="t1" name="<%=name%>"><%=op[1][0]%></td>
@@ -301,7 +316,7 @@
                     <td class="t1" name="<%=name%>"><%=op[1][6]%></td>
                     <% break;
                 default: %>
-                    <td class="t1">Y</td>
+                    <td class="t1">0</td>
                     <% break;
             }       
         }
@@ -310,7 +325,7 @@
 
 <tr>
 <%  for( int idx = 0; idx <= SZ2_MX; idx++ ) { 
-        String possDp = (SZ2_MX - idx + 1 == opDp[0] && opDp[0] > 0)? ".":"";
+        String possDp = (SZ2_MX - idx + 1 == ansDp && ansDp > 0 )? ".":"";
 %>
         <td class="t2"><%=possDp%></td>
 <%      if( idx < spacesb4Op[0] - 1 ) { %>            
@@ -318,9 +333,10 @@
 <%      } else if ( idx == spacesb4Op[0] - 1 ){ %>
             <td class="t1"> + </td>
 <%      } else {
-            //int col = maxDig[0] - idx + spacesb4Op[0]; 
+            //int col = numDig[0] - idx + spacesb4Op[0]; 
             int col = SZ2_MX - idx;
             String name = "op0" + col;
+            col = col + opDp[0] - ansDp;
             switch(col) {
                 case 0: %>
                     <td class="t1" name="<%=name%>"><%=op[0][0]%></td>
@@ -344,7 +360,7 @@
                     <td class="t1" name="<%=name%>"><%=op[0][6]%></td>
                     <% break;
                 default: %>
-                    <td class="t1">Y</td>
+                    <td class="t1">0</td>
                     <% break;
             }
         }
@@ -362,7 +378,12 @@
         <span name="dec-pt" onclick="chooseThis( <%=idx%> )" class="dp" >_</span>
         </td>
 <%      if( idx >= spacesb4an ) { 
-            int col = SZ2_MX - idx; 
+            int col = SZ2_MX - idx;
+            if( col < 0 || col > SZ2_MX-1 ) {
+                System.out.print("reducing ans col from " + col );
+                col = 0;
+                System.out.println(" to " + col);
+            }
             String name = "an" + col;  %>
             <td class="t1"><input type="text" name="<%=name%>" class="a1" size="1" 
             value="<%=ans[col]%>"
