@@ -9,18 +9,16 @@
 <html>
 <head>
 <style>
-#div1 {width:350px;height:70px;padding:10px;border:1px solid #aaaaaa;}
+#div1 {width:370px;height:70px;padding:10px;border:1px solid #aaaaaa;}
 </style>
 
 <link rel="stylesheet" href="Adder.css" type="text/css">
 <script src="Multiplier.js"></script>
 <script src="Adder.js"></script>
+<script src="dragger.js"></script>
 </head>
-<body onload="setFocus();" onmousedown="javascript:return false;"
-      onselctstart="javascript:return false;">
-
-
-
+<body>
+   
 <%  final int SZ2_MX = 6; // maximum answer size
     final int maxOps = 4;
     int numOps = (int)(2*Math.random()) + maxOps - 1; // 2 -3 operands
@@ -37,8 +35,12 @@
     int maxDp = (int)(SZ2_MX*Math.random()); // max decimal point 
     int ansDp = 0;
     int numDig[] = new int[maxOps]; // how many digits do operands have
+    String isLinedUp = "true";
     for( int idx = 0; idx < numOps; idx++ ) {
         opDp[idx] = (int)((maxDp+1)*Math.random());
+        if( idx > 0 && opDp[idx] != opDp[idx-1]) {
+            isLinedUp = "false";
+        }
         if( opDp[idx] > ansDp ) {
             ansDp = opDp[idx];
         }
@@ -199,7 +201,8 @@
 <%  } %>
 </tr>
 <%  if( numOps > 3 ) { %>
-<tr>
+<div ondrop="drop(event)" ondragover="allowDrop(event)">
+<tr class="oprand">
 <%      for( int idx = 0; idx <= SZ2_MX; idx++ ) {  
             String possDp = (SZ2_MX - idx + 1 == ansDp && ansDp > 0 )? ".":""; %>
             <td class="t2"><%=possDp%></td>
@@ -224,6 +227,7 @@
                         <td class="t1" name="<%=name%>"><%=op[3][3]%></td>
                         <% break;
                     case 4: %>
+                    
                         <td class="t1" name="<%=name%>"><%=op[3][4]%></td>
                         <% break;
                     case 5: %>
@@ -233,15 +237,17 @@
                         <td class="t1" name="<%=name%>"><%=op[3][6]%></td>
                         <% break;
                     default: %>
-                        <td class="t1">0</td>
+                        <td class="t1">Y</td>
                         <% break;
                 }       
             }
         } %>
+    
 </tr>
+</div>
 <%  }    %>
 <%  if( numOps > 2 ) { %>
-<tr>
+<tr class="oprand">
 <%      for( int idx = 0; idx <= SZ2_MX; idx++ ) {  
             String possDp = (SZ2_MX - idx + 1 == ansDp && ansDp > 0 )? ".":""; %>
             <td class="t2"><%=possDp%></td>
@@ -275,14 +281,14 @@
                         <td class="t1" name="<%=name%>"><%=op[2][6]%></td>
                         <% break;
                     default: %>
-                        <td class="t1">0</td>
+                        <td class="t1">Y</td>
                         <% break;
                 }       
             }
         } %>
 </tr>
 <%  }    %>
-<tr>
+<tr class="oprand">
 <%  for( int idx = 0; idx <= SZ2_MX; idx++ ) {  
         String possDp = (SZ2_MX - idx + 1 == ansDp && ansDp > 0 )? ".":""; %>
         <td class="t2"><%=possDp%></td>
@@ -316,14 +322,14 @@
                     <td class="t1" name="<%=name%>"><%=op[1][6]%></td>
                     <% break;
                 default: %>
-                    <td class="t1">0</td>
+                    <td class="t1">Y</td>
                     <% break;
             }       
         }
     } %>
 </tr>
 
-<tr>
+<tr class="oprand">
 <%  for( int idx = 0; idx <= SZ2_MX; idx++ ) { 
         String possDp = (SZ2_MX - idx + 1 == ansDp && ansDp > 0 )? ".":"";
 %>
@@ -360,14 +366,12 @@
                     <td class="t1" name="<%=name%>"><%=op[0][6]%></td>
                     <% break;
                 default: %>
-                    <td class="t1">0</td>
+                    <td class="t1">Y</td>
                     <% break;
             }
         }
     } %>
 </tr> 
-
-
 
     <tr><th class="th-id1" colspan="<%=colspan%>"></th></tr>
     <tr>
@@ -409,6 +413,9 @@
 </div>
 <div class="d3">
 <label id="decRmdr" class="msg">Click where the decimal point should be</label>
+</div>
+<div class="d3">
+<label id="lineRmdr" class="msg">Drag red boxes to line up decimal points</label>
 </div>
     <input type="hidden" id="whatbox" value="<%=whatBx[bdx]%>" class="shortbox"> 
 <tr>    
@@ -460,7 +467,36 @@
 <% } %>
 <input type="hidden" id="bdx" value="<%=bdx%>" class="shortbox">
 <input type="hidden" id="lastbox" value="<%=maxBx%>" class="shortbox">
+<input type="hidden" id="linedUp" value="<%=isLinedUp%>" class="shortbox">
+<div id="statusBox1"></div>
+<div id="statusBox2"></div>
+<div id="statusBox3"></div>
+<table>
+    <tr class="DragBox">
+<%  for( int idx = 0; idx <= SZ2_MX; idx++ ) { %>
+        <td class="t2">_</td><td class="t1" name="bob">o</td>
+<%  }   %>
+    </tr>
+    <tr class="DragBox">
+<%  for( int idx = 0; idx <= SZ2_MX; idx++ ) { %>
+        <td class="t2">_</td><td class="t1" name="bob">o</td>
+<%  }   %>
+    </tr>
+    <tr class="DragBox">
+<%  for( int idx = 0; idx <= SZ2_MX; idx++ ) { %>
+        <td class="t2">_</td><td class="t1" name="bob">o</td>
+<%  }   %>
+    </tr>
+    <tr class="DragBox">
+<%  for( int idx = 0; idx <= SZ2_MX; idx++ ) { %>
+        <td class="t2">_</td><td class="t1" name="bob">o</td>
+<%  }   %>
+    </tr>
+</table>
+
+
 </form>
+
 </div>
 </body>
 </html>

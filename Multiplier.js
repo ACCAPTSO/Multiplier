@@ -377,6 +377,11 @@ function promptForDp( bdx ) {
             isSetAlready = 1;
         }
     }
+    // hide the decimal point reminder by making the text the same as the background
+    // color if:
+    // the answer doesn't have a decimal point, 
+    // there are still numbers to fill in or
+    // the decimal point is already set correctly
     if( Number(document.getElementById("ansDp").value) === 0 ||
         bdx < Number(document.getElementById("lastbox").value - 1 ) ||
         isSetAlready )  { 

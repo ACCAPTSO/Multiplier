@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
+/*
 function allowDrop(ev) {
     ev.preventDefault();
 }
@@ -16,7 +16,7 @@ function drop(ev) {
     ev.preventDefault();
     var data = ev.dataTransfer.getData("text");
     ev.target.appendChild(document.getElementById(data));
-}
+}*/
 
 function justAddCarry( col ) {
     //var aicol = col + 1;
@@ -108,6 +108,9 @@ function justAddCarry( col ) {
     setFocus();
 }
 
+// checks if most significant digits are 0. or 0.0 or 0.000 etc.
+// this affects how the last digit of addition is handled
+// (is it an add or a carry
 function checkZeroPoint( opBx ) {
     var parent = opBx.parentNode;
     var nodeNum = 0;
@@ -136,7 +139,7 @@ function checkZeroPoint( opBx ) {
                 //alert("whatValue = '" + parent.childNodes[nodeNum].childNodes[0].nodeValue + "'" + " allZeros = " + allZeros );
             }    
         }
-        if( parent.childNodes[nodeNum].isSameNode(opBx) ) {
+        if( parent.childNodes[nodeNum].isEqualNode(opBx) ) {
             //alert("opBx nodeNum is " + nodeNum );
             break;
         }
