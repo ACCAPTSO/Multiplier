@@ -179,10 +179,10 @@ td {
 }
 /* bar under operands */
 .th-id1{
-    background-color: #638456
+    background-color: #638456;
 }
 .DragBox {
-    //background-color : black;
+    color : #e9effb;
     border : none;
     position : fixed;
     //display : block; 

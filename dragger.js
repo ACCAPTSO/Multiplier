@@ -28,19 +28,10 @@
 	var mouseOffset = null; 
 	var iMouseDown  = false; 
 	var lMouseState = false; 
-	//var dragObject  = null; 
-	// Demo 0 variables 
-	//var DragDrops   = []; 
 	var curTarget   = null; 
 	var lastTarget  = null; 
-	//var dragHelper  = null; 
-	//var tempDiv     = null; 
-	//var rootParent  = null; 
-	//var rootSibling = null; 
-        //var offsetWidth = "1120";
-        //var offsetHeight = "10";
+
         var activeCont = null; 
-	//Number.prototype.NaN0=function(){return isNaN(this)?0:this;}  
 	function getMouseOffset(target, ev){ 
 	    ev = ev || window.event; 
             var docPosX    = target.style.left.match(/[0-9]+/); // left of target
@@ -49,6 +40,7 @@
             //document.getElementById('statusBox1').innerHTML = "docPos.x = " + docPosX + " mousePos.x = " + mousePos.x + " docPos.y = " + docPosY + " mousePos.y = " + mousePos.y;
 	    return {x:mousePos.x - docPosX, y:mousePos.y - docPosY}; 
 	} 
+        // seems a little off for Mozilla fixit
 	function getPosition(e){ 
 	    var left = 0; 
 	    var top  = 0; 
@@ -82,23 +74,7 @@
 	        // if the user is just starting to drag the element 
 	        if(iMouseDown && !lMouseState){ 
                     mouseOffset   = getMouseOffset(dragBox, ev); 
-
-	            // set the class on our helper DIV if necessary 
-	            //var dragClass = dragBox.getAttribute('dragClass'); 
-	            /*
-	            Record the current position of all drag/drop targets related
-	            to the element.  We do this here so that we do not have to do
-	            it on the general mouse move event which fires when the mouse
-	            moves even 1 pixel.  If we don't do this here the script
-	            would run much slower.
-	            */ 
-	            //var dragConts = DragDrops[dragObj]; 
-	            /*
-	            first record the width/height of our drag item.  Then hide it since
-	            it is going to (potentially) be moved out of its parent.
-	            */ 
-	            //dragBox.setAttribute('startWidth',  parseInt(dragBox.offsetWidth)); 
-	            //dragBox.setAttribute('startHeight', parseInt(dragBox.offsetHeight)); 
+ 
                     var squares = dragBox.childNodes;
                     for( var i = 0; i < squares.length; i++ ) {
                         if( squares[i].nodeType == 1 ) {
@@ -109,9 +85,7 @@
                 var leftH = mousePos.x - mouseOffset.x; 
                 var xPos = leftH + xOffs;
 	        dragBox.style.left = leftH + "px";
-	        //var dragConts  = DragDrops[dragBox.getAttribute('DragObj')]; 
 
-                //document.getElementById('statusBox2').innerHTML = "i = " + i + " cStrtY = " + cStrtY + " cHgtY = " + cHgtY + " yClick = " + yClick + " xPos = " + xPos + " targPos = " + targPos;
 	        if(((targPos - 10) < xPos) && (cStrtY < yClick) && ((targPos + 10)  > xPos) && ((cStrtY + cHgtY) > yClick)){ 
                     var squares = dragBox.childNodes;
                     dragBox.style.backgroundColor = "black";
@@ -145,8 +119,8 @@
 	        var yPos = mousePos.y - mouseOffset.y + (parseInt(dragBox.getAttribute('startHeight'))/2);
             	// Our target object is in one of our containers.  Check to see where our div belongs 
 	        if(activeCont){ 
-                    //document.getElementById('statusBox1').innerHTML = "mouse is up dragBox = " + " targPos = " + targPos + " dpOffs = " + dpOffs;
-                    var leftPos = targPos - xOffs;
+                    //document.getElementById('statusBox1').innerHTML = "mouse is up targPos = " + targPos + " xOffs = " + xOffs;
+                    var leftPos = targPos - Number(dragBox.getAttribute('dpOffs')); ;
 	            dragBox.style.left = leftPos + "px";
 	        } 
 	    } 
@@ -191,27 +165,34 @@
 	} 
         function checklineup() {
             if( document.getElementById('linedUp').value == "false") {
-                var opDpPos = operands[0].getAttribute('targPos'); // same for all operands
+                var opDpPos = Number(operands[0].getAttribute('targPos')); // same for all operands
                 var allLinedUp = true;
                 // there may be more helpers than operands, only check the ones that
                 // have corresponding operands
                 for( idx = 0; idx < operands.length; idx++ ) { 
-                    var hpDpPos = getPosition(dragHelper[idx]).x + Number(dragHelper[idx].getAttribute('dpOffs'));
+                    xOffs = Number(dragHelper[idx].getAttribute('dpOffs')); 
+                    var hpDpPos = getPosition(dragHelper[idx]).x + xOffs;
+                    // seems to be executing too many times check and fixit
                     //alert( "idx = " + idx + " opDpPos = " + opDpPos + " hpDpPos = " + hpDpPos);
                     var squares = dragHelper[idx].childNodes;
-                    if( hpDpPos != opDpPos ) {
+                    var tol = 3;
+                    if( opDpPos - tol < hpDpPos && hpDpPos < opDpPos + tol ) {
+                        if( opDpPos !== hpDpPos ) { // line them up if not exact
+                            var leftPos = opDpPos - xOffs;
+                            dragHelper[idx].style.left = leftPos + "px";
+                        }
+                        dragHelper[idx].style.backgroundColor = "#bcbebe";
+                        for( var i = 0; i < squares.length; i++ ) {
+                            if( squares[i].nodeType == 1 ) {
+                                squares[i].style.color = "black";
+                            }
+                        }
+                    } else {
                         dragHelper[idx].style.backgroundColor = "red";
                         allLinedUp = false;
                         for( var i = 0; i < squares.length; i++ ) {
                             if( squares[i].nodeType == 1 ) {
                                 squares[i].style.color = "red";
-                            }
-                        }
-                    } else {
-                        dragHelper[idx].style.backgroundColor = "#bcbebe";
-                        for( var i = 0; i < squares.length; i++ ) {
-                            if( squares[i].nodeType == 1 ) {
-                                squares[i].style.color = "black";
                             }
                         }
                     }
@@ -231,6 +212,14 @@
 	document.onmouseup   = mouseUp; 
 	window.onload = function(){ 
             if( document.getElementById('linedUp').value == "true") {
+                // if decimal points are lined up by default, get rid of the 
+                // dragHelpers, you don't need them and they will get in the way
+                dragHelper  = document.getElementsByClassName('DragBox');
+                for( idx = 0; idx < dragHelper.length; idx++ ) {
+                    for( nodeNum = 0; nodeNum < dragHelper[idx].childNodes.length; nodeNum++ ) {
+                        dragHelper[idx].removeChild(dragHelper[idx].childNodes[nodeNum]);
+                    }
+                }
                 setFocus();
             } else {
                 //document.getElementById('statusBox1').innerHTML = "in onload";
@@ -255,8 +244,10 @@
                     var nodeNum = 0;
                     var length = 0;
                     var name = "";
+                    var number = 0;
                     var numSquares = 0;
                     var whatValue = new Array();
+                    var whatName = new Array();
                     var dpTarg = 0;
                     for( nodeNum = 0; nodeNum < operands[idx].childNodes.length; nodeNum++ ) {
                         
@@ -265,7 +256,11 @@
                             numSquares += 1;  
                             if( operands[idx].childNodes[nodeNum].childNodes[0] ) {
                                 whatValue[length] = operands[idx].childNodes[nodeNum].childNodes[0].nodeValue;
-                                name = operands[idx].childNodes[nodeNum].getAttribute('name');                             
+                                name = operands[idx].childNodes[nodeNum].getAttribute('name');
+                                if( name ) {
+                                    number = name.match(/[0-9]+/);
+                                    whatName[length] = "dH" + number
+                                }
                                 if( whatValue[length] == "." ) {
                                     var targPos = getPosition(operands[idx].childNodes[nodeNum]).x;
                                     operands[idx].setAttribute('targPos', targPos);
@@ -299,6 +294,7 @@
                                     }
                                 } else if( className == "t1" ) {
                                     dragHelper[idx].childNodes[nodeNum].childNodes[0].nodeValue = digVal;
+                                    dragHelper[idx].childNodes[nodeNum].setAttribute('name',whatName[dragNum]);
                                     dragNum += 1;
                                     if( noDpYet ) {
                                         lsbNode = dragHelper[idx].childNodes[nodeNum];
@@ -329,22 +325,16 @@
                     dragHelper[idx].style.left = leftPos + "px";
                     dragHelper[idx].style.height = boxHeight + "px";
                     dragHelper[idx].setAttribute('dpOffs', dpOffs); 
-	            dragHelper[idx].setAttribute('DragObj', 1); 
-                    // this is cut and pasted, probably needs to be dropped
-                    //var cDrag        = DragDrops.length; 
-                    //DragDrops[cDrag] = []; 
+	            //dragHelper[idx].setAttribute('DragObj', 1); 
 
-                    var cObj = operands[idx];
-                    //DragDrops[cDrag].push(cObj); 
-                    //cObj.setAttribute('DropObj', cDrag); 
-                    // since containers don't move or expand, this only needs to be done once
-                    var pos = getPosition(cObj);
-                    var strtHght = parseInt(cObj.offsetHeight);
-	            cObj.setAttribute('startHeight', strtHght);  
-	            cObj.setAttribute('startTop',    pos.y);
-                    checklineup();
+                    // since drop targets don't move or expand, this only needs to be done once
+                    var pos = getPosition(operands[idx]);
+                    var strtHght = parseInt(operands[idx].offsetHeight);
+	            operands[idx].setAttribute('startHeight', strtHght);  
+	            operands[idx].setAttribute('startTop',    pos.y);
                 }
             }
+            checklineup();
 	} 
 
 

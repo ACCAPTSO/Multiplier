@@ -32,39 +32,61 @@ function justAddCarry( col ) {
     var ai1Bx = document.getElementsByName("op1" + col);
     var ai2Bx = document.getElementsByName("op2" + col);
     var ai3Bx = document.getElementsByName("op3" + col);
+    var dH0Bx = document.getElementsByName("dH0" + col);
+    var dH1Bx = document.getElementsByName("dH1" + col);
+    var dH2Bx = document.getElementsByName("dH2" + col);
+    var dH3Bx = document.getElementsByName("dH3" + col);
+    var dragBoxes = document.getElementsByClassName("DragBox");
     var pcBx;
-    if( ai0Bx.length !== 0 ) {
+    if( dH0Bx.length !== 0 ) {
+        ai0 = Number(dH0Bx[0].childNodes[0].nodeValue);
+    } else if( ai0Bx.length !== 0 ) {
         ai0 = Number(ai0Bx[0].childNodes[0].nodeValue);
     }
-    if( ai1Bx.length !== 0 ) {
+    if( dH1Bx.length !== 0 ) {
+        ai1 = Number(dH1Bx[0].childNodes[0].nodeValue);
+    } else if( ai1Bx.length !== 0 ) {
         ai1 = Number(ai1Bx[0].childNodes[0].nodeValue);
     }
-    if( ai2Bx.length !== 0 ) {
+    if( dH2Bx.length !== 0 ) {
+        ai2 = Number(dH2Bx[0].childNodes[0].nodeValue);
+    } else if( ai2Bx.length !== 0 ) {
         ai2 = Number(ai2Bx[0].childNodes[0].nodeValue);
     }
-    if( ai3Bx.length !== 0 ) {
+    if( dH3Bx.length !== 0 ) {
+        ai3 = Number(dH3Bx[0].childNodes[0].nodeValue);
+    } else if( ai3Bx.length !== 0 ) {
         ai3 = Number(ai3Bx[0].childNodes[0].nodeValue);
     }
+
     if( col > 0 ) {
         var prevCol = col - 1;
-        pcBx = document.getElementsByName("ca" + prevCol)[0];
-        prevCarry = Number(pcBx.value);
+        pcBx = document.getElementsByName("ca" + prevCol);
+        prevCarry = Number(pcBx[0].value);
     }
     var errBx = document.getElementById("wrongans");
     var corrAns = Math.floor((ai0+ai1+ai2+ai3+prevCarry)/10); 
     //alert(ai1 + " + " + ai2 + " + " + ai3 + " + " + prevCarry );
     if(ans == corrAns ){
         errBx.style.color = "#FAF3E4";
-        if( ai0Bx.length !== 0 ) {
+        if( dH0Bx.length !== 0 ) {
+            dH0Bx[0].style.color = "black";
+        } else if( ai0Bx.length !== 0 ) {
             ai0Bx[0].style.color = "black";
         }
-        if( ai1Bx.length !== 0 ) {
+        if( dH1Bx.length !== 0 ) {
+            dH1Bx[0].style.color = "black";
+        } else if( ai1Bx.length !== 0 ) {
             ai1Bx[0].style.color = "black";
         }
-        if( ai2Bx.length !== 0 ) {
+        if( dH2Bx.length !== 0 ) {
+            dH2Bx[0].style.color = "black";
+        } else if( ai2Bx.length !== 0 ) {
             ai2Bx[0].style.color = "black";
         }
-        if( ai3Bx.length !== 0 ) {
+        if( dH3Bx.length !== 0 ) {
+            dH3Bx[0].style.color = "black";
+        } else if( ai3Bx.length !== 0 ) {
             ai3Bx[0].style.color = "black";
         }
         if( pcBx != null ) {
@@ -83,18 +105,26 @@ function justAddCarry( col ) {
         upDateErrCount();
         errString = "not " + ans;
         errBx.innerHTML = "";
-        errBx.innerText = errString;
+        errBx.innerHTML = errString;
         errBx.style.color = "red";
-        if( ai0Bx.length !== 0 ) {
+        if( dH0Bx.length !== 0 ) {
+            dH0Bx[0].style.color = "red";
+        } else if( ai0Bx.length !== 0 ) {
             ai0Bx[0].style.color = "red";
         }
-        if( ai1Bx.length !== 0 ) {
+        if( dH1Bx.length !== 0 ) {
+            dH1Bx[0].style.color = "red";
+        } else if( ai1Bx.length !== 0 ) {
             ai1Bx[0].style.color = "red";
         }
-        if( ai2Bx.length !== 0 ) {
+        if( dH2Bx.length !== 0 ) {
+            dH2Bx[0].style.color = "red";
+        } else if( ai2Bx.length !== 0 ) {
             ai2Bx[0].style.color = "red";
         }
-        if( ai3Bx.length !== 0 ) {
+        if( dH3Bx.length !== 0 ) {
+            dH3Bx[0].style.color = "red";
+        } else if( ai3Bx.length !== 0 ) {
             ai3Bx[0].style.color = "red";
         }
         if( pcBx != null ) {
@@ -157,7 +187,7 @@ function checkZeroPoint( opBx ) {
     return isDp;
 }            
             
-function justAdd( col ) {
+function origJustAdd( col ) {
     var ansBx = document.getElementsByName("an" + col)[0];
     var ans = ansBx.value;
     var errString = "";
@@ -306,6 +336,121 @@ function justAdd( col ) {
         }
         if( ai3Bx.length !== 0 ) {
             ai3Bx[0].style.color = "red";
+        }
+        if( pcBx != null ) {
+            if( pcBx.length > 0 ) {
+                pcBx[0].style.color = "red";
+            }
+        }
+        ansBx.style.color = "red";
+        ansBx.value = "";
+    }
+    setFocus();
+}
+function justAdd( col ) {
+    var ansBx = document.getElementsByName("an" + col)[0];
+    var ans = ansBx.value;
+    var errString = "";
+    var len = 4;
+    var ops = new Array(len);
+    var txt = new Array(len);
+    var opBx = new Array();
+    var allBlank = 1;
+    var isZeroPointX = 0; // zero is false in javascript
+    var sum = 0;
+    for( var i = 0; i < len; i++ ) {
+        ops[i] = 0;
+        txt[i] = "blank";
+        opBx[i] = document.getElementsByName("dH" + i + col);
+        if( opBx[i].length === 0 ) {
+            opBx[i] = document.getElementsByName("op" + i + col);
+        }
+        if( opBx[i].length !== 0 ) {
+            allBlank = 0;
+            txt[i] = opBx[i][0].childNodes[0].nodeValue;
+            if( txt[i] === "0") {
+                if( i === 0 || isZeroPointX ) {
+                    isZeroPointX = checkZeroPoint( opBx[i][0] );
+                }
+            } else {
+                isZeroPointX = 0;
+            }
+            ops[i] = Number(txt[i]);
+            sum += ops[i];
+            //alert("ops[" + i + "] = " + ops[i] + " sum =" + sum + " allBlank = " + allBlank );
+        }
+    }
+    var prevCarry = 0;
+    var pcBx;
+    
+    if( col > 0 ) {
+        var prevCol = col - 1;
+        pcBx = document.getElementsByName("ca" + prevCol);
+        if( pcBx.length > 0 ) {
+            prevCarry = Number(pcBx[0].value);
+        }
+    }
+    var corrAns = -1;
+    // if this is not an add at all but a carry to the last digit...
+    if( allBlank || isZeroPointX ) {
+        col = col - 1;
+        sum = 0;
+        for( var i = 0; i < len; i++ ) {
+            ops[i] = 0;
+            opBx[i] = document.getElementsByName("dH" + i + col);
+            if( opBx[i].length === 0 ) {
+                opBx[i] = document.getElementsByName("op" + i + col);
+            }
+            if( opBx[i].length !== 0 ) {
+                ops[i] = Number(opBx[i][0].childNodes[0].nodeValue);
+            }
+            sum += ops[i];
+            //alert("allBlank = " + allBlank + " isZeroPointX = " + isZeroPointX + " ops[" + i + "] = " + ops[i] + " sum =" + sum);
+        }
+        if( prevCol > 0 ) {
+            prevCol = prevCol - 1;
+            pcBx = document.getElementsByName("ca" + prevCol);
+            if( pcBx.length > 0 ) {
+                prevCarry = Number(pcBx[0].value);
+            }
+        }
+        corrAns = Math.floor((sum+prevCarry)/10);
+        
+        errString = "most significant digit of " + errString;
+    } else {
+        //alert(ai1 + " + " + ai2 + " + " + ai3 + " + " + prevCarry );
+        corrAns = (sum+prevCarry)%10;
+        errString = "least significant digit of " + errString;
+    }
+    var errBx = document.getElementById("wrongans");
+    if(ans == corrAns ){
+        errBx.style.color = "#FAF3E4";
+        for( var i = 0; i < len; i++ ) {
+            if( opBx[i].length !== 0 ) {
+                opBx[i][0].style.color = "black";
+            }
+        }
+        if( pcBx != null && pcBx.length > 0 ) {
+            pcBx[0].style.color = "black";
+        }
+        ansBx.style.backgroundColor =  "white";
+        ansBx.style.color = "black";
+        // advance the box
+        var bdx = Number(document.getElementById("bdx").value) + 1;
+        document.getElementById("bdx").value = bdx;
+        var nextbox = document.getElementsByName("nextbox")[bdx].value;
+        document.getElementById("whatbox").value = nextbox;
+        promptForDp( bdx );
+    } else {  
+        upDateErrCount();
+        errString = "not " + ans;
+        errBx.innerHTML = "";
+        errBx.innerHTML = errString;
+        errBx.style.color = "red";
+        for( var i = 0; i < len; i++ ) {
+            if( opBx[i].length !== 0 ) {
+                opBx[i][0].style.color = "red";
+            }
         }
         if( pcBx != null ) {
             if( pcBx.length > 0 ) {
