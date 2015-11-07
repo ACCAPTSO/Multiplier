@@ -266,7 +266,7 @@
                                     operands[idx].setAttribute('targPos', targPos);
                                 }
                                 // only count the decimal points and the digits with a name
-                                if( name || whatValue[length] != "Y" ) { 
+                                if( name || whatValue[length] != "0" ) { 
                                     length += 1;
                                 }
                             }    

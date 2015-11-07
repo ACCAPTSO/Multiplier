@@ -21,7 +21,44 @@
    
 <%  final int SZ2_MX = 6; // maximum answer size
     final int maxOps = 4;
-    int numOps = (int)(2*Math.random()) + maxOps - 1; // 2 -3 operands
+    final double NEXP = 2.6; // used to generate # of digits or # operands
+    final double DEXP = 1.4; // used to generate digits themselves
+    boolean noCarriesCk = false;
+    boolean carriesCk = false;
+    boolean fxDecPtCk = false;
+    boolean varDecPtCk = false;
+    String isNoCarries = "";
+    String isCarries = "";
+    String isFixedDp = "";
+    String isVarDp = "";
+    String tmp = "";      // temporary storage for newly gotten 
+                          // request parameter
+    String whatlvl = "";
+    double justLessThn1 = 1 - 1/Double.MAX_VALUE;
+    
+    if(( tmp = request.getParameter("difflvl")) != null ) {
+        whatlvl = tmp;
+        if( whatlvl.equals("No Carries") ) {
+            noCarriesCk = true;
+            isNoCarries = "checked";
+        } else if( whatlvl.equals("Carries")) {
+            carriesCk = true;
+            isCarries = "checked";
+        } else if( whatlvl.equals("Fixed Decimal Point")) {
+            fxDecPtCk = true;
+            isFixedDp = "checked";
+        } else if( whatlvl.equals("Variable Decimal Point")) {
+            varDecPtCk = true;
+            isVarDp = "checked";
+        }
+    }
+    
+    int numOps = 2;
+    if( !noCarriesCk ) {
+        // 2 - 4 operands if maxOps = 4
+        // more likely to be 4
+        numOps = 2 + (int)((maxOps-1)*(1 - Math.pow(Math.random(), NEXP)));     
+    } 
     int colspan = 2*(SZ2_MX + 1);
     int[][] op;           // operand's first index is what operand (top/bottom)
                           // second index is what digit of that operand
@@ -32,13 +69,21 @@
     }
 
     int opDp[] = new int[maxOps]; // operand decimal point positions
-    int maxDp = (int)(SZ2_MX*Math.random()); // max decimal point 
+    int maxDp = 0; // max decimal point 
+    if( fxDecPtCk || varDecPtCk ) {
+        maxDp = (int)(SZ2_MX*Math.random());
+    }
     int ansDp = 0;
     int numDig[] = new int[maxOps]; // how many digits do operands have
     String isLinedUp = "true";
+    
+    int sum[];
+    sum = new int[SZ2_MX+1];
+    int digMax = 10;
+    
     for( int idx = 0; idx < numOps; idx++ ) {
         opDp[idx] = (int)((maxDp+1)*Math.random());
-        if( idx > 0 && opDp[idx] != opDp[idx-1]) {
+        if( varDecPtCk && idx > 0 && opDp[idx] != opDp[idx-1]) {
             isLinedUp = "false";
         }
         if( opDp[idx] > ansDp ) {
@@ -47,11 +92,11 @@
         numDig[idx] = 0;
     }
     
-    op = new int[maxOps][SZ2_MX];
+    op = new int[maxOps][SZ2_MX+1];
     String[] ans;   // final answer string   
     String[] cas;   // additive carry string 
-    cas = new String[SZ2_MX];
-    ans = new String[SZ2_MX];
+    cas = new String[SZ2_MX+1];
+    ans = new String[SZ2_MX+1];
     int jdx;
     int kdx;
     int ldx = 0;
@@ -62,9 +107,11 @@
     whatBx = new int[maxOps*SZ2_MX];
     int maxBx = 20;
     
-    for( int idx = 0; idx < SZ2_MX; idx++ ) {
-        op[0][idx] = 0;
-        op[1][idx] = 0;   
+    for( int idx = 0; idx <= SZ2_MX; idx++ ) {
+        for( int hdx = 0; hdx < maxOps; hdx++ ) {
+            op[hdx][idx] = 0;
+        }
+        sum[idx] = 0;
         cas[idx] = "";
         ans[idx] = "";
     }
@@ -75,8 +122,6 @@
     String corrPerHr = "0";
     String strtTime = String.valueOf(System.currentTimeMillis());
     String errs = "0";
-    String tmp = "";      // temporary storage for newly gotten 
-                          // request parameter
     
     //retrieves the value of the DOM object with name="numAttmptdP"
     if(( tmp = request.getParameter("numAttmptdP")) != null) {
@@ -99,20 +144,36 @@
         strtTime = tmp.toString();
     } 
     
+    //generate number of digits first, will be neeeded to prevent carries
     for( jdx = numOps-1; jdx >= 0; jdx-- ) {
         // limit the size so it fits the table
-        int maxDig = SZ2_MX - 1 - ansDp + opDp[jdx]; 
-        numDig[jdx] = (int)(maxDig*Math.random()) + 1;
+        int maxDig = SZ2_MX - ansDp + opDp[jdx];
+        // more likely to have more digits than less
+        numDig[jdx] = (int)((maxDig)*(justLessThn1 - Math.pow(Math.random(), NEXP))) + 1;
+    }
+    for( jdx = numOps-1; jdx >= 0; jdx-- ) {
         for (kdx = 0; kdx < numDig[jdx]-1; kdx++){
-            // generate uniform distribution of digits
-            op[jdx][kdx] = (new Double(10*Math.random())).intValue();
+            if( noCarriesCk ) {
+                digMax = 10 - sum[kdx]; // digMax is actually 1 greater than
+                                        // maximum allowed digit value
+                if( (numDig[0]-1) == kdx ) { // msd of op[0] cannot be 0
+                    digMax = digMax - 1;     // so this digit cannot be 9
+                }
+            }
+            op[jdx][kdx] = (int)((digMax)*(justLessThn1 - Math.pow(Math.random(), DEXP)));
+            //System.out.println("sum[" + kdx + "] = " + sum[kdx] + " digMax = " + digMax + " op[" + jdx + "][" + kdx + "] = " + op[jdx][kdx]);
             operand[jdx] = operand[jdx] + op[jdx][kdx]*(int)(Math.pow(10.,(double)kdx));
+            sum[kdx] += op[jdx][kdx];
             //System.out.println("op[" + jdx + "][" + kdx + "] = " + op[jdx][kdx]);
-            
         }
-    
+        if( noCarriesCk ) {
+            digMax = 10 - sum[kdx];
+        }
         // msb cannot be 0
-        op[jdx][kdx] = (new Double(1+9*Math.random())).intValue();
+        op[jdx][kdx] = 1 + (int)((digMax-1)*(justLessThn1 - Math.pow(Math.random(), DEXP)));
+        //System.out.println("sum[" + jdx + "] = " + sum[jdx] + " digMax = " + digMax + " op[" + jdx + "][" + kdx + "] = " + op[jdx][kdx]);
+        sum[kdx] += op[jdx][kdx];
+
         operand[jdx] = operand[jdx] + op[jdx][kdx]*(int)(Math.pow(10.,(double)kdx));
         //System.out.println("op[" + jdx + "][" + kdx + "] = " + op[jdx][kdx]);
         //System.out.println("operand[" + jdx + "] = " + operand[jdx]);
@@ -135,8 +196,7 @@
     //System.out.print("digits in answer is " + maxAnDig);
 
     int nacarries = 0;
-    int trailingZeros = 0;
-    int possCarries = 0;
+
     int spacesb4Op[] = new int[maxOps];
     // all the decimal points need to be lined up
     for( int idx = numOps-1; idx >= 0; idx-- ) {
@@ -148,14 +208,16 @@
         } else {
             spacesb4Op[idx] = SZ2_MX - ansDp;
         }
-        trailingZeros = ansDp - opDp[idx];
-        possCarries = numDig[idx] - 1;
-        if( trailingZeros > 0 ) {
-            possCarries += trailingZeros;
+        if( !noCarriesCk ) {
+            int trailingZeros = ansDp - opDp[idx];
+            int possCarries = numDig[idx] - 1;
+            if( trailingZeros > 0 ) {
+                possCarries += trailingZeros;
+            }
+            if( possCarries > nacarries ) {
+                nacarries = possCarries; 
+            }
         }
-        if( possCarries > nacarries ) {
-            nacarries = possCarries; 
-        }  
         //System.out.println("numDig[" + idx + "] = " + numDig[idx] + " opDp[" + idx + "] = " + opDp[idx] + " spacesb4Op[" + idx + "] = " + spacesb4Op[idx]);
     }
     //int spacesb4btmOp = SZ2_MX - numDig[0]; // "+" takes up one space
@@ -182,24 +244,26 @@
 <div class="d3">
 <table class="tbl">
 <tr><th id="F1" colspan="<%=colspan%>">Addition Problem</th></tr>
-<tr>
-<%  for( int idx = 0; idx <= SZ2_MX; idx++ ) {
-        if( idx >= spacesb4ca && idx < nacarries + spacesb4ca && nacarries > 0 ) { 
-            int col = SZ2_MX - 1 - idx;
-            String name = "ca" + col; 
-            if( col < 0 || col >= SZ2_MX ) {
-                 System.out.println("ca col = " + col + "being reduced to 0");
-                 col = 0;
-            } %>
-            <td class="t2"><input type="text" name="<%=name%>" class="c2" 
-                 value="<%=cas[col]%>"
-                 onkeyup="justAddCarry(<%=col%>)"></td>
-<%      } else { %>
-            <td class="t2"></td>
+<%  if( nacarries > 0 ) { %>
+    <tr>
+<%      for( int idx = 0; idx <= SZ2_MX; idx++ ) {
+            if( idx >= spacesb4ca && idx < nacarries + spacesb4ca ) { 
+                int col = SZ2_MX - 1 - idx;
+                String name = "ca" + col; 
+                if( col < 0 || col >= SZ2_MX ) {
+                     System.out.println("ca col = " + col + "being reduced to 0");
+                     col = 0;
+                } %>
+                <td class="t2"><input type="text" name="<%=name%>" class="c2" 
+                     value="<%=cas[col]%>"
+                     onkeyup="justAddCarry(<%=col%>)"></td>
+<%          } else { %>
+                <td class="t2"></td>
+<%          } %>
+        <td class="t1"></td>
 <%      } %>
-    <td class="t1"></td>
+    </tr>
 <%  } %>
-</tr>
 <%  if( numOps > 3 ) { %>
 <div ondrop="drop(event)" ondragover="allowDrop(event)">
 <tr class="oprand">
@@ -233,11 +297,8 @@
                     case 5: %>
                         <td class="t1" name="<%=name%>"><%=op[3][5]%></td>
                         <% break;
-                    case 6: %>
-                        <td class="t1" name="<%=name%>"><%=op[3][6]%></td>
-                        <% break;
                     default: %>
-                        <td class="t1">Y</td>
+                        <td class="t1">0</td>
                         <% break;
                 }       
             }
@@ -257,6 +318,7 @@
                 //int col = numDig[2] - idx + spacesb4Op[2] - 1;
                 int col = SZ2_MX - idx;
                 String name = "op2" + col;
+                //System.out.println("col = " + col + " opDp[2] = " + opDp[2] + " ansDp = " + ansDp);
                 col = col + opDp[2] - ansDp;
                 switch(col) {
                     case 0: %>
@@ -277,11 +339,8 @@
                     case 5: %>
                         <td class="t1" name="<%=name%>"><%=op[2][5]%></td>
                         <% break;
-                    case 6: %>
-                        <td class="t1" name="<%=name%>"><%=op[2][6]%></td>
-                        <% break;
                     default: %>
-                        <td class="t1">Y</td>
+                        <td class="t1">0</td>
                         <% break;
                 }       
             }
@@ -298,6 +357,7 @@
             //int col = numDig[1] - idx + spacesb4Op[1] - 1;
             int col = SZ2_MX - idx;
             String name = "op1" + col;
+            //System.out.println("col = " + col + " opDp[1] = " + opDp[1] + " ansDp = " + ansDp);
             col = col + opDp[1] - ansDp;
             switch(col) {
                 case 0: %>
@@ -318,11 +378,8 @@
                 case 5: %>
                     <td class="t1" name="<%=name%>"><%=op[1][5]%></td>
                     <% break;
-                case 6: %>
-                    <td class="t1" name="<%=name%>"><%=op[1][6]%></td>
-                    <% break;
                 default: %>
-                    <td class="t1">Y</td>
+                    <td class="t1">0</td>
                     <% break;
             }       
         }
@@ -362,11 +419,8 @@
                 case 5:  %>
                     <td class="t1" name="<%=name%>"><%=op[0][5]%></td>
                     <% break;
-                case 6:  %>
-                    <td class="t1" name="<%=name%>"><%=op[0][6]%></td>
-                    <% break;
                 default: %>
-                    <td class="t1">Y</td>
+                    <td class="t1">0</td>
                     <% break;
             }
         }
@@ -383,7 +437,7 @@
         </td>
 <%      if( idx >= spacesb4an ) { 
             int col = SZ2_MX - idx;
-            if( col < 0 || col > SZ2_MX-1 ) {
+            if( col < 0 || col > SZ2_MX ) {
                 System.out.print("reducing ans col from " + col );
                 col = 0;
                 System.out.println(" to " + col);
@@ -415,9 +469,35 @@
 <label id="decRmdr" class="msg">Click where the decimal point should be</label>
 </div>
 <div class="d3">
-<label id="lineRmdr" class="msg">Drag red boxes to line up decimal points</label>
+<label id="lineRmdr" class="msg">Drag red box(es) to line up decimal points</label>
 </div>
-    <input type="hidden" id="whatbox" value="<%=whatBx[bdx]%>" class="shortbox"> 
+<input type="hidden" id="whatbox" value="<%=whatBx[bdx]%>" class="shortbox"> 
+<div class="d4">  
+<table>
+    <tr><th colspan="1">Highest Difficulty Level</th></tr>
+    <tr><td>
+    </td></tr>
+    <tr><td>
+        <input type="radio" name="difflvl" value="No Carries" <%=isNoCarries%>>
+        <label>No Carries</label>
+    </td></tr>
+    <tr><td>
+        <input type="radio" name="difflvl" value="Carries" <%=isCarries%>>
+        <label>Carries</label>
+    </td></tr>
+    <tr><td>
+        <input type="radio" name="difflvl" value="Fixed Decimal Point" <%=isFixedDp%>> 
+        <label>Fixed Decimal Point</label>
+    </td></tr>
+    <tr><td>
+        <input type="radio" name="difflvl" value="Variable Decimal Point" <%=isVarDp%>>
+        <label>Variable Decimal Point</label>
+    </td></tr>
+</table>
+</div>
+
+<div class="d2">
+<table>
 <tr>    
     <td><label>Problems Attempted</label></td>
     <td>
@@ -458,6 +538,7 @@
 </td>
 </tr>
 </table>
+</div>
                    
 
 <input type="hidden" id="strtTime" name="strtTimeP" value="<%=strtTime%>" class="shortbox">
@@ -468,32 +549,23 @@
 <input type="hidden" id="bdx" value="<%=bdx%>" class="shortbox">
 <input type="hidden" id="lastbox" value="<%=maxBx%>" class="shortbox">
 <input type="hidden" id="linedUp" value="<%=isLinedUp%>" class="shortbox">
+<div id="statusBox0" class="d2"></div>
 <div id="statusBox1"></div>
 <div id="statusBox2"></div>
 <div id="statusBox3"></div>
-<table>
-    <tr class="DragBox">
-<%  for( int idx = 0; idx <= SZ2_MX; idx++ ) { %>
-        <td class="t2">_</td><td class="t1" name="bob">o</td>
-<%  }   %>
-    </tr>
-    <tr class="DragBox">
-<%  for( int idx = 0; idx <= SZ2_MX; idx++ ) { %>
-        <td class="t2">_</td><td class="t1" name="bob">o</td>
-<%  }   %>
-    </tr>
-    <tr class="DragBox">
-<%  for( int idx = 0; idx <= SZ2_MX; idx++ ) { %>
-        <td class="t2">_</td><td class="t1" name="bob">o</td>
-<%  }   %>
-    </tr>
-    <tr class="DragBox">
-<%  for( int idx = 0; idx <= SZ2_MX; idx++ ) { %>
-        <td class="t2">_</td><td class="t1" name="bob">o</td>
-<%  }   %>
-    </tr>
-</table>
 
+<% if( isLinedUp == "false" ) { %>
+<table>
+    <% for( int i = 0; i < numOps; i++ ) { %>
+    <tr class="DragBox">
+<%      for( int idx = 0; idx <= SZ2_MX; idx++ ) { %>
+            <td class="t2">_</td><td class="t1" name="bob">o</td>
+<%      }   %>
+    </tr>
+
+<%  }   %>
+</table>
+    <% } %>
 
 </form>
 
