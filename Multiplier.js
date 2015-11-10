@@ -23,7 +23,7 @@ function startAgain() {
             Number(document.getElementById("numAttmptd").value) + 1;
     if( document.getElementById("errs").value == '0' &&
         Number(document.getElementById("bdx").value) + 1 == max &&
-        document.getElementById("decRmdr").style.color != "red" ) {     
+        document.getElementById("msg").innerHTML == "" ) {
             document.getElementById("numWoErr").value =
                 Number(document.getElementById("numWoErr").value) + 1;    
             document.getElementById("consWoErr").value =
@@ -47,9 +47,10 @@ function checkZero( row, col ) {
     var ansBx = document.getElementsByName("ai" + row + col)[0];
     var ans = ansBx.value;
     var errString = "";  
-        var errBx = document.getElementById("wrongans");
+        var errBx = document.getElementById("msg");
     if( ans == "0" ) {
-        errBx.style.color = "#FAF3E4";
+        //errBx.style.color = "#FAF3E4";
+        errBx.innerHTML = "";
         op0Bx.style.color = "black";
         ansBx.style.backgroundColor =  "#E6EAE8";
         ansBx.style.color = "black";
@@ -64,7 +65,7 @@ function checkZero( row, col ) {
         errString = "not " + ans;
         errBx.innerHTML = "";
         errBx.innerHTML = errString;
-        errBx.style.color = "red";
+        //errBx.style.color = "red";
         op0Bx.style.color = "red";
         ansBx.style.color = "red";
         ansBx.value = "";
@@ -105,9 +106,10 @@ function checkMult( row, col ) {
         op1 =  op1Bx.childNodes[0].nodeValue; 
         corrAns = (Number(op0)*Number(op1) + Number(cin))%10;
     }
-    var errBx = document.getElementById("wrongans");
+    var errBx = document.getElementById("msg");
     if( ans == corrAns ) {
-        errBx.style.color = "#FAF3E4";
+        //errBx.style.color = "#FAF3E4";
+        errBx.innerHTML = "";
         op0Bx.style.color = "black";
         op1Bx.style.color = "black";
         if( cinBx.length > 0 ) {
@@ -126,7 +128,7 @@ function checkMult( row, col ) {
         errString = "not " + ans;
         errBx.innerHTML = "";
         errBx.innerHTML = errString;
-        errBx.style.color = "red";
+        //errBx.style.color = "red";
         op0Bx.style.color = "red";
         op1Bx.style.color = "red";
         if( cinBx.length > 0 ) {
@@ -152,10 +154,11 @@ function checkCarry( row, col ) {
     if( cinBx.length > 0 ) {
         cin = cinBx[0].value;
     }
-    var errBx = document.getElementById("wrongans");
+    var errBx = document.getElementById("msg");
     corrAns = Math.floor((Number(op0)*Number(op1) + Number(cin))/10);
     if( ans == corrAns ) {
-        errBx.style.color = "#FAF3E4";
+        //errBx.style.color = "#FAF3E4
+        errBx.innerHTML = "";
         op0Bx.style.color = "black";
         op1Bx.style.color = "black";
         if( cinBx.length > 0 ) {
@@ -173,7 +176,7 @@ function checkCarry( row, col ) {
         var errString = "not " + ans;
         errBx.innerHTML = "";
         errBx.innerHTML = errString;
-        errBx.style.color = "red";
+        //errBx.style.color = "red";
         op0Bx.style.color = "red";
         op1Bx.style.color = "red";
         if( cinBx.length > 0 ) {
@@ -212,10 +215,11 @@ function checkAddCarry( col ) {
         pcBx = document.getElementsByName("ca" + prevCol)[0];
         prevCarry = Number(pcBx.value);
     }
-    var errBx = document.getElementById("wrongans");
+    var errBx = document.getElementById("msg");
     var corrAns = Math.floor((ai0+ai1+ai2+prevCarry)/10); 
     if(ans == corrAns ){
-        errBx.style.color = "#FAF3E4";
+        //errBx.style.color = "#FAF3E4";
+        errBx.innerHTML = "";
         if( ai0Bx.length !== 0 ) {
             ai0Bx[0].style.color = "black";
         }
@@ -242,7 +246,7 @@ function checkAddCarry( col ) {
         errString = "not " + ans;
         errBx.innerHTML = "";
         errBx.innerText = errString;
-        errBx.style.color = "red";
+        //errBx.style.color = "red";
         if( ai0Bx.length !== 0 ) {
             ai0Bx[0].style.color = "red";
         }
@@ -320,9 +324,10 @@ function checkAdd( col ) {
         corrAns = (ai0+ai1+ai2+prevCarry)%10;
         errString = "least significant digit of " + errString;
     }
-    var errBx = document.getElementById("wrongans");
+    var errBx = document.getElementById("msg");
     if(ans == corrAns ){
-        errBx.style.color = "#FAF3E4";
+        //errBx.style.color = "#FAF3E4";
+        errBx.innerHTML = "";
         if( ai0Bx.length !== 0 ) {
             ai0Bx[0].style.color = "black";
         }
@@ -348,7 +353,7 @@ function checkAdd( col ) {
         errString = "not " + ans;
         errBx.innerHTML = "";
         errBx.innerHTML = errString;
-        errBx.style.color = "red";
+        //errBx.style.color = "red";
         if( ai0Bx.length !== 0 ) {
             ai0Bx[0].style.color = "red";
         }
@@ -385,9 +390,10 @@ function promptForDp( bdx ) {
     if( Number(document.getElementById("ansDp").value) === 0 ||
         bdx < Number(document.getElementById("lastbox").value - 1 ) ||
         isSetAlready )  { 
-        document.getElementById("decRmdr").style.color="#FAF3E4";
+        //document.getElementById("decRmdr").style.color="#FAF3E4";
+        document.getElementById("msg").innerHTML = "";
     } else {
-        document.getElementById("decRmdr").style.color = "red";
+        document.getElementById("msg").innerHTML = "Click where decimal point should be";
     }
 }
 
@@ -437,8 +443,10 @@ function chooseThis( which_one ) {
 
     if( totDec === 0 || ( which_one !== 7 && btns[which_one].style.color === "black") ||
         Number(document.getElementById("bdx").value) < Number(document.getElementById("lastbox").value - 1 ))  { 
-        document.getElementById("decRmdr").style.color=document.getElementById("decRmdr").style.backgroundColor;
+        //document.getElementById("decRmdr").style.color=document.getElementById("decRmdr").style.backgroundColor;
+        document.getElementById("msg").innerHTML = "";
     } else {
-        document.getElementById("decRmdr").style.color = "red";
+        //document.getElementById("decRmdr").style.color = "red";
+        document.getElementById("msg").innerHTML = "Click where decimal point should be";
     }
 }

@@ -51,23 +51,31 @@ button {
     column-count: 2;
     column-gap: 3em;
 }
-.d2 {
-    //margin-top: 7em;
-    padding-top: 5em;
-    margin-bottom: 0px;
-    padding-bottom: 0px;
-    height: 6em;
-    text-align: left;
-}
-.d3{
-    padding-top: 1em;
-    padding-bottom: 1em;
+.d2{
+    //padding-top: 1em;
+    //padding-bottom: 10em;
     text-align: center;
+    min-height: 25em;
+}
+.d3 {
+    padding-top: 2em;
+    padding-bottom: 2em;
+    text-align: center;
+    //min-height: 3em;
 }
 .d4 {
-    padding-top: 1em;
-    padding-bottom: 9em;
-    text-align: center;
+    //padding-top: 1em;
+    //padding-bottom: 1em;
+    text-align: left;
+    min-height: 6em;
+}
+.d5 {
+    //margin-top: 7em;
+    //padding-top: 1em;
+    margin-bottom: 0px;
+    padding-bottom: 0px;
+    min-height: 8em;
+    text-align: left;
 }
 .tbl {
   border: 2px solid black;
@@ -176,16 +184,17 @@ button {
     border-right-color: #D6DAD8;
     font: inherit;
 }
-.msg {
-    text-align: center;
-    margin-left: 1em;
-}
 .th-id1 {
   background-color: #2E7FA7;
 }
 #decRmdr{
     color: #FAF3E4;
     margin-left: 1em;
+}
+#msg {
+    text-align: center;
+    margin-left: 1em;
+    color: red;
 }
 #th-id2 {
   background-color: #FAF3E4;

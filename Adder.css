@@ -46,23 +46,32 @@ td {
     column-count: 2;
     column-gap: 3em;
 }
-.d2 {
-    //margin-top: 7em;
-    padding-top: 5em;
-    margin-bottom: 0px;
-    padding-bottom: 0px;
-    height: 6em;
-    text-align: left;
-}
-.d3{
-    padding-top: 1em;
-    padding-bottom: 1em;
+.d2{
+    //padding-top: 1em;
+    //padding-bottom: 10em;
     text-align: center;
+    min-height: 20em;
+}
+.d3 {
+    padding-top: 2em;
+    padding-bottom: 2em;
+    min-height: 4em;
+    text-align: center;
+    //min-height: 3em;
 }
 .d4 {
-    padding-top: 1em;
-    padding-bottom: 9em;
-    text-align: center;
+    //padding-top: 1em;
+    //padding-bottom: 1em;
+    text-align: left;
+    min-height: 6em;
+}
+.d5 {
+    //margin-top: 7em;
+    //padding-top: 1em;
+    margin-bottom: 0px;
+    padding-bottom: 0px;
+    min-height: 8em;
+    text-align: left;
 }
 .tbl {
   border: 2px solid black;
@@ -121,7 +130,6 @@ td {
   background-color:  #e9effb;;
   color:  #e9effb;;
   text-align: center;
-  border: 1px;
   font: inherit;
   height: 1.7em;
   margin-left: 0px;
@@ -173,42 +181,30 @@ td {
     border-right-color: #bcbebe;
     font: inherit;
 }
-.msg {
-    text-align: left;
-    margin-left: 1em;
-    color: #e9effb;
-}
+
 /* bar under operands */
 .th-id1{
     background-color: #638456;
 }
 .DragBox {
     color : #e9effb;
-    border : none;
+    //border : none;
     position : fixed;
     //display : block; 
     padding: 0px;
     margin: 0px;
 }
-/*
-#lineRmdr{
-    color:  #e9effb;
-    margin-left: 1em;
-}
-#decRmdr{
-    color:  #e9effb;
-    margin-left: 1em;
-}*/
 #th-id2 {
     background-color: #e9effb;
   //text-align: center;
   columns: 3 auto;
 }
-
-.DragContainer{
-    border: 2px solid pink;
+#msg {
+    //text-align: left;
+    margin-left: 1em;
+    color: red;
+    //color: #e9effb;
 }
-
 #statusBox{
     background-color: tan;
     color: black;

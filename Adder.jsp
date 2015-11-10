@@ -20,14 +20,16 @@
 <body>
    
 <%  final int SZ2_MX = 6; // maximum answer size
-    final int maxOps = 4;
-    final double NEXP = 2.6; // used to generate # of digits or # operands
-    final double DEXP = 1.4; // used to generate digits themselves
-    boolean noCarriesCk = false;
+    final int maxOps = 7;
+    final double NEXP = 2.6; // used to generate # of digits 
+    final double DEXP = 1.4; // used to generate digits themselves or # operands
+    boolean noCarriesCk = true;
     boolean carriesCk = false;
+    boolean moreThn2Ck = false;
     boolean fxDecPtCk = false;
     boolean varDecPtCk = false;
-    String isNoCarries = "";
+    String isNoCarries = "checked";
+    String isMoreThn2 = "";
     String isCarries = "";
     String isFixedDp = "";
     String isVarDp = "";
@@ -37,6 +39,8 @@
     double justLessThn1 = 1 - 1/Double.MAX_VALUE;
     
     if(( tmp = request.getParameter("difflvl")) != null ) {
+        noCarriesCk = false;
+        isNoCarries = "";
         whatlvl = tmp;
         if( whatlvl.equals("No Carries") ) {
             noCarriesCk = true;
@@ -44,6 +48,9 @@
         } else if( whatlvl.equals("Carries")) {
             carriesCk = true;
             isCarries = "checked";
+        } else if( whatlvl.equals("More Than 2 Operands")) {
+            moreThn2Ck = true;
+            isMoreThn2 = "checked";
         } else if( whatlvl.equals("Fixed Decimal Point")) {
             fxDecPtCk = true;
             isFixedDp = "checked";
@@ -54,10 +61,10 @@
     }
     
     int numOps = 2;
-    if( !noCarriesCk ) {
+    if( moreThn2Ck || varDecPtCk ) {
         // 2 - 4 operands if maxOps = 4
         // more likely to be 4
-        numOps = 2 + (int)((maxOps-1)*(1 - Math.pow(Math.random(), NEXP)));     
+        numOps = 2 + (int)((maxOps-1)*(1 - Math.pow(Math.random(), DEXP)));     
     } 
     int colspan = 2*(SZ2_MX + 1);
     int[][] op;           // operand's first index is what operand (top/bottom)
@@ -241,7 +248,7 @@
     maxBx = ldx + 1; %>
 <div class="d1" >
 <form id="th-id2" method="get" action="Adder.jsp">
-<div class="d3">
+<div class="d2">
 <table class="tbl">
 <tr><th id="F1" colspan="<%=colspan%>">Addition Problem</th></tr>
 <%  if( nacarries > 0 ) { %>
@@ -264,8 +271,124 @@
 <%      } %>
     </tr>
 <%  } %>
+<%  if( numOps > 6 ) { %>
+<tr class="oprand">
+<%      for( int idx = 0; idx <= SZ2_MX; idx++ ) {  
+            String possDp = (SZ2_MX - idx + 1 == ansDp && ansDp > 0 )? ".":""; %>
+            <td class="t2"><%=possDp%></td>
+<%          if( idx < spacesb4Op[6] ) { %>
+                <td class="t1"></td>
+<%          } else { 
+                int col = SZ2_MX - idx;
+                String name = "op6" + col;
+                col = col + opDp[6] - ansDp;
+                switch(col) {
+                    case 0: %>
+                        <td class="t1" name="<%=name%>"><%=op[6][0]%></td>
+                        <% break;
+                    case 1: %>
+                        <td class="t1" name="<%=name%>"><%=op[6][1]%></td>
+                        <% break;
+                    case 2: %>
+                        <td class="t1" name="<%=name%>"><%=op[6][2]%></td>
+                        <% break;
+                    case 3: %>
+                        <td class="t1" name="<%=name%>"><%=op[6][3]%></td>
+                        <% break;
+                    case 4: %>
+                        <td class="t1" name="<%=name%>"><%=op[6][4]%></td>
+                        <% break;
+                    case 5: %>
+                        <td class="t1" name="<%=name%>"><%=op[6][5]%></td>
+                        <% break;
+                    default: %>
+                        <td class="t1">0</td>
+                        <% break;
+                }       
+            }
+        } %>
+    
+</tr>
+<%  }    %>
+<%  if( numOps > 5 ) { %>
+<tr class="oprand">
+<%      for( int idx = 0; idx <= SZ2_MX; idx++ ) {  
+            String possDp = (SZ2_MX - idx + 1 == ansDp && ansDp > 0 )? ".":""; %>
+            <td class="t2"><%=possDp%></td>
+<%          if( idx < spacesb4Op[5] ) { %>
+                <td class="t1"></td>
+<%          } else { 
+                int col = SZ2_MX - idx;
+                String name = "op5" + col;
+                col = col + opDp[5] - ansDp;
+                switch(col) {
+                    case 0: %>
+                        <td class="t1" name="<%=name%>"><%=op[5][0]%></td>
+                        <% break;
+                    case 1: %>
+                        <td class="t1" name="<%=name%>"><%=op[5][1]%></td>
+                        <% break;
+                    case 2: %>
+                        <td class="t1" name="<%=name%>"><%=op[5][2]%></td>
+                        <% break;
+                    case 3: %>
+                        <td class="t1" name="<%=name%>"><%=op[5][3]%></td>
+                        <% break;
+                    case 4: %>
+                        <td class="t1" name="<%=name%>"><%=op[5][4]%></td>
+                        <% break;
+                    case 5: %>
+                        <td class="t1" name="<%=name%>"><%=op[5][5]%></td>
+                        <% break;
+                    default: %>
+                        <td class="t1">0</td>
+                        <% break;
+                }       
+            }
+        } %>
+    
+</tr>
+<%  }    %>
+<%  if( numOps > 4 ) { %>
+<tr class="oprand">
+<%      for( int idx = 0; idx <= SZ2_MX; idx++ ) {  
+            String possDp = (SZ2_MX - idx + 1 == ansDp && ansDp > 0 )? ".":""; %>
+            <td class="t2"><%=possDp%></td>
+<%          if( idx < spacesb4Op[4] ) { %>
+                <td class="t1"></td>
+<%          } else { 
+                int col = SZ2_MX - idx;
+                String name = "op4" + col;
+                col = col + opDp[4] - ansDp;
+                switch(col) {
+                    case 0: %>
+                        <td class="t1" name="<%=name%>"><%=op[4][0]%></td>
+                        <% break;
+                    case 1: %>
+                        <td class="t1" name="<%=name%>"><%=op[4][1]%></td>
+                        <% break;
+                    case 2: %>
+                        <td class="t1" name="<%=name%>"><%=op[4][2]%></td>
+                        <% break;
+                    case 3: %>
+                        <td class="t1" name="<%=name%>"><%=op[4][3]%></td>
+                        <% break;
+                    case 4: %>
+                        <td class="t1" name="<%=name%>"><%=op[4][4]%></td>
+                        <% break;
+                    case 5: %>
+                        <td class="t1" name="<%=name%>"><%=op[4][5]%></td>
+                        <% break;
+                    default: %>
+                        <td class="t1">0</td>
+                        <% break;
+                }       
+            }
+        } %>
+    
+</tr>
+<%  }    %>
 <%  if( numOps > 3 ) { %>
-<div ondrop="drop(event)" ondragover="allowDrop(event)">
 <tr class="oprand">
 <%      for( int idx = 0; idx <= SZ2_MX; idx++ ) {  
             String possDp = (SZ2_MX - idx + 1 == ansDp && ansDp > 0 )? ".":""; %>
@@ -291,7 +414,6 @@
                         <td class="t1" name="<%=name%>"><%=op[3][3]%></td>
                         <% break;
                     case 4: %>
-                    
                         <td class="t1" name="<%=name%>"><%=op[3][4]%></td>
                         <% break;
                     case 5: %>
@@ -305,7 +427,6 @@
         } %>
     
 </tr>
-</div>
 <%  }    %>
 <%  if( numOps > 2 ) { %>
 <tr class="oprand">
@@ -457,19 +578,28 @@
 <%      } 
     }  %>  
     </tr>
+</table>
+</div>
+<div id="statusBox0" class="d2"></div>
+<div id="statusBox1"></div>
+<div id="statusBox2"></div>
+<div id="statusBox3"></div>
 
-
+<% if( isLinedUp == "false" ) { %>
 <table>
-</div>
-<div class="d4">
+    <% for( int i = 0; i < numOps; i++ ) { %>
+    <tr class="DragBox">
+<%      for( int idx = 0; idx <= SZ2_MX; idx++ ) { %>
+            <td class="t2">_</td><td class="t1" name="bob">o</td>
+<%      }   %>
+    </tr>
+
+<%  }   %>
+</table>
+    <% } %>
+<div class="d3">
 <!--this is where error messages get displayed//-->
-<label id="wrongans" class="msg"></label>
-</div>
-<div class="d3">
-<label id="decRmdr" class="msg">Click where the decimal point should be</label>
-</div>
-<div class="d3">
-<label id="lineRmdr" class="msg">Drag red box(es) to line up decimal points</label>
+<label id="msg"></label>
 </div>
 <input type="hidden" id="whatbox" value="<%=whatBx[bdx]%>" class="shortbox"> 
 <div class="d4">  
@@ -486,6 +616,10 @@
         <label>Carries</label>
     </td></tr>
     <tr><td>
+        <input type="radio" name="difflvl" value="More Than 2 Operands" <%=isMoreThn2%>> 
+        <label>MoreThan 2 Operands</label>
+    </td></tr>
+    <tr><td>
         <input type="radio" name="difflvl" value="Fixed Decimal Point" <%=isFixedDp%>> 
         <label>Fixed Decimal Point</label>
     </td></tr>
@@ -496,7 +630,7 @@
 </table>
 </div>
 
-<div class="d2">
+<div class="d5">
 <table>
 <tr>    
     <td><label>Problems Attempted</label></td>
@@ -549,23 +683,7 @@
 <input type="hidden" id="bdx" value="<%=bdx%>" class="shortbox">
 <input type="hidden" id="lastbox" value="<%=maxBx%>" class="shortbox">
 <input type="hidden" id="linedUp" value="<%=isLinedUp%>" class="shortbox">
-<div id="statusBox0" class="d2"></div>
-<div id="statusBox1"></div>
-<div id="statusBox2"></div>
-<div id="statusBox3"></div>
 
-<% if( isLinedUp == "false" ) { %>
-<table>
-    <% for( int i = 0; i < numOps; i++ ) { %>
-    <tr class="DragBox">
-<%      for( int idx = 0; idx <= SZ2_MX; idx++ ) { %>
-            <td class="t2">_</td><td class="t1" name="bob">o</td>
-<%      }   %>
-    </tr>
-
-<%  }   %>
-</table>
-    <% } %>
 
 </form>
 

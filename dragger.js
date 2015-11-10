@@ -15,7 +15,7 @@
         var operands = new Array();
         var dragging = false;
         var dragBox = null; // this is the dragHelper clicked on
-        var boxWidth = 0;
+        //var boxWidth = 0;
         var dBoxWidth = 0;
         var boxHeight = 0;
         var yClick = null;
@@ -40,7 +40,6 @@
             //document.getElementById('statusBox1').innerHTML = "docPos.x = " + docPosX + " mousePos.x = " + mousePos.x + " docPos.y = " + docPosY + " mousePos.y = " + mousePos.y;
 	    return {x:mousePos.x - docPosX, y:mousePos.y - docPosY}; 
 	} 
-        // seems a little off for Mozilla fixit
 	function getPosition(e){ 
 	    var left = 0; 
 	    var top  = 0; 
@@ -52,7 +51,23 @@
 	    left += e.offsetLeft; 
 	    top  += e.offsetTop; 
 	    return {x:Number(left), y:Number(top)}; 
+	}
+        function mouseCoords(ev){ 
+	    if(ev.pageX || ev.pageY){ 
+	        return {x:ev.pageX, y:ev.pageY}; 
+	    } 
+	    return { 
+	        x:Number(ev.clientX) + Number(document.body.scrollLeft) - Number(document.body.clientLeft), 
+	        y:Number(ev.clientY) + Number(document.body.scrollTop)  - Number(document.body.clientTop)
+	    }; 
 	} 
+        /*
+	function getPosition(e){ 
+            var rect = e.getBoundingClientRect();
+	    var left = rect.left; 
+	    var top  = rect.top; 
+	    return {x:Number(left), y:Number(top)}; 
+	} */
         function mouseCoords(ev){ 
 	    if(ev.pageX || ev.pageY){ 
 	        return {x:ev.pageX, y:ev.pageY}; 
@@ -143,7 +158,11 @@
                 var targetI = dragHelper[i]; 
                 var top = Number(dragHelper[i].style.top.match(/[0-9]+/)); 
                 var bottom = top + boxHeight;
-                if( top < mousePos.y && mousePos.y < bottom ) {
+                var left = Number(dragHelper[i].style.left.match(/[0-9]+/));
+                var right = left + 
+                    Number(getComputedStyle(dragHelper[i]).width.match(/[0-9]+/));
+                if( top < mousePos.y && mousePos.y < bottom &&
+                   left < mousePos.x && mousePos.x < right ) {
                     dragBox = dragHelper[i];
                     dragging = true;
                     yClick = top + 1;
@@ -172,7 +191,6 @@
                 for( idx = 0; idx < operands.length; idx++ ) { 
                     xOffs = Number(dragHelper[idx].getAttribute('dpOffs')); 
                     var hpDpPos = getPosition(dragHelper[idx]).x + xOffs;
-                    // seems to be executing too many times check and fixit
                     //alert( "idx = " + idx + " opDpPos = " + opDpPos + " hpDpPos = " + hpDpPos);
                     var squares = dragHelper[idx].childNodes;
                     var tol = 3;
@@ -199,10 +217,13 @@
                 }
                 if( allLinedUp ) {
                     document.getElementById('linedUp').value = "true";
-                    document.getElementById("lineRmdr").style.color=getComputedStyle(document.getElementById("lineRmdr")).backgroundColor;
+                    document.getElementById('msg').innerHTML = "";
+                            
+                            //getComputedStyle(document.getElementById("lineRmdr")).backgroundColor;
                     setFocus();
                 } else {
-                    document.getElementById("lineRmdr").style.color = "red";
+                    document.getElementById("msg").innerHTML = 
+                            "Drag red box(es) to line up decimal points";
                 }
             }
         }
@@ -237,7 +258,7 @@
                 operands = document.getElementsByClassName('oprand');
                 dragHelper  = document.getElementsByClassName('DragBox');
                 dBoxWidth = getPosition(dpBoxes[1]).x - getPosition(opBoxes[0]).x;
-                boxWidth = (getPosition(dpBoxes[1]).x - getPosition(dpBoxes[0]).x)/2;
+                //boxWidth = (getPosition(dpBoxes[1]).x - getPosition(dpBoxes[0]).x)/2;
                 boxHeight = Number(getComputedStyle(opBoxes[0]).height.match(/[0-9]+/));
                 for( var idx = 0; idx < operands.length; idx++ ) {
                     allLinedup = false;

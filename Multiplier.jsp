@@ -85,16 +85,18 @@ incorrect //-->
     int maxAndig = 0;
     
     final double EXP = 2.4;
-    boolean singlCk = false;
+    boolean singlCk = true;
     boolean tenshCk = false;
     boolean triplsCk = false;
     boolean decsCk = false;
-    String isSingl = "";
+    String isSingl = "checked";
     String isTensh = "";
     String isTripl = "";
     String isDecs = "";
     String whatlvl = "";
     if(( tmp = request.getParameter("difflvl")) != null ) {
+        singlCk = false;
+        isSingl = "";
         whatlvl = tmp;
         if( whatlvl.equals("Single Digits") ) {
             singlCk = true;
@@ -140,7 +142,8 @@ incorrect //-->
         strtTime = tmp.toString();
     } 
 
-    // Math.random() generates x, 0<=x<1
+    // Math.random() generates x, 0<=x< 1
+    // topOpDgts will be uniformly distributed between 2 and 4 for SZ2_MX = 6
     topOpDgts = (new Double(2+(SZ2_MX-3)*Math.random())).intValue();
     nmcarries = topOpDgts - 1; // number of multiplicative carries
         
@@ -154,7 +157,20 @@ incorrect //-->
     
     if( singlCk ) {
         btmOpDgts = 1;
-    } else { // more likely to have more digits than less
+    } else { // more likely to have more digits than less.
+        // takes uniform distribution and makes small numbers bigger and big
+        // numbers smaller. If the *'s made a straight line, individual numbers 
+        // would change but the distribution would not. End result with this *
+        // distribution is more of the numbers are bigger
+        // 1**
+        // | @  *
+        // |  @   *
+        // |   @   *
+        // |    @   *
+        // |     @  *
+        // |      @ *
+        // |        *
+        // 0--------1 
         btmOpDgts = (new Double(1+(maxBtmDgts)*(1 - Math.pow(Math.random(),EXP)))).intValue();
     }
     
@@ -328,7 +344,7 @@ incorrect //-->
 %>
 <div class="d1" >
 <form id="th-id2" method="get" action="Multiplier.jsp">
-<div class="d3">
+<div class="d2">
 <table class="tbl">
 
 <tr><th id="F1" colspan="<%=colspan%>">Multiplication Problem</th></tr>
@@ -515,14 +531,11 @@ if( nonZeros > 1 ) { // more than one intermediate answer => need to add%>
 </div>
     
 <div class="d3">
-<label id="decRmdr" class="msg">Click where the decimal point should be</label>
-</div>
-
-<div class="d4">
 <!--this is where error messages get displayed//-->
-<label id="wrongans" class="msg"></label>
+<label id="msg"></label>
 </div>
-<input type="hidden" id="whatbox" value="<%=whatBx[bdx]%>" class="shortbox">   
+<input type="hidden" id="whatbox" value="<%=whatBx[bdx]%>" class="shortbox">  
+<div class="d4">
 <table>
     <tr><th colspan="1">Highest Difficulty Level</th></tr>
     <tr><td>
@@ -544,8 +557,8 @@ if( nonZeros > 1 ) { // more than one intermediate answer => need to add%>
         <label>Decimals</label>
     </td></tr>
 </table>
-
-<div class="d2">
+</div>
+<div class="d5">
 <table>
 <tr>    
     <td><label>Problems Attempted</label></td>
