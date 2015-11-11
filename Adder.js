@@ -113,7 +113,6 @@ function justAdd( col ) {
     }
     var errBx = document.getElementById("msg");
     if(ans == corrAns ){
-        //errBx.style.color = "#FAF3E4";
         errBx.innerHTML = "";
         for( var i = 0; i < len; i++ ) {
             if( opBx[i].length !== 0 ) {

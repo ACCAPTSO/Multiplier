@@ -541,19 +541,23 @@ if( nonZeros > 1 ) { // more than one intermediate answer => need to add%>
     <tr><td>
     </td></tr>
     <tr><td>
-        <input type="radio" name="difflvl" value="Single Digits" <%=isSingl%>>
+        <input type="radio" name="difflvl" value="Single Digits" <%=isSingl%>
+            onclick="zeroCounts()">
         <label>Single Digits</label>
     </td></tr>
     <tr><td>
-        <input type="radio" name="difflvl" value="Tens and Hundreds" <%=isTensh%>>
+        <input type="radio" name="difflvl" value="Tens and Hundreds" <%=isTensh%>
+            onclick="zeroCounts()">
         <label>Tens and Hundreds</label>
     </td></tr>
     <tr><td>
-        <input type="radio" name="difflvl" value="Double and Triple Digits" <%=isTripl%>> 
+        <input type="radio" name="difflvl" value="Double and Triple Digits" <%=isTripl%>
+            onclick="zeroCounts()"> 
         <label>Double and Triple Digits</label>
     </td></tr>
     <tr><td>
-        <input type="radio" name="difflvl" value="Decimals" <%=isDecs%>>
+        <input type="radio" name="difflvl" value="Decimals" <%=isDecs%>
+            onclick="zeroCounts()">
         <label>Decimals</label>
     </td></tr>
 </table>

@@ -8,9 +8,6 @@
 <!DOCTYPE html>
 <html>
 <head>
-<style>
-#div1 {width:370px;height:70px;padding:10px;border:1px solid #aaaaaa;}
-</style>
 
 <link rel="stylesheet" href="Adder.css" type="text/css">
 <script src="Multiplier.js"></script>
@@ -19,7 +16,7 @@
 </head>
 <body>
    
-<%  final int SZ2_MX = 6; // maximum answer size
+<%  final int SZ2_MX = 5; // maximum answer size
     final int maxOps = 7;
     final double NEXP = 2.6; // used to generate # of digits 
     final double DEXP = 1.4; // used to generate digits themselves or # operands
@@ -156,7 +153,7 @@
         // limit the size so it fits the table
         int maxDig = SZ2_MX - ansDp + opDp[jdx];
         // more likely to have more digits than less
-        numDig[jdx] = (int)((maxDig)*(justLessThn1 - Math.pow(Math.random(), NEXP))) + 1;
+        numDig[jdx] = (int)((maxDig-1)*(justLessThn1 - Math.pow(Math.random(), NEXP))) + 2;
     }
     for( jdx = numOps-1; jdx >= 0; jdx-- ) {
         for (kdx = 0; kdx < numDig[jdx]-1; kdx++){
@@ -187,13 +184,10 @@
     }
 
     double maxAns = 0;
-    // more to it than this when there is a decimal point fixit
     for( int idx = 0; idx < numOps; idx++ ) {
         maxAns += operand[idx]/Math.pow(10,opDp[idx]);
         //System.out.println("partial answer is " + maxAns);
     }
-    //maxAns *= Math.pow(10,ansDp);
-    //System.out.print("answer is " + maxAns);
     
     int maxAnDig = 0;
     if( maxAns > 0 ) {
@@ -608,23 +602,28 @@
     <tr><td>
     </td></tr>
     <tr><td>
-        <input type="radio" name="difflvl" value="No Carries" <%=isNoCarries%>>
+        <input type="radio" name="difflvl" value="No Carries" 
+            <%=isNoCarries%> onclick="zeroCounts()">
         <label>No Carries</label>
     </td></tr>
     <tr><td>
-        <input type="radio" name="difflvl" value="Carries" <%=isCarries%>>
+        <input type="radio" name="difflvl" value="Carries"
+            <%=isCarries%> onclick="zeroCounts()">
         <label>Carries</label>
     </td></tr>
     <tr><td>
-        <input type="radio" name="difflvl" value="More Than 2 Operands" <%=isMoreThn2%>> 
+        <input type="radio" name="difflvl" value="More Than 2 Operands" 
+            <%=isMoreThn2%> onclick="zeroCounts()"> 
         <label>MoreThan 2 Operands</label>
     </td></tr>
     <tr><td>
-        <input type="radio" name="difflvl" value="Fixed Decimal Point" <%=isFixedDp%>> 
+        <input type="radio" name="difflvl" value="Fixed Decimal Point" 
+            <%=isFixedDp%> onclick="zeroCounts()"> 
         <label>Fixed Decimal Point</label>
     </td></tr>
     <tr><td>
-        <input type="radio" name="difflvl" value="Variable Decimal Point" <%=isVarDp%>>
+        <input type="radio" name="difflvl" value="Variable Decimal Point" 
+            <%=isVarDp%> onclick="zeroCounts()">
         <label>Variable Decimal Point</label>
     </td></tr>
 </table>

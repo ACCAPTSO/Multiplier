@@ -218,8 +218,6 @@
                 if( allLinedUp ) {
                     document.getElementById('linedUp').value = "true";
                     document.getElementById('msg').innerHTML = "";
-                            
-                            //getComputedStyle(document.getElementById("lineRmdr")).backgroundColor;
                     setFocus();
                 } else {
                     document.getElementById("msg").innerHTML = 
@@ -248,17 +246,14 @@
                 var opBoxes = document.getElementsByClassName('t1');
                 for( var idx = 0; idx < opBoxes.length; idx++ ) {
                     opBoxes[idx].style.color = getComputedStyle(opBoxes[idx]).backgroundColor;
-                    //opBoxes[idx].style.color = "blue";
                 }
                 var dpBoxes = document.getElementsByClassName('t2');
                 for( var idx = 0; idx < dpBoxes.length; idx++ ) {
                     dpBoxes[idx].style.color = getComputedStyle(dpBoxes[idx]).backgroundColor;
-                    //dpBoxes[idx].style.color = "blue";
                 }
                 operands = document.getElementsByClassName('oprand');
                 dragHelper  = document.getElementsByClassName('DragBox');
                 dBoxWidth = getPosition(dpBoxes[1]).x - getPosition(opBoxes[0]).x;
-                //boxWidth = (getPosition(dpBoxes[1]).x - getPosition(dpBoxes[0]).x)/2;
                 boxHeight = Number(getComputedStyle(opBoxes[0]).height.match(/[0-9]+/));
                 for( var idx = 0; idx < operands.length; idx++ ) {
                     allLinedup = false;
@@ -346,7 +341,6 @@
                     dragHelper[idx].style.left = leftPos + "px";
                     dragHelper[idx].style.height = boxHeight + "px";
                     dragHelper[idx].setAttribute('dpOffs', dpOffs); 
-	            //dragHelper[idx].setAttribute('DragObj', 1); 
 
                     // since drop targets don't move or expand, this only needs to be done once
                     var pos = getPosition(operands[idx]);

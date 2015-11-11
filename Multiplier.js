@@ -14,6 +14,18 @@ function setFocus() { // this part is javascript
     x.elements[i].value="";
 }
 
+
+function zeroCounts() {
+    var max = Number(document.getElementById('lastbox').value);
+        
+    // update problem counts
+    document.getElementById("numAttmptd").value = -1;
+    document.getElementById("errs").value = 1;
+    document.getElementById("numWoErr").value = 0;   
+    document.getElementById("consWoErr").value = 0;
+    document.getElementById("strtTime").value = Number(Date.now());
+    startAgain();
+}
 // start again button code
 function startAgain() {
     var max = Number(document.getElementById('lastbox').value);
@@ -35,9 +47,12 @@ function startAgain() {
     var jstime = Number(Date.now());
     var jatime = Number(document.getElementById("strtTime").value);
     var timediff = jstime - jatime;
-    document.getElementById("corrPerHr").value = 
-        Math.floor(3600000*document.getElementById("numWoErr").value/timediff);
-
+    if( timediff === 0 ) {
+        document.getElementById("corrPerHr").value = 0;
+    } else {
+        document.getElementById("corrPerHr").value = 
+        Math.floor(3600000*Number(document.getElementById("numWoErr").value)/timediff);
+    }
     document.getElementById('th-id2').submit();
     setFocus();
 }
@@ -410,12 +425,13 @@ function upDateErrCount() {
 function chooseThis( which_one ) { 
     var btns = document.getElementsByName('dec-pt');
     var totDec = Number(document.getElementById("ansDp").value);
-    for( i = 0; i < btns.length; i++ ) {
+    var nbtns= btns.length;
+    for( i = 0; i < nbtns; i++ ) {
         var att = "andsp" + i;
         if( i === which_one ) {
             btns[i].childNodes[0].nodeValue=".";
             btns[i].setAttribute( att,'.');
-            var markedDec = 7 - i;
+            var markedDec = nbtns - i;
             if( totDec === markedDec ) {
                 btns[i].style.color="black";
                 var leadZeros = document.getElementsByName("yesThis");
@@ -428,7 +444,9 @@ function chooseThis( which_one ) {
                 if( btns[i].style.color == "red") { 
                     btns[i].childNodes[0].nodeValue="_";
                     btns[i].setAttribute( att,'');
-                    btns[i].style.color="#FAF3E4"; // hide "_" with background color
+                    //btns[i].style.color="#FAF3E4"; // hide "_" with background color
+                    // hide "_" with background color
+                    btns[i].style.color=btns[i].style.backgroundColor; 
                 } else {
                     btns[i].style.color="red";
                     upDateErrCount();
