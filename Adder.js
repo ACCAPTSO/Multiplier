@@ -109,7 +109,6 @@ function justAdd( col ) {
     } else {
         //alert(ai1 + " + " + ai2 + " + " + ai3 + " + " + prevCarry );
         corrAns = (sum+prevCarry)%10;
-        errString = "least significant digit of " + errString;
     }
     var errBx = document.getElementById("msg");
     if(ans == corrAns ){
