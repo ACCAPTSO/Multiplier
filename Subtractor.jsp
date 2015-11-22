@@ -78,7 +78,7 @@
     
     for( int idx = 1; idx >= 0; idx-- ) {
         opDp[idx] = minDp + (int)((maxDp+1-minDp)*Math.random());
-        minDp = opDp[idx]; // lower operand needs to be smaller that upper
+        minDp = opDp[idx]; // lower operand needs to be smaller than upper
                            // so put more digits to the right of the decimal pt
         if( varDecPtCk && idx == 0 && opDp[0] != opDp[1]) {
             isLinedUp = "false";
@@ -171,7 +171,7 @@
             }
             op[jdx][kdx] = digMin + (int)((digMax - digMin)*(justLessThn1 - Math.pow(Math.random(), DEXP)));
             //System.out.println("sum[" + kdx + "] = " + sum[kdx] + " digMax = " + digMax + " op[" + jdx + "][" + kdx + "] = " + op[jdx][kdx]);
-            //operand[jdx] = operand[jdx] + op[jdx][kdx]*(int)(Math.pow(10.,(double)kdx));
+            operand[jdx] = operand[jdx] + op[jdx][kdx]*(int)(Math.pow(10.,(double)kdx));
             //System.out.println("op[" + jdx + "][" + kdx + "] = " + op[jdx][kdx]);
         }
         if( jdx == 0 && (noBorrowsCk || numDig[0] == numDig[1] ) ) {
@@ -181,13 +181,23 @@
         op[jdx][kdx] = 1 + (int)((digMax-1)*(justLessThn1 - Math.pow(Math.random(), DEXP)));
         //System.out.println("sum[" + jdx + "] = " + sum[jdx] + " digMax = " + digMax + " op[" + jdx + "][" + kdx + "] = " + op[jdx][kdx]);
 
-        //operand[jdx] = operand[jdx] + op[jdx][kdx]*(int)(Math.pow(10.,(double)kdx));
+        operand[jdx] = operand[jdx] + op[jdx][kdx]*(int)(Math.pow(10.,(double)kdx));
         //System.out.println("op[" + jdx + "][" + kdx + "] = " + op[jdx][kdx]);
         //System.out.println("operand[" + jdx + "] = " + operand[jdx]);
     }
     
+    if( operand[1] <= operand[0] ) {
+        int lastDig = numDig[0] - 1;
+        operand[0] -= (int)(Math.pow(10, lastDig)*op[0][lastDig]);
+        operand[0] += (int)(Math.pow(10, lastDig)*(op[0][lastDig]-1));
+        op[0][lastDig] = op[0][lastDig] - 1;
+        if( op[0][lastDig] == 0 ) {
+            numDig[0] -= 1;
+        }
+    }
+    
     // shift the digits so the decimal points line up and calculate operands
-    for( jdx = numOps-1; jdx >= 0; jdx-- ) {
+    //for( jdx = numOps-1; jdx >= 0; jdx-- ) {
         /*
         int diff = ansDp - opDp[jdx];
         if( diff > 0 ) {
@@ -200,15 +210,15 @@
         opDp[jdx] += diff;
         System.out.println("numDig[" + jdx + "] = "+ numDig[jdx] + " opDp[" + jdx + "] = " + opDp[jdx]);
                 */
-        for (kdx = 0; kdx < numDig[jdx]-1; kdx++){
-            operand[jdx] = operand[jdx] + op[jdx][kdx]*(int)(Math.pow(10.,(double)kdx));
+        //for (kdx = 0; kdx < numDig[jdx]-1; kdx++){
+            //operand[jdx] = operand[jdx] + op[jdx][kdx]*(int)(Math.pow(10.,(double)kdx));
             //System.out.println("op[" + jdx + "][" + kdx + "] = " + op[jdx][kdx]);
-        }
+        //}
 
-        operand[jdx] = operand[jdx] + op[jdx][kdx]*(int)(Math.pow(10.,(double)kdx));
+        //operand[jdx] = operand[jdx] + op[jdx][kdx]*(int)(Math.pow(10.,(double)kdx));
         //System.out.println("op[" + jdx + "][" + kdx + "] = " + op[jdx][kdx]);
-        System.out.println("operand[" + jdx + "] = " + operand[jdx]);
-    }    
+        //System.out.println("operand[" + jdx + "] = " + operand[jdx]);
+    //}    
 
     int dec = 0;
     int nacarries = 0;
@@ -226,7 +236,7 @@
             }
         }
         if( needsCarry ) {
-            borrows[kdx+1] = oneidx+1 > 0? op[1][oneidx+1] - 1: -1;
+            borrows[kdx+1] = (0 < oneidx+1 && oneidx+1 < SZ2_MX)? op[1][oneidx+1] - 1: -1;
             carries[kdx] = 1;
             dec = 1;
             nacarries += 1;          
