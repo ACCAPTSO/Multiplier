@@ -53,8 +53,8 @@ td {
     min-height: 20em;
 }
 .d3 {
-    padding-top: 2em;
-    padding-bottom: 2em;
+    //padding-top: 1em;
+    //padding-bottom: 1em;
     min-height: 4em;
     text-align: center;
     //min-height: 3em;
@@ -205,7 +205,8 @@ td {
 
 /* bar under operands */
 .th-id1{
-    background-color: #1b065c;
+    background-color: #0f156f;
+
 }
 .DragBox {
     color : #fdfaef;
@@ -219,9 +220,12 @@ td {
   //text-align: center;
   columns: 3 auto;
 }
-#msg {
-    //text-align: left;
-    margin-left: 1em;
+#dispBo {
+    //margin-left: 1em;
+    color: red;
+}
+#msg {;
+    //margin-left: 1em;
     color: red;
 }
 #statusBox{

@@ -119,14 +119,13 @@ function subtract( col ) {
         errString = "not " + ans;
         errBx.innerHTML = "";
         errBx.innerHTML = errString;
-        //errBx.style.color = "red";
         for( var i = 0; i < len; i++ ) {
             if( opBx[i].length !== 0 ) {
                 opBx[i][0].style.color = "red";
             }
         }
         if( cBx != null ) {
-            if( cBx.length > 0 ) {
+            if( cBx.length > 0 && cBx[0].style.textDecoration != "line-through" ) {
                 cBx[0].style.color = "red";
             }
         }
@@ -137,43 +136,15 @@ function subtract( col ) {
 }
 function checkBorrow( col ) {
     var errBx = document.getElementById("msg");
-    //var borBx = document.getElementsByName("op1" + col)[0];
-    //var coBx = document.getElementsByName("ca" + col);
-    //var co = 0;
-    //if( coBx.length > 0 ) {
-    //    co = 10*Number(coBx[0].value);
-    //}
-    //var newBx = document.getElementsByName("bo" + col)[0];
-
-    //var prevCol = col - 1;
     var ciBx = document.getElementsByName("ca" + col)[0];
-    //var biBx = document.getElementsByName("bo" + prevCol)[0];
-    //alert("col = " + col + " borBx = " + borBx);
-        //if( newVal > 9 ) {
-    //    newVal = newVal - co;
-    //} else if( coBx[0] ) {
-    //    coBx[0].value = "";
-    //}
-    //newBx.value = newVal;
-    //borBx.style.setProperty("text-decoration", "line-through");
-    //var biValue = 0;
-
     var ans = ciBx.value;
-    var corrAns = 1;
-    //if( biBx ) {
-    //    biValue = Number(biBx.value);
-    //}
-    //if( biValue < 0 ) {
-    //    biBx.value = biValue + 10;
-    //} else {
-    //    ciBx.value = 1;
-    //}
-    if(ans == corrAns ) {
+    
+    if(ans == 1 ) {
         errBx.innerHTML = "";
         ciBx.style.color = "black";
         setFocus();
     } else {
-        upDateErrCount
+        upDateErrCount();
         ciBx.style.color = "red";
         ciBx.value="";
         errString = "not " + ans;
@@ -184,6 +155,9 @@ function checkBorrow( col ) {
 function checkNewVal( col ) {
     var errBx = document.getElementById("msg");
     var borBx = document.getElementsByName("op1" + col)[0];
+    if( !borBx ) {
+        borBx = document.getElementsByName("ze1" + col)[0];
+    }
     var coBx = document.getElementsByName("ca" + col);
     var co = 0;
     if( coBx.length > 0 ) {
@@ -195,160 +169,109 @@ function checkNewVal( col ) {
     var ciBx = document.getElementsByName("ca" + prevCol)[0];
     var ans = newBx.value;
     var corrAns = co + Number(borBx.childNodes[0].nodeValue) - 1;
-    //if( corrAns < 0 ) {
-        
-    //} else 
+
     if( corrAns > 9 ) {
         corrAns = corrAns - co;
-    } else if( coBx[0] ) {
-        coBx[0].value = "";
     }
-    // red highlight newBx fixit
     if(ans == corrAns ) {
         errBx.innerHTML = "";
         newBx.style.color = "black";
+        borBx.style.color = "black";
+        if( coBx.length > 0 ) {
+            coBx[0].style.color = "black";
+        }
         ciBx.focus();
         ciBx.style.backgroundColor = "white";
         ciBx.style.color = "red";
         ciBx.style.border = "1px solid black";
         ciBx.value="";
     } else {
-        upDateErrCount
+        upDateErrCount();
         newBx.style.color = "red";
         newBx.value = "";
+        borBx.style.color = "red";
+        if( coBx.length > 0 ) {
+            coBx[0].style.color = "red";
+        }
         errString = "not " + ans;
         errBx.innerHTML = "";
         errBx.innerHTML = errString;
     }
 }
+// cross off the digit being borrowed from, make new box visible for the
+// new operand digit and set the focus to the new box
+// allows borrows when there shouldn't be one fixit
 function promptBorrow( col ) {
     var borBx = document.getElementsByName("op1" + col)[0];
-    //var coBx = document.getElementsByName("ca" + col);
-    //var co = 0;
-    //if( coBx.length > 0 ) {
-    //    co = 10*Number(coBx[0].value);
-    //}
+    if( !borBx ) {
+        borBx = document.getElementsByName("ze1" + col)[0];
+    }
+    var coBx = document.getElementsByName("ca" + col);
     var newBx = document.getElementsByName("bo" + col)[0];
-    newBx.focus();
-    newBx.style.backgroundColor = "white";
-    newBx.style.color = "red";
-    newBx.style.border = "1px solid black";
-    newBx.value="";
-    //var prevCol = col - 1;
-    //var ciBx = document.getElementsByName("ca" + prevCol)[0];
-    //var biBx = document.getElementsByName("bo" + prevCol)[0];
-    //alert("col = " + col + " borBx = " + borBx);
-    //var newVal = co + Number(borBx.childNodes[0].nodeValue) - 1;
-    //if( newVal > 9 ) {
-    //    newVal = newVal - co;
-    //} else if( coBx[0] ) {
-    //    coBx[0].value = "";
-    //}
-    //newBx.value = newVal;
     
-    // if 0 then cross off the carry in as well fixit
-    // perhaps cross off both on clicking carry in as well fixit
-    borBx.style.setProperty("text-decoration", "line-through");
+    // turn any red numbers for a subtraction error black
+    var allT1s = document.getElementsByClassName("t1");
+    for( var i = 0; i < allT1s.length; i++ ) {
+        allT1s[i].style.color = "black";
+    }  
+    var allF1s = document.getElementsByClassName("f1");
+    for( var i = 0; i < allF1s.length; i++ ) {
+        allF1s[i].style.color = "black";
+    } 
+    var allF2s = document.getElementsByClassName("f2");
+    for( var i = 0; i < allF2s.length; i++ ) {
+        allF2s[i].style.color = "black";
+    } 
+    var errBx = document.getElementById("msg");
+    errBx.innerHTML = "";
+    
+    if( newBx ) { // make sure it's really a column that should be borrowed from 
+                  // or do nothing
+    
+        if( Number(borBx.childNodes[0].nodeValue) === 0 ) {
+            // if 0 then cross off the carry in as well
+            // if it's 0 & no carry in, there is nothing to borrow so do nothing
+            if( coBx.length > 0 && Number(coBx[0].value) === 1 ) {
+                borBx.style.setProperty("text-decoration", "line-through");
+                coBx[0].style.textDecoration = "line-through";
+                newBx.focus();
+                newBx.style.backgroundColor = "white";
+                newBx.style.color = "red";
+                newBx.style.border = "1px solid black";
+                newBx.value="";
+            }
+        } else {
+            borBx.style.setProperty("text-decoration", "line-through");
+            newBx.focus();
+            newBx.style.backgroundColor = "white";
+            newBx.style.color = "red";
+            newBx.style.border = "1px solid black";
+            newBx.value="";
+        }
     
     // if it's the last digit, shouldn't have to borrow 
     // just for 1xxx or for any last digit? fixit
     
-    // if it's 0 and no carry in, there is nothing to borrow turn it red or
-    // do nothing or something fixit
-    
     // should they actually have to do the borrows or do I calculate using
     // real numbers, not box entries? fixit
     
-    // keep "click on a digit to borrow from it" message up until all the borrows
-    // have been made java String defaultMsg? how would you clear it? fixit
-    // perhaps you need two message boxes after all
-    
-    // don't make the 1 disappear if you're cancelling a 10 to make it 9, if
-    // you don't get the 9 in the first try, it will never calculate correctly
-    // fixit
-    
-    //var biValue = 0;
-    //if( biBx ) {
-    //    biValue = Number(biBx.value);
-    //}
-    //if( biValue < 0 ) {
-    //    biBx.value = biValue + 10;
-    //} else {
-    //    ciBx.value = 1;
-    //}
+        // keep "click on a digit to borrow from it" message up until all the 
+        // borrows have been made
+        var displayBorrow = document.getElementById('dispBo');
+        var nCols = document.getElementsByClassName('dp');
+        var mtBoxes = 0;
+        for( var idx = 0; idx < nCols.length; idx++ ) {
+            newBx = document.getElementsByName("bo" + idx)[0];
+            if( newBx ) {
+                if( newBx.value === "" ) {
+                    mtBoxes += 1;
+                }
+            }
+
+        }
+        if( mtBoxes < 2 ) {
+            displayBorrow.style.color = getComputedStyle(displayBorrow).backgroundColor;
+        }
+    }
 }
-    /*
-    var ansBx = document.getElementsByName("ca" + col)[0];
-    var ans = ansBx.value;
-    var errString = "";
-    var len = document.getElementsByClassName('oprand').length;
-    var ops = new Array(len);
-    var txt = new Array(len);
-    var opBx = new Array(len);
-    var sum = 0;
-    var prevCarry = 0;
-     var pcBx;
-
-    for( var i = 0; i < len; i++ ) {
-        ops[i] = 0;
-        opBx[i] = document.getElementsByName("dH" + i + col);
-        if( opBx[i].length === 0 ) {
-            opBx[i] = document.getElementsByName("op" + i + col);
-        }
-        if( opBx[i].length !== 0 ) {
-            ops[i] = Number(opBx[i][0].childNodes[0].nodeValue);
-        }
-        sum += ops[i];
-        //alert("allBlank = " + allBlank + " isZeroPointX = " + isZeroPointX + " ops[" + i + "] = " + ops[i] + " sum =" + sum);
-    }
-    if( col > 0 ) {
-        var prevCol = col - 1;
-        pcBx = document.getElementsByName("ca" + prevCol);
-        if( pcBx.length > 0 ) {
-            prevCarry = Number(pcBx[0].value);
-        }
-    }
-    var corrAns = Math.floor((sum+prevCarry)/10);
-
-    var errBx = document.getElementById("msg");
-    if(ans == corrAns ){
-        //errBx.style.color = "#FAF3E4";
-        errBx.innerHTML = "";
-        for( var i = 0; i < len; i++ ) {
-            if( opBx[i].length !== 0 ) {
-                opBx[i][0].style.color = "black";
-            }
-        }
-        if( pcBx != null && pcBx.length > 0 ) {
-            pcBx[0].style.color = "black";
-        }
-        ansBx.style.backgroundColor =  "white";
-        ansBx.style.color = "black";
-        // advance the box
-        var bdx = Number(document.getElementById("bdx").value) + 1;
-        document.getElementById("bdx").value = bdx;
-        var nextbox = document.getElementsByName("nextbox")[bdx].value;
-        document.getElementById("whatbox").value = nextbox;
-        promptForDp( bdx );
-    } else {  
-        upDateErrCount();
-        errString = "not " + ans;
-        errBx.innerHTML = "";
-        errBx.innerHTML = errString;
-        //errBx.style.color = "red";
-        for( var i = 0; i < len; i++ ) {
-            if( opBx[i].length !== 0 ) {
-                opBx[i][0].style.color = "red";
-            }
-        }
-        if( pcBx != null ) {
-            if( pcBx.length > 0 ) {
-                pcBx[0].style.color = "red";
-            }
-        }
-        ansBx.style.color = "red";
-        ansBx.value = "";
-    }
-    setFocus();
-}*/
-
+   

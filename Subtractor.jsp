@@ -74,9 +74,12 @@
     String isLinedUp = "true";
     
     int digMax = 10;
+    int minDp = 0;
     
     for( int idx = 1; idx >= 0; idx-- ) {
-        opDp[idx] = (int)((maxDp+1)*Math.random());
+        opDp[idx] = minDp + (int)((maxDp+1-minDp)*Math.random());
+        minDp = opDp[idx]; // lower operand needs to be smaller that upper
+                           // so put more digits to the right of the decimal pt
         if( varDecPtCk && idx == 0 && opDp[0] != opDp[1]) {
             isLinedUp = "false";
         }
@@ -84,6 +87,7 @@
             ansDp = opDp[idx];
         }
         numDig[idx] = 0;
+        System.out.println("opDp[" + idx + "] = " + opDp[idx]);
     }
     
     op = new int[maxOps][SZ2_MX+1];
@@ -141,9 +145,7 @@
         strtTime = tmp.toString();
     } 
     
-
-    
-    //generate number of digits first
+    // generate number of digits first
     // limit the size so it fits the table
     int maxDig = SZ2_MX - ansDp + opDp[1];
     // more likely to have more digits than less
@@ -152,8 +154,8 @@
     if( numDig[1] > 2 ) {
         minDig = numDig[1] - 3;
     }
-    numDig[0] = (int)((numDig[1]-minDig)*(justLessThn1 - Math.pow(Math.random(), NEXP))) + minDig;
-
+    numDig[0] = (int)((numDig[1]-minDig+1)*(justLessThn1 - Math.pow(Math.random(), NEXP))) + minDig;
+    // sometimes generates larger 2nd operand than first fixit
     for( jdx = numOps-1; jdx >= 0; jdx-- ) {
         for (kdx = 0; kdx < numDig[jdx]-1; kdx++){
             int digMin = 0;
@@ -169,7 +171,7 @@
             }
             op[jdx][kdx] = digMin + (int)((digMax - digMin)*(justLessThn1 - Math.pow(Math.random(), DEXP)));
             //System.out.println("sum[" + kdx + "] = " + sum[kdx] + " digMax = " + digMax + " op[" + jdx + "][" + kdx + "] = " + op[jdx][kdx]);
-            operand[jdx] = operand[jdx] + op[jdx][kdx]*(int)(Math.pow(10.,(double)kdx));
+            //operand[jdx] = operand[jdx] + op[jdx][kdx]*(int)(Math.pow(10.,(double)kdx));
             //System.out.println("op[" + jdx + "][" + kdx + "] = " + op[jdx][kdx]);
         }
         if( jdx == 0 && (noBorrowsCk || numDig[0] == numDig[1] ) ) {
@@ -179,25 +181,59 @@
         op[jdx][kdx] = 1 + (int)((digMax-1)*(justLessThn1 - Math.pow(Math.random(), DEXP)));
         //System.out.println("sum[" + jdx + "] = " + sum[jdx] + " digMax = " + digMax + " op[" + jdx + "][" + kdx + "] = " + op[jdx][kdx]);
 
-        operand[jdx] = operand[jdx] + op[jdx][kdx]*(int)(Math.pow(10.,(double)kdx));
+        //operand[jdx] = operand[jdx] + op[jdx][kdx]*(int)(Math.pow(10.,(double)kdx));
         //System.out.println("op[" + jdx + "][" + kdx + "] = " + op[jdx][kdx]);
         //System.out.println("operand[" + jdx + "] = " + operand[jdx]);
     }
     
+    // shift the digits so the decimal points line up and calculate operands
+    for( jdx = numOps-1; jdx >= 0; jdx-- ) {
+        /*
+        int diff = ansDp - opDp[jdx];
+        if( diff > 0 ) {
+            for (kdx = numDig[jdx]-1; kdx >= 0; kdx--){
+                op[jdx][kdx + diff] = op[jdx][kdx];
+                op[jdx][kdx] = 0;
+            }
+        }
+        numDig[jdx] += diff;
+        opDp[jdx] += diff;
+        System.out.println("numDig[" + jdx + "] = "+ numDig[jdx] + " opDp[" + jdx + "] = " + opDp[jdx]);
+                */
+        for (kdx = 0; kdx < numDig[jdx]-1; kdx++){
+            operand[jdx] = operand[jdx] + op[jdx][kdx]*(int)(Math.pow(10.,(double)kdx));
+            //System.out.println("op[" + jdx + "][" + kdx + "] = " + op[jdx][kdx]);
+        }
+
+        operand[jdx] = operand[jdx] + op[jdx][kdx]*(int)(Math.pow(10.,(double)kdx));
+        //System.out.println("op[" + jdx + "][" + kdx + "] = " + op[jdx][kdx]);
+        System.out.println("operand[" + jdx + "] = " + operand[jdx]);
+    }    
 
     int dec = 0;
     int nacarries = 0;
     
-    for (kdx = 0; kdx < numDig[1]; kdx++) {
-        if( op[0][kdx] > op[1][kdx] - dec ) {
-            borrows[kdx+1] = op[1][kdx+1] - 1;
+    int diff = opDp[1] - opDp[0];
+    int kdxmax = diff < 0? numDig[1] - diff: numDig[1];
+    for (kdx = 0; kdx < kdxmax; kdx++) {
+        //System.out.println("op[1][" + kdx + "] = " + op[1][kdx] + " op[0][" + kdx + "] = " + op[0][kdx]);
+        boolean needsCarry = true;
+        int oneidx = kdx+diff;
+        if( (0 <= oneidx) && (oneidx < SZ2_MX) ) {
+            System.out.println("op[1][" + oneidx + "] = " + op[1][oneidx] + " dec = " + dec + " op[0][" + kdx + "] = " + op[0][kdx]);
+            if( op[0][kdx] <= op[1][kdx+diff] - dec ) {
+                needsCarry = false;
+            }
+        }
+        if( needsCarry ) {
+            borrows[kdx+1] = oneidx+1 > 0? op[1][oneidx+1] - 1: -1;
             carries[kdx] = 1;
             dec = 1;
-            nacarries += 1;
-            System.out.println("b");
+            nacarries += 1;          
         } else {
             dec = 0;
         }
+        System.out.println("carries[" + kdx + "] = " + carries[kdx]);
     }
 
     double maxAns = operand[1]/Math.pow(10,opDp[1]) - operand[0]/Math.pow(10,opDp[0]);
@@ -258,7 +294,7 @@
 <%  if( nacarries > 0 ) { %>
     <tr>
 <%      for( int idx = 0; idx <= SZ2_MX; idx++ ) {
-                        int col = SZ2_MX - idx;
+            int col = SZ2_MX - idx;
             if( carries[col] != 0 ) { 
                 String name = "ca" + col; 
                 if( col < 0 || col >= SZ2_MX ) {
@@ -267,14 +303,15 @@
                 } %>
                 <td class="t2">
                     <input type="text" name="<%=name%>" class="f2" 
-                     value="<%=cas[col]%>" onkeyup="checkBorrow(<%=col%>)">
+                     value="<%=cas[col]%>" onkeyup="checkBorrow(<%=col%>)"
+                     onclick="promptBorrow(<%=col%>)">
                 </td>
 <%          } else { %>
                 <td class="t2"></td>
 <%          } 
             if( col > 0 && carries[col-1] != 0 ) { 
                 String name = "bo" + col; 
-                if( col < 0 || col >= SZ2_MX ) {
+                if( col < 0 || col > SZ2_MX ) {
                      System.out.println("bo col = " + col + "being reduced to 0");
                      col = 0;
                 } %>
@@ -299,10 +336,10 @@
             int col = SZ2_MX - idx;
             String name = "op1" + col;
             //System.out.println("col = " + col + " opDp[1] = " + opDp[1] + " ansDp = " + ansDp);
-            col = col + opDp[1] - ansDp;
-            switch(col) {
+            int sel = col + opDp[1] - ansDp; // this is what is mucking up columns fixit
+            switch(sel) {
                 case 0: %>
-                    <td class="t1" name="<%=name%>" >
+                    <td class="t1" name="<%=name%>" onclick="promptBorrow(<%=col%>)">
                         <%=op[1][0]%>
                     </td>
                     <% break;
@@ -326,8 +363,13 @@
                         <%=op[1][4]%>
                     </td>
                     <% break;
-                default: %>
-                    <td class="t1">
+                case 5: %>
+                    <td class="t1" name="<%=name%>" onclick="promptBorrow(<%=col%>)">
+                        <%=op[1][5]%>
+                    </td>
+                    <% break;
+                default: name = "ze1" + col; %>
+                    <td class="t1" name="<%=name%>" onclick="promptBorrow(<%=col%>)">
                         0
                     </td>
                     <% break;
@@ -349,8 +391,8 @@
             //int col = numDig[0] - idx + spacesb4Op[0]; 
             int col = SZ2_MX - idx;
             String name = "op0" + col;
-            col = col + opDp[0] - ansDp;
-            switch(col) {
+            int sel = col + opDp[0] - ansDp;
+            switch(sel) {
                 case 0: %>
                     <td class="t1" name="<%=name%>"><%=op[0][0]%></td>
                     <% break; 
@@ -365,6 +407,9 @@
                     <% break; 
                 case 4: %>
                     <td class="t1" name="<%=name%>"><%=op[0][4]%></td>
+                    <% break;
+                case 5: %>
+                    <td class="t1" name="<%=name%>"><%=op[0][5]%></td>
                     <% break;
                 default: %>
                     <td class="t1">0</td>
@@ -425,9 +470,12 @@
     <% } %>
 <div class="d3">
 <!--this is where error messages get displayed//-->
-<label id="msg">
-    <% if( nacarries > 0 ) { %>
-        Click on a digit to borrow from it
+<label id="msg"></label>
+</div>
+<div class="d3">
+<label id="dispBo">
+<%  if( nacarries > 0) { %>
+            Click on a digit to borrow from it
 <%  } %>
 </label>
 </div>
