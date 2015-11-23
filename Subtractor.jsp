@@ -77,7 +77,7 @@
     int minDp = 0;
     
     for( int idx = 1; idx >= 0; idx-- ) {
-        opDp[idx] = minDp + (int)((maxDp+1-minDp)*Math.random());
+        opDp[idx] = minDp + (int)((maxDp+1-minDp)*(justLessThn1 - Math.pow(Math.random(), DEXP)));
         minDp = opDp[idx]; // lower operand needs to be smaller than upper
                            // so put more digits to the right of the decimal pt
         if( varDecPtCk && idx == 0 && opDp[0] != opDp[1]) {
@@ -87,7 +87,7 @@
             ansDp = opDp[idx];
         }
         numDig[idx] = 0;
-        System.out.println("opDp[" + idx + "] = " + opDp[idx]);
+        //System.out.println("opDp[" + idx + "] = " + opDp[idx]);
     }
     
     op = new int[maxOps][SZ2_MX+1];
@@ -155,7 +155,7 @@
         minDig = numDig[1] - 3;
     }
     numDig[0] = (int)((numDig[1]-minDig+1)*(justLessThn1 - Math.pow(Math.random(), NEXP))) + minDig;
-    // sometimes generates larger 2nd operand than first fixit
+    
     for( jdx = numOps-1; jdx >= 0; jdx-- ) {
         for (kdx = 0; kdx < numDig[jdx]-1; kdx++){
             int digMin = 0;
@@ -170,20 +170,15 @@
                 }
             }
             op[jdx][kdx] = digMin + (int)((digMax - digMin)*(justLessThn1 - Math.pow(Math.random(), DEXP)));
-            //System.out.println("sum[" + kdx + "] = " + sum[kdx] + " digMax = " + digMax + " op[" + jdx + "][" + kdx + "] = " + op[jdx][kdx]);
             operand[jdx] = operand[jdx] + op[jdx][kdx]*(int)(Math.pow(10.,(double)kdx));
-            //System.out.println("op[" + jdx + "][" + kdx + "] = " + op[jdx][kdx]);
         }
+        // if borrows are not allowed or if there is no next digit to borrow from
         if( jdx == 0 && (noBorrowsCk || numDig[0] == numDig[1] ) ) {
             digMax = op[1][kdx] + 1;
         }
         // msb cannot be 0
         op[jdx][kdx] = 1 + (int)((digMax-1)*(justLessThn1 - Math.pow(Math.random(), DEXP)));
-        //System.out.println("sum[" + jdx + "] = " + sum[jdx] + " digMax = " + digMax + " op[" + jdx + "][" + kdx + "] = " + op[jdx][kdx]);
-
         operand[jdx] = operand[jdx] + op[jdx][kdx]*(int)(Math.pow(10.,(double)kdx));
-        //System.out.println("op[" + jdx + "][" + kdx + "] = " + op[jdx][kdx]);
-        //System.out.println("operand[" + jdx + "] = " + operand[jdx]);
     }
     
     if( operand[1] <= operand[0] ) {
@@ -194,31 +189,7 @@
         if( op[0][lastDig] == 0 ) {
             numDig[0] -= 1;
         }
-    }
-    
-    // shift the digits so the decimal points line up and calculate operands
-    //for( jdx = numOps-1; jdx >= 0; jdx-- ) {
-        /*
-        int diff = ansDp - opDp[jdx];
-        if( diff > 0 ) {
-            for (kdx = numDig[jdx]-1; kdx >= 0; kdx--){
-                op[jdx][kdx + diff] = op[jdx][kdx];
-                op[jdx][kdx] = 0;
-            }
-        }
-        numDig[jdx] += diff;
-        opDp[jdx] += diff;
-        System.out.println("numDig[" + jdx + "] = "+ numDig[jdx] + " opDp[" + jdx + "] = " + opDp[jdx]);
-                */
-        //for (kdx = 0; kdx < numDig[jdx]-1; kdx++){
-            //operand[jdx] = operand[jdx] + op[jdx][kdx]*(int)(Math.pow(10.,(double)kdx));
-            //System.out.println("op[" + jdx + "][" + kdx + "] = " + op[jdx][kdx]);
-        //}
-
-        //operand[jdx] = operand[jdx] + op[jdx][kdx]*(int)(Math.pow(10.,(double)kdx));
-        //System.out.println("op[" + jdx + "][" + kdx + "] = " + op[jdx][kdx]);
-        //System.out.println("operand[" + jdx + "] = " + operand[jdx]);
-    //}    
+    } 
 
     int dec = 0;
     int nacarries = 0;
@@ -226,11 +197,10 @@
     int diff = opDp[1] - opDp[0];
     int kdxmax = diff < 0? numDig[1] - diff: numDig[1];
     for (kdx = 0; kdx < kdxmax; kdx++) {
-        //System.out.println("op[1][" + kdx + "] = " + op[1][kdx] + " op[0][" + kdx + "] = " + op[0][kdx]);
         boolean needsCarry = true;
         int oneidx = kdx+diff;
         if( (0 <= oneidx) && (oneidx < SZ2_MX) ) {
-            System.out.println("op[1][" + oneidx + "] = " + op[1][oneidx] + " dec = " + dec + " op[0][" + kdx + "] = " + op[0][kdx]);
+            //System.out.println("op[1][" + oneidx + "] = " + op[1][oneidx] + " dec = " + dec + " op[0][" + kdx + "] = " + op[0][kdx]);
             if( op[0][kdx] <= op[1][kdx+diff] - dec ) {
                 needsCarry = false;
             }
@@ -243,7 +213,7 @@
         } else {
             dec = 0;
         }
-        System.out.println("carries[" + kdx + "] = " + carries[kdx]);
+        //System.out.println("carries[" + kdx + "] = " + carries[kdx]);
     }
 
     double maxAns = operand[1]/Math.pow(10,opDp[1]) - operand[0]/Math.pow(10,opDp[0]);
@@ -253,11 +223,9 @@
         maxAnDig = 1 + (int)Math.log10(maxAns );
     }
     maxAnDig += ansDp;
-    //System.out.print("digits in answer is " + maxAnDig);
 
-    int spacesb4Op[] = new int[maxOps];
     // all the decimal points need to be lined up
-    
+    int spacesb4Op[] = new int[maxOps];
     for( int idx = numOps-1; idx >= 0; idx-- ) {
         if( numDig[idx] > opDp[idx] ) {
             // digits in front of the decimal point
@@ -267,30 +235,13 @@
         } else {
             spacesb4Op[idx] = SZ2_MX - ansDp;
         }
-        if( !noBorrowsCk ) {
-            int trailingZeros = ansDp - opDp[idx];
-            int possCarries = numDig[idx] - 1;
-            if( trailingZeros > 0 ) {
-                possCarries += trailingZeros;
-            }
-            //if( possCarries > nacarries ) {
-                //nacarries = possCarries; 
-            //}
-        }
-        //System.out.println("numDig[" + idx + "] = " + numDig[idx] + " opDp[" + idx + "] = " + opDp[idx] + " spacesb4Op[" + idx + "] = " + spacesb4Op[idx]);
     } 
 
     int ar = 2*nacarries;  // first additive carry 
     int qu = ar + maxAnDig - 1; // lsb of final answer box
 
     for( int idx = 0; idx < maxAnDig; idx++ ) {
-        //if( nacarries > 0 && idx > 0 && ar >= idx ) {
-        //    whatBx[ldx] = ar - idx; // additive carry 
-            //System.out.println("whatBx[" + ldx + "] = " + whatBx[ldx]);
-        //    ldx++;
-        //}
         whatBx[ldx] = qu - idx; // final answer boxes
-        //System.out.println("whatBx[" + ldx + "] = " + whatBx[ldx]);
         ldx++;
     }
     whatBx[ldx] = qu + 1;

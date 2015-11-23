@@ -92,8 +92,10 @@ td {
   margin-right: 0px;
   margin-top: 0px;
   background-color:  #fdfaef;
-  padding-top: 0px;
-  padding-bottom: 5px;
+  padding: 0px;
+  height: 1.5em;
+  //padding-top: 0px;
+  //padding-bottom: 5px;
 }
 /* table cell with operand or answer digit */
 .t1{
@@ -105,6 +107,7 @@ td {
   margin-right: 0px;
   background-color: #fdfaef;
   padding: 0px;
+  height: 1.5em;
 }
 /* carry boxes */
 .f2 {

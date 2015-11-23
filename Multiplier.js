@@ -29,13 +29,14 @@ function zeroCounts() {
 // start again button code
 function startAgain() {
     var max = Number(document.getElementById('lastbox').value);
-        
+    var errCt = Number(document.getElementById("errs").value);
+    var boxNo = Number(document.getElementById("bdx").value);
+    var errMsg = document.getElementById("msg").innerHTML;
+    //alert("boxNo = " + boxNo + " max = " + max + " errCt = " + errCt + " errMsg = " + errMsg);
     // update problem counts
     document.getElementById("numAttmptd").value = 
             Number(document.getElementById("numAttmptd").value) + 1;
-    if( document.getElementById("errs").value == '0' &&
-        Number(document.getElementById("bdx").value) + 1 == max &&
-        document.getElementById("msg").innerHTML == "" ) {
+    if( errCt === 0 && boxNo + 1 === max && errMsg === "" ) {
             document.getElementById("numWoErr").value =
                 Number(document.getElementById("numWoErr").value) + 1;    
             document.getElementById("consWoErr").value =

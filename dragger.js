@@ -264,25 +264,36 @@
                     var numSquares = 0;
                     var whatValue = new Array();
                     var whatName = new Array();
+                    var whatFun = new Array();
                     var dpTarg = 0;
                     for( nodeNum = 0; nodeNum < operands[idx].childNodes.length; nodeNum++ ) {
                         
                         if( operands[idx].childNodes[nodeNum].nodeType == 1 ) {
                             // count table squares
                             numSquares += 1;  
+                            // copy the operand values into array 'whatValue'
                             if( operands[idx].childNodes[nodeNum].childNodes[0] ) {
                                 whatValue[length] = operands[idx].childNodes[nodeNum].childNodes[0].nodeValue;
                                 name = operands[idx].childNodes[nodeNum].getAttribute('name');
+                                // node with copy of op13 will be named dH13
                                 if( name ) {
-                                    number = name.match(/[0-9]+/);
-                                    whatName[length] = "dH" + number
+                                    var nameMatch = name.match(/op/);
+                                    // for some javascript reason this can't
+                                    // be done in the outer if
+                                    if( nameMatch ) { 
+                                        number = name.match(/[0-9]+/);
+                                        whatName[length] = "dH" + number;
+                                        whatFun[length] =
+                                            operands[idx].childNodes[nodeNum].getAttribute('onclick');
+                                        length += 1;
+                                    }
                                 }
+                                // take note of the location of the decimal point
+                                // of the original operand so you can match it up
+                                // with the helper
                                 if( whatValue[length] == "." ) {
                                     var targPos = getPosition(operands[idx].childNodes[nodeNum]).x;
                                     operands[idx].setAttribute('targPos', targPos);
-                                }
-                                // only count the decimal points and the digits with a name
-                                if( name || whatValue[length] != "0" ) { 
                                     length += 1;
                                 }
                             }    
@@ -294,8 +305,11 @@
                     var lsbNode = null;
                     for( nodeNum = 0; nodeNum < dragHelper[idx].childNodes.length;  nodeNum++ ) {
                         if( dragHelper[idx].childNodes[nodeNum].nodeType == 1 ) {
+                            // mark leading blanks for deletion
                             if( blankNum < numSquares - 2*(length-1) + 1 ) {
                                 dragHelper[idx].childNodes[nodeNum].setAttribute('marked', 1 );
+                            
+                            // copy over digits and decimal point
                             } else {
                                 var digVal = whatValue[dragNum];
                                 var className = dragHelper[idx].childNodes[nodeNum].className;
@@ -311,6 +325,7 @@
                                 } else if( className == "t1" ) {
                                     dragHelper[idx].childNodes[nodeNum].childNodes[0].nodeValue = digVal;
                                     dragHelper[idx].childNodes[nodeNum].setAttribute('name',whatName[dragNum]);
+                                    dragHelper[idx].childNodes[nodeNum].setAttribute('onclick',whatFun[dragNum]);
                                     dragNum += 1;
                                     if( noDpYet ) {
                                         lsbNode = dragHelper[idx].childNodes[nodeNum];

@@ -154,7 +154,10 @@ function checkBorrow( col ) {
 }
 function checkNewVal( col ) {
     var errBx = document.getElementById("msg");
-    var borBx = document.getElementsByName("op1" + col)[0];
+    var borBx = document.getElementsByName("dH1" + col)[0];
+    if( !borBx ) {
+        borBx = document.getElementsByName("op1" + col)[0];
+    }
     if( !borBx ) {
         borBx = document.getElementsByName("ze1" + col)[0];
     }
@@ -202,7 +205,10 @@ function checkNewVal( col ) {
 // new operand digit and set the focus to the new box
 // allows borrows when there shouldn't be one fixit
 function promptBorrow( col ) {
-    var borBx = document.getElementsByName("op1" + col)[0];
+    var borBx = document.getElementsByName("dH1" + col)[0];
+    if( !borBx ) {
+        borBx = document.getElementsByName("op1" + col)[0];
+    }
     if( !borBx ) {
         borBx = document.getElementsByName("ze1" + col)[0];
     }
