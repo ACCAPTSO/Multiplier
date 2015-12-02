@@ -233,12 +233,14 @@
             if( document.getElementById('linedUp').value == "true") {
                 // if decimal points are lined up by default, get rid of the 
                 // dragHelpers, you don't need them and they will get in the way
-                dragHelper  = document.getElementsByClassName('DragBox');
-                for( idx = 0; idx < dragHelper.length; idx++ ) {
-                    for( nodeNum = 0; nodeNum < dragHelper[idx].childNodes.length; nodeNum++ ) {
-                        dragHelper[idx].removeChild(dragHelper[idx].childNodes[nodeNum]);
-                    }
-                }
+                // 
+                // this isn't needed, they aren't in the html if isLinedUp
+                //dragHelper  = document.getElementsByClassName('DragBox');
+                //for( idx = 0; idx < dragHelper.length; idx++ ) {
+                //    for( nodeNum = 0; nodeNum < dragHelper[idx].childNodes.length; nodeNum++ ) {
+                //        dragHelper[idx].removeChild(dragHelper[idx].childNodes[nodeNum]);
+                //    }
+                //}
                 setFocus();
             } else {
                 //document.getElementById('statusBox1').innerHTML = "in onload";

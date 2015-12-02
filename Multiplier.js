@@ -32,15 +32,16 @@ function startAgain() {
     var errCt = Number(document.getElementById("errs").value);
     var boxNo = Number(document.getElementById("bdx").value);
     var errMsg = document.getElementById("msg").innerHTML;
+    var numAttmptd = Number(document.getElementById("numAttmptd").value);
+    var numWoErr = Number(document.getElementById("numWoErr").value);
+    var consWoErr = Number(document.getElementById("consWoErr").value);
     //alert("boxNo = " + boxNo + " max = " + max + " errCt = " + errCt + " errMsg = " + errMsg);
+
     // update problem counts
-    document.getElementById("numAttmptd").value = 
-            Number(document.getElementById("numAttmptd").value) + 1;
+    document.getElementById("numAttmptd").value = numAttmptd + 1;
     if( errCt === 0 && boxNo + 1 === max && errMsg === "" ) {
-            document.getElementById("numWoErr").value =
-                Number(document.getElementById("numWoErr").value) + 1;    
-            document.getElementById("consWoErr").value =
-                Number(document.getElementById("consWoErr").value) + 1;
+            document.getElementById("numWoErr").value = numWoErr + 1;    
+            document.getElementById("consWoErr").value = consWoErr + 1;
     } else {
         document.getElementById("consWoErr").value = '0';
     }

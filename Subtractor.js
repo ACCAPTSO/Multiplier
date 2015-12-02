@@ -48,38 +48,73 @@ function subtract( col ) {
     var ops = new Array(len);
     var opBx = new Array();
     var whichStatus = "statusBox";
+
     for( var i = 0; i < len; i++ ) {
+        var noOpYet = true
         whichStatus = "statusBox" + i;
         ops[i] = 0;
         if( i === 1 ) {
             opBx[i] = document.getElementsByName("bo" + col);
-            if( opBx[i] ) {
                 //document.getElementById(whichStatus).innerHTML = "borbox = " + opBx[i] + " borBoxlength = " + opBx[i].length + " ansBx = " + ansBx + " ans = " + ans; 
                 //alert("borrow opBx[" + i + "] = " + opBx[i]);
-                if( opBx[i].length !== 0 ) {
-                    //alert("borrow opBx[" + i + "].length = " + opBx[i].length);
-                    //alert(" opBx[" + i + "].childNodes[0]" + opBx[i].childNodes[0]);
-                    ops[i] = Number(opBx[i][0].value);
+            if( opBx[i].length !== 0 ) {
+                noOpYet = false;
+                //alert("borrow opBx[" + i + "][0].value = " + opBx[i][0].value);
+                    //alert(" opBx[" + i + "].childNodes[0]" + opBx[i].childNodes[0
+                var opval = opBx[i][0].value;
+                if( opval ) {
+                    ops[i] = Number(opval);
+                    //document.getElementById(whichStatus).innerHTML = "borrowed col = " + col + " opBx[" + i + "][0].value = " + opBx[i][0].value;
+                } else { // there should be a borrow but there isn't so calculate itt
+                    opBx[i] = document.getElementsByName("dH" + i + col);
+                    if( opBx[i].length !== 0 ) {
+                        ops[i] = Number(opBx[i][0].childNodes[0].nodeValue) - 1;
+                        //document.getElementById(whichStatus).innerHTML = "calc from helper col = " + col + " opBx[" + i + "[0].childNodes[0].nodeValue -1 = " + ops[i];
+                    } else {
+                        opBx[i] = document.getElementsByName("op" + i + col);
+                        //alert("operand opBx[" + i + "] = " + opBx[i]);
+                        if( opBx[i].length !== 0 ) {
+                            ops[i] = Number(opBx[i][0].childNodes[0].nodeValue) - 1;
+                            //document.getElementById(whichStatus).innerHTML = "calc from actual col = " + col + " opBx[" + i + "].childNodes[0].nodeValue -1 = " + ops[i];
+                        } else {
+                            opBx[i] = document.getElementsByName("ze" + i + col);
+                                //alert("operand opBx[" + i + "] = " + opBx[i]);
+                            if( opBx[i].length !== 0 ) {
+                                ops[i] = Number(opBx[i][0].childNodes[0].nodeValue) - 1;
+                                //document.getElementById(whichStatus).innerHTML = "calc from zero col = " + col + " opBx[" + i + "].childNodes[0].nodeValue -1 = " + ops[i];
+                            }
+                        }
+                    }
                 }
             }
         }
-        if( i === 0 || opBx[i].length === 0 ) {
+        //alert("after first loop i = " + i + " noOpYet = " + noOpYet);
+        if( i === 0 || noOpYet ) {
             opBx[i] = document.getElementsByName("dH" + i + col);
-            if( opBx[i] ) {
                 //document.getElementById(whichStatus).innerHTML = "dHbox = " + opBx[i] + " dHBoxlength = " + opBx[i].length + " ansBx = " + ansBx + " ans = " + ans; 
-                //alert("helper opBx[" + i + "] = " + opBx[i]);
-                if( opBx[i].length !== 0 ) {
-                    ops[i] = Number(opBx[i][0].childNodes[0].nodeValue);
-                }
+           
+            if( opBx[i].length !== 0 ) {
+                noOpYet = false;
+                //document.getElementById(whichStatus).innerHTML ="helper col = " + col + " opBx[" + i + "][0].childNodes[0].nodeValue= " + opBx[i][0].childNodes[0].nodeValue;
+                ops[i] = Number(opBx[i][0].childNodes[0].nodeValue);
             }
         }
-        if( opBx[i].length === 0 ) {
+        //alert("after second loop i = " + i + " noOpYet = " + noOpYet);
+        if( noOpYet ) {
             opBx[i] = document.getElementsByName("op" + i + col);
             //alert("operand opBx[" + i + "] = " + opBx[i]);
-            if( opBx[i] ) {
-                if( opBx[i].length !== 0 ) {
-                    ops[i] = Number(opBx[i][0].childNodes[0].nodeValue);
-                }
+            if( opBx[i].length !== 0 ) {
+                noOpYet = false;
+                //document.getElementById(whichStatus).innerHTML = "actual col = " + col + " opBx[" + i + "][0].childNodes[0].nodeValue = " + opBx[i][0].childNodes[0].nodeValue;
+                ops[i] = Number(opBx[i][0].childNodes[0].nodeValue);
+            }
+        }
+        if( noOpYet ) {
+            opBx[i] = document.getElementsByName("ze" + i + col);
+            //alert("operand opBx[" + i + "] = " + opBx[i]);
+            if( opBx[i].length !== 0 ) {
+                //document.getElementById(whichStatus).innerHTML = "zero col = " + col + " opBx[" + i + "][0].childNodes[0].nodeValue = " + opBx[i][0].childNodes[0].nodeValue;
+                ops[i] = Number(opBx[i][0].childNodes[0].nodeValue);
             }
         }
     }
@@ -88,11 +123,17 @@ function subtract( col ) {
     
     cBx = document.getElementsByName("ca" + col);
     if( cBx.length > 0 ) {
-        carry = Number(cBx[0].value);
+        var cval = cBx[0].value;
+        if( cval ) {
+            carry = Number(cval);
+        } else {
+            carry = 1;
+        }
     }
     var corrAns = -1;
     
     corrAns = (carry*10+ops[1]-ops[0])%10;
+    whichStatus = "statusBox2";
     //document.getElementById(whichStatus).innerHTML = "ans = " + ans + " corrAns = " + corrAns + " carry = " + carry + " ops[1] = " + ops[1] + " ops[0] = " + ops[0];
     
     var errBx = document.getElementById("msg");
@@ -203,7 +244,6 @@ function checkNewVal( col ) {
 }
 // cross off the digit being borrowed from, make new box visible for the
 // new operand digit and set the focus to the new box
-// allows borrows when there shouldn't be one fixit
 function promptBorrow( col ) {
     var borBx = document.getElementsByName("dH1" + col)[0];
     if( !borBx ) {
@@ -254,12 +294,6 @@ function promptBorrow( col ) {
             newBx.style.border = "1px solid black";
             newBx.value="";
         }
-    
-    // if it's the last digit, shouldn't have to borrow 
-    // just for 1xxx or for any last digit? fixit
-    
-    // should they actually have to do the borrows or do I calculate using
-    // real numbers, not box entries? fixit
     
         // keep "click on a digit to borrow from it" message up until all the 
         // borrows have been made

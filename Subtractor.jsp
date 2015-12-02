@@ -204,6 +204,9 @@
             if( op[0][kdx] <= op[1][kdx+diff] - dec ) {
                 needsCarry = false;
             }
+        } else if( op[0][kdx] <= 0 - dec ) {
+            //System.out.println("zero column, dec = " + dec + " op[0][" + kdx + "] = " + op[0][kdx]);
+            needsCarry = false;
         }
         if( needsCarry ) {
             borrows[kdx+1] = (0 < oneidx+1 && oneidx+1 < SZ2_MX)? op[1][oneidx+1] - 1: -1;
@@ -297,7 +300,7 @@
             int col = SZ2_MX - idx;
             String name = "op1" + col;
             //System.out.println("col = " + col + " opDp[1] = " + opDp[1] + " ansDp = " + ansDp);
-            int sel = col + opDp[1] - ansDp; // this is what is mucking up columns fixit
+            int sel = col + opDp[1] - ansDp;
             switch(sel) {
                 case 0: %>
                     <td class="t1" name="<%=name%>" onclick="promptBorrow(<%=col%>)">
@@ -422,7 +425,7 @@
     <% for( int i = 0; i < numOps; i++ ) { %>
     <tr class="DragBox">
 <%      for( int idx = 0; idx <= SZ2_MX; idx++ ) { %>
-            <td class="t2">_</td><td class="t1" name="bob">o</td>
+            <td class="t2" style="color:purple">_</td><td class="t1" name="bob" style="color:purple">o</td>
 <%      }   %>
     </tr>
 
