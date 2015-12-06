@@ -17,7 +17,7 @@
 <body>
    
 <%  final int SZ2_MX = 5; // maximum answer size
-    final int maxOps = 7;
+    final int maxOps = 2;
     final double NEXP = 2.6; // used to generate # of digits 
     final double DEXP = 1.4; // used to generate digits themselves or # operands
     boolean noBorrowsCk = true;
@@ -93,10 +93,10 @@
     op = new int[maxOps][SZ2_MX+1];
     borrows = new int[SZ2_MX+1];
     carries = new int[SZ2_MX+1];
-    String[] ans;   // final answer string   
-    String[] cas;   // additive carry string 
-    cas = new String[SZ2_MX+1];
-    ans = new String[SZ2_MX+1];
+    //String[] ans;   // final answer string   
+    //String[] cas;   // additive carry string 
+    //cas = new String[SZ2_MX+1];
+    //ans = new String[SZ2_MX+1];
     int jdx;
     int kdx;
     int ldx = 0;
@@ -111,8 +111,8 @@
         for( int hdx = 0; hdx < maxOps; hdx++ ) {
             op[hdx][idx] = 0;
         }
-        cas[idx] = "";
-        ans[idx] = "";
+        //cas[idx] = "";
+        //ans[idx] = "";
         borrows[idx] = 0;
         carries[idx] = 0;
     }
@@ -267,8 +267,8 @@
                 } %>
                 <td class="t2">
                     <input type="text" name="<%=name%>" class="f2" 
-                     value="<%=cas[col]%>" onkeyup="checkBorrow(<%=col%>)"
-                     onclick="promptBorrow(<%=col%>)">
+                    onkeyup="checkBorrow(<%=col%>)"
+                    onclick="promptBorrow(<%=col%>)">
                 </td>
 <%          } else { %>
                 <td class="t2"></td>
@@ -400,7 +400,6 @@
             }
             String name = "an" + col;  %>
             <td class="t1"><input type="text" name="<%=name%>" class="a1" size="1" 
-            value="<%=ans[col]%>"
             onkeyup="subtract(<%=col%>)"></td>
 <%      } else { 
             String possZero; 
