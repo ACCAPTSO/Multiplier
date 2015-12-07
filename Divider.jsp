@@ -33,13 +33,24 @@
     String whatlvl = "";
     double justLessThn1 = 1 - 1/Double.MAX_VALUE;
     
-    int quotient = 5321;
-    int divisor = 321;
+    int dsMaxDg = 4; //2 + (int)((SZ2_MX - 3)*Math.random());
+    int dsMax = (int)(Math.pow(10, dsMaxDg)) - 1;
+    int divisor = 1 + (int)(dsMax*Math.random());
+    //System.out.println("dsMaxDg = " + dsMaxDg + " dsMax = " + dsMax + " divisor = " + divisor);
+
+    int dvsrDigs = (int)Math.log10(divisor) + 1;
+    int qtMaxDg = 7 - dvsrDigs; //(SZ2_MX - dvsrDigs)/dvsrDigs;
+    int qtMax = (int)(Math.pow(10, qtMaxDg)) - 1;
+    int quotient = 1 + (int)(qtMax*Math.random());
+    //System.out.println("dvsrDigs = " + dvsrDigs + " qtMaxDg = " + qtMaxDg + " qtMax = " + qtMax + " quotient = " + quotient);
+
+    //int quotient = 5321;
+    //int divisor = 321;
     //int quotient = 21;
     //int divisor = 321;
     int dividend = quotient*divisor;
     int quotDigs = (int)Math.log10(quotient) + 1;
-    int dvsrDigs = (int)Math.log10(divisor) + 1;
+    
     int dvdDigs = (int)Math.log10(dividend) + 1;
     int [] qt;
     int [] ds;
@@ -62,8 +73,6 @@
     for( int idx = 0; idx < quotDigs; ++idx ) {
         qt[idx] = tmpint % 10;
         tmpint = tmpint / 10;
-
-
         //System.out.println("quotient = " + quotient + " qt[" + idx + "] = " + qt[idx]);
     }
 
@@ -112,7 +121,8 @@
     int operand[] = new int[quotDigs*maxOps];
     op = new int[quotDigs][maxOps][SZ2_MX+1];
     int [][] numDig = new int[quotDigs][maxOps]; // how many digits do operands have
-    int [][] spacesb4Op = new int[quotDigs][maxOps];
+    int [][] spacesb4Op = new int[quotDigs
+            ][maxOps];
     tmpint = dividend;
     // use only the first few digits
     int lastDig = 0;
@@ -121,46 +131,79 @@
         tmpint = tmpint / 10;
     }
     // back off the last digit removed
-    tmpint = tmpint*10 + lastDig;
-    
-    for( int sbx = quotDigs-1; sbx >= 0; --sbx ) {
-        operand[sbx*maxOps+0] = qt[sbx]*divisor;
-        operand[sbx*maxOps+1] = tmpint - operand[sbx*maxOps+0];
-        numDig[sbx][0] = operand[sbx*maxOps+0] > 0? 
-                (int)Math.log10(operand[sbx*maxOps+0]) + 1: 1;
-        numDig[sbx][1] = operand[sbx*maxOps+1] > 0? 
-                (int)Math.log10(operand[sbx*maxOps+1]) + 1: 1;       
+    if( tmpint != qt[quotDigs-1]*divisor ) {
+        tmpint = tmpint*10 + lastDig;
+    }
+    int s = quotDigs-1; // there may be more quotient digits than subtractions
+    int f = 0; // actual subtractions
+    while( s >= 0 ) {
+        //System.out.println("f = " + f + " s = " + s );
+        operand[f*maxOps+0] = qt[s]*divisor;
+        operand[f*maxOps+1] = tmpint - operand[f*maxOps+0];
+
+        numDig[f][0] = operand[f*maxOps+0] > 0? 
+                (int)Math.log10(operand[f*maxOps+0]) + 1: 1;
+        numDig[f][1] = operand[f*maxOps+1] > 0? 
+                (int)Math.log10(operand[f*maxOps+1]) + 1: 1;       
         // need to bring down more digits in some cases fixit
-        // bring down next digit
-        if( sbx > 0 ) {
-            tmpint = 10*operand[sbx*maxOps+1] + dd[sbx-1];
+        // bring down next 
+        
+        //System.out.println("f = " + f + " prod = " + operand[f*maxOps+0]);
+        //System.out.println("diff = " + operand[f*maxOps+1]);
+        if( operand[f*maxOps+1] < 0 ) {
+            System.out.println("diff = " + operand[f*maxOps+1] + " that's messed up");
+            break;
         }
-        System.out.println("sbx = " + sbx + " prod = " + operand[sbx*maxOps+0]);
-        System.out.println("diff = " + operand[sbx*maxOps+1]);
         //System.out.println("tmpint = " + tmpint);
 
-        spacesb4Op[sbx][0] = spacesb4quot + quotDigs - sbx - numDig[sbx][0] - 1;
-        System.out.println("spacesb4Op[" + sbx + "][0] = " + spacesb4Op[sbx][0]);
-        System.out.println("numDig[" + sbx + "][0] = " + numDig[sbx][0]);
-        int tmpint2 = operand[sbx*maxOps+0];
-        for( int idx = 0; idx < numDig[sbx][0]; ++idx ) {
-            op[sbx][0][idx] = tmpint2 % 10;
+        spacesb4Op[f][0] = spacesb4quot + quotDigs - s - numDig[f][0] - 1;
+        //System.out.println("spacesb4Op[" + s + "][0] = " + spacesb4Op[s][0]);
+        //System.out.println("numDig[" + s + "][0] = " + numDig[s][0]);
+        int tmpint2 = operand[f*maxOps+0];
+        for( int idx = 0; idx < numDig[f][0]; ++idx ) {
+            op[f][0][idx] = tmpint2 % 10;
             tmpint2 = tmpint2 / 10;
-            System.out.println("op[" + sbx + "][0][" + idx + "] = " + op[sbx][0][idx]);
+            //System.out.println("op[" + s + "][0][" + idx + "] = " + op[s][0][idx]);
         }
-        spacesb4Op[sbx][1] = spacesb4quot + quotDigs - sbx - numDig[sbx][1] - 1;
-        System.out.println("spacesb4Op[" + sbx + "][1] = " + spacesb4Op[sbx][1]);
-        System.out.println("numDig[" + sbx + "][1] = " + numDig[sbx][1]);
-        tmpint2 = operand[sbx*maxOps+1];
-        for( int idx = 0; idx < numDig[sbx][1]; ++idx ) {
-            op[sbx][1][idx] = tmpint2 % 10;
+        spacesb4Op[f][1] = spacesb4quot + quotDigs - s - numDig[f][1] - 1;
+        //System.out.println("spacesb4Op[" + s + "][1] = " + spacesb4Op[s][1]);
+        //System.out.println("numDig[" + s + "][1] = " + numDig[s][1]);
+        tmpint2 = operand[f*maxOps+1];
+        for( int idx = 0; idx < numDig[f][1]; ++idx ) {
+            op[f][1][idx] = tmpint2 % 10;
             tmpint2 = tmpint2 / 10;
-            System.out.println("op[" + sbx + "][1][" + idx + "] = " + op[sbx][1][idx]);
+            //System.out.println("op[" + s + "][1][" + idx + "] = " + op[s][1][idx]);
         }
-        cspan[sbx] = 2*numDig[sbx][0] + 1;
-        bspan[sbx] = 2*spacesb4Op[sbx][0] + 1;
-        dspan[sbx] = 2*(SZ2_MX + 1) - bspan[sbx] - cspan[sbx];
-    }
+        cspan[f] = 2*numDig[f][0] + 1;
+        bspan[f] = 2*spacesb4Op[f][0] + 1;
+        dspan[f] = 2*(SZ2_MX + 1) - bspan[f] - cspan[f];
+        if( s == 0 ) {
+            break; // don't need to generate tmpint for the next loop, you're 
+        }          // done
+        boolean restAreZero = false;
+        if( operand[f*maxOps+1] == 0 ) {            // if difference is zero
+            restAreZero = true;                     // check if there is 
+            for( int idx = s-1; idx >= 0; --idx ) { // anything but zeros left
+                if( dd[idx] != 0 ) {
+                    restAreZero = false;
+                    break; // rest are not zero, stop checking
+                }
+            }
+        }
+        if( restAreZero ) {  
+            break; // all checked to be zero, break out of outer loop
+        }
+
+        // bring down as many new digits as needed to get something divisor
+        // will go into
+        tmpint = operand[f*maxOps+1];
+        while( tmpint < divisor ) {
+            tmpint = 10*tmpint + dd[s-1];
+            //System.out.println("tmpint = " + tmpint + " divisor = " + divisor + " f = " + f + " s = " + s );
+            s = s - 1;
+        }
+        f = f + 1;
+    } 
     //int opDp[] = new int[maxOps]; // operand decimal point positions
     int maxDp = 0; // max decimal point 
     if( fxDecPtCk || varDecPtCk ) {
@@ -172,21 +215,6 @@
     
     int digMax = 10;
     int minDp = 0;
-    /*
-    for( int idx = 1; idx >= 0; idx-- ) {
-        opDp[idx] = minDp + (int)((maxDp+1-minDp)*(justLessThn1 - Math.pow(Math.random(), DEXP)));
-        minDp = opDp[idx]; // lower operand needs to be smaller than upper
-                           // so put more digits to the right of the decimal pt
-        if( varDecPtCk && idx == 0 && opDp[0] != opDp[1]) {
-            isLinedUp = "false";
-        }
-        if( opDp[idx] > ansDp ) {
-            ansDp = opDp[idx];
-        }
-        numDig[idx] = 0;
-        //System.out.println("opDp[" + idx + "] = " + opDp[idx]);
-    }
-    */
 
     borrows = new int[quotDigs*(SZ2_MX+1)];
     carries = new int[quotDigs*(SZ2_MX+1)];
@@ -197,7 +225,6 @@
     int jdx;
     int kdx;
     int ldx = 0;
-    
     int bdx = 0;            // box index used to track what box is selected
     
     int[] whatBx;
@@ -241,18 +268,6 @@
         strtTime = tmp.toString();
     } 
     
-    // generate number of digits first
-    // limit the size so it fits the table
-    //int maxDig = SZ2_MX; //- ansDp + opDp[1];
-    // more likely to have more digits than less
-    //numDig[1] = (int)((maxDig-1)*(justLessThn1 - Math.pow(Math.random(), NEXP))) + 2;
-    //int minDig = 0;
-    //if( numDig[1] > 2 ) {
-    //    minDig = numDig[1] - 3;
-    //}
-    //numDig[0] = (int)((numDig[1]-minDig+1)*(justLessThn1 - Math.pow(Math.random(), NEXP))) + minDig;
-    
-
     int dec = 0;
     int [] nacarries;
     nacarries = new int[quotDigs];
@@ -288,15 +303,7 @@
         maxAnDig = 1 + (int)Math.log10(maxAns );
     }
     maxAnDig += ansDp;
-
-    // all the decimal points need to be lined up
-/*
-    for( int sbx = 0; sbx < quotDigs; ++sbx ) {
-        for( int idx = numOps-1; idx >= 0; idx-- ) {
-             spacesb4Op[sbx*numOps+idx] = dvsrDigs + quotDigs; // - digits in operand fixit
-        } 
-    } 
-*/    
+   
     int ar = 2*nacarries[0];  // first additive carry 
     int qu = ar + maxAnDig - 1; // lsb of final answer box
 
@@ -346,8 +353,8 @@
 <%      }
     } %>
 </tr>
-<%  for( int sbx = quotDigs-1; sbx >= 0; --sbx ) {
-    System.out.println( "now sbx is " + sbx );
+<%  for( int sbx = 0; sbx <= f; ++sbx ) {
+    //System.out.println( "now sbx is " + sbx );
     if( nacarries[0] > 0 ) { %>
         <tr>
     <%      for( int idx = 0; idx <= SZ2_MX; idx++ ) {
@@ -394,11 +401,11 @@
                 int col = spacesb4Op[sbx][0] + numDig[sbx][0] - idx;
                 String name = "op0" + col;
                 if( 0 <= col && col < numDig[sbx][0] ) {
-                    System.out.print("op[" + sbx + "][0][" + col + "] = " + op[sbx][0][col] );
+                    //System.out.print("op[" + sbx + "][0][" + col + "] = " + op[sbx][0][col] );
                 } else {
-                    System.out.print("col out of range");
+                    //System.out.print("col out of range");
                 }
-                System.out.println(" product sbx =  " + sbx + " idx = " + idx + " col = " + col);
+                //System.out.println(" product sbx =  " + sbx + " idx = " + idx + " col = " + col);
                 switch(col) {
                     case 0: %>
                         <td class="t1" name="<%=name%>"><%=op[sbx][0][0]%></td>
@@ -437,11 +444,11 @@
                 int col = spacesb4Op[sbx][1] + numDig[sbx][1] - idx;
                 String name = "op1" + col;
                 if( 0 <= col && col < numDig[sbx][1] ) {
-                    System.out.print("op[" + sbx + "][1][" + col + "] = " + op[sbx][1][col] );
+                    //System.out.print("op[" + sbx + "][1][" + col + "] = " + op[sbx][1][col] );
                 } else {
-                    System.out.print("col out of range");
+                    //System.out.print("col out of range");
                 }
-                System.out.println(" difference sbx =  " + sbx + " idx = " + idx + " col = " + col);
+                //System.out.println(" difference sbx =  " + sbx + " idx = " + idx + " col = " + col);
 
                 switch(col) {
                     case 0: %>
