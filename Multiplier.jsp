@@ -339,7 +339,7 @@ incorrect //-->
         // it won't be a multiple of 1000 unless this program is expanded
         whatBx[ldx] = strtRow == 0? el + 1 : strtRow == 1? en + 1 : es + 1; 
     }
-    maxBx = ldx + 1;
+    maxBx = ldx;
 
 %>
 <div class="d1" >

@@ -13,6 +13,7 @@
 <script src="Multiplier.js"></script>
 <script src="Subtractor.js"></script>
 <script src="dragger.js"></script>
+<script src="Divider.js"></script>
 </head>
 <body>
    
@@ -20,14 +21,17 @@
     final int maxOps = 2;
     final double NEXP = 2.6; // used to generate # of digits 
     final double DEXP = 1.4; // used to generate digits themselves or # operands
-    boolean noBorrowsCk = true;
-    boolean borrowsCk = false;
-    boolean fxDecPtCk = false;
-    boolean varDecPtCk = false;
-    String isNoBorrows = "checked";
-    String isBorrows = "";
-    String isFixedDp = "";
-    String isVarDp = "";
+
+    boolean immFeedBkCk = true;
+    boolean estRequiredCk = false;
+    boolean remaindersCk = false;
+    boolean exDpCk = false;
+    boolean recDpCk = false;
+    String isImmFeedBk = "checked";
+    String isEstRequired = "";
+    String isRemainders = "";
+    String isExDp = "";
+    String isRecDp = "";
     String tmp = "";      // temporary storage for newly gotten 
                           // request parameter
     String whatlvl = "";
@@ -36,12 +40,14 @@
     int dsMaxDg = 4; //2 + (int)((SZ2_MX - 3)*Math.random());
     int dsMax = (int)(Math.pow(10, dsMaxDg)) - 1;
     int divisor = 1 + (int)(dsMax*Math.random());
+    //divisor = 28;
     //System.out.println("dsMaxDg = " + dsMaxDg + " dsMax = " + dsMax + " divisor = " + divisor);
 
     int dvsrDigs = (int)Math.log10(divisor) + 1;
     int qtMaxDg = 7 - dvsrDigs; //(SZ2_MX - dvsrDigs)/dvsrDigs;
     int qtMax = (int)(Math.pow(10, qtMaxDg)) - 1;
     int quotient = 1 + (int)(qtMax*Math.random());
+    //quotient = 3100904; // combination with divisor = 28 gives leading 0 in one of the arguments. is that a problem? fixit
     //System.out.println("dvsrDigs = " + dvsrDigs + " qtMaxDg = " + qtMaxDg + " qtMax = " + qtMax + " quotient = " + quotient);
 
     //int quotient = 5321;
@@ -90,23 +96,26 @@
     }
     
     int spacesb4quot = dvsrDigs + 1 + dvdDigs - quotDigs;
-    
+
     if(( tmp = request.getParameter("difflvl")) != null ) {
-        noBorrowsCk = false;
-        isNoBorrows = "";
+        immFeedBkCk = false;
+        isImmFeedBk = "";
         whatlvl = tmp;
-        if( whatlvl.equals("No Borrows") ) {
-            noBorrowsCk = true;
-            isNoBorrows = "checked";
-        } else if( whatlvl.equals("Borrows")) {
-            borrowsCk = true;
-            isBorrows = "checked";
-        } else if( whatlvl.equals("Fixed Decimal Point")) {
-            fxDecPtCk = true;
-            isFixedDp = "checked";
-        } else if( whatlvl.equals("Variable Decimal Point")) {
-            varDecPtCk = true;
-            isVarDp = "checked";
+        if( whatlvl.equals("Immediate Feedback") ) {
+            immFeedBkCk = true;
+            isImmFeedBk = "checked";
+        } else if( whatlvl.equals("Estimation Required")) {
+            estRequiredCk = true;
+            isEstRequired = "checked";
+        } else if( whatlvl.equals("Remainders")) {
+            remaindersCk = true;
+            isRemainders = "checked";
+        } else if( whatlvl.equals("Exact Decimals")) {
+            exDpCk = true;
+            isExDp = "checked";
+        } else if( whatlvl.equals("Recurring Decimals")) {
+            recDpCk = true;
+            isRecDp = "checked";
         }
     }
     
@@ -120,9 +129,11 @@
     
     int operand[] = new int[quotDigs*maxOps];
     op = new int[quotDigs][maxOps][SZ2_MX+1];
-    int [][] numDig = new int[quotDigs][maxOps]; // how many digits do operands have
-    int [][] spacesb4Op = new int[quotDigs
-            ][maxOps];
+    int [][] numDig = new int[quotDigs][maxOps];
+    int [] numBringDn = new int[quotDigs];
+    int [][] spacesb4Op = new int[quotDigs][maxOps];
+    int ansDp = 0;
+    
     tmpint = dividend;
     // use only the first few digits
     int lastDig = 0;
@@ -145,8 +156,6 @@
                 (int)Math.log10(operand[f*maxOps+0]) + 1: 1;
         numDig[f][1] = operand[f*maxOps+1] > 0? 
                 (int)Math.log10(operand[f*maxOps+1]) + 1: 1;       
-        // need to bring down more digits in some cases fixit
-        // bring down next 
         
         //System.out.println("f = " + f + " prod = " + operand[f*maxOps+0]);
         //System.out.println("diff = " + operand[f*maxOps+1]);
@@ -197,19 +206,15 @@
         // bring down as many new digits as needed to get something divisor
         // will go into
         tmpint = operand[f*maxOps+1];
+        numBringDn[f] = 0;
         while( tmpint < divisor ) {
             tmpint = 10*tmpint + dd[s-1];
             //System.out.println("tmpint = " + tmpint + " divisor = " + divisor + " f = " + f + " s = " + s );
             s = s - 1;
+            numBringDn[f] += 1;
         }
         f = f + 1;
     } 
-    //int opDp[] = new int[maxOps]; // operand decimal point positions
-    int maxDp = 0; // max decimal point 
-    if( fxDecPtCk || varDecPtCk ) {
-        maxDp = (int)(SZ2_MX*Math.random());
-    }
-    int ansDp = 0;
 
     String isLinedUp = "true";
     
@@ -228,8 +233,10 @@
     int bdx = 0;            // box index used to track what box is selected
     
     int[] whatBx;
-    whatBx = new int[maxOps*SZ2_MX];
-    int maxBx = 20;
+    whatBx = new int[SZ2_MX*maxOps*SZ2_MX]; // enough for quotient and
+                                            // all the multiplications and
+                                            // subtractions
+    int maxBx = 20;                      
     
     for( int sbx = 0; sbx < quotDigs; ++sbx ) {
         for( int idx = 0; idx <= SZ2_MX; idx++ ) {
@@ -296,24 +303,64 @@
             //System.out.println("carries[" + kdx + "] = " + carries[kdx]);
         }
     }
-    double maxAns = operand[1] - operand[0];
+
+    int [] em;
+    int [] en;
+    int [] oh;
+    int lastVisible = 1;
     
-    int maxAnDig = 0;
-    if( maxAns > 0 ) {
-        maxAnDig = 1 + (int)Math.log10(maxAns );
+    em = new int[quotDigs]; // least significant digit of each multiplication
+    en = new int[quotDigs]; // least significant digit of each subtraction
+    oh = new int[quotDigs]; // least significant digit on new dividend
+    
+    em[0] = quotDigs - 1;
+    for( int idx = 0; idx < quotDigs; ++idx ) {
+        em[idx] += numDig[idx][0];
+        if( idx > 0 ) {
+            em[idx] += oh[idx-1];
+        }
+        en[idx] = em[idx] + numDig[idx][1];
+        oh[idx] = en[idx] + numBringDn[idx];
     }
-    maxAnDig += ansDp;
-   
-    int ar = 2*nacarries[0];  // first additive carry 
-    int qu = ar + maxAnDig - 1; // lsb of final answer box
-
-    for( int idx = 0; idx < maxAnDig; idx++ ) {
-        whatBx[ldx] = qu - idx; // final answer boxes
-        ldx++;
+    int lastbox = 0;
+    for( int idx = 0, mdx = 0, ndx = 0, pdx = 1, qdx = 0; qdx < quotDigs; ++qdx ) {
+        whatBx[ldx] = qdx; // quotient box indexes
+        if( whatBx[ldx] > lastbox ) {
+            lastbox = whatBx[ldx];
+        }
+        //System.out.println("quotient whatBx[" + ldx + "] = " + whatBx[ldx] );
+        ++ldx;
+        for( ; mdx < numDig[idx][0]; ++mdx  ) { // product box indexes
+            whatBx[ldx] = em[idx] - mdx;
+            
+            //System.out.println("product whatBx[" + ldx + "] = " + whatBx[ldx] );
+            ++ldx;
+        }
+        for( ; ndx < numDig[idx][1]; ++ndx  ) { // difference box indexes
+            whatBx[ldx] = en[idx] - ndx;
+            if( whatBx[ldx] > lastbox ) {
+                lastbox = whatBx[ldx];
+            }
+            //System.out.println("difference whatBx[" + ldx + "] = " + whatBx[ldx] );
+            ++ldx;
+        }
+        //System.out.println("pdx = " + pdx + " numBringDn[" + idx + "] = " + numBringDn[idx] );
+        if( pdx <= numBringDn[idx] ) { // bringdown box indexes
+            whatBx[ldx] = en[idx] + pdx;
+            //System.out.println("bringdown whatBx[" + ldx + "] = " + whatBx[ldx] + " pdx = " + pdx + " oh[" + idx + "] = " + oh[idx]);
+            ++ldx;
+            ++pdx;
+            if( pdx > numBringDn[idx] ) { // reset for next row of products
+                ++idx;                    // and differences
+                pdx = 1;
+                mdx = 0;
+                ndx = 0;
+            }
+        }
     }
-    whatBx[ldx] = qu + 1;
 
-    maxBx = ldx + 1; %>
+    whatBx[ldx] = lastbox + 1;
+    maxBx = ldx; // + 1; %>
 <div >
 <form id="th-id2" method="get" action="Divider.jsp">
 <div class="d2">
@@ -325,10 +372,10 @@
 <%      if( idx < spacesb4quot || spacesb4quot + quotDigs <= idx ) { %>
             <td class="t1"></td>
 <%        } else {
-            int col = SZ2_MX - idx;
-            String name = "qt" + col;  %>
-            <td class="t1"><input type="text" name="<%=name%>" class="a1" size="1" 
-            onkeyup="subtract(<%=col%>)"></td>
+            int col = spacesb4quot + quotDigs - 1 - idx;
+            String qname = "qt" + col;  %>
+            <td class="t1"><input type="text" name="<%=qname%>" class="a1" size="1" 
+            onkeyup="divide(<%=immFeedBkCk%>, <%=col%>, <%=qt[col]%> )"></td>
 <%        }
     } %>
 </tr>
@@ -367,8 +414,8 @@
                     } %>
                     <td class="t2">
                         <input type="text" name="<%=name%>" class="f2" 
-                         value="<%=cas[col]%>" onkeyup="checkBorrow(<%=col%>)"
-                         onclick="promptBorrow(<%=col%>)">
+                        onkeyup="checkBorrow(<%=col%>)"
+                        onclick="promptBorrow(<%=col%>)">
                     </td>
     <%          } else { %>
                     <td class="t2"></td>
@@ -381,7 +428,7 @@
                     } %>
                     <td class="t1">
                         <input type="text" name="<%=name%>" class="f1"
-                               onkeyup="checkNewVal(<%=col%>)">
+                            onkeyup="checkNewVal(<%=col%>)">
                     </td>
     <%          } else { %>
                     <td class="t1"></td>
@@ -396,37 +443,22 @@
                 <td class="t1"></td>
 <%          } else if ( idx == spacesb4Op[sbx][0] ){ %>
                 <td class="t1"> - </td>
-    <%      } else if( idx <= spacesb4Op[sbx][0] + numDig[sbx][0] ) {          
+    <%      } else if( idx <= spacesb4Op[sbx][0] + numDig[sbx][0]) {          
                 //int col = numDig[0] - idx + spacesb4Op[0]; 
                 int col = spacesb4Op[sbx][0] + numDig[sbx][0] - idx;
-                String name = "op0" + col;
+                String name = "op" + sbx + "_0";
                 if( 0 <= col && col < numDig[sbx][0] ) {
                     //System.out.print("op[" + sbx + "][0][" + col + "] = " + op[sbx][0][col] );
                 } else {
                     //System.out.print("col out of range");
                 }
                 //System.out.println(" product sbx =  " + sbx + " idx = " + idx + " col = " + col);
-                switch(col) {
-                    case 0: %>
-                        <td class="t1" name="<%=name%>"><%=op[sbx][0][0]%></td>
-                        <% break; 
-                    case 1: %>
-                        <td class="t1" name="<%=name%>"><%=op[sbx][0][1]%></td>
-                        <% break;
-                    case 2:  %>
-                        <td class="t1" name="<%=name%>"><%=op[sbx][0][2]%></td>
-                        <% break;
-                    case 3:  %>
-                        <td class="t1" name="<%=name%>"><%=op[sbx][0][3]%></td>
-                        <% break;
-                    case 4:  %>
-                        <td class="t1" name="<%=name%>"><%=op[sbx][0][4]%></td>
-                        <% break;
-                    default: %>
-                        <td class="t1">0</td>
-                        <% break;
-                }
-            } else { %>
+                %>
+                <td class="t1">
+                <input type="text" name="<%=name%>" class="a1" size="1" 
+                onkeyup="multiply( <%=col%>, <%=sbx%> )">
+                </td>
+ <%           } else { %>
                 <td class="t1"></td>
 <%          }
         } %>
@@ -439,10 +471,18 @@
             <td class="t2"></td>
     <%      if( idx <= spacesb4Op[sbx][1] ) { %>
                 <td class="t1"></td>
-    <%      } else if( idx <= spacesb4Op[sbx][1] + numDig[sbx][1] ) { 
+<%      } else if( idx <= spacesb4Op[sbx][1] + numDig[sbx][1] ) { 
                 //int col = numDig[1] - idx + spacesb4Op[1] - 1;
                 int col = spacesb4Op[sbx][1] + numDig[sbx][1] - idx;
-                String name = "op1" + col;
+                String name = "op" + sbx + "_1"; %>
+                <td class="t1">
+                <input type="text" name="<%=name%>" class="a1" size="1" 
+                onkeyup="subtract( <%=col%>, <%=sbx%> )">
+                </td>
+    <%      } else if( idx <= spacesb4Op[sbx][1] + numDig[sbx][1]  + numBringDn[sbx] ) { 
+                //int col = numDig[1] - idx + spacesb4Op[1] - 1;
+                int col = spacesb4Op[sbx][1] + numDig[sbx][1] + numBringDn[sbx] - idx;
+                String name = "bd" + sbx;
                 if( 0 <= col && col < numDig[sbx][1] ) {
                     //System.out.print("op[" + sbx + "][1][" + col + "] = " + op[sbx][1][col] );
                 } else {
@@ -450,38 +490,12 @@
                 }
                 //System.out.println(" difference sbx =  " + sbx + " idx = " + idx + " col = " + col);
 
-                switch(col) {
-                    case 0: %>
-                        <td class="t1" name="<%=name%>" onclick="promptBorrow(<%=col%>)">
-                            <%=op[sbx][1][0]%>
-                        </td>
-                        <% break;
-                    case 1: %>
-                        <td class="t1" name="<%=name%>" onclick="promptBorrow(<%=col%>)">
-                            <%=op[sbx][1][1]%>
-                        </td>
-                        <% break;
-                    case 2: %>
-                        <td class="t1" name="<%=name%>" onclick="promptBorrow(<%=col%>)">
-                            <%=op[sbx][1][2]%>
-                        </td>
-                        <% break;
-                    case 3: %>
-                        <td class="t1" name="<%=name%>" onclick="promptBorrow(<%=col%>)">
-                            <%=op[sbx][1][3]%>
-                        </td>
-                        <% break;
-                     case 4: %>
-                        <td class="t1" name="<%=name%>" onclick="promptBorrow(<%=col%>)">
-                            <%=op[sbx][1][4]%>
-                        </td>
-                        <% break;
-                    default: name = "ze1" + col; %>
-                        <td class="t1" name="<%=name%>" onclick="promptBorrow(<%=col%>)">
-                            0
-                        </td>
-                        <% break;
-                }       
+%>
+                <td class="t1">
+                <input type="text" name="<%=name%>" class="a1" size="1" 
+                onkeyup="bringdown( <%=col%>, <%=sbx%> )">
+                </td>
+ <%                 
             } else { %>
                 <td class="t1"></td>
 <%          }
@@ -489,8 +503,8 @@
     </tr>
 <% } %>
 </table>
-</div>
-<div id="statusBox0" class="d2"></div>
+
+<div id="statusBox0"></div>
 <div id="statusBox1"></div>
 <div id="statusBox2"></div>
 <div id="statusBox3"></div>
@@ -507,6 +521,7 @@
 <%  }   %>
 </table>
     <% } %>
+</div>
 <div class="d3">
 <!--this is where error messages get displayed//-->
 <label id="msg"></label>
@@ -526,24 +541,29 @@
     <tr><td>
     </td></tr>
     <tr><td>
-        <input type="radio" name="difflvl" value="No Borrows" 
-            <%=isNoBorrows%> onclick="zeroCounts()">
-        <label>No Borrows</label>
+        <input type="radio" name="difflvl" value="Immediate Feedback" 
+            <%=isImmFeedBk%> onclick="zeroCounts()">
+        <label>Immediate Feedback</label>
     </td></tr>
     <tr><td>
-        <input type="radio" name="difflvl" value="Borrows"
-            <%=isBorrows%> onclick="zeroCounts()">
-        <label>Borrows</label>
+        <input type="radio" name="difflvl" value="Estimation Required"
+            <%=isEstRequired%> onclick="zeroCounts()">
+        <label>Estimation Required</label>
     </td></tr>
     <tr><td>
-        <input type="radio" name="difflvl" value="Fixed Decimal Point" 
-            <%=isFixedDp%> onclick="zeroCounts()"> 
-        <label>Fixed Decimal Point</label>
+        <input type="radio" name="difflvl" value="Remainders" 
+            <%=isRemainders%> onclick="zeroCounts()"> 
+        <label>Remainders</label>
     </td></tr>
     <tr><td>
-        <input type="radio" name="difflvl" value="Variable Decimal Point" 
-            <%=isVarDp%> onclick="zeroCounts()">
-        <label>Variable Decimal Point</label>
+        <input type="radio" name="difflvl" value="Exact Decimals" 
+            <%=isExDp%> onclick="zeroCounts()">
+        <label>Exact Decimals</label>
+    </td></tr>
+    <tr><td>
+        <input type="radio" name="difflvl" value="Recurring Decimals" 
+            <%=isRecDp%> onclick="zeroCounts()">
+        <label>Recurring Decimals</label>
     </td></tr>
 </table>
 </div>
@@ -601,8 +621,9 @@
 <input type="hidden" id="bdx" value="<%=bdx%>" class="shortbox">
 <input type="hidden" id="lastbox" value="<%=maxBx%>" class="shortbox">
 <input type="hidden" id="linedUp" value="<%=isLinedUp%>" class="shortbox">
-
-
+<input type="hidden" id="divisor" value="<%=divisor%>" >
+<input type="hidden" id="quotDigs" value="<%=quotDigs%>" >
+<input type="hidden" id="dividend" value="<%=dividend%>" >
 </form>
 
 </div>

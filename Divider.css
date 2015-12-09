@@ -51,13 +51,14 @@ td {
     //padding-top: 1em;
     //padding-bottom: 10em;
     text-align: center;
-    //min-height: 20em;
+    min-height: 10em;
 }
 .d3 {
     //padding-top: 1em;
     //padding-bottom: 1em;
-    //min-height: 4em;
+    min-height: 2em;
     text-align: center;
+    margin-top: 1em;
     //min-height: 3em;
 }
 .d4 {

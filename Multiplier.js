@@ -39,7 +39,7 @@ function startAgain() {
 
     // update problem counts
     document.getElementById("numAttmptd").value = numAttmptd + 1;
-    if( errCt === 0 && boxNo + 1 === max && errMsg === "" ) {
+    if( errCt === 0 && boxNo === max && errMsg === "" ) {
             document.getElementById("numWoErr").value = numWoErr + 1;    
             document.getElementById("consWoErr").value = consWoErr + 1;
     } else {
@@ -336,10 +336,8 @@ function checkAdd( col ) {
             }
         }
         corrAns = Math.floor((ai0+ai1+ai2+prevCarry)/10);
-        errString = "most significant digit of " + errString;
     } else {
         corrAns = (ai0+ai1+ai2+prevCarry)%10;
-        errString = "least significant digit of " + errString;
     }
     var errBx = document.getElementById("msg");
     if(ans == corrAns ){
@@ -405,7 +403,7 @@ function promptForDp( bdx ) {
     // there are still numbers to fill in or
     // the decimal point is already set correctly
     if( Number(document.getElementById("ansDp").value) === 0 ||
-        bdx < Number(document.getElementById("lastbox").value - 1 ) ||
+        bdx < Number(document.getElementById("lastbox").value ) ||
         isSetAlready )  { 
         //document.getElementById("decRmdr").style.color="#FAF3E4";
         document.getElementById("msg").innerHTML = "";

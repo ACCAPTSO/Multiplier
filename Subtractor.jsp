@@ -249,7 +249,7 @@
     }
     whatBx[ldx] = qu + 1;
 
-    maxBx = ldx + 1; %>
+    maxBx = ldx; %>
 <div class="d1" >
 <form id="th-id2" method="get" action="Subtractor.jsp">
 <div class="d2">
