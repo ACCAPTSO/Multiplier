@@ -3,7 +3,12 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
+function incrementbox(){
+    var bdx = Number(document.getElementById('bdx').value) + 1;
+    document.getElementById('bdx').value = bdx;
+    var nextbox = document.getElementsByName("nextbox")[bdx].value;
+    document.getElementById("whatbox").value = nextbox;
+}
 function divide( immFeedBkCk, col, qtDig ){
     //alert("immFeedBkCk = " + immFeedBkCk + " col = " + col + " qtDig = " + qtDig );
     if( immFeedBkCk ) {
@@ -14,13 +19,40 @@ function divide( immFeedBkCk, col, qtDig ){
             //alert("correct answer is " + ans );
             ansBx.style.color = "black";
             errBx.innerHTML = "";
-            var bdx = Number(document.getElementById('bdx').value) + 1;
-            document.getElementById('bdx').value = bdx;
-            var nextbox = document.getElementsByName("nextbox")[bdx].value;
-            document.getElementById("whatbox").value = nextbox;
+            if( ans != 0 ){ // otherwise you will need to bring down more digits
+                            // before you can start another row
+                var whatRow = Number(document.getElementById('rowNo').value);
+                var name = 'op' + whatRow + '_0';
+                var visibleMrows = document.getElementsByName(name);
+                //alert("name = " + name + " visible multiplication rows = " + visibleMrows + " length = " + visibleMrows.length);
+                for( var i = 0; i < visibleMrows.length; i++ ) {
+                    visibleMrows[i].type = "text";
+                }
+                var visibleDrows = document.getElementsByName('op' + whatRow + '_1');
+                for( var i = 0; i < visibleDrows.length; i++ ) {
+                    visibleDrows[i].type = "text";
+                }
+                var visibleBrows = document.getElementsByName('bd' + whatRow);
+                for( var i = 0; i < visibleBrows.length; i++ ) {
+                    visibleBrows[i].type = "text";
+                }
+                name = "cspan" + whatRow;
+                var visibleBar = document.getElementById(name);
+                //alert("name = " + name + " visible bar = " + visibleBar + " length = " + visibleBar.length);
+                if( visibleBar ) {
+                   visibleBar.className="th-id3";
+                }
+                var visibleMinus = document.getElementById('minus' + whatRow);
+                if( visibleMinus ) {
+                    visibleMinus.className="t1";
+                }
+                whatRow = whatRow + 1;
+                document.getElementById('rowNo').value = whatRow;
+            }
+            incrementbox();
         } else {
             errBx.innerHTML = "not " + ans;
-            upDateErrCount();
+            //upDateErrCount();
         }
         setFocus();
     }
@@ -58,10 +90,7 @@ function multiply( col, sbx ){
         //alert("correct, answer is " + ans);
         ansBxs[bxNo].style.color = "black";
         errBx.innerHTML = "";
-        var bdx = Number(document.getElementById('bdx').value) + 1;
-        document.getElementById('bdx').value = bdx;
-        var nextbox = document.getElementsByName("nextbox")[bdx].value;
-        document.getElementById("whatbox").value = nextbox;
+        incrementbox();
     } else {       
         errBx.innerHTML = "not " + ans;
         upDateErrCount(); // should not count as error but should not advance the
@@ -120,10 +149,7 @@ function subtract( col, sbx ){
         //alert("correct, answer is " + ans);
         ansBxs[bxNo].style.color = "black";
         errBx.innerHTML = "";
-        var bdx = Number(document.getElementById('bdx').value) + 1;
-        document.getElementById('bdx').value = bdx;
-        var nextbox = document.getElementsByName("nextbox")[bdx].value;
-        document.getElementById("whatbox").value = nextbox;
+        incrementbox();
     } else {
         errBx.innerHTML = "not " + ans;
         upDateErrCount();
@@ -153,10 +179,7 @@ function bringdown( col, sbx ) {
         //alert("correct, answer is " + ans);
         ansBxs[bxNo].style.color = "black";
         errBx.innerHTML = "";
-        var bdx = Number(document.getElementById('bdx').value) + 1;
-        document.getElementById('bdx').value = bdx;
-        var nextbox = document.getElementsByName("nextbox")[bdx].value;
-        document.getElementById("whatbox").value = nextbox;
+        incrementbox();
     } else {
         errBx.innerHTML = "not " + ans;
         upDateErrCount();

@@ -54,10 +54,10 @@
     //int divisor = 321;
     //int quotient = 21;
     //int divisor = 321;
-    int dividend = quotient*divisor;
+    int dividnd = quotient*divisor;
     int quotDigs = (int)Math.log10(quotient) + 1;
     
-    int dvdDigs = (int)Math.log10(dividend) + 1;
+    int dvdDigs = (int)Math.log10(dividnd) + 1;
     int [] qt;
     int [] ds;
     int [] dd;
@@ -88,11 +88,11 @@
         tmpint = tmpint / 10;
         //System.out.println("divisor = " + divisor + " ds[" + idx + "] = " + ds[idx]);
     }
-    tmpint = dividend;
+    tmpint = dividnd;
     for( int idx = 0; idx < dvdDigs; ++idx ) {
         dd[idx] = tmpint % 10;
         tmpint = tmpint / 10;
-        //System.out.println("dividend = " + dividend + " dd[" + idx + "] = " + dd[idx]);
+        //System.out.println("dividend = " + dividnd + " dd[" + idx + "] = " + dd[idx]);
     }
     
     int spacesb4quot = dvsrDigs + 1 + dvdDigs - quotDigs;
@@ -134,7 +134,7 @@
     int [][] spacesb4Op = new int[quotDigs][maxOps];
     int ansDp = 0;
     
-    tmpint = dividend;
+    tmpint = dividnd;
     // use only the first few digits
     int lastDig = 0;
     while( tmpint > qt[quotDigs-1]*divisor ) {
@@ -307,7 +307,6 @@
     int [] em;
     int [] en;
     int [] oh;
-    int lastVisible = 1;
     
     em = new int[quotDigs]; // least significant digit of each multiplication
     en = new int[quotDigs]; // least significant digit of each subtraction
@@ -315,10 +314,10 @@
     
     em[0] = quotDigs - 1;
     for( int idx = 0; idx < quotDigs; ++idx ) {
-        em[idx] += numDig[idx][0];
         if( idx > 0 ) {
-            em[idx] += oh[idx-1];
+            em[idx] = oh[idx-1];
         }
+        em[idx] += numDig[idx][0];
         en[idx] = em[idx] + numDig[idx][1];
         oh[idx] = en[idx] + numBringDn[idx];
     }
@@ -332,7 +331,6 @@
         ++ldx;
         for( ; mdx < numDig[idx][0]; ++mdx  ) { // product box indexes
             whatBx[ldx] = em[idx] - mdx;
-            
             //System.out.println("product whatBx[" + ldx + "] = " + whatBx[ldx] );
             ++ldx;
         }
@@ -441,12 +439,14 @@
             <td class="t2"></td>
     <%      if( idx < spacesb4Op[sbx][0] ) { %>
                 <td class="t1"></td>
-<%          } else if ( idx == spacesb4Op[sbx][0] ){ %>
-                <td class="t1"> - </td>
+<%          } else if ( idx == spacesb4Op[sbx][0] ){ 
+                String minusName="minus" + sbx; %>
+                <td class="t3" id="<%=minusName%>" > - </td>
     <%      } else if( idx <= spacesb4Op[sbx][0] + numDig[sbx][0]) {          
                 //int col = numDig[0] - idx + spacesb4Op[0]; 
                 int col = spacesb4Op[sbx][0] + numDig[sbx][0] - idx;
                 String name = "op" + sbx + "_0";
+                String whattype = "hidden";
                 if( 0 <= col && col < numDig[sbx][0] ) {
                     //System.out.print("op[" + sbx + "][0][" + col + "] = " + op[sbx][0][col] );
                 } else {
@@ -455,28 +455,31 @@
                 //System.out.println(" product sbx =  " + sbx + " idx = " + idx + " col = " + col);
                 %>
                 <td class="t1">
-                <input type="text" name="<%=name%>" class="a1" size="1" 
+                <input type="<%=whattype%>" name="<%=name%>" class="a1" size="1" 
                 onkeyup="multiply( <%=col%>, <%=sbx%> )">
                 </td>
  <%           } else { %>
                 <td class="t1"></td>
 <%          }
-        } %>
+        } 
+        String barName = "cspan" + sbx; %>
     <tr><th class="th-id1" colspan="<%=bspan[sbx]%>"></th>
-        <th colspan="<%=cspan[sbx]%>"></th>
+        <th id="<%=barName%>" class="th-id1" colspan="<%=cspan[sbx]%>"></th>
         <th class="th-id1" colspan="<%=dspan[sbx]%>"></th>
     </tr>
         <tr class="oprand">
-    <%  for( int idx = 0; idx <= SZ2_MX; idx++ ) {  %>
+    <%  for( int idx = 0; idx <= SZ2_MX; idx++ ) { 
+            String whattype = "hidden"; %>
             <td class="t2"></td>
     <%      if( idx <= spacesb4Op[sbx][1] ) { %>
                 <td class="t1"></td>
 <%      } else if( idx <= spacesb4Op[sbx][1] + numDig[sbx][1] ) { 
                 //int col = numDig[1] - idx + spacesb4Op[1] - 1;
                 int col = spacesb4Op[sbx][1] + numDig[sbx][1] - idx;
-                String name = "op" + sbx + "_1"; %>
+                String name = "op" + sbx + "_1"; 
+                 %>
                 <td class="t1">
-                <input type="text" name="<%=name%>" class="a1" size="1" 
+                <input type="<%=whattype%>" name="<%=name%>" class="a1" size="1" 
                 onkeyup="subtract( <%=col%>, <%=sbx%> )">
                 </td>
     <%      } else if( idx <= spacesb4Op[sbx][1] + numDig[sbx][1]  + numBringDn[sbx] ) { 
@@ -492,7 +495,7 @@
 
 %>
                 <td class="t1">
-                <input type="text" name="<%=name%>" class="a1" size="1" 
+                <input type="<%=whattype%>" name="<%=name%>" class="a1" size="1" 
                 onkeyup="bringdown( <%=col%>, <%=sbx%> )">
                 </td>
  <%                 
@@ -623,7 +626,8 @@
 <input type="hidden" id="linedUp" value="<%=isLinedUp%>" class="shortbox">
 <input type="hidden" id="divisor" value="<%=divisor%>" >
 <input type="hidden" id="quotDigs" value="<%=quotDigs%>" >
-<input type="hidden" id="dividend" value="<%=dividend%>" >
+<input type="hidden" id="rowNo" value="0" >
+<input type="hidden" id="dividend" value="<%=dividnd%>" >
 </form>
 
 </div>
