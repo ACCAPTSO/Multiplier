@@ -386,13 +386,13 @@
         <td class="t2"></td>
 <%      if( idx < dvsrDigs ) { 
             int col = dvsrDigs - 1 - idx; %>
-            <td class="t1" ><%=ds[col]%></td>
+            <td class="t1" name="dvsrdigs" ><%=ds[col]%></td>
 <%      } else if( idx == dvsrDigs ) { %>
             <td class="t1" >)</td>
 <%      } else if( idx <= dvsrDigs + dvdDigs ) { 
             int col = dvsrDigs +  dvdDigs - idx;
             //System.out.println("dividend col = " + col); %>
-            <td class="t1" ><%=dd[col]%></td>
+            <td class="t1" name="dvddigs"><%=dd[col]%></td>
 <%      } else { %>
             <td class="t1" ></td>
 <%      }
