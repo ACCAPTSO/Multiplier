@@ -9,6 +9,62 @@ function incrementbox(){
     var nextbox = document.getElementsByName("nextbox")[bdx].value;
     document.getElementById("whatbox").value = nextbox;
 }
+function checkMcarry( col, sbx ){
+    //var ansBxname = "cm" + col + "_" + sbx;
+    var ansBx = document.getElementsByName("cm" + col + "_" + sbx)[0];
+    var prevBx;
+    if( col > 0 ){
+        var prevCol = col - 1;
+        prevBx = document.getElementsByName("cm" + prevCol + "_" + sbx)[0];
+    }
+    //alert("ansBxname = " + ansBxname);
+    var ans = ansBx.value;
+    var errBx = document.getElementById("msg");
+    var mcarry = 0;
+    //var qdx = Number(document.getElementById('quotDigs').value) - 1 - sbx;
+    var quotDigs = Number(document.getElementById('quotDigs').value);
+
+    var qdigit = new Array();
+    var possBx = new Array();
+    // find the quotient digits that will generate carries
+    for( var i = quotDigs-1, j = 0; i >= 0; i-- ) {
+        possBx[j] = document.getElementsByName('qt' + i)[0];
+        var possdigit = Number(possBx[j].value);
+        if( possdigit > 1 ){
+            qdigit[j] = possdigit;
+            j++;
+        }
+    }
+    //alert(" qdigit[" + sbx + "] = " + qdigit[sbx] + "  col = " + col);
+    var dvsrdigs = document.getElementsByName("dvsrdigs");
+    for( var i = 0; i <= col; i++ ){
+        var whatdvsrDig = dvsrdigs.length-1-i;
+        var dvsrDig = dvsrdigs[whatdvsrDig].childNodes[0].nodeValue;
+        mcarry += Number(dvsrDig)*qdigit[sbx];
+        mcarry = Math.floor(mcarry/10);
+        //alert("dvsr index = " + whatdvsrDig + " divisor digit = " + dvsrDig + " mcarry = " + mcarry);
+    }
+    if( ans == mcarry ){
+        ansBx.style.color = "black";
+        dvsrdigs[dvsrdigs.length-1-col].style.color = "black";
+        if( prevBx ){
+            prevBx.style.color = "black";
+        }
+        possBx[sbx].style.color = "black";
+        errBx.innerHTML = "";
+        incrementbox();
+    } else {
+        dvsrdigs[dvsrdigs.length-1-col].style.color = "red";
+        if( prevBx ){
+            prevBx.style.color = "red";
+        }
+        possBx[sbx].style.color = "red";
+        errBx.innerHTML = "not " + ans;
+        upDateErrCount();
+    }
+    setFocus();
+}
+
 function divide( immFeedBkCk, col, qtDig ){
     //alert("immFeedBkCk = " + immFeedBkCk + " col = " + col + " qtDig = " + qtDig );
     if( immFeedBkCk ) {
@@ -122,18 +178,35 @@ function multiply( col, sbx ){
     var carry = 0;
     var prod = 0;
     var expDig = 0;
+    var prevcaBx;
+    if( col == ansBxs.length-1 && col > 1 ){
+        var prevCol = col - 2;
+        prevcaBx = document.getElementsByName("cm" + prevCol + "_" + sbx)[0];
+    } else if( col > 0 ){
+        var prevCol = col - 1;
+        prevcaBx = document.getElementsByName("cm" + prevCol + "_" + sbx)[0];
+    }
+    // starting with least significant digit, multiply each digit and 
+    // calculate the carry
+    // if carries were displayed, you would not have to calculate them fixit
     for( var i = 0; i <= col; i++ ) {
-        prod = (divisor % 10)*qtDig + carry;
-        expDig = prod % 10;
-        carry = (prod - expDig)/ 10;
+        prod = (divisor % 10)*qtDig + carry; // new least significant digit
+                                             // times quotient digit 
+                                             // plus previous carry
+        expDig = prod % 10; // least significant digit of prod
+        carry = (prod - expDig)/ 10; // most significant digit of prod
         //alert("qBx = " + qBx + " qtDig = " + qtDig + " divisor = " + divisor + " carry = " + carry + " expDig = " + expDig );
-        divisor = Math.floor(divisor / 10);
+        divisor = Math.floor(divisor / 10); // remove least significant digit
+
     }
     if( ans == expDig ) {
         //alert("correct, answer is " + ans);
         qBx.style.color = "black";
         dvsrdigs[whatDig].style.color = "black";
         ansBxs[bxNo].style.color = "black";
+        if( prevcaBx ){
+            prevcaBx.style.color = "black";
+        }
         errBx.innerHTML = "";
         incrementbox();
     } else { 
@@ -141,8 +214,10 @@ function multiply( col, sbx ){
         errBx.innerHTML = "not " + ans;
         qBx.style.color = "red";
         dvsrdigs[whatDig].style.color = "red";
-        upDateErrCount(); // should not count as error but should not advance the
-        // box either fixit
+        if( prevcaBx ){
+            prevcaBx.style.color = "red";
+        }
+        upDateErrCount();
     }
     setFocus();
 }
@@ -155,9 +230,7 @@ function subtract( col, sbx ){
     var errBx = document.getElementById("msg");
     var prodBxs = document.getElementsByName("op" + sbx + "_0");
     var prod = 0;
-    var whatRow = Number(document.getElementById('rowNo').value);
-    // do you need both dvddigs, dvdBxs? fixit
-    var dvddigs;
+    var dvdBxs;
     for( var i = 0; i < prodBxs.length; i++ ) {
         var pbx = prodBxs.length - 1 - i;
         prod += Math.pow(10, i)*Number(prodBxs[pbx].value);
@@ -168,10 +241,10 @@ function subtract( col, sbx ){
     var prodBx = prodBxs[prodidx];
     var dvdBx;
     if( sbx == 0 ) {
-        dvddigs = document.getElementsByName("dvddigs");
-        dvdidx = dvddigs.length - document.getElementById('quotDigs').value - col;
+        dvdBxs = document.getElementsByName("dvddigs");
+        dvdidx = dvdBxs.length - document.getElementById('quotDigs').value - col;
         //alert("actual dividend, dvdidx = " + dvdidx);
-        dvdBx = dvddigs[dvdidx];
+        dvdBx = dvdBxs[dvdidx];
         dividend = Number(document.getElementById("dividend").value);
         var lastDig = 0;
         // will this work with a wrong answer? fixit
@@ -183,7 +256,7 @@ function subtract( col, sbx ){
     } else {
         var ddx = sbx - 1;
         var bdBxs = document.getElementsByName("bd" + ddx );
-        var dvdBxs = document.getElementsByName("op" + ddx + "_1");
+        dvdBxs = document.getElementsByName("op" + ddx + "_1");
         var inc = bdBxs.length;
         dvdidx = inc - 1 - col;
         //alert(" bring down boxes length is " + inc );
@@ -237,21 +310,18 @@ function bringdown( col, sbx ) {
     var ans = Number(ansBxs[bxNo].value);
     var errBx = document.getElementById("msg");
     var dvddigs = document.getElementsByName("dvddigs");
-    // standardize what is dvdidx fixit
-    var dvdidx = Number(document.getElementById("quotDigs").value) - 1;
+    var dvdcol = Number(document.getElementById("quotDigs").value) - 1;
     //alert("quotDigs - 1 dvdidx = " + dvdidx );
     for( var idx = 0; idx < sbx; idx++ ) {
-        dvdidx -= document.getElementsByName("bd" + idx ).length;
+        dvdcol -= document.getElementsByName("bd" + idx ).length;
         //alert("idx = " + idx + " dvdidx = " + dvdidx );
     }
-    dvdidx -= document.getElementsByName("bd" + sbx ).length - col
-    var whatDig = dvddigs.length - 1 - dvdidx;
-    //alert(" final dvdidx = " + dvdidx + " whatDig = " + whatDig);
+    dvdcol -= document.getElementsByName("bd" + sbx ).length - col
+    var whatDig = dvddigs.length - 1 - dvdcol;
+    //alert(" final dvdcol = " + dvdcol + " whatDig = " + whatDig);
     var dividend = Number(document.getElementById("dividend").value);
-    var discard = dividend % Math.pow(10, dvdidx);
-    var expAns = (dividend % Math.pow(10,dvdidx+1) - discard)/Math.pow(10, dvdidx);
-    // fixit -how do you figure out what quotient digit to compare to?
-                      // count up all the bringdown boxes?
+    var discard = dividend % Math.pow(10, dvdcol);
+    var expAns = (dividend % Math.pow(10,dvdcol+1) - discard)/Math.pow(10, dvdcol);
     if( ans == expAns ) {
         //alert("correct, answer is " + ans);
         ansBxs[bxNo].style.color = "black";
@@ -265,6 +335,3 @@ function bringdown( col, sbx ) {
     }
     setFocus();
 }
-
-    
-

@@ -130,7 +130,21 @@ td {
   padding: 0px;
   height: 1.5em;
 }
-/* carry boxes */
+/* multiplicative carry boxes */
+.c2 {
+  width: 0.7em;
+  min-width: 0.7em;
+  max-width: 0.7em;
+  //background-color: black;
+  background-color: #e1ceb1;
+  //background-color: #ccccE8;
+  text-align: center;
+  border:1px solid black;
+  margin-left: 0px;
+  margin-right: 0px;
+  font: inherit;
+}
+/* subtractive borrow and carry boxes */
 .f2 {
     width: 0.7em;
     min-width: 0.7em;
@@ -199,7 +213,7 @@ td {
   min-width: 1.1em;
   max-width: 1.1em;
   //background-color: black; #cfd2d1;
-  background-color: #cac8cd;
+  background-color: #e1ceb1;
   //background-color: #a4a6a7;
   color: black; 
   text-align: center;
