@@ -17,7 +17,9 @@
 </head>
 <body>
    
-<%  final int SZ2_MX = 12; // maximum dividend + divisor + 1 size
+<%  // make the user click on the original box fixit
+    // 2nd divisor dig around 5 is harder to estimate fixit
+    final int SZ2_MX = 12; // maximum dividend + divisor + 1 size
     final int maxOps = 2;
     final double NEXP = 2.6; // used to generate # of digits 
     final double DEXP = 1.4; // used to generate digits themselves or # operands
@@ -40,6 +42,7 @@
     int dsMaxDg = 4; //2 + (int)((SZ2_MX - 3)*Math.random());
     int dsMax = (int)(Math.pow(10, dsMaxDg)) - 1;
     int divisor = 1 + (int)(dsMax*Math.random());
+    //divisor = 6851;
     //divisor = 28;
     //System.out.println("dsMaxDg = " + dsMaxDg + " dsMax = " + dsMax + " divisor = " + divisor);
 
@@ -47,7 +50,7 @@
     int qtMaxDg = 7 - dvsrDigs; //(SZ2_MX - dvsrDigs)/dvsrDigs;
     int qtMax = (int)(Math.pow(10, qtMaxDg)) - 1;
     int quotient = 1 + (int)(qtMax*Math.random());
-
+    //quotient = 237;
     //quotient = 3100904; // combination with divisor = 28 gives leading 0 in one of the arguments. is that a problem? fixit
     //System.out.println("dvsrDigs = " + dvsrDigs + " qtMaxDg = " + qtMaxDg + " qtMax = " + qtMax + " quotient = " + quotient);
 
@@ -125,12 +128,12 @@
     int[][][] op;       // operand's first index is what subtraction   
                         // second index is what operand (top/bottom)
                         // third index is what digit of that operand
-    int [] borrows;
-    int [] ncarries; // tracks if carry is needed
+    int [][] borrows;
+    int [][] ncarries; // tracks if carry is needed
     
     int [][] mcarries; // multiplicative carries
     
-    int operand[] = new int[quotDigs*maxOps];
+    int [][] operand = new int[quotDigs][maxOps];
     op = new int[quotDigs][maxOps][SZ2_MX+1];
     int [][] numDig = new int[quotDigs][maxOps];
     int [] numBringDn = new int[quotDigs];
@@ -151,27 +154,27 @@
     int s = quotDigs-1; // there may be more quotient digits than subtractions
     int nsubs = 0; // actual subtractions
     while( s >= 0 ) {
-        operand[nsubs*maxOps+0] = qt[s]*divisor;
-        operand[nsubs*maxOps+1] = tmpint - operand[nsubs*maxOps+0];
+        operand[nsubs][0] = qt[s]*divisor;
+        operand[nsubs][1] = tmpint - operand[nsubs][0];
 
-        numDig[nsubs][0] = operand[nsubs*maxOps+0] > 0? 
-                (int)Math.log10(operand[nsubs*maxOps+0]) + 1: 1;
-        numDig[nsubs][1] = operand[nsubs*maxOps+1] > 0? 
-                (int)Math.log10(operand[nsubs*maxOps+1]) + 1: 1;       
-        
-        if( operand[nsubs*maxOps+1] < 0 ) {
+        numDig[nsubs][0] = operand[nsubs][0] > 0? 
+                (int)Math.log10(operand[nsubs][0]) + 1: 1;
+        numDig[nsubs][1] = operand[nsubs][1] > 0? 
+                (int)Math.log10(operand[nsubs][1]) + 1: 1;       
+        System.out.println("operand[" + nsubs + "[1] = " + operand[nsubs][1] + " numDig[" + nsubs + "][1] = " + numDig[nsubs][1]);
+        if( operand[nsubs][1] < 0 ) {
             System.out.println("diff = " + operand[nsubs*maxOps+1] + " that's messed up");
             break;
         }
 
         spacesb4Op[nsubs][0] = spacesb4quot + quotDigs - s - numDig[nsubs][0] - 1;
-        int tmpint2 = operand[nsubs*maxOps+0];
+        int tmpint2 = operand[nsubs][0];
         for( int idx = 0; idx < numDig[nsubs][0]; ++idx ) {
             op[nsubs][0][idx] = tmpint2 % 10;
             tmpint2 = tmpint2 / 10;
         }
         spacesb4Op[nsubs][1] = spacesb4quot + quotDigs - s - numDig[nsubs][1] - 1;
-        tmpint2 = operand[nsubs*maxOps+1];
+        tmpint2 = operand[nsubs][1];
         for( int idx = 0; idx < numDig[nsubs][1]; ++idx ) {
             op[nsubs][1][idx] = tmpint2 % 10;
             tmpint2 = tmpint2 / 10;
@@ -183,7 +186,7 @@
             break; // don't need to generate tmpint nsubsor the next loop, you're 
         }          // done
         boolean restAreZero = false;
-        if( operand[nsubs*maxOps+1] == 0 ) {            // if difference is zero
+        if( operand[nsubs][1] == 0 ) {            // if difference is zero
             restAreZero = true;                     // check if there is 
             for( int idx = s-1; idx >= 0; --idx ) { // anything but zeros left
                 if( dd[idx] != 0 ) {
@@ -198,13 +201,14 @@
 
         // bring down as many new digits as needed to get something divisor
         // will go into
-        tmpint = operand[nsubs*maxOps+1];
+        tmpint = operand[nsubs][1];
         numBringDn[nsubs] = 0;
         while( tmpint < divisor ) {
             tmpint = 10*tmpint + dd[s-1];
             s = s - 1;
             numBringDn[nsubs] += 1;
         }
+        System.out.println("numBringDn[" + nsubs + "] = " + numBringDn[nsubs]);
         nsubs = nsubs + 1;
     } 
 
@@ -213,8 +217,8 @@
     int digMax = 10;
     int minDp = 0;
 
-    borrows = new int[quotDigs*(SZ2_MX+1)];
-    ncarries = new int[quotDigs*(SZ2_MX+1)];
+    borrows = new int[quotDigs][(SZ2_MX+1)];
+    ncarries = new int[quotDigs+1][(SZ2_MX+1)];
     
     mcarries = new int[quotDigs][SZ2_MX+1];
     for( int idx = 0; idx < quotDigs; idx++ ){
@@ -246,8 +250,8 @@
         for( int idx = 0; idx <= SZ2_MX; idx++ ) {
             cas[idx] = "";
             ans[idx] = "";
-            borrows[sbx*SZ2_MX + idx] = 0;
-            ncarries[sbx*SZ2_MX + idx] = 0;
+            borrows[sbx][idx] = 0;
+            ncarries[sbx][idx] = 0;
         }
     }
     
@@ -282,32 +286,49 @@
     int dec = 0;
     int [] nacarries;
     nacarries = new int[quotDigs];
-    /*
+    
+    int bdidx = quotDigs - 1;
     for( int sbx = 0; sbx < quotDigs; ++ sbx ) {
-        //int diff = opDp[1] - opDp[0];
-        int kdxmax = numDig[sbx][1];
-        for (kdx = 0; kdx < kdxmax; kdx++) {
+        nacarries[sbx] = 0;
+        int kdxmax = sbx == 0? dvdDigs - quotDigs + 1 : numDig[sbx][0] + numBringDn[sbx-1];
+        
+        for (kdx = 0; kdx < kdxmax; kdx++) { // kdx goes 1 too big fixit
             boolean needsCarry = true;
-            //int oneidx = kdx+diff;
 
-                //System.out.println("op[1][" + oneidx + "] = " + op[1][oneidx] + " dec = " + dec + " op[0][" + kdx + "] = " + op[0][kdx]);
-            if( op[sbx][0][kdx] <= op[sbx][1][kdx] - dec ) {
+            System.out.println("bring down dividend index " + bdidx);
+            int minuend;
+            if( sbx == 0 ) {
+                System.out.println("straight dividend minuend");
+                minuend = dd[kdx+quotDigs-1];
+            } else if( kdx < numBringDn[sbx-1] ) {
+                System.out.println("bring down minuend");
+                minuend = dd[bdidx];
+            } else {
+                System.out.println("previous diff minuend");
+                minuend = op[sbx-1][1][kdx-numBringDn[sbx-1]];
+            }
+            if( op[sbx][0][kdx] <= minuend - dec ) {
                 needsCarry = false;
             }
-
+            System.out.println("sbx = " + sbx + " kdx = " + kdx + " dec = " + dec + " minuend = " + minuend +  " op[sbx][0][" + kdx + "] = " + op[sbx][0][kdx]);
             if( needsCarry ) {
-                borrows[kdx+1] = (0 < kdx+1 && kdx+1 < SZ2_MX)? op[sbx][1][kdx+1] - 1: -1;
-                ncarries[kdx] = 1;
+                borrows[sbx][kdx+1] = (0 < kdx+1 && kdx+1 < SZ2_MX)? minuend - 1: -1;
+                ncarries[sbx][kdx] = 1;
                 dec = 1;
                 nacarries[sbx] += 1;          
             } else {
                 dec = 0;
             }
-            nacarries[sbx] = 0; // fixit
-            //System.out.println("carries[" + kdx + "] = " + carries[kdx]);
+            System.out.println("nacarries[" + sbx + "] = " + nacarries[sbx]);
+            if( sbx > 0 && kdx < numBringDn[sbx-1] ) {
+                bdidx += 1;
+            }
         }
+        if( sbx > 0  ) {
+                bdidx -= 1; // back off the last one
+        }
+        bdidx -= numBringDn[sbx];
     }
-*/
 
     int [] em;
     int [] en;
@@ -329,16 +350,21 @@
         }
         //System.out.println("qt[" + idx + "] = " + qt[idx] + " nmcars = " + nmcars + " crows = " + crows );
     }
-    em[0] = nmcars + quotDigs - 1;
+    em[0] = nmcars + 2*nacarries[0] + quotDigs - 1;
     for( int idx = 0; idx <= nsubs; ++idx ) {
         if( idx > 0 ) {
             em[idx] = oh[idx-1];
         }
         em[idx] += numDig[idx][0];
+        System.out.println("em[" + idx + "] = " + em[idx] + " numDig[" + idx + "][1] = " + numDig[idx][1]);
         en[idx] = em[idx] + numDig[idx][1];
+        if( idx < nsubs ) {
+            en[idx] += 2*nacarries[idx+1];
+            //en[idx] += 2*nacarries[idx];
+        }
         oh[idx] = en[idx] + numBringDn[idx];
         pe[idx] = nmcars - 1 - (dvsrDigs - 1)*idx;
-        //System.out.println("em[" + idx + "] = " + em[idx] + " en[" + idx + "] = " + en[idx] + " oh[" + idx + "] = " + oh[idx] + " pe[" + idx + "] = " + pe[idx]);
+        System.out.println("em[" + idx + "] = " + em[idx] + " en[" + idx + "] = " + en[idx] + " oh[" + idx + "] = " + oh[idx] + " pe[" + idx + "] = " + pe[idx]);
     }
     int lastbox = 0;
     for( int idx = 0, mdx = 0, ndx = 0, pdx = 0, qdx = nmcars, rdx = 1; qdx < nmcars + quotDigs; ++qdx ) {
@@ -346,15 +372,16 @@
         if( whatBx[ldx] > lastbox ) {
             lastbox = whatBx[ldx];
         }
-        //System.out.println("quotient whatBx[" + ldx + "] = " + whatBx[ldx] );
+        System.out.println("quotient whatBx[" + ldx + "] = " + whatBx[ldx] );
         ++ldx;
         //int lastcarry = numDig[idx][0] - 2;
         for( ; mdx < numDig[idx][0]; ++mdx  ) { // product box indexes
             whatBx[ldx] = em[idx] - mdx;
-            //System.out.println("product whatBx[" + ldx + "] = " + whatBx[ldx] );
+            System.out.println("product whatBx[" + ldx + "] = " + whatBx[ldx] );
             ++ldx;
             if( mcarries[quotDigs-1-qdx+nmcars][mdx] > 0 ) {
                 whatBx[ldx] = pe[pdx] - mdx;
+                System.out.println("mcarry whatBx[" + ldx + "] = " + whatBx[ldx]);
                 ++ldx;
             }
         }
@@ -363,13 +390,13 @@
             if( whatBx[ldx] > lastbox ) {
                 lastbox = whatBx[ldx];
             }
-            //System.out.println("difference whatBx[" + ldx + "] = " + whatBx[ldx] );
+            System.out.println("difference whatBx[" + ldx + "] = " + whatBx[ldx] );
             ++ldx;
         }
         //System.out.println("pdx = " + pdx + " numBringDn[" + idx + "] = " + numBringDn[idx] );
         if( rdx <= numBringDn[idx] ) { // bringdown box indexes
             whatBx[ldx] = en[idx] + rdx;
-            //System.out.println("bringdown whatBx[" + ldx + "] = " + whatBx[ldx] + " pdx = " + pdx + " oh[" + idx + "] = " + oh[idx]);
+            System.out.println("bringdown whatBx[" + ldx + "] = " + whatBx[ldx] + " pdx = " + pdx + " oh[" + idx + "] = " + oh[idx]);
             ++ldx;
             ++rdx;
             if( rdx > numBringDn[idx] ) { // reset for next row of products
@@ -431,6 +458,42 @@
     <th colspan="<%=cqspan%>"></th>
     <th class="th-id1" colspan="<%=dqspan%>"></th>
 </tr>
+<%    if( nacarries[0] > 0 ) { %>
+        <tr>
+    <%      for( int idx = 0; idx <= SZ2_MX; idx++ ) {
+                int ocol = dvsrDigs + dvdDigs - idx;
+                int col = dvsrDigs + dvdDigs - quotDigs + 1 - idx;
+                if( dvsrDigs < idx && idx < dvsrDigs + dvdDigs - quotDigs + 2
+                        && ncarries[0][col] != 0 ) { 
+                    String name = "ca" + ocol + "_0"; 
+                    if( ocol < 0 || ocol >= SZ2_MX ) {
+                         System.out.println("ca col = " + ocol + "being reduced to 0");
+                         col = 0;
+                    } %>
+                    <td class="t2">
+                        <input type="text" name="<%=name%>" class="f2" 
+                        onkeyup="checkDivBorrow(<%=ocol%>, 0)"
+                        onclick="promptDivBorrow(<%=ocol%>, 0)">
+                    </td>
+    <%          } else { %>
+                    <td class="t2"></td>
+    <%          } 
+                if( col > 0 && ncarries[0][col-1] != 0 ) { 
+                    String name = "bo" + ocol + "_0" ; 
+                    if( ocol < 0 || ocol > SZ2_MX ) {
+                         System.out.println("bo col = " + ocol + "being reduced to 0");
+                         col = 0;
+                    } %>
+                    <td class="t1">
+                        <input type="text" name="<%=name%>" class="f1"
+                            onkeyup="checkNewDivVal(<%=ocol%>, 0 )">
+                    </td>
+    <%          } else { %>
+                    <td class="t1"></td>
+    <%          } 
+            } %>
+        </tr>
+<% } %>
 <tr>
 <%  for( int idx = 0; idx <= SZ2_MX; idx++ ) { %>
         <td class="t2"></td>
@@ -442,48 +505,17 @@
 <%      } else if( idx <= dvsrDigs + dvdDigs ) { 
             int col = dvsrDigs +  dvdDigs - idx;
             //System.out.println("dividend col = " + col); %>
-            <td class="t1" name="dvddigs"><%=dd[col]%></td>
+            <td class="t1" name="dvddigs" onclick="promptDivBorrow(<%=col%>, 0)">
+                <%=dd[col]%>
+            </td>
 <%      } else { %>
             <td class="t1" ></td>
 <%      }
     } %>
 </tr>
 <%  for( int sbx = 0; sbx <= nsubs; ++sbx ) {
-    //System.out.println( "now sbx is " + sbx );
-    if( nacarries[0] > 0 ) { %>
-        <tr>
-    <%      for( int idx = 0; idx <= SZ2_MX; idx++ ) {
-                int col = SZ2_MX - idx;
-                if( ncarries[col] != 0 ) { 
-                    String name = "ca" + col; 
-                    if( col < 0 || col >= SZ2_MX ) {
-                         System.out.println("ca col = " + col + "being reduced to 0");
-                         col = 0;
-                    } %>
-                    <td class="t2">
-                        <input type="text" name="<%=name%>" class="f2" 
-                        onkeyup="checkBorrow(<%=col%>)"
-                        onclick="promptBorrow(<%=col%>)">
-                    </td>
-    <%          } else { %>
-                    <td class="t2"></td>
-    <%          } 
-                if( col > 0 && ncarries[col-1] != 0 ) { 
-                    String name = "bo" + col; 
-                    if( col < 0 || col > SZ2_MX ) {
-                         System.out.println("bo col = " + col + "being reduced to 0");
-                         col = 0;
-                    } %>
-                    <td class="t1">
-                        <input type="text" name="<%=name%>" class="f1"
-                            onkeyup="checkNewVal(<%=col%>)">
-                    </td>
-    <%          } else { %>
-                    <td class="t1"></td>
-    <%          } 
-            } %>
-        </tr>
-<% } %>
+    int rdx = sbx + 1; %>
+
     <tr class="oprand">
     <%  for( int idx = 0; idx <= SZ2_MX; idx++ ) { %>
             <td class="t2"></td>
@@ -517,6 +549,49 @@
         <th id="<%=barName%>" class="th-id1" colspan="<%=cspan[sbx]%>"></th>
         <th class="th-id1" colspan="<%=dspan[sbx]%>"></th>
     </tr>
+<%  if( rdx < nsubs && nacarries[rdx] > 0 ) { %>
+        <tr>
+<%      
+        for( int idx = 0; idx <= SZ2_MX; idx++ ) {
+            //int col = spacesb4Op[sbx][0] + numDig[sbx][0] - idx;
+            int col = spacesb4Op[sbx][0] + numDig[sbx][0] + numBringDn[sbx] - idx;
+            if( col < 0 ) {
+                col = SZ2_MX;
+            }
+            if( spacesb4Op[sbx][0] < idx && 
+                    idx <= spacesb4Op[sbx][0] + numDig[sbx][0] + numBringDn[sbx] && 
+                    ncarries[rdx][col] != 0 ) { 
+            //int col = SZ2_MX - idx;
+            //if( ncarries[col] != 0 ) { 
+                String name = "ca" + col + "_" + rdx; 
+                if( col < 0 || col >= SZ2_MX ) {
+                    System.out.println("ca col = " + col + "being reduced to 0");
+                    col = 0;
+                } %>
+                <td class="t2">
+                        <input type="text" name="<%=name%>" class="f2" 
+                        onkeyup="checkDivBorrow(<%=col%>, <%=rdx%>)"
+                        onclick="promptDivBorrow(<%=col%>, <%=rdx%>)">
+                </td>
+<%          } else { %>
+                <td class="t2"></td>
+<%          } 
+            if( col > 0 && ncarries[rdx][col-1] != 0 ) { 
+                String name = "bo" + col + "_" + rdx; 
+                if( col < 0 || col > SZ2_MX ) {
+                         System.out.println("bo col = " + col + "being reduced to 0");
+                         col = 0;
+                } %>
+                <td class="t1">
+                        <input type="text" name="<%=name%>" class="f1"
+                            onkeyup="checkNewDivVal(<%=col%>, <%=rdx%>)">
+                </td>
+<%          } else { %>
+                    <td class="t1"></td>
+<%          } 
+         } %>
+        </tr>
+<% } %>
         <tr class="oprand">
     <%  for( int idx = 0; idx <= SZ2_MX; idx++ ) { 
             String whattype = "hidden"; %>
@@ -526,15 +601,18 @@
 <%      } else if( idx <= spacesb4Op[sbx][1] + numDig[sbx][1] ) { 
                 //int col = numDig[1] - idx + spacesb4Op[1] - 1;
                 int col = spacesb4Op[sbx][1] + numDig[sbx][1] - idx;
+                int ocol = spacesb4Op[sbx][1] + numDig[sbx][1] + numBringDn[sbx] - idx;
                 String name = "op" + sbx + "_1"; 
                  %>
                 <td class="t1">
                 <input type="<%=whattype%>" name="<%=name%>" class="a1" size="1" 
-                onkeyup="subtract( <%=col%>, <%=sbx%> )">
+                onkeyup="subtract( <%=col%>, <%=sbx%> )" 
+                onclick="promptDivBorrow(<%=ocol%>, <%=rdx%>)">
                 </td>
     <%      } else if( idx <= spacesb4Op[sbx][1] + numDig[sbx][1]  + numBringDn[sbx] ) { 
                 //int col = numDig[1] - idx + spacesb4Op[1] - 1;
                 int col = spacesb4Op[sbx][1] + numDig[sbx][1] + numBringDn[sbx] - idx;
+                int ocol = spacesb4Op[sbx][1] + numDig[sbx][1] + numBringDn[sbx] - idx;
                 String name = "bd" + sbx;
                 if( 0 <= col && col < numDig[sbx][1] ) {
                     //System.out.print("op[" + sbx + "][1][" + col + "] = " + op[sbx][1][col] );
@@ -546,7 +624,8 @@
 %>
                 <td class="t1">
                 <input type="<%=whattype%>" name="<%=name%>" class="a1" size="1" 
-                onkeyup="bringdown( <%=col%>, <%=sbx%> )">
+                onkeyup="bringdown( <%=col%>, <%=sbx%> )"
+                onclick="promptDivBorrow(<%=ocol%>, <%=rdx%>)">
                 </td>
  <%                 
             } else { %>

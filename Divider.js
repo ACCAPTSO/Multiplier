@@ -66,6 +66,7 @@ function checkMcarry( col, sbx ){
 }
 
 function divide( immFeedBkCk, col, qtDig ){
+    //make the bringdowns appear one at a time fixit
     //alert("immFeedBkCk = " + immFeedBkCk + " col = " + col + " qtDig = " + qtDig );
     if( immFeedBkCk ) {
         var ansBx = document.getElementsByName("qt" + col)[0];
@@ -210,7 +211,7 @@ function multiply( col, sbx ){
         errBx.innerHTML = "";
         incrementbox();
     } else { 
-        // show carries fixit
+        // carries not always red fixit
         errBx.innerHTML = "not " + ans;
         qBx.style.color = "red";
         dvsrdigs[whatDig].style.color = "red";
@@ -295,7 +296,7 @@ function subtract( col, sbx ){
         errBx.innerHTML = "";
         incrementbox();
     } else {
-        // show borrows fixit
+        // show borrows only in case of error fixit
         dvdBx.style.color = "red";
         prodBx.style.color = "red";
         errBx.innerHTML = "not " + ans;
@@ -335,3 +336,177 @@ function bringdown( col, sbx ) {
     }
     setFocus();
 }
+function checkDivBorrow( col, sbx ) {
+    document.getElementById('statusBox2').innerHTML = "col = " + col + " sbx = " + sbx;
+    var errBx = document.getElementById("msg");
+    var ciBx = document.getElementsByName("ca" + col + "_" + sbx)[0];
+    var ans = ciBx.value;
+    
+    if(ans == 1 ) {
+        errBx.innerHTML = "";
+        ciBx.style.color = "black";
+        setFocus();
+    } else {
+        upDateErrCount();
+        ciBx.style.color = "red";
+        ciBx.value="";
+        errString = "not " + ans;
+        errBx.innerHTML = "";
+        errBx.innerHTML = errString;
+    }
+}
+function checkNewDivVal( col, sbx ) {
+    document.getElementById('statusBox2').innerHTML = "col = " + col + " sbx = " + sbx;
+    var errBx = document.getElementById("msg");
+    var borBxs;
+    var whatBorBx;
+    var borValue;
+    var borBx;
+    if( sbx == 0 ) {
+        borBxs = document.getElementsByName("dvddigs");
+        whatBorBx = borBxs.length - 1 - col;
+        borBx = borBxs[whatBorBx];
+        borValue = Number(borBx.childNodes[0].nodeValue); // read fixed node value
+    } else {
+        var ddx = sbx - 1;
+        borBxs = document.getElementsByName("op" + ddx + "_1");
+        var bdBxs = document.getElementsByName("bd" + ddx);
+        if( col < bdBxs.length ) {
+            whatBorBx = bdBxs.length - 1 - col;
+            borBx = bdBxs[whatBorBx];
+        } else {
+            whatBorBx = borBxs.length + bdBxs.length - 1 - col;
+            borBx = borBxs[whatBorBx];
+        }
+        borValue = Number(borBx.value); // read from input
+    }
+    var coBx = document.getElementsByName("ca" + col + "_" + sbx);
+    var co = 0;
+    if( coBx.length > 0 ) {
+        co = 10*Number(coBx[0].value);
+    }
+    var newBx = document.getElementsByName("bo" + col + "_" + sbx)[0];
+
+    var prevCol = col - 1;
+    var ciBx = document.getElementsByName("ca" + prevCol + "_" + sbx)[0];
+    var ans = newBx.value;
+    var corrAns = co + borValue - 1;
+
+    if( corrAns > 9 ) {
+        corrAns = corrAns - co;
+    }
+    if(ans == corrAns ) {
+        errBx.innerHTML = "";
+        newBx.style.color = "black";
+        borBx.style.color = "black";
+        if( coBx.length > 0 ) {
+            coBx[0].style.color = "black";
+        }
+        ciBx.focus();
+        ciBx.style.backgroundColor = "white";
+        ciBx.style.color = "red";
+        ciBx.style.border = "1px solid black";
+        ciBx.value="";
+    } else {
+        upDateErrCount();
+        newBx.style.color = "red";
+        newBx.value = "";
+        borBx.style.color = "red";
+        if( coBx.length > 0 ) {
+            coBx[0].style.color = "red";
+        }
+        errString = "not " + ans;
+        errBx.innerHTML = "";
+        errBx.innerHTML = errString;
+    }
+}
+// cross off the digit being borrowed from, make new box visible for the
+// new operand digit and set the focus to the new box
+function promptDivBorrow( col, sbx ) {
+    document.getElementById('statusBox0').innerHTML = "col = " + col + " sbx = " + sbx;
+    var borBxs;
+    var whatBorBx;
+    var borValue;
+    var borBx;
+    if( sbx == 0 ) {
+        borBxs = document.getElementsByName("dvddigs");
+        whatBorBx = borBxs.length - 1 - col;
+        borBx = borBxs[whatBorBx];
+        borValue = Number(borBx.childNodes[0].nodeValue); // read fixed node value
+    } else {
+        var ddx = sbx - 1;
+        borBxs = document.getElementsByName("op" + ddx + "_1");
+        var bdBxs = document.getElementsByName("bd" + ddx);
+        if( col < bdBxs.length ) {
+            whatBorBx = bdBxs.length - 1 - col;
+            borBx = bdBxs[whatBorBx];
+        } else {
+            whatBorBx = borBxs.length + bdBxs.length - 1 - col;
+            borBx = borBxs[whatBorBx];
+        }
+        borValue = Number(borBx.value); // read from input
+    }
+
+    var coBx = document.getElementsByName("ca" + col + "_" + sbx);
+    var newBx = document.getElementsByName("bo" + col + "_" + sbx)[0];
+    
+    // turn any red numbers for a subtraction error black
+    var allT1s = document.getElementsByClassName("t1");
+    for( var i = 0; i < allT1s.length; i++ ) {
+        allT1s[i].style.color = "black";
+    }  
+    var allF1s = document.getElementsByClassName("f1");
+    for( var i = 0; i < allF1s.length; i++ ) {
+        allF1s[i].style.color = "black";
+    } 
+    var allF2s = document.getElementsByClassName("f2");
+    for( var i = 0; i < allF2s.length; i++ ) {
+        allF2s[i].style.color = "black";
+    } 
+    var errBx = document.getElementById("msg");
+    errBx.innerHTML = "";
+    
+    if( newBx ) { // make sure it's really a column that should be borrowed from 
+                  // or do nothing
+    
+        if( borValue === 0 ) {
+            // if 0 then cross off the carry in as well
+            // if it's 0 & no carry in, there is nothing to borrow so do nothing
+            if( coBx.length > 0 && Number(coBx[0].value) === 1 ) {
+                borBx.style.setProperty("text-decoration", "line-through");
+                coBx[0].style.textDecoration = "line-through";
+                newBx.focus();
+                newBx.style.backgroundColor = "white";
+                newBx.style.color = "red";
+                newBx.style.border = "1px solid black";
+                newBx.value="";
+            }
+        } else {
+            borBx.style.setProperty("text-decoration", "line-through");
+            newBx.focus();
+            newBx.style.backgroundColor = "white";
+            newBx.style.color = "red";
+            newBx.style.border = "1px solid black";
+            newBx.value="";
+        }
+    
+        // keep "click on a digit to borrow from it" message up until all the 
+        // borrows have been made
+        var displayBorrow = document.getElementById('dispBo');
+        var nCols = document.getElementsByClassName('dp');
+        var mtBoxes = 0;
+        for( var idx = 0; idx < nCols.length; idx++ ) {
+            newBx = document.getElementsByName("bo" + idx)[0];
+            if( newBx ) {
+                if( newBx.value === "" ) {
+                    mtBoxes += 1;
+                }
+            }
+
+        }
+        if( mtBoxes < 2 ) {
+            displayBorrow.style.color = getComputedStyle(displayBorrow).backgroundColor;
+        }
+    }
+}
+   
