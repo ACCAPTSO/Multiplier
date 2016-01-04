@@ -19,6 +19,7 @@
    
 <%  // make the user click on the original box fixit
     // 2nd divisor dig around 5 is harder to estimate fixit
+    // Click on a digit to borrow from it is not always on fixit
     final int SZ2_MX = 12; // maximum dividend + divisor + 1 size
     final int maxOps = 2;
     final double NEXP = 2.6; // used to generate # of digits 
@@ -39,9 +40,10 @@
     String whatlvl = "";
     double justLessThn1 = 1 - 1/Double.MAX_VALUE;
     
-    int dsMaxDg = 4; //2 + (int)((SZ2_MX - 3)*Math.random());
+    int dsMaxDg = 4; //2 + (int)((SZ2_MX - 3)*Math.random())
     int dsMax = (int)(Math.pow(10, dsMaxDg)) - 1;
     int divisor = 1 + (int)(dsMax*Math.random());
+    //divisor = 77;
     //divisor = 6851;
     //divisor = 28;
     //System.out.println("dsMaxDg = " + dsMaxDg + " dsMax = " + dsMax + " divisor = " + divisor);
@@ -50,6 +52,7 @@
     int qtMaxDg = 7 - dvsrDigs; //(SZ2_MX - dvsrDigs)/dvsrDigs;
     int qtMax = (int)(Math.pow(10, qtMaxDg)) - 1;
     int quotient = 1 + (int)(qtMax*Math.random());
+    //quotient = 53094;
     //quotient = 237;
     //quotient = 3100904; // combination with divisor = 28 gives leading 0 in one of the arguments. is that a problem? fixit
     //System.out.println("dvsrDigs = " + dvsrDigs + " qtMaxDg = " + qtMaxDg + " qtMax = " + qtMax + " quotient = " + quotient);
@@ -79,11 +82,13 @@
     int cqspan = 2*dvdDigs + 1;
     int dqspan = 2*(SZ2_MX + 1) - bqspan - cqspan;
     
+    int [] numBringDn = new int[quotDigs];
     int tmpint = quotient;
     for( int idx = 0; idx < quotDigs; ++idx ) {
         qt[idx] = tmpint % 10;
         tmpint = tmpint / 10;
         //System.out.println("quotient = " + quotient + " qt[" + idx + "] = " + qt[idx]);
+        numBringDn[idx] = 0;
     }
 
     tmpint = divisor;
@@ -123,6 +128,17 @@
         }
     }
     
+    boolean showBrowsCk = false;
+    String isShowBrows = "";
+    String helplist[] = request.getParameterValues("showhelp");
+    if( helplist  != null ) {
+        for( int idx = 0; idx < helplist.length; idx++ ) {
+            if( helplist[idx].equals("Show Borrows") ) {
+                showBrowsCk = true;
+                isShowBrows = "checked";
+            }
+        }
+    }
     int numOps = 2;
     int colspan = 2*(SZ2_MX + 1);
     int[][][] op;       // operand's first index is what subtraction   
@@ -136,7 +152,6 @@
     int [][] operand = new int[quotDigs][maxOps];
     op = new int[quotDigs][maxOps][SZ2_MX+1];
     int [][] numDig = new int[quotDigs][maxOps];
-    int [] numBringDn = new int[quotDigs];
     int [][] spacesb4Op = new int[quotDigs][maxOps];
     int ansDp = 0;
     
@@ -161,7 +176,7 @@
                 (int)Math.log10(operand[nsubs][0]) + 1: 1;
         numDig[nsubs][1] = operand[nsubs][1] > 0? 
                 (int)Math.log10(operand[nsubs][1]) + 1: 1;       
-        System.out.println("operand[" + nsubs + "[1] = " + operand[nsubs][1] + " numDig[" + nsubs + "][1] = " + numDig[nsubs][1]);
+        //System.out.println("operand[" + nsubs + "[1] = " + operand[nsubs][1] + " numDig[" + nsubs + "][1] = " + numDig[nsubs][1]);
         if( operand[nsubs][1] < 0 ) {
             System.out.println("diff = " + operand[nsubs*maxOps+1] + " that's messed up");
             break;
@@ -208,7 +223,7 @@
             s = s - 1;
             numBringDn[nsubs] += 1;
         }
-        System.out.println("numBringDn[" + nsubs + "] = " + numBringDn[nsubs]);
+        //System.out.println("numBringDn[" + nsubs + "] = " + numBringDn[nsubs]);
         nsubs = nsubs + 1;
     } 
 
@@ -287,47 +302,50 @@
     int [] nacarries;
     nacarries = new int[quotDigs];
     
-    int bdidx = quotDigs - 1;
-    for( int sbx = 0; sbx < quotDigs; ++ sbx ) {
-        nacarries[sbx] = 0;
-        int kdxmax = sbx == 0? dvdDigs - quotDigs + 1 : numDig[sbx][0] + numBringDn[sbx-1];
-        
-        for (kdx = 0; kdx < kdxmax; kdx++) { // kdx goes 1 too big fixit
-            boolean needsCarry = true;
+    if( showBrowsCk ) {
+        int bdidx = quotDigs - 1;
+        for( int sbx = 0; sbx < quotDigs; ++ sbx ) {
+            nacarries[sbx] = 0;
+            int kdxmax = sbx == 0? dvdDigs - quotDigs + 1 : numDig[sbx][0] + numBringDn[sbx-1];
+            if( sbx > 0  ) {
+                bdidx -= numBringDn[sbx-1];
+            }
+            for (kdx = 0; kdx < kdxmax; kdx++) { // kdx goes 1 too big fixit
+                boolean needsCarry = true;
 
-            System.out.println("bring down dividend index " + bdidx);
-            int minuend;
-            if( sbx == 0 ) {
-                System.out.println("straight dividend minuend");
-                minuend = dd[kdx+quotDigs-1];
-            } else if( kdx < numBringDn[sbx-1] ) {
-                System.out.println("bring down minuend");
-                minuend = dd[bdidx];
-            } else {
-                System.out.println("previous diff minuend");
-                minuend = op[sbx-1][1][kdx-numBringDn[sbx-1]];
+                //System.out.println("bring down dividend index " + bdidx);
+                int minuend;
+                if( sbx == 0 ) {
+                    //System.out.println("straight dividend minuend");
+                    minuend = dd[kdx+quotDigs-1];
+                } else if( kdx < numBringDn[sbx-1] ) {
+                    //System.out.println("bring down minuend");
+                    minuend = dd[bdidx];
+                } else {
+                    //System.out.println("previous diff minuend");
+                    minuend = op[sbx-1][1][kdx-numBringDn[sbx-1]];
+                }
+                if( op[sbx][0][kdx] <= minuend - dec ) {
+                    needsCarry = false;
+                }
+                //System.out.println("sbx = " + sbx + " kdx = " + kdx + " dec = " + dec + " minuend = " + minuend +  " op[sbx][0][" + kdx + "] = " + op[sbx][0][kdx]);
+                if( needsCarry ) {
+                    borrows[sbx][kdx+1] = (0 < kdx+1 && kdx+1 < SZ2_MX)? minuend - 1: -1;
+                    ncarries[sbx][kdx] = 1;
+                    dec = 1;
+                    nacarries[sbx] += 1;          
+                } else {
+                    dec = 0;
+                }
+                //System.out.println("nacarries[" + sbx + "] = " + nacarries[sbx]);
+                if( sbx > 0 && kdx < numBringDn[sbx-1] ) {
+                    bdidx += 1;
+                }
             }
-            if( op[sbx][0][kdx] <= minuend - dec ) {
-                needsCarry = false;
-            }
-            System.out.println("sbx = " + sbx + " kdx = " + kdx + " dec = " + dec + " minuend = " + minuend +  " op[sbx][0][" + kdx + "] = " + op[sbx][0][kdx]);
-            if( needsCarry ) {
-                borrows[sbx][kdx+1] = (0 < kdx+1 && kdx+1 < SZ2_MX)? minuend - 1: -1;
-                ncarries[sbx][kdx] = 1;
-                dec = 1;
-                nacarries[sbx] += 1;          
-            } else {
-                dec = 0;
-            }
-            System.out.println("nacarries[" + sbx + "] = " + nacarries[sbx]);
-            if( sbx > 0 && kdx < numBringDn[sbx-1] ) {
-                bdidx += 1;
+            if( sbx > 0  ) {
+                bdidx -= numBringDn[sbx-1]; // back off the single increments
             }
         }
-        if( sbx > 0  ) {
-                bdidx -= 1; // back off the last one
-        }
-        bdidx -= numBringDn[sbx];
     }
 
     int [] em;
@@ -356,7 +374,7 @@
             em[idx] = oh[idx-1];
         }
         em[idx] += numDig[idx][0];
-        System.out.println("em[" + idx + "] = " + em[idx] + " numDig[" + idx + "][1] = " + numDig[idx][1]);
+        //System.out.println("em[" + idx + "] = " + em[idx] + " numDig[" + idx + "][1] = " + numDig[idx][1]);
         en[idx] = em[idx] + numDig[idx][1];
         if( idx < nsubs ) {
             en[idx] += 2*nacarries[idx+1];
@@ -364,7 +382,7 @@
         }
         oh[idx] = en[idx] + numBringDn[idx];
         pe[idx] = nmcars - 1 - (dvsrDigs - 1)*idx;
-        System.out.println("em[" + idx + "] = " + em[idx] + " en[" + idx + "] = " + en[idx] + " oh[" + idx + "] = " + oh[idx] + " pe[" + idx + "] = " + pe[idx]);
+        //System.out.println("em[" + idx + "] = " + em[idx] + " en[" + idx + "] = " + en[idx] + " oh[" + idx + "] = " + oh[idx] + " pe[" + idx + "] = " + pe[idx]);
     }
     int lastbox = 0;
     for( int idx = 0, mdx = 0, ndx = 0, pdx = 0, qdx = nmcars, rdx = 1; qdx < nmcars + quotDigs; ++qdx ) {
@@ -372,16 +390,16 @@
         if( whatBx[ldx] > lastbox ) {
             lastbox = whatBx[ldx];
         }
-        System.out.println("quotient whatBx[" + ldx + "] = " + whatBx[ldx] );
+        //System.out.println("quotient whatBx[" + ldx + "] = " + whatBx[ldx] );
         ++ldx;
         //int lastcarry = numDig[idx][0] - 2;
         for( ; mdx < numDig[idx][0]; ++mdx  ) { // product box indexes
             whatBx[ldx] = em[idx] - mdx;
-            System.out.println("product whatBx[" + ldx + "] = " + whatBx[ldx] );
+            //System.out.println("product whatBx[" + ldx + "] = " + whatBx[ldx] );
             ++ldx;
             if( mcarries[quotDigs-1-qdx+nmcars][mdx] > 0 ) {
                 whatBx[ldx] = pe[pdx] - mdx;
-                System.out.println("mcarry whatBx[" + ldx + "] = " + whatBx[ldx]);
+                //System.out.println("mcarry whatBx[" + ldx + "] = " + whatBx[ldx]);
                 ++ldx;
             }
         }
@@ -390,13 +408,13 @@
             if( whatBx[ldx] > lastbox ) {
                 lastbox = whatBx[ldx];
             }
-            System.out.println("difference whatBx[" + ldx + "] = " + whatBx[ldx] );
+            //System.out.println("difference whatBx[" + ldx + "] = " + whatBx[ldx] );
             ++ldx;
         }
         //System.out.println("pdx = " + pdx + " numBringDn[" + idx + "] = " + numBringDn[idx] );
         if( rdx <= numBringDn[idx] ) { // bringdown box indexes
             whatBx[ldx] = en[idx] + rdx;
-            System.out.println("bringdown whatBx[" + ldx + "] = " + whatBx[ldx] + " pdx = " + pdx + " oh[" + idx + "] = " + oh[idx]);
+            //System.out.println("bringdown whatBx[" + ldx + "] = " + whatBx[ldx] + " pdx = " + pdx + " oh[" + idx + "] = " + oh[idx]);
             ++ldx;
             ++rdx;
             if( rdx > numBringDn[idx] ) { // reset for next row of products
@@ -660,7 +678,7 @@
 </div>
 <div class="d3">
 <label id="dispBo">
-<%  if( nacarries[0] > 0) { %>
+<%  if( nacarries[0] > 0) { // needs to check all that are visible fixit %>
             Click on a digit to borrow from it
 <%  } %>
 </label>
@@ -669,6 +687,10 @@
 <div class ="d1">
 <div class="d4">  
 <table>
+    <tr><td><input type="checkbox" value="Show Borrows" name="showhelp" 
+                   <%=isShowBrows%> onclick="zeroCounts()">
+            <label>Show Borrows</label>
+        </td></tr>
     <tr><th colspan="1">Highest Difficulty Level</th></tr>
     <tr><td>
     </td></tr>

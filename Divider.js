@@ -153,6 +153,7 @@ function divide( immFeedBkCk, col, qtDig ){
 }
 
 function multiply( col, sbx ){
+    //document.getElementById('statusBox3').innerHTML = "col = " + col + " sbx = " + sbx;
     var ansBxs = document.getElementsByName("op" + sbx + "_0");
     var bxNo = ansBxs.length - 1 - col;
     //alert("ansBxs = " + ansBxs + " length = " + ansBxs.length + " bxNo = " + bxNo );
@@ -180,12 +181,21 @@ function multiply( col, sbx ){
     var prod = 0;
     var expDig = 0;
     var prevcaBx;
+    var cmx = 0;
+    var startquot = quotDigs - 1;
+    //document.getElementById('statusBox0').innerHTML = "startquot = " + startquot + " qdx = " + qdx;
+    for( var i = startquot; i > qdx; i-- ) {
+        if( Number(document.getElementsByName("qt" + i)[0].value) > 1 ) {
+            cmx = cmx + 1;
+        }
+        //alert(" i = " + i + " cmx = " + cmx);
+    }
     if( col == ansBxs.length-1 && col > 1 ){
-        var prevCol = col - 2;
-        prevcaBx = document.getElementsByName("cm" + prevCol + "_" + sbx)[0];
+        var prevCol = dvsrdigs.length - 2;
+        prevcaBx = document.getElementsByName("cm" + prevCol + "_" + cmx)[0];
     } else if( col > 0 ){
         var prevCol = col - 1;
-        prevcaBx = document.getElementsByName("cm" + prevCol + "_" + sbx)[0];
+        prevcaBx = document.getElementsByName("cm" + prevCol + "_" + cmx)[0];
     }
     // starting with least significant digit, multiply each digit and 
     // calculate the carry
@@ -212,6 +222,8 @@ function multiply( col, sbx ){
         incrementbox();
     } else { 
         // carries not always red fixit
+        // always with 3 digit divisors? fixit
+        // happens when the quotient has 0s in the middle of it? fixit
         errBx.innerHTML = "not " + ans;
         qBx.style.color = "red";
         dvsrdigs[whatDig].style.color = "red";
