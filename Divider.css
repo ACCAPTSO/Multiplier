@@ -130,6 +130,33 @@ td {
   padding: 0px;
   height: 1.5em;
 }
+/* collapsed table cell with space, carry, or decimal point */
+.s2 {
+  text-align: center;
+  width: 1em;
+  min-width: 1em;
+  max-width: 1em;
+  margin-left: 0px;
+  margin-right: 0px;
+  margin-top: 0px;
+  background-color: #fdefe0;
+  padding: 0px;
+  height: 0px;
+  //padding-top: 0px;
+  //padding-bottom: 5px;
+}
+/* collapsed table cell with operand or answer digit */
+.s1{
+  text-align: center;
+  width: 1.5em;
+  min-width: 1.5em;
+  max-width: 1.5em;
+  margin-left: 0px;
+  margin-right: 0px;
+  background-color: #fdefe0;
+  padding: 0px;
+  height: 0px;
+}
 /* multiplicative carry boxes */
 .c2 {
   width: 0.7em;
@@ -144,7 +171,7 @@ td {
   margin-right: 0px;
   font: inherit;
 }
-/* subtractive borrow and carry boxes */
+/* collapsed subtractive carry boxes */
 .f2 {
     width: 0.7em;
     min-width: 0.7em;
@@ -160,9 +187,10 @@ td {
     margin-right: 0px;
     margin-top: 0px;
     padding-top: 0px;
-    font: inherit;
+    //font: inherit;
+    height: 0px;
 }
-/* borrow boxes */
+/* collapsed borrow boxes */
 .f1 {
   width: 1.1em;
   min-width: 1.1em;
@@ -173,8 +201,8 @@ td {
   text-align: center;
   //border: 1px solid black;
   border: none;
-  font: inherit;
-  height: 1.7em;
+  //font: inherit;
+  height: 0px;
   margin-left: 0px;
   margin-right: 0px;
 }
@@ -263,7 +291,8 @@ td {
 }
 #dispBo {
     //margin-left: 1em;
-    color: #0f156f;
+    //color: #160404;
+    color: #fdefe0;
 }
 #msg {;
     //margin-left: 1em;

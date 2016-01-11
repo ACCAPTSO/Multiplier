@@ -3,6 +3,11 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
+
+// need borrows and carries calculated in javascript so that you can show the user 
+// where they made a mistake in subtracting and so that the user can estimate
+// answers and try again fixit
+
 function incrementbox(){
     var bdx = Number(document.getElementById('bdx').value) + 1;
     document.getElementById('bdx').value = bdx;
@@ -67,6 +72,8 @@ function checkMcarry( col, sbx ){
 
 function divide( immFeedBkCk, col, qtDig ){
     //make the bringdowns appear one at a time fixit
+    //a lot of the making things visible (minus, bar, subtraction boxes) 
+    // needs to happen after last multiply fixit
     //alert("immFeedBkCk = " + immFeedBkCk + " col = " + col + " qtDig = " + qtDig );
     if( immFeedBkCk ) {
         var ansBx = document.getElementsByName("qt" + col)[0];
@@ -103,7 +110,6 @@ function divide( immFeedBkCk, col, qtDig ){
                             // before you can start another row  
                 var name = 'op' + whatRow + '_0';
                 var visibleMrows = document.getElementsByName(name);
-                //alert("name = " + name + " visible multiplication rows = " + visibleMrows + " length = " + visibleMrows.length);
                 for( var i = 0; i < visibleMrows.length; i++ ) {
                     visibleMrows[i].type = "text";
                 }
@@ -117,13 +123,56 @@ function divide( immFeedBkCk, col, qtDig ){
                 }
                 name = "cspan" + whatRow;
                 var visibleBar = document.getElementById(name);
-                //alert("name = " + name + " visible bar = " + visibleBar + " length = " + visibleBar.length);
                 if( visibleBar ) {
                    visibleBar.className="th-id3";
                 }
                 var visibleMinus = document.getElementById('minus' + whatRow);
                 if( visibleMinus ) {
                     visibleMinus.className="t1";
+                }
+                var whatHelp = document.getElementsByName('showhelp');
+                for( var i = 0; i < whatHelp.length; i++ ) {
+                    if( whatHelp[i].checked ) { // need to check actual value fixit
+                        var jstop = dvddigs.length;
+                        if( bddigs ) {
+                            jstop += bddigs.length
+                        }
+                        var parentResized = false;
+                        for( var j = 0; j < jstop; j++ ) {
+                            var whatBorrow = 'bo' + j + "_" + whatRow;
+                            var visibleBorrow = document.getElementsByName( whatBorrow );
+                            if( visibleBorrow.length > 0 ) {
+                                if( !parentResized ) {
+                                    var parent = visibleBorrow[0].parentNode;;
+                                    while( parent.tagName != "TR" ) {      
+                                        parent = parent.parentNode;
+                                    }
+                                    var squares = parent.childNodes;
+                                    for( var k = 0; k < squares.length; k++ ) {
+                                        if( squares[k].nodeType == 1 ) {
+                                            if( squares[k].class == "s1") {
+                                                squares[k].class = "t1";
+                                            }
+                                            if( squares[k].class == "s2") {
+                                                squares[k].class = "t2";
+
+                                            }
+                                        }
+                                    }
+                                    parentResized = true;
+                                }
+                                document.getElementById("dispBo").style.color = "#160404";
+                                visibleBorrow[0].type = "text";
+                                visibleBorrow[0].style.height = "1.7em";
+                            }
+                            var whatCarry = 'ca' + j + "_" + whatRow;
+                            var visibleCarry = document.getElementsByName( whatCarry );
+                            if( visibleCarry.length > 0 ) {
+                                visibleCarry[0].type = "text";
+                                visibleCarry[0].style.height = "1em";
+                            }
+                        }
+                    }
                 }
                 whatRow = whatRow + 1;
                 document.getElementById('rowNo').value = whatRow;
@@ -349,7 +398,7 @@ function bringdown( col, sbx ) {
     setFocus();
 }
 function checkDivBorrow( col, sbx ) {
-    document.getElementById('statusBox2').innerHTML = "col = " + col + " sbx = " + sbx;
+    //document.getElementById('statusBox2').innerHTML = "col = " + col + " sbx = " + sbx;
     var errBx = document.getElementById("msg");
     var ciBx = document.getElementsByName("ca" + col + "_" + sbx)[0];
     var ans = ciBx.value;
@@ -368,7 +417,7 @@ function checkDivBorrow( col, sbx ) {
     }
 }
 function checkNewDivVal( col, sbx ) {
-    document.getElementById('statusBox2').innerHTML = "col = " + col + " sbx = " + sbx;
+    //document.getElementById('statusBox2').innerHTML = "col = " + col + " sbx = " + sbx;
     var errBx = document.getElementById("msg");
     var borBxs;
     var whatBorBx;
@@ -435,7 +484,7 @@ function checkNewDivVal( col, sbx ) {
 // cross off the digit being borrowed from, make new box visible for the
 // new operand digit and set the focus to the new box
 function promptDivBorrow( col, sbx ) {
-    document.getElementById('statusBox0').innerHTML = "col = " + col + " sbx = " + sbx;
+    //document.getElementById('statusBox0').innerHTML = "col = " + col + " sbx = " + sbx;
     var borBxs;
     var whatBorBx;
     var borValue;
@@ -477,9 +526,10 @@ function promptDivBorrow( col, sbx ) {
     } 
     var errBx = document.getElementById("msg");
     errBx.innerHTML = "";
-    
-    if( newBx ) { // make sure it's really a column that should be borrowed from 
-                  // or do nothing
+
+    //make sure it's really a column that should be borrowed from 
+    // or do nothing
+    if( newBx && document.getElementsByName('showhelp')[0].checked ) { 
     
         if( borValue === 0 ) {
             // if 0 then cross off the carry in as well
@@ -501,22 +551,32 @@ function promptDivBorrow( col, sbx ) {
             newBx.style.border = "1px solid black";
             newBx.value="";
         }
-    
+        //alert("in promptDivBorrow after croos off and new focus");
         // keep "click on a digit to borrow from it" message up until all the 
         // borrows have been made
-        var displayBorrow = document.getElementById('dispBo');
-        var nCols = document.getElementsByClassName('dp');
+        // keep it up for all rows fixit
+        
+        var nCols = document.getElementsByName('dvddigs');
         var mtBoxes = 0;
+        //alert("nCols.length = " + nCols.length);
         for( var idx = 0; idx < nCols.length; idx++ ) {
-            newBx = document.getElementsByName("bo" + idx)[0];
-            if( newBx ) {
-                if( newBx.value === "" ) {
-                    mtBoxes += 1;
+            var quotDigs = Number(document.getElementById('quotDigs').value);
+            //alert("quotDigs = " + quotDigs);
+            //for( var jdx = 0; jdx < quotDigs; jdx++ ) {
+                //var whatBorrow = "bo" + idx + "_" + jdx;
+                var whatBorrow = "bo" + idx + "_" + sbx;
+                //alert("checking if whatBorrow " + whatBorrow + " is empty");
+                newBx = document.getElementsByName( whatBorrow )[0];
+                if( newBx ) {
+                    if( newBx.value === "" ) {
+                        mtBoxes += 1;
+                    }
                 }
-            }
-
+            //}
         }
-        if( mtBoxes < 2 ) {
+        if( mtBoxes < 2 ) { // one empty box is allowed because it's above the
+                            // digit that you just clicked on
+            var displayBorrow = document.getElementById('dispBo');
             displayBorrow.style.color = getComputedStyle(displayBorrow).backgroundColor;
         }
     }

@@ -20,9 +20,12 @@
 <%  // make the user click on the original box fixit
     // 2nd divisor dig around 5 is harder to estimate fixit
     // Click on a digit to borrow from it is not always on fixit
+    // count it wrong if the user gueses a quotient digit 3 times fixit
+    // don't show individual multiplier boxes until you need them fixit
+    // need worst case number of borrow and carry boxes in jsp  fixit
     final int SZ2_MX = 12; // maximum dividend + divisor + 1 size
     final int maxOps = 2;
-    final double NEXP = 2.6; // used to generate # of digits 
+    final double NEXP = 2.6; // used to generate # of digits    
     final double DEXP = 1.4; // used to generate digits themselves or # operands
 
     boolean immFeedBkCk = true;
@@ -41,6 +44,7 @@
     double justLessThn1 = 1 - 1/Double.MAX_VALUE;
     
     int dsMaxDg = 4; //2 + (int)((SZ2_MX - 3)*Math.random())
+    dsMaxDg = 3;
     int dsMax = (int)(Math.pow(10, dsMaxDg)) - 1;
     int divisor = 1 + (int)(dsMax*Math.random());
     //divisor = 77;
@@ -302,7 +306,7 @@
     int [] nacarries;
     nacarries = new int[quotDigs];
     
-    if( showBrowsCk ) {
+    //if( showBrowsCk ) {
         int bdidx = quotDigs - 1;
         for( int sbx = 0; sbx < quotDigs; ++ sbx ) {
             nacarries[sbx] = 0;
@@ -316,19 +320,19 @@
                 //System.out.println("bring down dividend index " + bdidx);
                 int minuend;
                 if( sbx == 0 ) {
-                    //System.out.println("straight dividend minuend");
+                        //System.out.println("straight dividend minuend");
                     minuend = dd[kdx+quotDigs-1];
                 } else if( kdx < numBringDn[sbx-1] ) {
-                    //System.out.println("bring down minuend");
+                        //System.out.println("bring down minuend");
                     minuend = dd[bdidx];
                 } else {
-                    //System.out.println("previous diff minuend");
+                        //System.out.println("previous diff minuend");
                     minuend = op[sbx-1][1][kdx-numBringDn[sbx-1]];
                 }
                 if( op[sbx][0][kdx] <= minuend - dec ) {
                     needsCarry = false;
                 }
-                //System.out.println("sbx = " + sbx + " kdx = " + kdx + " dec = " + dec + " minuend = " + minuend +  " op[sbx][0][" + kdx + "] = " + op[sbx][0][kdx]);
+                    //System.out.println("sbx = " + sbx + " kdx = " + kdx + " dec = " + dec + " minuend = " + minuend +  " op[sbx][0][" + kdx + "] = " + op[sbx][0][kdx]);
                 if( needsCarry ) {
                     borrows[sbx][kdx+1] = (0 < kdx+1 && kdx+1 < SZ2_MX)? minuend - 1: -1;
                     ncarries[sbx][kdx] = 1;
@@ -337,7 +341,7 @@
                 } else {
                     dec = 0;
                 }
-                //System.out.println("nacarries[" + sbx + "] = " + nacarries[sbx]);
+                    //System.out.println("nacarries[" + sbx + "] = " + nacarries[sbx]);
                 if( sbx > 0 && kdx < numBringDn[sbx-1] ) {
                     bdidx += 1;
                 }
@@ -346,7 +350,7 @@
                 bdidx -= numBringDn[sbx-1]; // back off the single increments
             }
         }
-    }
+    //}
 
     int [] em;
     int [] en;
@@ -431,7 +435,11 @@
     }
 
     whatBx[ldx] = lastbox + 1;
-    maxBx = ldx; // + 1; %>
+    maxBx = ldx; // + 1; 
+    String browType = "hidden";    
+    if( showBrowsCk ) {
+        browType = "text";
+    }%>
 <div >
 <form id="th-id2" method="get" action="Divider.jsp">
 <div class="d2">
@@ -481,6 +489,10 @@
     <%      for( int idx = 0; idx <= SZ2_MX; idx++ ) {
                 int ocol = dvsrDigs + dvdDigs - idx;
                 int col = dvsrDigs + dvdDigs - quotDigs + 1 - idx;
+                //String browType = "hidden";
+                //if( showBrowsCk ) {
+                //    browType = "text";
+                //}
                 if( dvsrDigs < idx && idx < dvsrDigs + dvdDigs - quotDigs + 2
                         && ncarries[0][col] != 0 ) { 
                     String name = "ca" + ocol + "_0"; 
@@ -488,13 +500,13 @@
                          System.out.println("ca col = " + ocol + "being reduced to 0");
                          col = 0;
                     } %>
-                    <td class="t2">
-                        <input type="text" name="<%=name%>" class="f2" 
+                    <td class="s2">
+                        <input type="<%=browType%>" name="<%=name%>" class="f2" 
                         onkeyup="checkDivBorrow(<%=ocol%>, 0)"
                         onclick="promptDivBorrow(<%=ocol%>, 0)">
                     </td>
     <%          } else { %>
-                    <td class="t2"></td>
+                    <td class="s2"></td>
     <%          } 
                 if( col > 0 && ncarries[0][col-1] != 0 ) { 
                     String name = "bo" + ocol + "_0" ; 
@@ -502,12 +514,12 @@
                          System.out.println("bo col = " + ocol + "being reduced to 0");
                          col = 0;
                     } %>
-                    <td class="t1">
-                        <input type="text" name="<%=name%>" class="f1"
+                    <td class="s1">
+                        <input type="<%=browType%>" name="<%=name%>" class="f1"
                             onkeyup="checkNewDivVal(<%=ocol%>, 0 )">
                     </td>
     <%          } else { %>
-                    <td class="t1"></td>
+                    <td class="s1"></td>
     <%          } 
             } %>
         </tr>
@@ -569,7 +581,10 @@
     </tr>
 <%  if( rdx < nsubs && nacarries[rdx] > 0 ) { %>
         <tr>
-<%      
+<%      //String browType = "hidden";    
+        //if( showBrowsCk ) {
+        //            browType = "text";
+        //}
         for( int idx = 0; idx <= SZ2_MX; idx++ ) {
             //int col = spacesb4Op[sbx][0] + numDig[sbx][0] - idx;
             int col = spacesb4Op[sbx][0] + numDig[sbx][0] + numBringDn[sbx] - idx;
@@ -586,13 +601,13 @@
                     System.out.println("ca col = " + col + "being reduced to 0");
                     col = 0;
                 } %>
-                <td class="t2">
-                        <input type="text" name="<%=name%>" class="f2" 
+                <td class="s2">
+                        <input type="<%=browType%>" name="<%=name%>" class="f2" 
                         onkeyup="checkDivBorrow(<%=col%>, <%=rdx%>)"
                         onclick="promptDivBorrow(<%=col%>, <%=rdx%>)">
                 </td>
 <%          } else { %>
-                <td class="t2"></td>
+                <td class="s2"></td>
 <%          } 
             if( col > 0 && ncarries[rdx][col-1] != 0 ) { 
                 String name = "bo" + col + "_" + rdx; 
@@ -600,12 +615,12 @@
                          System.out.println("bo col = " + col + "being reduced to 0");
                          col = 0;
                 } %>
-                <td class="t1">
-                        <input type="text" name="<%=name%>" class="f1"
+                <td class="s1">
+                        <input type="<%=browType%>" name="<%=name%>" class="f1"
                             onkeyup="checkNewDivVal(<%=col%>, <%=rdx%>)">
                 </td>
 <%          } else { %>
-                    <td class="t1"></td>
+                    <td class="s1"></td>
 <%          } 
          } %>
         </tr>
@@ -659,18 +674,6 @@
 <div id="statusBox2"></div>
 <div id="statusBox3"></div>
 
-<% if( isLinedUp == "false" ) { %>
-<table>
-    <% for( int i = 0; i < numOps; i++ ) { %>
-    <tr class="DragBox">
-<%      for( int idx = 0; idx <= SZ2_MX; idx++ ) { %>
-            <td class="t2" style="color:purple">_</td><td class="t1" name="bob" style="color:purple">o</td>
-<%      }   %>
-    </tr>
-
-<%  }   %>
-</table>
-    <% } %>
 </div>
 <div class="d3">
 <!--this is where error messages get displayed//-->
@@ -678,7 +681,14 @@
 </div>
 <div class="d3">
 <label id="dispBo">
-<%  if( nacarries[0] > 0) { // needs to check all that are visible fixit %>
+<% boolean thereAreCarries = false;
+for( int idx = 0; idx < nsubs; ++ idx ) { 
+    if( nacarries[idx] > 0 ) {
+        thereAreCarries = true;
+        break;
+    }
+}
+if( thereAreCarries && showBrowsCk ) { // needs to check all that are visible fixit %>
             Click on a digit to borrow from it
 <%  } %>
 </label>
