@@ -292,7 +292,7 @@ td {
 #dispBo {
     //margin-left: 1em;
     //color: #160404;
-    color: #fdefe0;
+    color: #fdefe0; // default text color is background color (hidden)
 }
 #msg {;
     //margin-left: 1em;

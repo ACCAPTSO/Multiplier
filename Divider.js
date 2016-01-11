@@ -82,10 +82,11 @@ function divide( immFeedBkCk, col, qtDig ){
         var whatRow = Number(document.getElementById('rowNo').value);
         var dvddigs;
         var bddigs;
+        var prevRow;
         if( whatRow == 0 ) {
             dvddigs = document.getElementsByName("dvddigs");
         } else {
-            var prevRow = whatRow - 1;
+            prevRow = whatRow - 1;
             dvddigs = document.getElementsByName('op' + prevRow + '_1');
             bddigs = document.getElementsByName('bd' + prevRow);
         }
@@ -106,76 +107,23 @@ function divide( immFeedBkCk, col, qtDig ){
                     dvsrdigs[i].style.color = "black";
             }
             errBx.innerHTML = "";
-            if( ans != 0 ){ // otherwise you will need to bring down more digits
-                            // before you can start another row  
-                var name = 'op' + whatRow + '_0';
-                var visibleMrows = document.getElementsByName(name);
-                for( var i = 0; i < visibleMrows.length; i++ ) {
-                    visibleMrows[i].type = "text";
-                }
-                var visibleDrows = document.getElementsByName('op' + whatRow + '_1');
-                for( var i = 0; i < visibleDrows.length; i++ ) {
-                    visibleDrows[i].type = "text";
-                }
-                var visibleBrows = document.getElementsByName('bd' + whatRow);
-                for( var i = 0; i < visibleBrows.length; i++ ) {
-                    visibleBrows[i].type = "text";
-                }
-                name = "cspan" + whatRow;
-                var visibleBar = document.getElementById(name);
-                if( visibleBar ) {
-                   visibleBar.className="th-id3";
-                }
-                var visibleMinus = document.getElementById('minus' + whatRow);
-                if( visibleMinus ) {
-                    visibleMinus.className="t1";
-                }
-                var whatHelp = document.getElementsByName('showhelp');
-                for( var i = 0; i < whatHelp.length; i++ ) {
-                    if( whatHelp[i].checked ) { // need to check actual value fixit
-                        var jstop = dvddigs.length;
-                        if( bddigs ) {
-                            jstop += bddigs.length
-                        }
-                        var parentResized = false;
-                        for( var j = 0; j < jstop; j++ ) {
-                            var whatBorrow = 'bo' + j + "_" + whatRow;
-                            var visibleBorrow = document.getElementsByName( whatBorrow );
-                            if( visibleBorrow.length > 0 ) {
-                                if( !parentResized ) {
-                                    var parent = visibleBorrow[0].parentNode;;
-                                    while( parent.tagName != "TR" ) {      
-                                        parent = parent.parentNode;
-                                    }
-                                    var squares = parent.childNodes;
-                                    for( var k = 0; k < squares.length; k++ ) {
-                                        if( squares[k].nodeType == 1 ) {
-                                            if( squares[k].class == "s1") {
-                                                squares[k].class = "t1";
-                                            }
-                                            if( squares[k].class == "s2") {
-                                                squares[k].class = "t2";
-
-                                            }
-                                        }
-                                    }
-                                    parentResized = true;
-                                }
-                                document.getElementById("dispBo").style.color = "#160404";
-                                visibleBorrow[0].type = "text";
-                                visibleBorrow[0].style.height = "1.7em";
-                            }
-                            var whatCarry = 'ca' + j + "_" + whatRow;
-                            var visibleCarry = document.getElementsByName( whatCarry );
-                            if( visibleCarry.length > 0 ) {
-                                visibleCarry[0].type = "text";
-                                visibleCarry[0].style.height = "1em";
-                            }
+            // need to take 0.87 into account fixit
+            if( ans == 0 ){  // you will need to bring down more digits
+                             // before you can start another row  
+                var visibleBrows = document.getElementsByName('bd' + prevRow);
+                    for( var i = 0; i < visibleBrows.length; i++ ) {
+                        if( visibleBrows[i].type == "hidden") {
+                            visibleBrows[i].type = "text";
+                            break;
                         }
                     }
+            } else { // make multiplication boxes visible
+                var name = 'op' + whatRow + '_0';
+                var visibleMrow = document.getElementsByName(name);
+                for( var i = 0; i < visibleMrow.length; i++ ) {
+                    visibleMrow[i].type = "text";
                 }
-                whatRow = whatRow + 1;
-                document.getElementById('rowNo').value = whatRow;
+
             }
             incrementbox();
         } else {
@@ -203,6 +151,7 @@ function divide( immFeedBkCk, col, qtDig ){
 
 function multiply( col, sbx ){
     //document.getElementById('statusBox3').innerHTML = "col = " + col + " sbx = " + sbx;
+
     var ansBxs = document.getElementsByName("op" + sbx + "_0");
     var bxNo = ansBxs.length - 1 - col;
     //alert("ansBxs = " + ansBxs + " length = " + ansBxs.length + " bxNo = " + bxNo );
@@ -239,9 +188,14 @@ function multiply( col, sbx ){
         }
         //alert(" i = " + i + " cmx = " + cmx);
     }
-    if( col == ansBxs.length-1 && col > 1 ){
-        var prevCol = dvsrdigs.length - 2;
-        prevcaBx = document.getElementsByName("cm" + prevCol + "_" + cmx)[0];
+    var isLastMult = false;
+    // this needs to be changed to allow for estimation fixit
+    if( col == ansBxs.length-1 ){
+        isLastMult = true;
+        if( col > 1 ) {
+            var prevCol = dvsrdigs.length - 2;
+            prevcaBx = document.getElementsByName("cm" + prevCol + "_" + cmx)[0];
+        }
     } else if( col > 0 ){
         var prevCol = col - 1;
         prevcaBx = document.getElementsByName("cm" + prevCol + "_" + cmx)[0];
@@ -260,7 +214,6 @@ function multiply( col, sbx ){
 
     }
     if( ans == expDig ) {
-        //alert("correct, answer is " + ans);
         qBx.style.color = "black";
         dvsrdigs[whatDig].style.color = "black";
         ansBxs[bxNo].style.color = "black";
@@ -268,11 +221,84 @@ function multiply( col, sbx ){
             prevcaBx.style.color = "black";
         }
         errBx.innerHTML = "";
+        if( isLastMult ) {
+            var whatRow = Number(document.getElementById('rowNo').value);
+            var visibleDrows = document.getElementsByName('op' + whatRow + '_1');
+            for( var i = 0; i < visibleDrows.length; i++ ) {
+                visibleDrows[i].type = "text";
+            }
+
+            var name = "cspan" + whatRow;
+            var visibleBar = document.getElementById(name);
+            if( visibleBar ) {
+                visibleBar.className="th-id3";
+            }
+            var visibleMinus = document.getElementById('minus' + whatRow);
+            if( visibleMinus ) {
+                visibleMinus.className="t1";
+            }
+            var whatHelp = document.getElementsByName('showhelp');
+            var showBrowsChkd = false;
+            for( var i = 0; i < whatHelp.length; i++ ) {
+                if( whatHelp[i].checked ) { // need to check actual value fixit
+                    showBrowsChkd = true;
+                    break;
+                }
+            }
+            if( showBrowsChkd ) {
+                var dvddigs = document.getElementsByName("dvddigs");
+                var bddigs;
+                if( whatRow > 0 ) {
+                    var prevRow = whatRow - 1;
+                    dvddigs = document.getElementsByName('op' + prevRow + '_1');
+                    bddigs = document.getElementsByName('bd' + prevRow);
+                }
+                var jstop = dvddigs.length;
+                if( bddigs ) {
+                        jstop += bddigs.length
+                }
+                var parentResized = false;
+                for( var j = 0; j < jstop; j++ ) {
+                    var whatBorrow = 'bo' + j + "_" + whatRow;
+                    var visibleBorrow = document.getElementsByName( whatBorrow );
+                    if( visibleBorrow.length > 0 ) {
+                        if( !parentResized ) {
+                            var parent = visibleBorrow[0].parentNode;;
+                            while( parent.tagName != "TR" ) {      
+                                parent = parent.parentNode;
+                            }
+                            var squares = parent.childNodes;
+                            for( var k = 0; k < squares.length; k++ ) {
+                                if( squares[k].nodeType == 1 ) {
+                                    if( squares[k].class == "s1") {
+                                        squares[k].class = "t1";
+                                    }
+                                    if( squares[k].class == "s2") {
+                                        squares[k].class = "t2";
+                                    }
+                                }
+                            }
+                            parentResized = true;
+                        }
+                        //document.getElementById("dispBo").style.color = "#160404";
+                        //document.getElementById("dispBo").style.color = "#580615";
+                        document.getElementById("dispBo").style.color = "#600301";
+                        visibleBorrow[0].type = "text";
+                        visibleBorrow[0].style.height = "1.7em";
+                    }
+                    var whatCarry = 'ca' + j + "_" + whatRow;
+                    var visibleCarry = document.getElementsByName( whatCarry );
+                    if( visibleCarry.length > 0 ) {
+                        visibleCarry[0].type = "text";
+                        visibleCarry[0].style.height = "1em";
+                    }
+                }
+            }
+            whatRow = whatRow + 1;
+            document.getElementById('rowNo').value = whatRow;
+        }
         incrementbox();
     } else { 
-        // carries not always red fixit
-        // always with 3 digit divisors? fixit
-        // happens when the quotient has 0s in the middle of it? fixit
         errBx.innerHTML = "not " + ans;
         qBx.style.color = "red";
         dvsrdigs[whatDig].style.color = "red";
@@ -286,6 +312,7 @@ function multiply( col, sbx ){
 
 function subtract( col, sbx ){
     var ansBxs = document.getElementsByName("op" + sbx + "_1");
+    var isLastSub = ( col == ansBxs.length - 1 ); // won't work for estimates fixit
     var bxNo = ansBxs.length - 1 - col;
     //alert("ansBxs = " + ansBxs + " length = " + ansBxs.length + " bxNo = " + bxNo );
     var ans = Number(ansBxs[bxNo].value);
@@ -347,7 +374,6 @@ function subtract( col, sbx ){
     //alert("dividend = " + dividend + " prod = " + prod + " diff = " + diff );
     var discard = diff % Math.pow(10, col);
     var expAns = (diff % Math.pow(10,col+1) - discard)/Math.pow(10, col);
-    //alert("expAns = " + expAns);
 
     if( ans == expAns ) {
         //alert("correct, answer is " + ans);
@@ -355,6 +381,14 @@ function subtract( col, sbx ){
         dvdBx.style.color = "black";
         prodBx.style.color = "black";
         errBx.innerHTML = "";
+        if( isLastSub ) {
+            var displayBorrow = document.getElementById('dispBo');
+            displayBorrow.style.color = getComputedStyle(displayBorrow).backgroundColor;
+            var visibleBrows = document.getElementsByName('bd' + sbx);
+            if( visibleBrows.length > 0 ) {
+                visibleBrows[0].type = "text";
+            }
+        }
         incrementbox();
     } else {
         // show borrows only in case of error fixit
