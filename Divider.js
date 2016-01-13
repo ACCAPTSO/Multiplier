@@ -71,10 +71,6 @@ function checkMcarry( col, sbx ){
 }
 
 function divide( immFeedBkCk, col, qtDig ){
-    //make the bringdowns appear one at a time fixit
-    //a lot of the making things visible (minus, bar, subtraction boxes) 
-    // needs to happen after last multiply fixit
-    //alert("immFeedBkCk = " + immFeedBkCk + " col = " + col + " qtDig = " + qtDig );
     if( immFeedBkCk ) {
         var ansBx = document.getElementsByName("qt" + col)[0];
         var ans = ansBx.value;
@@ -257,31 +253,10 @@ function multiply( col, sbx ){
                 if( bddigs ) {
                         jstop += bddigs.length
                 }
-                var parentResized = false;
                 for( var j = 0; j < jstop; j++ ) {
                     var whatBorrow = 'bo' + j + "_" + whatRow;
                     var visibleBorrow = document.getElementsByName( whatBorrow );
                     if( visibleBorrow.length > 0 ) {
-                        if( !parentResized ) {
-                            var parent = visibleBorrow[0].parentNode;;
-                            while( parent.tagName != "TR" ) {      
-                                parent = parent.parentNode;
-                            }
-                            var squares = parent.childNodes;
-                            for( var k = 0; k < squares.length; k++ ) {
-                                if( squares[k].nodeType == 1 ) {
-                                    if( squares[k].class == "s1") {
-                                        squares[k].class = "t1";
-                                    }
-                                    if( squares[k].class == "s2") {
-                                        squares[k].class = "t2";
-                                    }
-                                }
-                            }
-                            parentResized = true;
-                        }
-                        //document.getElementById("dispBo").style.color = "#160404";
-                        //document.getElementById("dispBo").style.color = "#580615";
                         document.getElementById("dispBo").style.color = "#600301";
                         visibleBorrow[0].type = "text";
                         visibleBorrow[0].style.height = "1.7em";
@@ -310,7 +285,7 @@ function multiply( col, sbx ){
     setFocus();
 }
 
-function subtract( col, sbx ){
+function subtract( col, sbx ) {
     var ansBxs = document.getElementsByName("op" + sbx + "_1");
     var isLastSub = ( col == ansBxs.length - 1 ); // won't work for estimates fixit
     var bxNo = ansBxs.length - 1 - col;
@@ -320,28 +295,38 @@ function subtract( col, sbx ){
     var prodBxs = document.getElementsByName("op" + sbx + "_0");
     var prod = 0;
     var dvdBxs;
+    var pbx;
     for( var i = 0; i < prodBxs.length; i++ ) {
-        var pbx = prodBxs.length - 1 - i;
+    //for( var i = 0; i <= col; i++ ) {
+        pbx = prodBxs.length - 1 - i;
         prod += Math.pow(10, i)*Number(prodBxs[pbx].value);
+        //alert("i = " + i + " prodBxs[" + pbx + "] = " + prodBxs[pbx].value + " prod = " + prod );
     }
     var dividend = 0;
     var dvdidx;
     var prodidx = prodBxs.length - 1 - col;
     var prodBx = prodBxs[prodidx];
     var dvdBx;
+    var dvdVal = 0;
+    var borCol = Number(col);
     if( sbx == 0 ) {
+        borCol = borCol + Number(document.getElementById('quotDigs').value) - 1;
+
         dvdBxs = document.getElementsByName("dvddigs");
         dvdidx = dvdBxs.length - document.getElementById('quotDigs').value - col;
         //alert("actual dividend, dvdidx = " + dvdidx);
         dvdBx = dvdBxs[dvdidx];
+        dvdVal = Number(dvdBx.childNodes[0].nodeValue);
         dividend = Number(document.getElementById("dividend").value);
         var lastDig = 0;
         // will this work with a wrong answer? fixit
+        // could probably work with dvdBxs. do we need dividend id at all?
+        // remove least significant digits
         while( dividend >= prod ) {
             lastDig = dividend % 10;
             dividend = (dividend - lastDig)/10;
         }
-        dividend = 10*dividend + lastDig;
+        dividend = 10*dividend + lastDig; // back off last removal
     } else {
         var ddx = sbx - 1;
         var bdBxs = document.getElementsByName("bd" + ddx );
@@ -351,8 +336,9 @@ function subtract( col, sbx ){
         //alert(" bring down boxes length is " + inc );
         for( var i = 0; i < inc; i++ ) {
             var dd = inc - 1 - i;
-            dividend += Math.pow(10, i)*Number(bdBxs[dd].value);
-            //alert("i = " + i + " dividend = " + dividend );
+            dvdVal = Number(bdBxs[dd].value);
+            dividend += Math.pow(10, i)*dvdVal;
+            //alert("bringdown i = " + i + " dividend = " + dividend );
         }
         if( col >= inc ){
             //alert("adding " + dvdBxs.length + " to dvdidx " + dvdidx );
@@ -363,14 +349,20 @@ function subtract( col, sbx ){
             //alert("sbx = " + sbx + " bringdown dvdidx = " + dvdidx);
             dvdBx = bdBxs[dvdidx];
         }
-
+        dvdVal = dvdBx.value;
         for( var i = 0; i < dvdBxs.length; i++ ) {
+        //for( var i = 0; i <= col; i++ ) {
             var dd = dvdBxs.length - 1 - i;
             dividend += Math.pow(10, i+inc)*Number(dvdBxs[dd].value);
-            //alert("prod = " + prod + " i = " + i + " dividend = " + dividend );
+            //alert("i = " + i + " dividend = " + dividend );
         }
+        var ddx = sbx - 1;
     }
     var diff = dividend - prod;
+    var whatBorBx = "bo" + borCol + "_" + sbx;
+    var borBx = document.getElementsByName(whatBorBx);
+    var whatCarry = "ca" + borCol + "_" + sbx;
+    var caBx = document.getElementsByName( whatCarry );
     //alert("dividend = " + dividend + " prod = " + prod + " diff = " + diff );
     var discard = diff % Math.pow(10, col);
     var expAns = (diff % Math.pow(10,col+1) - discard)/Math.pow(10, col);
@@ -378,7 +370,15 @@ function subtract( col, sbx ){
     if( ans == expAns ) {
         //alert("correct, answer is " + ans);
         ansBxs[bxNo].style.color = "black";
+        if( borBx.length > 0 ) {
+            borBx[0].type = "hidden";
+        }
+
+        if( caBx.length > 0 ) {
+            caBx[0].type = "hidden";
+        }
         dvdBx.style.color = "black";
+        dvdBx.style.removeProperty("text-decoration");
         prodBx.style.color = "black";
         errBx.innerHTML = "";
         if( isLastSub ) {
@@ -391,15 +391,40 @@ function subtract( col, sbx ){
         }
         incrementbox();
     } else {
-        // show borrows only in case of error fixit
-        dvdBx.style.color = "red";
+        // show borrows  or carries in case of error
+        var caValue = 0;
+        if( caBx.length > 0 ) { // won't work for estimate fixit
+            caBx[0].style.height = "1em";
+            caBx[0].type = "text";
+            caBx[0].style.color = "red";
+            caValue = 1;
+            caBx[0].value = caValue;
+        }
+        
+        if( borBx.length > 0 ) { // won't work for estimate fixit
+            borBx[0].style.height = "1.7em";
+            borBx[0].type = "text";
+            borBx[0].style.color = "red";
+            //alert("dvdVal = " + dvdVal);
+            var borVal = dvdVal - 1;
+            if( borVal < 0 ) {
+                borVal += 10;
+                caBx[0].style.setProperty("text-decoration", "line-through");
+                caBx[0].style.color = "black";
+            }
+            borBx[0].value = borVal;
+            dvdBx.style.setProperty("text-decoration", "line-through");
+        } else {
+            dvdBx.style.color = "red";
+        }
+        //alert("whatBorCol = " + borCol + " whatBorrow = " + whatBorBx + " whatCarry = " + whatCarry );
         prodBx.style.color = "red";
         errBx.innerHTML = "not " + ans;
         upDateErrCount();
     }
     setFocus();
 }
-
+                            
 function bringdown( col, sbx ) {
     var ansBxs = document.getElementsByName("bd" + sbx );
     var bxNo = ansBxs.length - 1 - col;
@@ -585,10 +610,6 @@ function promptDivBorrow( col, sbx ) {
             newBx.style.border = "1px solid black";
             newBx.value="";
         }
-        //alert("in promptDivBorrow after croos off and new focus");
-        // keep "click on a digit to borrow from it" message up until all the 
-        // borrows have been made
-        // keep it up for all rows fixit
         
         var nCols = document.getElementsByName('dvddigs');
         var mtBoxes = 0;
