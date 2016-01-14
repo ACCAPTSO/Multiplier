@@ -289,15 +289,15 @@ function subtract( col, sbx ) {
     var ansBxs = document.getElementsByName("op" + sbx + "_1");
     var isLastSub = ( col == ansBxs.length - 1 ); // won't work for estimates fixit
     var bxNo = ansBxs.length - 1 - col;
-    //alert("ansBxs = " + ansBxs + " length = " + ansBxs.length + " bxNo = " + bxNo );
+    //alert("col = " + col + " ansBxs = " + ansBxs + " length = " + ansBxs.length + " bxNo = " + bxNo );
     var ans = Number(ansBxs[bxNo].value);
     var errBx = document.getElementById("msg");
     var prodBxs = document.getElementsByName("op" + sbx + "_0");
     var prod = 0;
     var dvdBxs;
     var pbx;
-    for( var i = 0; i < prodBxs.length; i++ ) {
-    //for( var i = 0; i <= col; i++ ) {
+    //for( var i = 0; i < prodBxs.length; i++ ) {
+    for( var i = 0; i <= col; i++ ) {
         pbx = prodBxs.length - 1 - i;
         prod += Math.pow(10, i)*Number(prodBxs[pbx].value);
         //alert("i = " + i + " prodBxs[" + pbx + "] = " + prodBxs[pbx].value + " prod = " + prod );
@@ -314,9 +314,25 @@ function subtract( col, sbx ) {
 
         dvdBxs = document.getElementsByName("dvddigs");
         dvdidx = dvdBxs.length - document.getElementById('quotDigs').value - col;
+        
         //alert("actual dividend, dvdidx = " + dvdidx);
         dvdBx = dvdBxs[dvdidx];
         dvdVal = Number(dvdBx.childNodes[0].nodeValue);
+        var lasti = dvdidx - 1;
+        //for( var pow = 0, i = dvdBxs.length - document.getElementById('quotDigs').value;
+        //    i >= lasti ; 
+        //    --i, ++pow ) {
+        var pow = 0;
+        var i = dvdBxs.length - document.getElementById('quotDigs').value;
+        while( dividend < prod || i >= dvdidx ) {     
+            dividend += Math.pow( 10, pow)*Number(dvdBxs[i].childNodes[0].nodeValue);
+            --i;
+            if( i < 0 ) {
+                break;
+            }
+            ++pow;
+        }
+        /*
         dividend = Number(document.getElementById("dividend").value);
         var lastDig = 0;
         // will this work with a wrong answer? fixit
@@ -327,6 +343,7 @@ function subtract( col, sbx ) {
             dividend = (dividend - lastDig)/10;
         }
         dividend = 10*dividend + lastDig; // back off last removal
+        */
     } else {
         var ddx = sbx - 1;
         var bdBxs = document.getElementsByName("bd" + ddx );
@@ -340,20 +357,30 @@ function subtract( col, sbx ) {
             dividend += Math.pow(10, i)*dvdVal;
             //alert("bringdown i = " + i + " dividend = " + dividend );
         }
+        var mindd;
         if( col >= inc ){
             //alert("adding " + dvdBxs.length + " to dvdidx " + dvdidx );
             dvdidx = dvdidx + dvdBxs.length;
             //alert("sbx = " + sbx + " difference dvdidx = " + dvdidx);
             dvdBx = dvdBxs[dvdidx];
+            mindd = dvdidx;
         } else {
             //alert("sbx = " + sbx + " bringdown dvdidx = " + dvdidx);
             dvdBx = bdBxs[dvdidx];
+            mindd = dvdBxs.length-1;
         }
         dvdVal = dvdBx.value;
-        for( var i = 0; i < dvdBxs.length; i++ ) {
-        //for( var i = 0; i <= col; i++ ) {
-            var dd = dvdBxs.length - 1 - i;
+        //for( var i = 0; i < dvdBxs.length; i++ ) {
+        //for( var i = 0; i <= col-inc+1; i++ ) {
+        i = 0;
+        var dd = dvdBxs.length - 1 - i;
+        while( dividend < prod || dd >= mindd ) {
+            if( dd < 0 ) { 
+                break;
+            }
             dividend += Math.pow(10, i+inc)*Number(dvdBxs[dd].value);
+            i++;
+            dd--;
             //alert("i = " + i + " dividend = " + dividend );
         }
         var ddx = sbx - 1;
@@ -363,18 +390,30 @@ function subtract( col, sbx ) {
     var borBx = document.getElementsByName(whatBorBx);
     var whatCarry = "ca" + borCol + "_" + sbx;
     var caBx = document.getElementsByName( whatCarry );
-    //alert("dividend = " + dividend + " prod = " + prod + " diff = " + diff );
+
     var discard = diff % Math.pow(10, col);
+    //var mainpart = diff % Math.pow(10,col+1);
+    //var ten2col = Math.pow(10, col);
+    //var ten2colPlus1 = Math.pow(10,col+1);
+    //document.getElementById('statusBox1').innerHTML = "dividend = " + dividend + " prod = " + prod + " diff = " + diff + " mainpart = " + mainpart + " discard = " + discard;
     var expAns = (diff % Math.pow(10,col+1) - discard)/Math.pow(10, col);
 
     if( ans == expAns ) {
         //alert("correct, answer is " + ans);
         ansBxs[bxNo].style.color = "black";
-        if( borBx.length > 0 ) {
+        var whatHelp = document.getElementsByName('showhelp');
+        var showBrowsChkd = false;
+        for( var i = 0; i < whatHelp.length; i++ ) {
+            if( whatHelp[i].checked ) { // need to check actual value fixit
+                showBrowsChkd = true;
+                break;
+            }
+        }
+        if( !showBrowsChkd && borBx.length > 0 ) {
             borBx[0].type = "hidden";
         }
 
-        if( caBx.length > 0 ) {
+        if( !showBrowsChkd && caBx.length > 0 ) {
             caBx[0].type = "hidden";
         }
         dvdBx.style.color = "black";
@@ -470,35 +509,34 @@ function checkDivBorrow( col, sbx ) {
         upDateErrCount();
         ciBx.style.color = "red";
         ciBx.value="";
-        errString = "not " + ans;
         errBx.innerHTML = "";
-        errBx.innerHTML = errString;
+        errBx.innerHTML = "not " + ans;
     }
 }
 function checkNewDivVal( col, sbx ) {
     //document.getElementById('statusBox2').innerHTML = "col = " + col + " sbx = " + sbx;
     var errBx = document.getElementById("msg");
-    var borBxs;
-    var whatBorBx;
-    var borValue;
-    var borBx;
+    var borFrmBxs;
+    var whatBorFrm;
+    var borFrmValue;
+    var borFrmBx;
     if( sbx == 0 ) {
-        borBxs = document.getElementsByName("dvddigs");
-        whatBorBx = borBxs.length - 1 - col;
-        borBx = borBxs[whatBorBx];
-        borValue = Number(borBx.childNodes[0].nodeValue); // read fixed node value
+        borFrmBxs = document.getElementsByName("dvddigs");
+        whatBorFrm = borFrmBxs.length - 1 - col;
+        borFrmBx = borFrmBxs[whatBorFrm];
+        borFrmValue = Number(borFrmBx.childNodes[0].nodeValue); // read fixed node value
     } else {
         var ddx = sbx - 1;
-        borBxs = document.getElementsByName("op" + ddx + "_1");
+        borFrmBxs = document.getElementsByName("op" + ddx + "_1");
         var bdBxs = document.getElementsByName("bd" + ddx);
         if( col < bdBxs.length ) {
-            whatBorBx = bdBxs.length - 1 - col;
-            borBx = bdBxs[whatBorBx];
+            whatBorFrm = bdBxs.length - 1 - col;
+            borFrmBx = bdBxs[whatBorFrm];
         } else {
-            whatBorBx = borBxs.length + bdBxs.length - 1 - col;
-            borBx = borBxs[whatBorBx];
+            whatBorFrm = borFrmBxs.length + bdBxs.length - 1 - col;
+            borFrmBx = borFrmBxs[whatBorFrm];
         }
-        borValue = Number(borBx.value); // read from input
+        borFrmValue = Number(borFrmBx.value); // read from input
     }
     var coBx = document.getElementsByName("ca" + col + "_" + sbx);
     var co = 0;
@@ -510,7 +548,7 @@ function checkNewDivVal( col, sbx ) {
     var prevCol = col - 1;
     var ciBx = document.getElementsByName("ca" + prevCol + "_" + sbx)[0];
     var ans = newBx.value;
-    var corrAns = co + borValue - 1;
+    var corrAns = co + borFrmValue - 1;
 
     if( corrAns > 9 ) {
         corrAns = corrAns - co;
@@ -518,7 +556,7 @@ function checkNewDivVal( col, sbx ) {
     if(ans == corrAns ) {
         errBx.innerHTML = "";
         newBx.style.color = "black";
-        borBx.style.color = "black";
+        borFrmBx.style.color = "black";
         if( coBx.length > 0 ) {
             coBx[0].style.color = "black";
         }
@@ -531,40 +569,41 @@ function checkNewDivVal( col, sbx ) {
         upDateErrCount();
         newBx.style.color = "red";
         newBx.value = "";
-        borBx.style.color = "red";
-        if( coBx.length > 0 ) {
+        borFrmBx.style.color = "red";
+        // test to make sure carry shows red only when cancelling 10 to make 9
+        // fixit
+        if( coBx.length > 0 && borFrmValue === 0 ) {
             coBx[0].style.color = "red";
         }
-        errString = "not " + ans;
         errBx.innerHTML = "";
-        errBx.innerHTML = errString;
+        errBx.innerHTML = "not " + ans;
     }
 }
 // cross off the digit being borrowed from, make new box visible for the
 // new operand digit and set the focus to the new box
 function promptDivBorrow( col, sbx ) {
     //document.getElementById('statusBox0').innerHTML = "col = " + col + " sbx = " + sbx;
-    var borBxs;
-    var whatBorBx;
-    var borValue;
-    var borBx;
+    var borFrmBxs;
+    var whatBorFrm;
+    var borFrmValue;
+    var borFrmBx;
     if( sbx == 0 ) {
-        borBxs = document.getElementsByName("dvddigs");
-        whatBorBx = borBxs.length - 1 - col;
-        borBx = borBxs[whatBorBx];
-        borValue = Number(borBx.childNodes[0].nodeValue); // read fixed node value
+        borFrmBxs = document.getElementsByName("dvddigs");
+        whatBorFrm = borFrmBxs.length - 1 - col;
+        borFrmBx = borFrmBxs[whatBorFrm];
+        borFrmValue = Number(borFrmBx.childNodes[0].nodeValue); // read fixed node value
     } else {
         var ddx = sbx - 1;
-        borBxs = document.getElementsByName("op" + ddx + "_1");
+        borFrmBxs = document.getElementsByName("op" + ddx + "_1");
         var bdBxs = document.getElementsByName("bd" + ddx);
         if( col < bdBxs.length ) {
-            whatBorBx = bdBxs.length - 1 - col;
-            borBx = bdBxs[whatBorBx];
+            whatBorFrm = bdBxs.length - 1 - col;
+            borFrmBx = bdBxs[whatBorFrm];
         } else {
-            whatBorBx = borBxs.length + bdBxs.length - 1 - col;
-            borBx = borBxs[whatBorBx];
+            whatBorFrm = borFrmBxs.length + bdBxs.length - 1 - col;
+            borFrmBx = borFrmBxs[whatBorFrm];
         }
-        borValue = Number(borBx.value); // read from input
+        borFrmValue = Number(borFrmBx.value); // read from input
     }
 
     var coBx = document.getElementsByName("ca" + col + "_" + sbx);
@@ -590,11 +629,11 @@ function promptDivBorrow( col, sbx ) {
     // or do nothing
     if( newBx && document.getElementsByName('showhelp')[0].checked ) { 
     
-        if( borValue === 0 ) {
+        if( borFrmValue === 0 ) {
             // if 0 then cross off the carry in as well
             // if it's 0 & no carry in, there is nothing to borrow so do nothing
             if( coBx.length > 0 && Number(coBx[0].value) === 1 ) {
-                borBx.style.setProperty("text-decoration", "line-through");
+                borFrmBx.style.setProperty("text-decoration", "line-through");
                 coBx[0].style.textDecoration = "line-through";
                 newBx.focus();
                 newBx.style.backgroundColor = "white";
@@ -603,11 +642,11 @@ function promptDivBorrow( col, sbx ) {
                 newBx.value="";
             }
         } else {
-            borBx.style.setProperty("text-decoration", "line-through");
+            borFrmBx.style.setProperty("text-decoration", "line-through");
             newBx.focus();
             newBx.style.backgroundColor = "white";
             newBx.style.color = "red";
-            newBx.style.border = "1px solid black";
+            newBx.style.borFrmder = "1px solid black";
             newBx.value="";
         }
         
