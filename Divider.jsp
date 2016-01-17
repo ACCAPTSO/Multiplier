@@ -19,7 +19,6 @@
    
 <%  // make the user click on the original box fixit
     // 2nd divisor dig around 5 is harder to estimate fixit
-    // Click on a digit to borrow from it is not always on fixit
     // count it wrong if the user gueses a quotient digit 3 times fixit
     // don't show individual multiplier boxes until you need them fixit
     // need worst case number of borrow and carry boxes in jsp  fixit
@@ -42,11 +41,13 @@
                           // request parameter
     String whatlvl = "";
     double justLessThn1 = 1 - 1/Double.MAX_VALUE;
-    
-    int dsMaxDg = 4; //2 + (int)((SZ2_MX - 3)*Math.random())
-    dsMaxDg = 3;
+
+    int dsMaxDg = 2 + (int)(3*Math.random()); // 2-4 digits
+    //int dsMaxDg = 3 + (int)(2*Math.random()); // 3-5 digits
+    //dsMaxDg = 3;
     int dsMax = (int)(Math.pow(10, dsMaxDg)) - 1;
     int divisor = 1 + (int)(dsMax*Math.random());
+
     //divisor = 77;
     //divisor = 6851;
     //divisor = 28;
@@ -56,6 +57,7 @@
     int qtMaxDg = 7 - dvsrDigs; //(SZ2_MX - dvsrDigs)/dvsrDigs;
     int qtMax = (int)(Math.pow(10, qtMaxDg)) - 1;
     int quotient = 1 + (int)(qtMax*Math.random());
+
     //quotient = 53094;
     //quotient = 237;
     //quotient = 3100904; // combination with divisor = 28 gives leading 0 in one of the arguments. is that a problem? fixit
@@ -154,8 +156,10 @@
     int [][] mcarries; // multiplicative carries
     
     int [][] operand = new int[quotDigs][maxOps];
+    int [][] calcOp = new int[quotDigs][maxOps];
     op = new int[quotDigs][maxOps][SZ2_MX+1];
     int [][] numDig = new int[quotDigs][maxOps];
+    int [][] calcDig = new int[quotDigs][maxOps];
     int [][] spacesb4Op = new int[quotDigs][maxOps];
     int ansDp = 0;
     
@@ -254,7 +258,7 @@
     String[] cas;   // additive carry string 
     cas = new String[SZ2_MX+1];
     ans = new String[SZ2_MX+1];
-    int jdx;
+    //int jdx;
     int kdx;
     int ldx = 0;
     int bdx = 0;            // box index used to track what box is selected
@@ -688,7 +692,7 @@ for( int idx = 0; idx < nsubs; ++ idx ) {
         break;
     }
 }
-if( thereAreCarries && showBrowsCk ) { // needs to check all that are visible fixit %>
+if( thereAreCarries && showBrowsCk ) { %>
             Click on a digit to borrow from it
 <%  } %>
 </label>
@@ -781,7 +785,15 @@ if( thereAreCarries && showBrowsCk ) { // needs to check all that are visible fi
 <input type="hidden" id="ansDp" value="<%=ansDp%>" class="shortbox">
 <% for( int idx = 0; idx <= maxBx; idx++ ) { %>
     <input type="hidden" name="nextbox" value="<%=whatBx[idx]%>" class="shortbox">
-<% } %>
+<% } 
+for( int idx = 0; idx < quotDigs; idx++ ) {
+    for( int jdx = 0; jdx < maxOps; jdx++ ) { 
+        String cid = "calcDig" + idx + "_" + jdx;
+        String oid = "operand" + idx + "_" + jdx; %>
+        <input type="hidden" id="<%=cid%>" value="<%=calcDig[idx][jdx]%>" class="shortbox">
+        <input type="hidden" id="<%=oid%>" value="<%=calcOp[idx][jdx]%>" class="shortbox">
+<%  }
+}%>
 <input type="hidden" id="bdx" value="<%=bdx%>" class="shortbox">
 <input type="hidden" id="lastbox" value="<%=maxBx%>" class="shortbox">
 <input type="hidden" id="linedUp" value="<%=isLinedUp%>" class="shortbox">
