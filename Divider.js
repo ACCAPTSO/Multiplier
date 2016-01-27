@@ -155,31 +155,32 @@ function divide( immFeedBkCk, col, qtDig ){
     setFocus();
 }
 
-function multiply( col, sbx ){
-    var ansBxs = document.getElementsByName("op" + sbx + "_0");
+function multiply( col ){
+    var whatRow = Number(document.getElementById('rowNo').value);
+    var ansBxs = document.getElementsByName("op" + whatRow + "_0");
     var bxNo = ansBxs.length - 1 - col;
     var ans = Number(ansBxs[bxNo].value);
     var errBx = document.getElementById("msg");
     var quotDigs = Number(document.getElementById("quotDigs").value);
-    var dec = sbx;
-    for( var prevrow = sbx - 1; prevrow >= 0; prevrow-- ) {
+    var dec = whatRow;
+    for( var prevrow = whatRow - 1; prevrow >= 0; prevrow-- ) {
         var bringDowns = document.getElementsByName("bd" + prevrow ).length;
         if( bringDowns > 1 ) {
             dec += bringDowns - 1;
         }
     }
-    var qdx = quotDigs - 1 - dec; // not neccessarily sbx if there was more than 1 bringdowns
+    var qdx = quotDigs - 1 - dec; // not neccessarily whatRow if there was more than 1 bringdowns
     var qBx = document.getElementsByName("qt" + qdx)[0];
     var qtDig = Number(qBx.value);
     // do we need both? fixit
-    var divisor = Number(document.getElementById("divisor").value);
+    //var divisor = Number(document.getElementById("divisor").value);
     var dvsrdigs = document.getElementsByName("dvsrdigs");
     var whatDig = dvsrdigs.length - 1 - col;
     if( whatDig < 0 ) {
         whatDig = 0;
     }
     var carry = 0;
-    var prod = Number(document.getElementById("operand" + sbx + "_0").value);
+    var prod = Number(document.getElementById("operand" + whatRow + "_0").value);
         var ten2col = Math.pow(10, col);
     var discard = prod % ten2col;
     var mainpart = prod % Math.pow(10,col+1);
@@ -197,7 +198,7 @@ function multiply( col, sbx ){
         //alert(" i = " + i + " cmx = " + cmx);
     }
     
-    var isLastMult = (col === Number(document.getElementById("calcDig" + sbx + "_0").value));
+    var isLastMult = (col === Number(document.getElementById("calcDig" + whatRow + "_0").value));
 
     if( isLastMult ) {
         if( col > 1 ) {
@@ -218,7 +219,7 @@ function multiply( col, sbx ){
         errBx.innerHTML = "";
         if( isLastMult ) {
             var dividend = 0;
-            if( sbx == 0 ) {
+            if( whatRow == 0 ) {
                 var dvdBxs = document.getElementsByName("dvddigs");
                 var dvdidx = dvdBxs.length - document.getElementById('quotDigs').value - col;
                 var dvdBx = dvdBxs[dvdidx];
@@ -234,15 +235,14 @@ function multiply( col, sbx ){
                     ++pow;
                 }  
             } else {
-                var prevRow = sbx - 1;
+                var prevRow = whatRow - 1;
                 dividend = Number(document.getElementById("operand" + prevRow + "_1").value);
             }
             var diff = dividend - prod;           
             //alert("in multiply, predicting: prev dividend = " + dividend + " prod = " + prod + " diff = " + diff );
-
-            document.getElementById("operand" + sbx + "_1").value = diff;
-            // replace with sbx? fixit
-            var whatRow = Number(document.getElementById('rowNo').value);
+            var diffMxIdx = diff > 0? Math.floor(Math.log10(prod)) : 1;
+            document.getElementById("calcDig" + whatRow + "_1").value = diffMxIdx;
+            document.getElementById("operand" + whatRow + "_1").value = diff;
             var visibleDrows = document.getElementsByName('op' + whatRow + '_1');
             for( var i = 0; i < visibleDrows.length; i++ ) {
                 visibleDrows[i].type = "text";
@@ -267,29 +267,33 @@ function multiply( col, sbx ){
             }
             if( showBrowsChkd ) {
                 var dvddigs = document.getElementsByName("dvddigs");
-                var bddigs;
+                var bddigs = null;
                 if( whatRow > 0 ) {
                     var prevRow = whatRow - 1;
                     dvddigs = document.getElementsByName('op' + prevRow + '_1');
                     bddigs = document.getElementsByName('bd' + prevRow);
                 }
-                var jstop = dvddigs.length;
-                if( bddigs ) {
-                        jstop += bddigs.length
+                var jstop = document.getElementById("calcDig" + whatRow + "_0").value;//dvddigs.length; // store and retrive it fixit
+                if( bddigs !== null ) {
+                        jstop += bddigs.value; //bddigs.length; // store and retireive it? fixit
                 }
                 for( var j = 0; j < jstop; j++ ) {
                     var whatBorrow = 'bo' + j + "_" + whatRow;
                     var visibleBorrow = document.getElementsByName( whatBorrow );
                     if( visibleBorrow.length > 0 ) {
                         document.getElementById("dispBo").style.color = "#600301";
+                        var origColor = getComputedStyle(visibleBorrow[0].parentNode).backgroundColor;
                         visibleBorrow[0].type = "text";
                         visibleBorrow[0].style.height = "1.7em";
+                        visibleBorrow[0].style.backgroundColor = origColor;
                     }
                     var whatCarry = 'ca' + j + "_" + whatRow;
                     var visibleCarry = document.getElementsByName( whatCarry );
                     if( visibleCarry.length > 0 ) {
+                        var origColor = getComputedStyle(visibleCarry[0].parentNode).backgroundColor;
                         visibleCarry[0].type = "text";
                         visibleCarry[0].style.height = "1em";
+                        visibleCarry[0].style.backgroundColor = origColor;
                     }
                 }
             }
@@ -311,7 +315,6 @@ function multiply( col, sbx ){
 
 function subtract( col, sbx ) {
     var ansBxs = document.getElementsByName("op" + sbx + "_1");
-    //var isLastSub = ( col == ansBxs.length - 1 ); // won't work for estimates fixit
     var bxNo = ansBxs.length - 1 - col;
     //alert("col = " + col + " ansBxs = " + ansBxs + " length = " + ansBxs.length + " bxNo = " + bxNo );
     var ans = Number(ansBxs[bxNo].value);
@@ -322,7 +325,7 @@ function subtract( col, sbx ) {
     var pbx;
 
     var dividend = 0;
-    var dvdidx;
+    var dvdidx = 0;
     var prodidx = prodBxs.length - 1 - col;
     var prodBx = prodBxs[prodidx];
     var dvdBx;
@@ -331,7 +334,7 @@ function subtract( col, sbx ) {
     if( sbx == 0 ) {
         borCol = borCol + Number(document.getElementById('quotDigs').value) - 1;
         subBxs = document.getElementsByName("dvddigs");
-        dvdidx = subBxs.length - document.getElementById('quotDigs').value - col;
+        dvdidx = subBxs.length -  Number(document.getElementById('quotDigs').value) - col;
         dvdBx = subBxs[dvdidx];
         dvdVal = Number(dvdBx.childNodes[0].nodeValue);
         var pow = 0;
@@ -351,17 +354,32 @@ function subtract( col, sbx ) {
         subBxs = document.getElementsByName("op" + prevRow + "_1");
         
         var inc = 0;
+/*        for( var i = 0; i <= sbx; i++ ) {
+            var bringdnId = "bringdown" + i;
+            var bringdnval = document.getElementById(bringdnId ).value;
+            alert("i = " + i + " bringdnId = " + bringdnId + " bringdnval = " + bringdnval)
+        } */
+        var inc = Number(document.getElementById("bringdown" + prevRow ).value) - 1;
+        /*
+        if( possinc ) {
+            inc = Number(possinc);
+        }*/
+                /**
         for( var i = 0; i < bdBxs.length; i++ ) {
             if( bdBxs[i].value !== "" ) {
-                inc = i + 1;
+                inc = i + 1; // store & retrieve it? fixit
             }
-        }
+        }*/
         
-        dvdidx = inc - 1 - col;
-        if( col >= inc ){
-            dvdidx = dvdidx + subBxs.length;
+        dvdidx = inc - col;
+        //document.getElementById('statusBox1').innerHTML = " inc = " + inc + " col = " + col + " dididx = " + dvdidx;
+        if( col > inc ){
+            var calcDig = Number(document.getElementById("calcDig" + sbx + "_1").value);
+            dvdidx = dvdidx + calcDig; //subBxs.length; // store and retrieve length fixit
+            //document.getElementById('statusBox2').innerHTML = "inc = " + inc + " col = " + col + " calcDig = " + calcDig + " dvdidx = " + dvdidx;
             dvdBx = subBxs[dvdidx];
         } else {
+            
             dvdBx = bdBxs[dvdidx];
         }
 
@@ -372,6 +390,7 @@ function subtract( col, sbx ) {
     var borBx = document.getElementsByName(whatBorBx);
     var whatCarry = "ca" + borCol + "_" + sbx;
     var caBx = document.getElementsByName( whatCarry );
+    //document.getElementById('statusBox3').innerHTML = "whatBorBx = " + whatBorBx + " whatCarry = " + whatCarry;
 
     var ten2col = Math.pow(10, col);
     var discard = diff % ten2col;
@@ -453,21 +472,24 @@ function subtract( col, sbx ) {
     setFocus();
 }
                             
-function bringdown( col, sbx ) {
+function bringdown( sbx ) { // col is probably not needed fixit
     var ansBxs = document.getElementsByName("bd" + sbx );
-    var bxNo = ansBxs.length - 1 - col;
+    var thisRowsBdDigs = document.getElementById("bringdown" + sbx ).value
+    var thisRowsBdDigsVal = (thisRowsBdDigs ) ? Number(thisRowsBdDigs) : 0;
+    var bxNo = thisRowsBdDigsVal; // + 1; //ansBxs.length - 1 - col
+    //document.getElementById('statusBox1').innerHTML =   " thisRowBdDigs = " + thisRowsBdDigs + " bxNo = " + bxNo;
     var ans = Number(ansBxs[bxNo].value);
     var errBx = document.getElementById("msg");
     var dvddigs = document.getElementsByName("dvddigs");
-    var dvdcol = Number(document.getElementById("quotDigs").value) - 1;
-    //alert("quotDigs - 1 dvdidx = " + dvdidx );
+    var dvdcol = Number(document.getElementById("quotDigs").value) - 2;
     for( var idx = 0; idx < sbx; idx++ ) {
-        dvdcol -= document.getElementsByName("bd" + idx ).length;
+        dvdcol -= Number(document.getElementById("bringdown" + idx).value); //document.getElementsByName("bd" + idx ).length;
         //alert("idx = " + idx + " dvdidx = " + dvdidx );
     }
-    dvdcol -= document.getElementsByName("bd" + sbx ).length - col
+    //var thisRowsBdDigs = Number(document.getElementsByName("bringdown" + sbx ).value);
+    dvdcol -= thisRowsBdDigsVal;// - col;
     var whatDig = dvddigs.length - 1 - dvdcol;
-    //alert(" final dvdcol = " + dvdcol + " whatDig = " + whatDig);
+    //document.getElementById('statusBox2').innerHTML = " final dvdcol = " + dvdcol + " whatDig = " + whatDig;
     var dividend = Number(document.getElementById("dividend").value);
     var discard = dividend % Math.pow(10, dvdcol);
     var expAns = (dividend % Math.pow(10,dvdcol+1) - discard)/Math.pow(10, dvdcol);
@@ -478,6 +500,9 @@ function bringdown( col, sbx ) {
         errBx.innerHTML = "";
         var prevDividend = Number(document.getElementById("operand" + sbx + "_1").value);
         document.getElementById("operand" + sbx + "_1").value = 10*prevDividend + ans;
+        var newval = thisRowsBdDigsVal + 1;
+        //alert("thisRowsBdDigsval = " + thisRowsBdDigsVal + " newval = " + newval);
+        document.getElementById("bringdown" + sbx).value = newval;
         incrementbox();
     } else {
         dvddigs[whatDig].style.color = "red";
@@ -555,6 +580,7 @@ function checkNewDivVal( col, sbx ) {
         ciBx.style.backgroundColor = "white";
         ciBx.style.color = "red";
         ciBx.style.border = "1px solid black";
+        ciBx.style.height = "1em";
         ciBx.value="";
     } else {
         upDateErrCount();
@@ -573,7 +599,6 @@ function checkNewDivVal( col, sbx ) {
 // cross off the digit being borrowed from, make new box visible for the
 // new operand digit and set the focus to the new box
 function promptDivBorrow( col, sbx ) {
-    //document.getElementById('statusBox0').innerHTML = "col = " + col + " sbx = " + sbx;
     var borFrmBxs;
     var whatBorFrm;
     var borFrmValue;
@@ -619,7 +644,7 @@ function promptDivBorrow( col, sbx ) {
     //make sure it's really a column that should be borrowed from 
     // or do nothing
     if( newBx && document.getElementsByName('showhelp')[0].checked ) { 
-    
+        //document.getElementById('statusBox0').innerHTML = "col = " + col + " sbx = " + sbx + " newBx = " + newBx;
         if( borFrmValue === 0 ) {
             // if 0 then cross off the carry in as well
             // if it's 0 & no carry in, there is nothing to borrow so do nothing
@@ -630,6 +655,7 @@ function promptDivBorrow( col, sbx ) {
                 newBx.style.backgroundColor = "white";
                 newBx.style.color = "red";
                 newBx.style.border = "1px solid black";
+                newBx.style.height = "1.7em";
                 newBx.value="";
             }
         } else {
@@ -637,7 +663,8 @@ function promptDivBorrow( col, sbx ) {
             newBx.focus();
             newBx.style.backgroundColor = "white";
             newBx.style.color = "red";
-            newBx.style.borFrmder = "1px solid black";
+            newBx.style.border = "1px solid black";
+            newBx.style.height = "1.7em";
             newBx.value="";
         }
         

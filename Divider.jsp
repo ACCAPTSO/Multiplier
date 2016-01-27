@@ -160,6 +160,7 @@
     op = new int[quotDigs][maxOps][SZ2_MX+1];
     int [][] numDig = new int[quotDigs][maxOps];
     int [][] calcDig = new int[quotDigs][maxOps];
+    int [] calcBdDig = new int[quotDigs];
     int [][] spacesb4Op = new int[quotDigs][maxOps];
     int ansDp = 0;
     
@@ -572,7 +573,7 @@
                 %>
                 <td class="t1">
                 <input type="<%=whattype%>" name="<%=name%>" class="a1" size="1" 
-                onkeyup="multiply( <%=col%>, <%=sbx%> )">
+                onkeyup="multiply( <%=col%> )">
                 </td>
  <%           } else { %>
                 <td class="t1"></td>
@@ -661,7 +662,7 @@
 %>
                 <td class="t1">
                 <input type="<%=whattype%>" name="<%=name%>" class="a1" size="1" 
-                onkeyup="bringdown( <%=col%>, <%=sbx%> )"
+                onkeyup="bringdown( <%=sbx%> )"
                 onclick="promptDivBorrow(<%=ocol%>, <%=rdx%>)">
                 </td>
  <%                 
@@ -793,7 +794,9 @@ for( int idx = 0; idx < quotDigs; idx++ ) {
         <input type="hidden" id="<%=cid%>" value="<%=calcDig[idx][jdx]%>" class="shortbox">
         <input type="hidden" id="<%=oid%>" value="<%=calcOp[idx][jdx]%>" class="shortbox">
 <%  }
-}%>
+     String bid = "bringdown" + idx; %>
+     <input type="hidden" id="<%=bid%>" value="<%=calcBdDig[idx]%>" class="shortbox">
+<% } %>
 <input type="hidden" id="bdx" value="<%=bdx%>" class="shortbox">
 <input type="hidden" id="lastbox" value="<%=maxBx%>" class="shortbox">
 <input type="hidden" id="linedUp" value="<%=isLinedUp%>" class="shortbox">
