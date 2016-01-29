@@ -70,21 +70,41 @@ function checkMcarry( col, sbx ){
 
 function divide( immFeedBkCk, col, qtDig ){
     var whatRow = Number(document.getElementById('rowNo').value);
+    // calculate and store the product  and of this quotient digit and divisor
+    // as well as the max digit of that product
+    var prod = 0;
+    var dvsrdigs = document.getElementsByName("dvsrdigs");
+    var ansBx = document.getElementsByName("qt" + col)[0];
+    var ans = ansBx.value;
+    for( var i = 0; i < dvsrdigs.length; i++ ) {
+        var dbx = dvsrdigs.length - 1 - i;
+        prod += Math.pow(10, i)*Number(dvsrdigs[dbx].childNodes[0].nodeValue)*ans;
+        //alert("i = " + i + " prodBxs[" + pbx + "] = " + prodBxs[pbx].value + " prod = " + prod );
+    }
+    var prodMxIdx = prod > 0? Math.floor(Math.log10(prod)) : 1;
+    document.getElementById("calcDig" + whatRow + "_0").value = prodMxIdx;
+    document.getElementById("operand" + whatRow + "_0").value = prod;
+    var origDvdDigs = document.getElementsByName("dvddigs");
+    if( whatRow == 0 ) {
+        dvddigs = origDvdDigs;
+    } else {
+        prevRow = whatRow - 1;
+        dvddigs = document.getElementsByName('op' + prevRow + '_1');
+        bddigs = document.getElementsByName('bd' + prevRow);
+    }
+    var stop = dvddigs.length;
+    var quotDigs = Number(document.getElementById('quotDigs').value);
+    if( whatRow == 0 ){
+        stop = stop + 1 - quotDigs;
+    }
     if( immFeedBkCk ) {
-        var ansBx = document.getElementsByName("qt" + col)[0];
-        var ans = ansBx.value;
+
         var errBx = document.getElementById("msg");
         var dvddigs;
         var bddigs;
         var prevRow;
-        if( whatRow == 0 ) {
-            dvddigs = document.getElementsByName("dvddigs");
-        } else {
-            prevRow = whatRow - 1;
-            dvddigs = document.getElementsByName('op' + prevRow + '_1');
-            bddigs = document.getElementsByName('bd' + prevRow);
-        }
-        var dvsrdigs = document.getElementsByName("dvsrdigs");
+
+
         if( ans == qtDig ) {
             //alert("correct answer is " + ans );
             ansBx.style.color = "black";
@@ -105,12 +125,12 @@ function divide( immFeedBkCk, col, qtDig ){
             if( ans == 0 ){  // you will need to bring down more digits
                              // before you can start another row  
                 var visibleBrows = document.getElementsByName('bd' + prevRow);
-                    for( var i = 0; i < visibleBrows.length; i++ ) {
-                        if( visibleBrows[i].type == "hidden") {
-                            visibleBrows[i].type = "text";
-                            break;
-                        }
+                for( var i = 0; i < visibleBrows.length; i++ ) {
+                    if( visibleBrows[i].type == "hidden") {
+                        visibleBrows[i].type = "text";
+                        break;
                     }
+                }
             } else { // make next row of multiplication boxes visible
                 var name = 'op' + whatRow + '_0';
                 var visibleMrow = document.getElementsByName(name);
@@ -122,10 +142,7 @@ function divide( immFeedBkCk, col, qtDig ){
             incrementbox();
         } else {
             // make divisor and either dividend or most recent difference red
-            var stop = dvddigs.length;
-            if( whatRow == 0 ){
-                stop = stop + 1 - document.getElementById('quotDigs').value;
-            }
+
             for( var i = 0; i < stop; i++ ){
                     dvddigs[i].style.color = "red";
             }
@@ -140,18 +157,87 @@ function divide( immFeedBkCk, col, qtDig ){
             errBx.innerHTML = "not " + ans;
         }
         
+    } else {
+        var nextbox;
+        // skip multiplicative carries
+        nextbox = document.getElementsByClassName('c2').length;
+        //alert("skip mcarries nextbox = " + nextbox);
+        // need to take 0.87 into account fixit
+        if( ans == 0 ) {  // you will need to bring down more digits
+                         // before you can start another row  
+            var visibleBrows = document.getElementsByName('bd' + prevRow);
+            // make next bringdown box visible
+            for( var i = 0; i < visibleBrows.length; i++ ) {
+                if( visibleBrows[i].type == "hidden") {
+                    visibleBrows[i].type = "text";
+                    break;
+                }
+            }
+            var restAreZero = true;
+            for( var i = origDvdDigs.length - col; i < origDvdDigs.length; i++ ) {
+                if( Number(origDvdDigs[i].childNodes[0].nodeValue) !== 0 ){
+                    restAreZero = false;
+                }
+                //alert("origDvdDigs[" + i + "] = " + origDvdDigs[i].childNodes[0].nodeValue + " restarezero = " + restAreZero );
+            }
+            if( restAreZero ) {
+                nextbox += quotDigs - col;
+            } else {
+                // skip quotient boxes
+                nextbox += quotDigs;
+                // skip borrow and carry boxes for original dividend
+                nextbox += 2*(origDvdDigs.length - quotDigs);
+                // needs every row of operands, borrows and carries
+                for( var i = 0; i < whatRow; i++ ) {
+                    var cid = Number(document.getElementById("calcDig" + i + "_0").value) + 1;
+                    nextbox += cid; // product digit boxes
+                    //alert("skip row " + i + " prod nextbox = " + nextbox);
+                    cid = Number(document.getElementById("calcDig" + i + "_1").value) + 1;
+                    // there are going to be an entire rest of the row that are bringdowns fixit
+                    cid += Number(document.getElementById("bringdown" + i).value);
+                    nextbox += cid; // dividend boxes
+                    //alert("skip row " + i + " dividend nextbox = " + nextbox);
+                    nextbox += 2*(cid-1); // borrows and carries
+                    //alert("skip row " + i + " borrows and carries nextbox = " + nextbox);
+                } 
+            }
+        } else { // make next row of multiplication boxes visible
+            var name = 'op' + whatRow + '_0';
+            var visibleMrow = document.getElementsByName(name);
+            for( var i = 0; i < visibleMrow.length; i++ ) {
+                visibleMrow[i].type = "text";
+            }
+
+            // skip quotient boxes
+            nextbox += quotDigs;
+            //alert("skip quotdigs and mcarries nextbox = " + nextbox);
+            // skip borrow and carry boxes for original dividend
+            nextbox += 2*(origDvdDigs.length - quotDigs);
+            //alert("skip qd, mc and borrows and carries nextbox = " + nextbox);
+
+            // needs every row of operands, borrows and carries
+            for( var i = 0; i < whatRow; i++ ) {
+                var cid = Number(document.getElementById("calcDig" + i + "_0").value) + 1;
+                nextbox += cid; // product digit boxes
+                //alert("skip row " + i + " prod nextbox = " + nextbox);
+                cid = Number(document.getElementById("calcDig" + i + "_1").value) + 1;
+                cid += Number(document.getElementById("bringdown" + i).value);
+                nextbox += cid; // dividend boxes
+                //alert("skip row " + i + " dividend nextbox = " + nextbox);
+                nextbox += 2*(cid-1); // borrows and carries
+                //alert("skip row " + i + " borrows and carries nextbox = " + nextbox);
+            } 
+            // skip current product
+            nextbox += prodMxIdx;
+            //alert("skip current prod nextbox = " + nextbox);
+        }
+        var bdx = Number(document.getElementById('bdx').value) + 1;
+        document.getElementById('bdx').value = bdx;
+
+        //alert("final nextbox = " + nextbox);
+        document.getElementById("whatbox").value = nextbox;
     }
-    // calculate and store the product  and of this quotient digit and divisor
-    // as well as the max digit of that product
-    var prod = 0;
-    for( var i = 0; i < dvsrdigs.length; i++ ) {
-        var dbx = dvsrdigs.length - 1 - i;
-        prod += Math.pow(10, i)*Number(dvsrdigs[dbx].childNodes[0].nodeValue)*qtDig;
-        //alert("i = " + i + " prodBxs[" + pbx + "] = " + prodBxs[pbx].value + " prod = " + prod );
-    }
-    var prodMxIdx = prod > 0? Math.floor(Math.log10(prod)) : 1;
-    document.getElementById("calcDig" + whatRow + "_0").value = prodMxIdx;
-    document.getElementById("operand" + whatRow + "_0").value = prod;
+
     setFocus();
 }
 
@@ -190,7 +276,7 @@ function multiply( col ){
     var prevcaBx;
     var cmx = 0;
     var startquot = quotDigs - 1;
-    //document.getElementById('statusBox0').innerHTML = "startquot = " + startquot + " qdx = " + qdx;
+    
     for( var i = startquot; i > qdx; i-- ) {
         if( Number(document.getElementsByName("qt" + i)[0].value) > 1 ) {
             cmx = cmx + 1;
@@ -199,7 +285,7 @@ function multiply( col ){
     }
     
     var isLastMult = (col === Number(document.getElementById("calcDig" + whatRow + "_0").value));
-
+    //document.getElementById('statusBox2').innerHTML = "col = " + col + " whatRow = " + whatRow + " isLastMult = " + isLastMult;
     if( isLastMult ) {
         if( col > 1 ) {
             var prevCol = dvsrdigs.length - 2;
@@ -240,7 +326,7 @@ function multiply( col ){
             }
             var diff = dividend - prod;           
             //alert("in multiply, predicting: prev dividend = " + dividend + " prod = " + prod + " diff = " + diff );
-            var diffMxIdx = diff > 0? Math.floor(Math.log10(prod)) : 1;
+            var diffMxIdx = diff > 0? Math.floor(Math.log10(diff)) : 1;
             document.getElementById("calcDig" + whatRow + "_1").value = diffMxIdx;
             document.getElementById("operand" + whatRow + "_1").value = diff;
             var visibleDrows = document.getElementsByName('op' + whatRow + '_1');
@@ -275,7 +361,7 @@ function multiply( col ){
                 }
                 var jstop = document.getElementById("calcDig" + whatRow + "_0").value;//dvddigs.length; // store and retrive it fixit
                 if( bddigs !== null ) {
-                        jstop += bddigs.value; //bddigs.length; // store and retireive it? fixit
+                        jstop += Number(bddigs.value); //bddigs.length; // store and retireive it? fixit
                 }
                 for( var j = 0; j < jstop; j++ ) {
                     var whatBorrow = 'bo' + j + "_" + whatRow;
@@ -342,9 +428,9 @@ function subtract( col, sbx ) {
         while( dividend < prod ) {  
             dividend += Math.pow( 10, pow)*Number(subBxs[i].childNodes[0].nodeValue);
             --i;
-            if( i < 0 ) {
-                break;
-            }
+            if( i < 0 ) {   // if you put the wrong quotient digit
+                break;      // dividend may never get bigger than prod
+            }               // then what? fixit
             ++pow;
         }
     } else {
@@ -353,36 +439,20 @@ function subtract( col, sbx ) {
         var bdBxs = document.getElementsByName("bd" + prevRow );
         subBxs = document.getElementsByName("op" + prevRow + "_1");
         
-        var inc = 0;
-/*        for( var i = 0; i <= sbx; i++ ) {
-            var bringdnId = "bringdown" + i;
-            var bringdnval = document.getElementById(bringdnId ).value;
-            alert("i = " + i + " bringdnId = " + bringdnId + " bringdnval = " + bringdnval)
-        } */
         var inc = Number(document.getElementById("bringdown" + prevRow ).value) - 1;
-        /*
-        if( possinc ) {
-            inc = Number(possinc);
-        }*/
-                /**
-        for( var i = 0; i < bdBxs.length; i++ ) {
-            if( bdBxs[i].value !== "" ) {
-                inc = i + 1; // store & retrieve it? fixit
-            }
-        }*/
         
         dvdidx = inc - col;
-        //document.getElementById('statusBox1').innerHTML = " inc = " + inc + " col = " + col + " dididx = " + dvdidx;
+        //document.getElementById('statusBox0').innerHTML = " inc = " + inc + " col = " + col + " dididx = " + dvdidx;
         if( col > inc ){
-            var calcDig = Number(document.getElementById("calcDig" + sbx + "_1").value);
-            dvdidx = dvdidx + calcDig; //subBxs.length; // store and retrieve length fixit
+            var calcDig = Number(document.getElementById("calcDig" + prevRow + "_1").value) + 1;
+            dvdidx = dvdidx + calcDig;
             //document.getElementById('statusBox2').innerHTML = "inc = " + inc + " col = " + col + " calcDig = " + calcDig + " dvdidx = " + dvdidx;
             dvdBx = subBxs[dvdidx];
         } else {
             
             dvdBx = bdBxs[dvdidx];
         }
-
+        //document.getElementById('statusBox1').innerHTML = "dvdidx = " + dvdidx;
         dvdVal = dvdBx.value;
     }
     var diff = dividend - prod;
@@ -400,7 +470,7 @@ function subtract( col, sbx ) {
     var expAns = (mainpart - discard)/ten2col;
     var lastDig = diff > 0 ? Math.floor(Math.log10(diff)) : 0;
     var isLastSub = ( col ===  lastDig );
-    //document.getElementById('statusBox3').innerHTML = "diff " + diff + " lastDig = " + lastDig + " col = " + col + " isLastSub = " + isLastSub;
+    //document.getElementById('statusBox0').innerHTML = "diff " + diff + " lastDig = " + lastDig + " col = " + col + " isLastSub = " + isLastSub;
     if( ans == expAns ) {
         ansBxs[bxNo].style.color = "black";
         var whatHelp = document.getElementsByName('showhelp');
@@ -435,6 +505,7 @@ function subtract( col, sbx ) {
             if( visibleBrows.length > 0 ) {
                 visibleBrows[0].type = "text";
             }
+            //document.getElementById('statusBox1').innerHTML = "sbx = " + sbx + " visibleBrows = " + visibleBrows;
         }
         incrementbox();
     } else {
@@ -643,7 +714,8 @@ function promptDivBorrow( col, sbx ) {
 
     //make sure it's really a column that should be borrowed from 
     // or do nothing
-    if( newBx && document.getElementsByName('showhelp')[0].checked ) { 
+    //if( newBx &&
+    if( document.getElementsByName('showhelp')[0].checked ) { 
         //document.getElementById('statusBox0').innerHTML = "col = " + col + " sbx = " + sbx + " newBx = " + newBx;
         if( borFrmValue === 0 ) {
             // if 0 then cross off the carry in as well

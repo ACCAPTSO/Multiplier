@@ -47,6 +47,7 @@
     //dsMaxDg = 3;
     int dsMax = (int)(Math.pow(10, dsMaxDg)) - 1;
     int divisor = 1 + (int)(dsMax*Math.random());
+    //divisor = 497; // bringdowns not being counted for nextbox fixit
 
     //divisor = 77;
     //divisor = 6851;
@@ -57,7 +58,7 @@
     int qtMaxDg = 7 - dvsrDigs; //(SZ2_MX - dvsrDigs)/dvsrDigs;
     int qtMax = (int)(Math.pow(10, qtMaxDg)) - 1;
     int quotient = 1 + (int)(qtMax*Math.random());
-
+    //quotient = 5007; // bringdowns not being counted for nextbox fixit
     //quotient = 53094;
     //quotient = 237;
     //quotient = 3100904; // combination with divisor = 28 gives leading 0 in one of the arguments. is that a problem? fixit
@@ -185,7 +186,7 @@
                 (int)Math.log10(operand[nsubs][0]) + 1: 1;
         numDig[nsubs][1] = operand[nsubs][1] > 0? 
                 (int)Math.log10(operand[nsubs][1]) + 1: 1;       
-        //System.out.println("operand[" + nsubs + "[1] = " + operand[nsubs][1] + " numDig[" + nsubs + "][1] = " + numDig[nsubs][1]);
+        
         if( operand[nsubs][1] < 0 ) {
             System.out.println("diff = " + operand[nsubs*maxOps+1] + " that's messed up");
             break;
@@ -232,7 +233,7 @@
             s = s - 1;
             numBringDn[nsubs] += 1;
         }
-        //System.out.println("numBringDn[" + nsubs + "] = " + numBringDn[nsubs]);
+        //System.out.println("operand[" + nsubs + "][1] = " + operand[nsubs][1] + " numDig[" + nsubs + "][1] = " + numDig[nsubs][1] + " numBringDn[" + nsubs + "] = " + numBringDn[nsubs]);
         nsubs = nsubs + 1;
     } 
 
@@ -315,13 +316,13 @@
         int bdidx = quotDigs - 1;
         for( int sbx = 0; sbx < quotDigs; ++ sbx ) {
             nacarries[sbx] = 0;
-            int kdxmax = sbx == 0? dvdDigs - quotDigs + 1 : numDig[sbx][0] + numBringDn[sbx-1];
+            int kdxmax = sbx == 0? dvdDigs - quotDigs + 1 : numDig[sbx-1][1] + numBringDn[sbx-1]; //numBringDn[sbx-1];
             if( sbx > 0  ) {
                 bdidx -= numBringDn[sbx-1];
             }
             for (kdx = 0; kdx < kdxmax; kdx++) { // kdx goes 1 too big fixit
                 boolean needsCarry = true;
-
+                //System.out.println("sbx = " + sbx + " kdx = " + kdx + " kdxmax = " + kdxmax );
                 //System.out.println("bring down dividend index " + bdidx);
                 int minuend;
                 if( sbx == 0 ) {
@@ -334,7 +335,10 @@
                         //System.out.println("previous diff minuend");
                     minuend = op[sbx-1][1][kdx-numBringDn[sbx-1]];
                 }
-                if( op[sbx][0][kdx] <= minuend - dec ) {
+                //if( op[sbx][0][kdx] <= minuend - dec ) {
+                //    needsCarry = false;
+                //}
+                if( kdx >= kdxmax-1 ) {
                     needsCarry = false;
                 }
                     //System.out.println("sbx = " + sbx + " kdx = " + kdx + " dec = " + dec + " minuend = " + minuend +  " op[sbx][0][" + kdx + "] = " + op[sbx][0][kdx]);
@@ -347,7 +351,7 @@
                     dec = 0;
                 }
                     //System.out.println("nacarries[" + sbx + "] = " + nacarries[sbx]);
-                if( sbx > 0 && kdx < numBringDn[sbx-1] ) {
+                if( sbx > 0 && kdx <  numBringDn[sbx-1] ) {
                     bdidx += 1;
                 }
             }
@@ -386,6 +390,7 @@
         //System.out.println("em[" + idx + "] = " + em[idx] + " numDig[" + idx + "][1] = " + numDig[idx][1]);
         en[idx] = em[idx] + numDig[idx][1];
         if( idx < nsubs ) {
+            //System.out.println("nacarries = " + nacarries[idx+1]);
             en[idx] += 2*nacarries[idx+1];
             //en[idx] += 2*nacarries[idx];
         }
@@ -584,13 +589,9 @@
         <th id="<%=barName%>" class="th-id1" colspan="<%=cspan[sbx]%>"></th>
         <th class="th-id1" colspan="<%=dspan[sbx]%>"></th>
     </tr>
-<%  if( rdx < nsubs && nacarries[rdx] > 0 ) { %>
+<%  if( rdx <= nsubs && nacarries[rdx] > 0 ) {  %>
         <tr>
-<%      //String browType = "hidden";    
-        //if( showBrowsCk ) {
-        //            browType = "text";
-        //}
-        for( int idx = 0; idx <= SZ2_MX; idx++ ) {
+<%      for( int idx = 0; idx <= SZ2_MX; idx++ ) {
             //int col = spacesb4Op[sbx][0] + numDig[sbx][0] - idx;
             int col = spacesb4Op[sbx][0] + numDig[sbx][0] + numBringDn[sbx] - idx;
             if( col < 0 ) {
@@ -598,9 +599,8 @@
             }
             if( spacesb4Op[sbx][0] < idx && 
                     idx <= spacesb4Op[sbx][0] + numDig[sbx][0] + numBringDn[sbx] && 
-                    ncarries[rdx][col] != 0 ) { 
-            //int col = SZ2_MX - idx;
-            //if( ncarries[col] != 0 ) { 
+                    ncarries[rdx][col] != 0 ) {  
+
                 String name = "ca" + col + "_" + rdx; 
                 if( col < 0 || col >= SZ2_MX ) {
                     System.out.println("ca col = " + col + "being reduced to 0");
