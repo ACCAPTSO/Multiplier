@@ -47,6 +47,9 @@
     //dsMaxDg = 3;
     int dsMax = (int)(Math.pow(10, dsMaxDg)) - 1;
     int divisor = 1 + (int)(dsMax*Math.random());
+    divisor = 586;
+    //divisor = 4975;
+
     //divisor = 497; // bringdowns not being counted for nextbox fixit
 
     //divisor = 77;
@@ -58,6 +61,8 @@
     int qtMaxDg = 7 - dvsrDigs; //(SZ2_MX - dvsrDigs)/dvsrDigs;
     int qtMax = (int)(Math.pow(10, qtMaxDg)) - 1;
     int quotient = 1 + (int)(qtMax*Math.random());
+    quotient = 7069;
+    //quotient = 160;
     //quotient = 5007; // bringdowns not being counted for nextbox fixit
     //quotient = 53094;
     //quotient = 237;
@@ -381,7 +386,8 @@
         }
         //System.out.println("qt[" + idx + "] = " + qt[idx] + " nmcars = " + nmcars + " crows = " + crows );
     }
-    em[0] = nmcars + 2*nacarries[0] + quotDigs - 1;
+    //em[0] = nmcars + 2*nacarries[0] + quotDigs - 1;
+    em[0] = nmcars + 4*nacarries[0] + quotDigs - 1; // with hidden borrows anc carries
     for( int idx = 0; idx <= nsubs; ++idx ) {
         if( idx > 0 ) {
             em[idx] = oh[idx-1];
@@ -391,8 +397,8 @@
         en[idx] = em[idx] + numDig[idx][1];
         if( idx < nsubs ) {
             //System.out.println("nacarries = " + nacarries[idx+1]);
-            en[idx] += 2*nacarries[idx+1];
-            //en[idx] += 2*nacarries[idx];
+            //en[idx] += 2*nacarries[idx+1];
+            en[idx] += 4*nacarries[idx+1]; // with hidden borrows and carries
         }
         oh[idx] = en[idx] + numBringDn[idx];
         pe[idx] = nmcars - 1 - (dvsrDigs - 1)*idx;
@@ -499,13 +505,10 @@
     <%      for( int idx = 0; idx <= SZ2_MX; idx++ ) {
                 int ocol = dvsrDigs + dvdDigs - idx;
                 int col = dvsrDigs + dvdDigs - quotDigs + 1 - idx;
-                //String browType = "hidden";
-                //if( showBrowsCk ) {
-                //    browType = "text";
-                //}
                 if( dvsrDigs < idx && idx < dvsrDigs + dvdDigs - quotDigs + 2
                         && ncarries[0][col] != 0 ) { 
                     String name = "ca" + ocol + "_0"; 
+                    String hid = "hca" + ocol + "_0"; 
                     if( ocol < 0 || ocol >= SZ2_MX ) {
                          System.out.println("ca col = " + ocol + "being reduced to 0");
                          col = 0;
@@ -514,12 +517,14 @@
                         <input type="<%=browType%>" name="<%=name%>" class="f2" 
                         onkeyup="checkDivBorrow(<%=ocol%>, 0)"
                         onclick="promptDivBorrow(<%=ocol%>, 0)">
+                        <input type="hidden" id="<%=hid%>" value="0">
                     </td>
     <%          } else { %>
                     <td class="s2"></td>
     <%          } 
                 if( col > 0 && ncarries[0][col-1] != 0 ) { 
                     String name = "bo" + ocol + "_0" ; 
+                    String hid = "hbo" + ocol + "_0" ; 
                     if( ocol < 0 || ocol > SZ2_MX ) {
                          System.out.println("bo col = " + ocol + "being reduced to 0");
                          col = 0;
@@ -527,6 +532,7 @@
                     <td class="s1">
                         <input type="<%=browType%>" name="<%=name%>" class="f1"
                             onkeyup="checkNewDivVal(<%=ocol%>, 0 )">
+                        <input type="hidden" id="<%=hid%>" value="-1">
                     </td>
     <%          } else { %>
                     <td class="s1"></td>
@@ -602,6 +608,7 @@
                     ncarries[rdx][col] != 0 ) {  
 
                 String name = "ca" + col + "_" + rdx; 
+                String hid = "hca" + col + "_" + rdx; 
                 if( col < 0 || col >= SZ2_MX ) {
                     System.out.println("ca col = " + col + "being reduced to 0");
                     col = 0;
@@ -610,12 +617,14 @@
                         <input type="<%=browType%>" name="<%=name%>" class="f2" 
                         onkeyup="checkDivBorrow(<%=col%>, <%=rdx%>)"
                         onclick="promptDivBorrow(<%=col%>, <%=rdx%>)">
+                        <input type="hidden" id="<%=hid%>" value="0">
                 </td>
 <%          } else { %>
                 <td class="s2"></td>
 <%          } 
             if( col > 0 && ncarries[rdx][col-1] != 0 ) { 
                 String name = "bo" + col + "_" + rdx; 
+                String hid = "hbo" + col + "_" + rdx; 
                 if( col < 0 || col > SZ2_MX ) {
                          System.out.println("bo col = " + col + "being reduced to 0");
                          col = 0;
@@ -623,6 +632,7 @@
                 <td class="s1">
                         <input type="<%=browType%>" name="<%=name%>" class="f1"
                             onkeyup="checkNewDivVal(<%=col%>, <%=rdx%>)">
+                        <input type="hidden" id="<%=hid%>" value="-1">
                 </td>
 <%          } else { %>
                     <td class="s1"></td>
@@ -678,6 +688,22 @@
 <div id="statusBox1"></div>
 <div id="statusBox2"></div>
 <div id="statusBox3"></div>
+<div id="statusBox4"></div>
+<div id="statusBox5"></div>
+<div id="statusBox6"></div>
+<div id="statusBox7"></div>
+<div id="statusBox8"></div>
+<div id="statusBox9"></div>
+<div id="statusBox10"></div>
+<div id="statusBox11"></div>
+<div id="statusBox12"></div>
+<div id="statusBox13"></div>
+<div id="statusBox14"></div>
+<div id="statusBox15"></div>
+<div id="statusBox16"></div>
+<div id="statusBox17"></div>
+<div id="statusBox18"></div>
+<div id="statusBox19"></div>
 
 </div>
 <div class="d3">
@@ -790,12 +816,15 @@ if( thereAreCarries && showBrowsCk ) { %>
 for( int idx = 0; idx < quotDigs; idx++ ) {
     for( int jdx = 0; jdx < maxOps; jdx++ ) { 
         String cid = "calcDig" + idx + "_" + jdx;
-        String oid = "operand" + idx + "_" + jdx; %>
-        <input type="hidden" id="<%=cid%>" value="<%=calcDig[idx][jdx]%>" class="shortbox">
-        <input type="hidden" id="<%=oid%>" value="<%=calcOp[idx][jdx]%>" class="shortbox">
+        String oid = "operand" + idx + "_" + jdx;  %>
+        <label><%=cid%></label>
+        <input type="text" id="<%=cid%>" value="<%=calcDig[idx][jdx]%>" class="shortbox">
+        <label><%=oid%></label>
+        <input type="text" id="<%=oid%>" value="<%=calcOp[idx][jdx]%>" class="shortbox">
 <%  }
      String bid = "bringdown" + idx; %>
-     <input type="hidden" id="<%=bid%>" value="<%=calcBdDig[idx]%>" class="shortbox">
+     <label><%=bid%></label>
+     <input type="text" id="<%=bid%>" value="<%=calcBdDig[idx]%>" class="shortbox">
 <% } %>
 <input type="hidden" id="bdx" value="<%=bdx%>" class="shortbox">
 <input type="hidden" id="lastbox" value="<%=maxBx%>" class="shortbox">
