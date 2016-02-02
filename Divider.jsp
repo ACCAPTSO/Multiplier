@@ -47,7 +47,7 @@
     //dsMaxDg = 3;
     int dsMax = (int)(Math.pow(10, dsMaxDg)) - 1;
     int divisor = 1 + (int)(dsMax*Math.random());
-    divisor = 586;
+
     //divisor = 4975;
 
     //divisor = 497; // bringdowns not being counted for nextbox fixit
@@ -61,7 +61,7 @@
     int qtMaxDg = 7 - dvsrDigs; //(SZ2_MX - dvsrDigs)/dvsrDigs;
     int qtMax = (int)(Math.pow(10, qtMaxDg)) - 1;
     int quotient = 1 + (int)(qtMax*Math.random());
-    quotient = 7069;
+;
     //quotient = 160;
     //quotient = 5007; // bringdowns not being counted for nextbox fixit
     //quotient = 53094;
@@ -386,8 +386,8 @@
         }
         //System.out.println("qt[" + idx + "] = " + qt[idx] + " nmcars = " + nmcars + " crows = " + crows );
     }
-    //em[0] = nmcars + 2*nacarries[0] + quotDigs - 1;
-    em[0] = nmcars + 4*nacarries[0] + quotDigs - 1; // with hidden borrows anc carries
+    em[0] = nmcars + 2*nacarries[0] + quotDigs - 1;
+    //em[0] = nmcars + 4*nacarries[0] + quotDigs - 1; // with hidden borrows anc carries
     for( int idx = 0; idx <= nsubs; ++idx ) {
         if( idx > 0 ) {
             em[idx] = oh[idx-1];
@@ -397,8 +397,8 @@
         en[idx] = em[idx] + numDig[idx][1];
         if( idx < nsubs ) {
             //System.out.println("nacarries = " + nacarries[idx+1]);
-            //en[idx] += 2*nacarries[idx+1];
-            en[idx] += 4*nacarries[idx+1]; // with hidden borrows and carries
+            en[idx] += 2*nacarries[idx+1];
+            //en[idx] += 4*nacarries[idx+1]; // with hidden borrows and carries in the table
         }
         oh[idx] = en[idx] + numBringDn[idx];
         pe[idx] = nmcars - 1 - (dvsrDigs - 1)*idx;
@@ -508,31 +508,27 @@
                 if( dvsrDigs < idx && idx < dvsrDigs + dvdDigs - quotDigs + 2
                         && ncarries[0][col] != 0 ) { 
                     String name = "ca" + ocol + "_0"; 
-                    String hid = "hca" + ocol + "_0"; 
                     if( ocol < 0 || ocol >= SZ2_MX ) {
-                         System.out.println("ca col = " + ocol + "being reduced to 0");
-                         col = 0;
+                         System.out.println("ca ocol = " + ocol + "being reduced to 0");
+                         ocol = 0;
                     } %>
                     <td class="s2">
                         <input type="<%=browType%>" name="<%=name%>" class="f2" 
                         onkeyup="checkDivBorrow(<%=ocol%>, 0)"
                         onclick="promptDivBorrow(<%=ocol%>, 0)">
-                        <input type="hidden" id="<%=hid%>" value="0">
                     </td>
     <%          } else { %>
                     <td class="s2"></td>
     <%          } 
                 if( col > 0 && ncarries[0][col-1] != 0 ) { 
                     String name = "bo" + ocol + "_0" ; 
-                    String hid = "hbo" + ocol + "_0" ; 
                     if( ocol < 0 || ocol > SZ2_MX ) {
-                         System.out.println("bo col = " + ocol + "being reduced to 0");
-                         col = 0;
+                         System.out.println("bo ocol = " + ocol + "being reduced to 0");
+                         ocol = 0;
                     } %>
                     <td class="s1">
                         <input type="<%=browType%>" name="<%=name%>" class="f1"
                             onkeyup="checkNewDivVal(<%=ocol%>, 0 )">
-                        <input type="hidden" id="<%=hid%>" value="-1">
                     </td>
     <%          } else { %>
                     <td class="s1"></td>
@@ -591,6 +587,7 @@
 <%          }
         } 
         String barName = "cspan" + sbx; %>
+    </tr>
     <tr><th class="th-id1" colspan="<%=bspan[sbx]%>"></th>
         <th id="<%=barName%>" class="th-id1" colspan="<%=cspan[sbx]%>"></th>
         <th class="th-id1" colspan="<%=dspan[sbx]%>"></th>
@@ -608,7 +605,6 @@
                     ncarries[rdx][col] != 0 ) {  
 
                 String name = "ca" + col + "_" + rdx; 
-                String hid = "hca" + col + "_" + rdx; 
                 if( col < 0 || col >= SZ2_MX ) {
                     System.out.println("ca col = " + col + "being reduced to 0");
                     col = 0;
@@ -617,14 +613,12 @@
                         <input type="<%=browType%>" name="<%=name%>" class="f2" 
                         onkeyup="checkDivBorrow(<%=col%>, <%=rdx%>)"
                         onclick="promptDivBorrow(<%=col%>, <%=rdx%>)">
-                        <input type="hidden" id="<%=hid%>" value="0">
                 </td>
 <%          } else { %>
                 <td class="s2"></td>
 <%          } 
             if( col > 0 && ncarries[rdx][col-1] != 0 ) { 
                 String name = "bo" + col + "_" + rdx; 
-                String hid = "hbo" + col + "_" + rdx; 
                 if( col < 0 || col > SZ2_MX ) {
                          System.out.println("bo col = " + col + "being reduced to 0");
                          col = 0;
@@ -632,7 +626,6 @@
                 <td class="s1">
                         <input type="<%=browType%>" name="<%=name%>" class="f1"
                             onkeyup="checkNewDivVal(<%=col%>, <%=rdx%>)">
-                        <input type="hidden" id="<%=hid%>" value="-1">
                 </td>
 <%          } else { %>
                     <td class="s1"></td>
@@ -683,7 +676,66 @@
     </tr>
 <% } %>
 </table>
+<table>
+    <tr>
+<%    if( nacarries[0] > 0 ) {
+    for( int idx = 0; idx <= SZ2_MX; idx++ ) {
+                int ocol = dvsrDigs + dvdDigs - idx;
+                int col = dvsrDigs + dvdDigs - quotDigs + 1 - idx;
+                if( dvsrDigs < idx && idx < dvsrDigs + dvdDigs - quotDigs + 2
+                        && ncarries[0][col] != 0 ) { 
+                    String hid = "hca" + ocol + "_0"; 
+                    if( ocol < 0 || ocol >= SZ2_MX ) {
+                         System.out.println("ca col = " + ocol + "being reduced to 0");
+                         ocol = 0;
+                    } %>
+                    <td><input type="hidden" id="<%=hid%>" value="0"></td>
+    <%          } 
+                if( col > 0 && ncarries[0][col-1] != 0 ) { 
+                    String hid = "hbo" + ocol + "_0" ; 
+                    if( ocol < 0 || ocol > SZ2_MX ) {
+                         System.out.println("bo col = " + ocol + "being reduced to 0");
+                         ocol = 0;
+                    } %>
+                    <td><input type="hidden" id="<%=hid%>" value="-2"></td>
+    <%          } 
+            } 
+} %>
+</tr>
+<%  for( int sbx = 0; sbx <= nsubs; ++sbx ) {
+    int rdx = sbx + 1; 
 
+    if( rdx <= nsubs && nacarries[rdx] > 0 ) {  %>
+    <tr>
+<%      for( int idx = 0; idx <= SZ2_MX; idx++ ) {
+            //int col = spacesb4Op[sbx][0] + numDig[sbx][0] - idx;
+            int col = spacesb4Op[sbx][0] + numDig[sbx][0] + numBringDn[sbx] - idx;
+            if( col < 0 ) {
+                col = SZ2_MX;
+            }
+            if( spacesb4Op[sbx][0] < idx && 
+                    idx <= spacesb4Op[sbx][0] + numDig[sbx][0] + numBringDn[sbx] && 
+                    ncarries[rdx][col] != 0 ) {  
+                String hid = "hca" + col + "_" + rdx; 
+                if( col < 0 || col >= SZ2_MX ) {
+                    System.out.println("ca col = " + col + "being reduced to 0");
+                    col = 0;
+                } %>
+                <td><input type="hidden" id="<%=hid%>" value="0"></td>
+<%          } 
+            if( col > 0 && ncarries[rdx][col-1] != 0 ) { 
+                String hid = "hbo" + col + "_" + rdx; 
+                if( col < 0 || col > SZ2_MX ) {
+                         System.out.println("bo col = " + col + "being reduced to 0");
+                         col = 0;
+                } %>
+                <td><input type="hidden" id="<%=hid%>" value="-2"></td>
+<%          } 
+         } %>
+         </tr>
+<%   }
+} %>
+</table>
 <div id="statusBox0"></div>
 <div id="statusBox1"></div>
 <div id="statusBox2"></div>
