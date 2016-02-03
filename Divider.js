@@ -32,13 +32,9 @@ function checkMcarry( col, sbx ){
     // with estimation allowed, there is no way to predict what user will put
     // in quotient boxes, therefore no way to predict carries fixit in jsp and here
     // find the quotient digits that will generate carries
-    for( var i = quotDigs-1, j = 0; i >= 0; i-- ) {
+    for( var i = quotDigs-1, j = 0; i >= 0; i--, j++ ) {
         possBx[j] = document.getElementsByName('qt' + i)[0];
-        var possdigit = Number(possBx[j].value);
-        //if( possdigit > 1 ){
-            qdigit[j] = possdigit;
-            j++;
-        //}
+        qdigit[j] = Number(possBx[j].value);
     }
 
     var dvsrdigs = document.getElementsByName("dvsrdigs");
@@ -56,7 +52,46 @@ function checkMcarry( col, sbx ){
         }
         possBx[sbx].style.color = "black";
         errBx.innerHTML = "";
-        incrementbox();
+        //var x = 0;
+        var nextbox = document.getElementsByClassName("c2").length;
+        // skip quotient boxes
+        nextbox += quotDigs;
+        //document.getElementById('statusBox' + x).innerHTML = "skip mcarry and quotient boxes nextbox = " + nextbox;
+        //x = x + 1;
+        // skip borrow and carry boxes for original dividend
+        nextbox += 2*(document.getElementsByName("dvddigs").length - quotDigs);
+        //document.getElementById('statusBox' + x).innerHTML = "skip orig dividend borrow and carry boxes nextbox = " + nextbox;
+        //x = x + 1;
+        // needs every row of operands, borrows and carries
+        //var maxi = sbx - 1
+        var whatRow = Number(document.getElementById('rowNo').value);
+        for( var i = 0; i < whatRow; i++ ) {
+            var cid = document.getElementsByName("op" + i + "_0").length;
+            nextbox += cid; // product digit boxes
+            //document.getElementById('statusBox' + x).innerHTML = "skip row " + i + " prod nextbox = " + nextbox;
+            //x = x + 1;
+            var nexti = i + 1;
+            nextbox += document.getElementsByName("boca" + nexti).length; // borrows and carries
+            //document.getElementById('statusBox' + x).innerHTML = "skip row " + nexti + " borrows and carries nextbox = " + nextbox;
+            //x = x + 1;
+            cid = document.getElementsByName("op" + i + "_1").length;
+            cid += document.getElementsByName("bd" + i).length;
+            nextbox += cid; // dividend boxes
+            //document.getElementById('statusBox' + x).innerHTML = "skip row " + i + " dividend nextbox = " + nextbox;
+            //x = x + 1;
+        } 
+        nextbox += document.getElementsByName("op" + i + "_0").length;
+        //document.getElementById('statusBox' + x).innerHTML = "skip row " + i + " prod nextbox = " + nextbox;
+        //x = x + 1;
+        nextbox -= col + 2;
+        //document.getElementById('statusBox' + x).innerHTML = "back off prod digits already done nextbox = " + nextbox;
+        //x = x + 1;
+        var bdx = Number(document.getElementById('bdx').value) + 1;
+        document.getElementById('bdx').value = bdx;
+
+        //alert("final nextbox = " + nextbox);
+        document.getElementById("whatbox").value = nextbox;
+        //incrementbox();
     } else {
         dvsrdigs[dvsrdigs.length-1-col].style.color = "red";
         if( prevBx ){
@@ -350,17 +385,20 @@ function divide( immFeedBkCk, col, qtDig ) {
                 //nextbox += 2*(origDvdDigs.length - quotDigs);
                 // needs every row of operands, borrows and carries
                 for( var i = 0; i < whatRow; i++ ) {
-                    var cid = Number(document.getElementById("calcDig" + i + "_0").value) + 1;
+                    //var cid = Number(document.getElementById("calcDig" + i + "_0").value) + 1;
+                    var cid = document.getElementsByName("op" + i + "_0").length;
                     nextbox += cid; // product digit boxes
                     //alert("skip row " + i + " prod nextbox = " + nextbox);
-                    cid = Number(document.getElementById("calcDig" + i + "_1").value) + 1;
+                    //cid = Number(document.getElementById("calcDig" + i + "_1").value) + 1;
+                    cid = document.getElementsByName("op" + i + "_1").length;
                     // there are going to be an entire rest of the row that are bringdowns fixit
-                    cid += Number(document.getElementById("bringdown" + i).value);
-                    nextbox += cid; // dividend boxes
-                    //alert("skip row " + i + " dividend nextbox = " + nextbox);
-                    nextbox += 2*(cid-1); // borrows and carries
+                    //cid += Number(document.getElementById("bringdown" + i).value);
+                    cid += document.getElementsByName("bd" + i).length;
+                    nextbox += 2*(cid-1); // borrows and carries // count actual boxes, not calculated boxes fixit
                     //nextbox += 2*(cid-1); // borrows and carries
                     //alert("skip row " + i + " borrows and carries nextbox = " + nextbox);
+                    nextbox += cid; // dividend boxes
+                    //alert("skip row " + i + " dividend nextbox = " + nextbox);
                 } 
             }
         } else { // make next row of multiplication boxes visible
@@ -380,16 +418,19 @@ function divide( immFeedBkCk, col, qtDig ) {
 
             // needs every row of operands, borrows and carries
             for( var i = 0; i < whatRow; i++ ) {
-                var cid = Number(document.getElementById("calcDig" + i + "_0").value) + 1;  // need to actually add worst case boxes fixit
+                //var cid = Number(document.getElementById("calcDig" + i + "_0").value) + 1;  // need to actually add worst case boxes fixit
+                var cid = document.getElementsByName("op" + i + "_0").length;  // need to actually add worst case boxes fixit
                 nextbox += cid; // product digit boxes
                 //alert("skip row " + i + " prod nextbox = " + nextbox);
-                cid = Number(document.getElementById("calcDig" + i + "_1").value) + 1;
-                cid += Number(document.getElementById("bringdown" + i).value);
-                nextbox += cid; // dividend boxes
-                //alert("skip row " + i + " dividend nextbox = " + nextbox);
-                nextbox += 2*(cid-1); // borrows and carries
+                //cid = Number(document.getElementById("calcDig" + i + "_1").value) + 1;
+                cid = document.getElementsByName("op" + i + "_1").length;
+                //cid += Number(document.getElementById("bringdown" + i).value);
+                cid += document.getElementsByName("bd" + i).length;
+                nextbox += 2*(cid-1); // borrows and carries // count actual boxes, not calculated index/length fixit
                 //nextbox += 2*(cid-1); // borrows and carries
                 //alert("skip row " + i + " nextboxborrows and carries nextbox = " + nextbox);
+                nextbox += cid; // dividend boxes
+                //alert("skip row " + i + " dividend nextbox = " + nextbox);         
             } 
             // skip current product
             nextbox += prodMxIdx;
@@ -501,27 +542,20 @@ function multiply( col ) { // may want to pass sbx instead of reading whatRow af
                     bddigs = document.getElementsByName('bringdown' + prevRow);
                 }
                 var jstop = document.getElementById("calcDig" + whatRow + "_0").value;
-                if( bddigs !== null ) {
-                        jstop += Number(bddigs.value);
+                //if( bddigs !== null ) {
+                //        jstop += Number(bddigs.value);
+                //}
+                var whatBorCaBxs = 'boca' + whatRow;
+                var visibleBorCaBxs = document.getElementsByName( whatBorCaBxs );
+                var origColor = "";
+                if( visibleBorCaBxs ) {
+                    document.getElementById("dispBo").style.color = "#600301";
+                    origColor = getComputedStyle(visibleBorCaBxs[0].parentNode).backgroundColor;
                 }
-                for( var j = 0; j < jstop; j++ ) {
-                    var whatBorrow = 'bo' + j + "_" + whatRow;
-                    var visibleBorrow = document.getElementsByName( whatBorrow );
-                    if( visibleBorrow.length > 0 ) {
-                        document.getElementById("dispBo").style.color = "#600301";
-                        var origColor = getComputedStyle(visibleBorrow[0].parentNode).backgroundColor;
-                        visibleBorrow[0].type = "text";
-                        visibleBorrow[0].style.height = "1.7em";
-                        //visibleBorrow[0].style.backgroundColor = origColor;
-                    }
-                    var whatCarry = 'ca' + j + "_" + whatRow;
-                    var visibleCarry = document.getElementsByName( whatCarry );
-                    if( visibleCarry.length > 0 ) {
-                        var origColor = getComputedStyle(visibleCarry[0].parentNode).backgroundColor;
-                        visibleCarry[0].type = "text";
-                        visibleCarry[0].style.height = "1em";
-                        //visibleCarry[0].style.backgroundColor = origColor;
-                    }
+                for( var j = 0; j <  visibleBorCaBxs.length; j++ ) {
+                    visibleBorCaBxs[j].type = "text";
+                    visibleBorCaBxs[j].style.height = "1.7em";
+                    //visibleBorCaBxs[0].style.backgroundColor = origColor;
                 }
             }
             nextBox += Number(document.getElementById("calcDig" + whatRow + "_0").value); // product boxes
@@ -529,7 +563,7 @@ function multiply( col ) { // may want to pass sbx instead of reading whatRow af
             var bringDownDigs = document.getElementsByName('bd' + whatRow).length;
             if( visibleDrows.length > 1 ) {
                 nextBox += 2*(visibleDrows.length + bringDownDigs - 1); // borrow, carry
-                document.getElementById('statusBox1').innerHTML = "with borrow and carry boxes, nextBox = " + nextBox;
+                //document.getElementById('statusBox1').innerHTML = "with borrow and carry boxes, nextBox = " + nextBox;
                 nextBox += visibleDrows.length; // dividend boxes
             } else {
                 nextBox += 1;
@@ -613,14 +647,16 @@ function subtract( col, sbx ) {
         //document.getElementById('statusBox1').innerHTML = "dvdidx = " + dvdidx;
         dvdVal = dvdBx.value;
     }
-    //var diff = dividend - prod;
     var diff = Number(document.getElementById("operand" + sbx + "_1").value);
     var whatBorBx = "bo" + borCol + "_" + sbx;
-    var borBx = document.getElementsByName(whatBorBx);
+    //document.getElementById('statusBox19').innerHTML = "659 whatBorBx = " + whatBorBx;
+    var borBx = null;
+    borBx = document.getElementById(whatBorBx);
     var hiddenBorBx = null;
     hiddenBorBx = document.getElementById("hbo" + borCol + "_" + sbx);
     var whatCarry = "ca" + borCol + "_" + sbx;
-    var caBx = document.getElementsByName( whatCarry );
+    var caBx = null;
+    caBx = document.getElementById( whatCarry );
     var hiddenCaBx = null;
     hiddenCaBx = document.getElementById( "hca" + borCol + "_" + sbx );
     //document.getElementById('statusBox3').innerHTML = "whatBorBx = " + whatBorBx + " whatCarry = " + whatCarry;
@@ -643,17 +679,17 @@ function subtract( col, sbx ) {
                 break;
             }
         }
-        if( borBx.length > 0 ) {
-            borBx[0].style.color = "black";
+        if( borBx ) {
+            borBx.style.color = "black";
             if( !showBrowsChkd ) {
-                borBx[0].type = "hidden";
+                borBx.type = "hidden";
             }
         }
 
-        if( caBx.length > 0 ) {
-            caBx[0].style.color = "black";
+        if( caBx ) {
+            caBx.style.color = "black";
             if( !showBrowsChkd ) {
-                caBx[0].type = "hidden";
+                caBx.type = "hidden";
             }
         }
         dvdBx.style.color = "black";
@@ -676,25 +712,25 @@ function subtract( col, sbx ) {
         if( hiddenCaBx !== null ) {
             caValue = Number(hiddenCaBx.value);
             if( caValue === 1 ) {
-                caBx[0].style.height = "1em";
-                caBx[0].type = "text";
-                caBx[0].style.color = "red";
-                caBx[0].value = caValue;
+                caBx.style.height = "1em";
+                caBx.type = "text";
+                caBx.style.color = "red";
+                caBx.value = caValue;
             }
         }
         
         if( hiddenBorBx !== null && Number(hiddenBorBx.value) >= -1 ) {
-            borBx[0].style.height = "1.7em";
-            borBx[0].type = "text";
-            borBx[0].style.color = "red";
+            borBx.style.height = "1.7em";
+            borBx.type = "text";
+            borBx.style.color = "red";
             //alert("dvdVal = " + dvdVal);
             var borVal = Number(hiddenBorBx.value);
             if( borVal < 0 ) {
                 borVal += 10;
-                caBx[0].style.setProperty("text-decoration", "line-through");
-                caBx[0].style.color = "black";
+                caBx.style.setProperty("text-decoration", "line-through");
+                caBx.style.color = "black";
             }
-            borBx[0].value = borVal;
+            borBx.value = borVal;
             dvdBx.style.setProperty("text-decoration", "line-through");
         } else {
             dvdBx.style.color = "red";
@@ -795,10 +831,10 @@ function checkNewDivVal( col, sbx ) {
     if( coBx.length > 0 ) {
         co = 10*Number(coBx[0].value);
     }
-    var newBx = document.getElementsByName("bo" + col + "_" + sbx)[0];
+    var newBx = document.getElementById("bo" + col + "_" + sbx)[0];
 
     var prevCol = col - 1;
-    var ciBx = document.getElementsByName("ca" + prevCol + "_" + sbx)[0];
+    var ciBx = document.getElementById("ca" + prevCol + "_" + sbx)[0];
     var ans = newBx.value;
     var corrAns = co + borFrmValue - 1;
 
@@ -858,8 +894,8 @@ function promptDivBorrow( col, sbx ) {
         borFrmValue = Number(borFrmBx.value); // read from input
     }
 
-    var coBx = document.getElementsByName("ca" + col + "_" + sbx);
-    var newBx = document.getElementsByName("bo" + col + "_" + sbx)[0];
+    var coBx = document.getElementById("ca" + col + "_" + sbx);
+    var newBx = document.getElementById("bo" + col + "_" + sbx)[0];
     
     // turn any red numbers for a subtraction error black
     var allT1s = document.getElementsByClassName("t1");
@@ -915,7 +951,7 @@ function promptDivBorrow( col, sbx ) {
                 //var whatBorrow = "bo" + idx + "_" + jdx;
                 var whatBorrow = "bo" + idx + "_" + sbx;
                 //alert("checking if whatBorrow " + whatBorrow + " is empty");
-                newBx = document.getElementsByName( whatBorrow )[0];
+                newBx = document.getElementById( whatBorrow )[0];
                 if( newBx ) {
                     if( newBx.value === "" ) {
                         mtBoxes += 1;

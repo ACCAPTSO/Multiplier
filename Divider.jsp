@@ -47,6 +47,7 @@
     //dsMaxDg = 3;
     int dsMax = (int)(Math.pow(10, dsMaxDg)) - 1;
     int divisor = 1 + (int)(dsMax*Math.random());
+    //divisor = 94 // sometimes gives wrong box after mcarry fixit
     //divisor = 3717;
     //divisor = 57; // whatborbx or cabx does not exist does it matter? fixit
     //divisor = 4975;
@@ -62,6 +63,7 @@
     int qtMaxDg = 7 - dvsrDigs; //(SZ2_MX - dvsrDigs)/dvsrDigs;
     int qtMax = (int)(Math.pow(10, qtMaxDg)) - 1;
     int quotient = 1 + (int)(qtMax*Math.random());
+    //quotient = 27793; // sometimes gives wrong box after mcarry fixit
     //quotient = 137;
     //quotient = 65241;// whatborbx or cabx does not exist does it matter? fixit
     //quotient = 160;
@@ -507,30 +509,31 @@
     <%      for( int idx = 0; idx <= SZ2_MX; idx++ ) {
                 int ocol = dvsrDigs + dvdDigs - idx;
                 int col = dvsrDigs + dvdDigs - quotDigs + 1 - idx;
+                String name = "boca0"; 
                 if( dvsrDigs < idx && idx < dvsrDigs + dvdDigs - quotDigs + 2
                         && ncarries[0][col] != 0 ) { 
-                    String name = "ca" + ocol + "_0"; 
+                    String cid = "ca" + ocol + "_0"; 
                     if( ocol < 0 || ocol >= SZ2_MX ) {
                          System.out.println("ca ocol = " + ocol + "being reduced to 0");
                          ocol = 0;
                     } %>
                     <td class="s2">
-                        <input type="<%=browType%>" name="<%=name%>" class="f2" 
-                        onkeyup="checkDivBorrow(<%=ocol%>, 0)"
+                        <input type="<%=browType%>" name="<%=name%>" id="<%=cid%>"
+                        class="f2" onkeyup="checkDivBorrow(<%=ocol%>, 0)"
                         onclick="promptDivBorrow(<%=ocol%>, 0)">
                     </td>
     <%          } else { %>
                     <td class="s2"></td>
     <%          } 
                 if( col > 0 && ncarries[0][col-1] != 0 ) { 
-                    String name = "bo" + ocol + "_0" ; 
+                    String bid = "bo" + ocol + "_0" ; 
                     if( ocol < 0 || ocol > SZ2_MX ) {
                          System.out.println("bo ocol = " + ocol + "being reduced to 0");
                          ocol = 0;
                     } %>
                     <td class="s1">
-                        <input type="<%=browType%>" name="<%=name%>" class="f1"
-                            onkeyup="checkNewDivVal(<%=ocol%>, 0 )">
+                        <input type="<%=browType%>" name="<%=name%>" id="<%=bid%>"
+                        class="f1" onkeyup="checkNewDivVal(<%=ocol%>, 0 )">
                     </td>
     <%          } else { %>
                     <td class="s1"></td>
@@ -602,32 +605,33 @@
             if( col < 0 ) {
                 col = SZ2_MX;
             }
+            String name = "boca" + rdx; 
             if( spacesb4Op[sbx][0] < idx && 
                     idx <= spacesb4Op[sbx][0] + numDig[sbx][0] + numBringDn[sbx] && 
                     ncarries[rdx][col] != 0 ) {  
 
-                String name = "ca" + col + "_" + rdx; 
+                String cid = "ca" + col + "_" + rdx; 
                 if( col < 0 || col >= SZ2_MX ) {
                     System.out.println("ca col = " + col + "being reduced to 0");
                     col = 0;
                 } %>
                 <td class="s2">
-                        <input type="<%=browType%>" name="<%=name%>" class="f2" 
-                        onkeyup="checkDivBorrow(<%=col%>, <%=rdx%>)"
+                        <input type="<%=browType%>" name="<%=name%>" id="<%=cid%>"
+                        class="f2" onkeyup="checkDivBorrow(<%=col%>, <%=rdx%>)"
                         onclick="promptDivBorrow(<%=col%>, <%=rdx%>)">
                 </td>
 <%          } else { %>
                 <td class="s2"></td>
 <%          } 
             if( col > 0 && ncarries[rdx][col-1] != 0 ) { 
-                String name = "bo" + col + "_" + rdx; 
+                String bid = "bo" + col + "_" + rdx; 
                 if( col < 0 || col > SZ2_MX ) {
                          System.out.println("bo col = " + col + "being reduced to 0");
                          col = 0;
                 } %>
                 <td class="s1">
-                        <input type="<%=browType%>" name="<%=name%>" class="f1"
-                            onkeyup="checkNewDivVal(<%=col%>, <%=rdx%>)">
+                    <input type="<%=browType%>" name="<%=name%>" id="<%=bid%>" 
+                    class="f1" onkeyup="checkNewDivVal(<%=col%>, <%=rdx%>)">
                 </td>
 <%          } else { %>
                     <td class="s1"></td>
