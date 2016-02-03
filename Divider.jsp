@@ -47,7 +47,8 @@
     //dsMaxDg = 3;
     int dsMax = (int)(Math.pow(10, dsMaxDg)) - 1;
     int divisor = 1 + (int)(dsMax*Math.random());
-
+    //divisor = 3717;
+    //divisor = 57; // whatborbx or cabx does not exist does it matter? fixit
     //divisor = 4975;
 
     //divisor = 497; // bringdowns not being counted for nextbox fixit
@@ -61,7 +62,8 @@
     int qtMaxDg = 7 - dvsrDigs; //(SZ2_MX - dvsrDigs)/dvsrDigs;
     int qtMax = (int)(Math.pow(10, qtMaxDg)) - 1;
     int quotient = 1 + (int)(qtMax*Math.random());
-;
+    //quotient = 137;
+    //quotient = 65241;// whatborbx or cabx does not exist does it matter? fixit
     //quotient = 160;
     //quotient = 5007; // bringdowns not being counted for nextbox fixit
     //quotient = 53094;
@@ -327,7 +329,7 @@
             }
             for (kdx = 0; kdx < kdxmax; kdx++) { // kdx goes 1 too big fixit
                 boolean needsCarry = true;
-                //System.out.println("sbx = " + sbx + " kdx = " + kdx + " kdxmax = " + kdxmax );
+                //System.out.println("sbx = " + sbx + " kdx = " + kdx + " kdxmax = " + kdxmax + " numDig[" + sbx + "][1] = " + numDig[sbx][1]);
                 //System.out.println("bring down dividend index " + bdidx);
                 int minuend;
                 if( sbx == 0 ) {
@@ -343,7 +345,7 @@
                 //if( op[sbx][0][kdx] <= minuend - dec ) {
                 //    needsCarry = false;
                 //}
-                if( kdx >= kdxmax-1 ) {
+                if( kdx >= kdxmax-1 || (sbx > 0 && numDig[sbx-1][1] < 2 ) ) {
                     needsCarry = false;
                 }
                     //System.out.println("sbx = " + sbx + " kdx = " + kdx + " dec = " + dec + " minuend = " + minuend +  " op[sbx][0][" + kdx + "] = " + op[sbx][0][kdx]);
@@ -380,14 +382,14 @@
     int crows = 0;
     for( int idx = quotDigs - 1; idx >= 0; --idx ) {
         
-        if( qt[idx] > 1 ) {
+        //if( qt[idx] > 1 ) { // worst case everything has a carry
             nmcars += (dvsrDigs - 1);
             crows += 1;
-        }
+        //}
         //System.out.println("qt[" + idx + "] = " + qt[idx] + " nmcars = " + nmcars + " crows = " + crows );
     }
     em[0] = nmcars + 2*nacarries[0] + quotDigs - 1;
-    //em[0] = nmcars + 4*nacarries[0] + quotDigs - 1; // with hidden borrows anc carries
+    //em[0] = nmcars + 4*nacarries[0] + quotDigs - 1; // with hidden borrows anc carries in same table
     for( int idx = 0; idx <= nsubs; ++idx ) {
         if( idx > 0 ) {
             em[idx] = oh[idx-1];
@@ -398,7 +400,7 @@
         if( idx < nsubs ) {
             //System.out.println("nacarries = " + nacarries[idx+1]);
             en[idx] += 2*nacarries[idx+1];
-            //en[idx] += 4*nacarries[idx+1]; // with hidden borrows and carries in the table
+            //en[idx] += 4*nacarries[idx+1]; // with hidden borrows and carries in same table
         }
         oh[idx] = en[idx] + numBringDn[idx];
         pe[idx] = nmcars - 1 - (dvsrDigs - 1)*idx;
@@ -474,9 +476,9 @@
 <%          } %>
             <td class="t1"></td>
 <%      } %>
-        <tr>
+        </tr>
 <%  } %>
-
+<tr>
 <%  for( int idx = 0; idx <= SZ2_MX; idx++ ) { 
         if( idx < dvsrDigs - 1 && crows > 0 ) { 
             int col = dvsrDigs - 2 - idx;
@@ -677,6 +679,31 @@
 <% } %>
 </table>
 <table>
+<%  //for( int sbx = crows - 1; sbx > 0; --sbx ) { 
+    for( int sbx = crows - 1; sbx > 0; --sbx ) {%>
+        <tr>
+<%      for( int idx = 0; idx <= SZ2_MX; idx++ ) { 
+            if( idx < dvsrDigs - 1 ) { 
+                int col = dvsrDigs - 2 - idx;
+                String cid = "hcm" + col + "_" + sbx; %>
+                <td><label><%=cid%></label></td>
+                <td><input type="text" id="<%=cid%>" ></td>
+<%          }
+        } %>
+        <tr>
+<%  } %>
+<tr>
+<%  for( int idx = 0; idx <= SZ2_MX; idx++ ) { 
+        if( idx < dvsrDigs - 1 && crows > 0 ) { 
+            int col = dvsrDigs - 2 - idx;
+            String cid = "hcm" + col + "_0"; %>
+            <td><label><%=cid%></label></td>
+            <td><input type="text" id="<%=cid%>"></td>
+<%      }
+    } %>
+</tr>
+</table>
+<table>
     <tr>
 <%    if( nacarries[0] > 0 ) {
     for( int idx = 0; idx <= SZ2_MX; idx++ ) {
@@ -776,7 +803,8 @@ if( thereAreCarries && showBrowsCk ) { %>
 <%  } %>
 </label>
 </div>
-<input type="hidden" id="whatbox" value="<%=whatBx[bdx]%>" class="shortbox"> 
+<label>whatBx</label> 
+<input type="text" id="whatbox" value="<%=whatBx[bdx]%>" class="shortbox"> 
 <div class ="d1">
 <div class="d4">  
 <table>
@@ -863,7 +891,9 @@ if( thereAreCarries && showBrowsCk ) { %>
 <input type="hidden" id="strtTime" name="strtTimeP" value="<%=strtTime%>" class="shortbox">
 <input type="hidden" id="ansDp" value="<%=ansDp%>" class="shortbox">
 <% for( int idx = 0; idx <= maxBx; idx++ ) { %>
-    <input type="hidden" name="nextbox" value="<%=whatBx[idx]%>" class="shortbox">
+<label>idx <%=idx%></label>
+    
+    <input type="text" name="nextbox" value="<%=whatBx[idx]%>" class="shortbox">
 <% } 
 for( int idx = 0; idx < quotDigs; idx++ ) {
     for( int jdx = 0; jdx < maxOps; jdx++ ) { 
@@ -878,7 +908,8 @@ for( int idx = 0; idx < quotDigs; idx++ ) {
      <label><%=bid%></label>
      <input type="text" id="<%=bid%>" value="<%=calcBdDig[idx]%>" class="shortbox">
 <% } %>
-<input type="hidden" id="bdx" value="<%=bdx%>" class="shortbox">
+<label>bdx</label>
+    <input type="text" id="bdx" value="<%=bdx%>" class="shortbox">
 <input type="hidden" id="lastbox" value="<%=maxBx%>" class="shortbox">
 <input type="hidden" id="linedUp" value="<%=isLinedUp%>" class="shortbox">
 <input type="hidden" id="divisor" value="<%=divisor%>" >
