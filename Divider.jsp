@@ -47,6 +47,8 @@
     //dsMaxDg = 3;
     int dsMax = (int)(Math.pow(10, dsMaxDg)) - 1;
     int divisor = 1 + (int)(dsMax*Math.random());
+
+    //divisor = 6495; // had issue with restAreZero fixit
     //divisor = 94 // sometimes gives wrong box after mcarry fixit
     //divisor = 3717;
     //divisor = 57; // whatborbx or cabx does not exist does it matter? fixit
@@ -63,6 +65,8 @@
     int qtMaxDg = 7 - dvsrDigs; //(SZ2_MX - dvsrDigs)/dvsrDigs;
     int qtMax = (int)(Math.pow(10, qtMaxDg)) - 1;
     int quotient = 1 + (int)(qtMax*Math.random());
+
+    //quotient = 302; // had issue with restAreZero fixit
     //quotient = 27793; // sometimes gives wrong box after mcarry fixit
     //quotient = 137;
     //quotient = 65241;// whatborbx or cabx does not exist does it matter? fixit
@@ -494,8 +498,8 @@
             <td class="t1"></td>
 <%      } else {
             int col = spacesb4quot + quotDigs - 1 - idx;
-            String qname = "qt" + col;  %>
-            <td class="t1"><input type="text" name="<%=qname%>" class="a1" size="1" 
+            String qid = "qt" + col;  %>
+            <td class="t1"><input type="text" id="<%=qid%>" class="a1" size="1" 
             onkeyup="divide(<%=immFeedBkCk%>, <%=col%>, <%=qt[col]%> )"></td>
 <%      }
     } %>
@@ -808,7 +812,9 @@ if( thereAreCarries && showBrowsCk ) { %>
 </label>
 </div>
 <label>whatBx</label> 
-<input type="text" id="whatbox" value="<%=whatBx[bdx]%>" class="shortbox"> 
+<input type="text" id="whatbox" value="<%=whatBx[bdx]%>" class="shortbox">
+<label>lastBoxOfCurrRow</label>
+<input type="text" id="lastBoxOfCurrRow">
 <div class ="d1">
 <div class="d4">  
 <table>
@@ -918,6 +924,7 @@ for( int idx = 0; idx < quotDigs; idx++ ) {
 <input type="hidden" id="linedUp" value="<%=isLinedUp%>" class="shortbox">
 <input type="hidden" id="divisor" value="<%=divisor%>" >
 <input type="hidden" id="quotDigs" value="<%=quotDigs%>" >
+<input type="hidden" id="quotient" value="<%=quotient%>" >
 <input type="hidden" id="rowNo" value="0" >
 <input type="hidden" id="dividend" value="<%=dividnd%>" >
 </form>

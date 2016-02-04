@@ -33,7 +33,7 @@ function checkMcarry( col, sbx ){
     // in quotient boxes, therefore no way to predict carries fixit in jsp and here
     // find the quotient digits that will generate carries
     for( var i = quotDigs-1, j = 0; i >= 0; i--, j++ ) {
-        possBx[j] = document.getElementsByName('qt' + i)[0];
+        possBx[j] = document.getElementById('qt' + i);
         qdigit[j] = Number(possBx[j].value);
     }
 
@@ -111,7 +111,7 @@ function divide( immFeedBkCk, col, qtDig ) {
     // as well as the max digit of that product
     var prod = 0;
     var dvsrdigs = document.getElementsByName("dvsrdigs");
-    var ansBx = document.getElementsByName("qt" + col)[0];
+    var ansBx = document.getElementById("qt" + col);
     var ans = ansBx.value;
     var quotDigs = Number(document.getElementById('quotDigs').value);
     var mcarry = 0;
@@ -135,11 +135,20 @@ function divide( immFeedBkCk, col, qtDig ) {
     document.getElementById("calcDig" + whatRow + "_0").value = prodMxIdx;
     document.getElementById("operand" + whatRow + "_0").value = prod;
     
+    var x = 0;
     var dvdnd = 0;
     var dvdBxs = document.getElementsByName("dvddigs");
-    var restAreZero = true;
-    for( var i = dvdBxs.length - col; i < dvdBxs.length; i++ ) {
-        if( Number(dvdBxs[i].childNodes[0].nodeValue) !== 0 ){
+    var restAreZero = true; // not that simple, there could be non-zero quotient digits fixit
+    // this may not work either in some cases where user has entered wrong qdigit fixit
+    var quotient = Number(document.getElementById("quotient").value);
+    //alert("quotDigs = " + quotDigs + " col = " + col);
+    for( var i = quotDigs - col; i < quotDigs; i++ ) {
+        var ten2i = Math.pow(10,i);
+        var discard = quotient % ten2i;
+        var qdigI = (quotient % Math.pow(10, i+1) - discard)/ten2i;
+        //alert("qDig[" + i + "] = " + qdigI);
+        x = x + 1;
+        if( qdigI !== 0 ){
             restAreZero = false;
         }
     }
@@ -155,7 +164,7 @@ function divide( immFeedBkCk, col, qtDig ) {
     var borCol = 0;
     var whatBorBx = "";
     var borBx = null;
-    var x = 0;
+
     for( var j = 0; j < 20; j++ ) {
         document.getElementById('statusBox' + j).innerHTML = "";
     }
@@ -300,6 +309,7 @@ function divide( immFeedBkCk, col, qtDig ) {
     if( whatRow == 0 ){
         stop = stop + 1 - quotDigs;
     }
+    var time2increment = true;
     if( immFeedBkCk ) {
 
         var errBx = document.getElementById("msg");
@@ -341,7 +351,6 @@ function divide( immFeedBkCk, col, qtDig ) {
                     visibleMrow[i].type = "text";
                 }
             }
-            incrementbox();
         } else {
             // make divisor and either dividend or most recent difference red
 
@@ -357,13 +366,12 @@ function divide( immFeedBkCk, col, qtDig ) {
                     dvsrdigs[i].style.color = "red";
             }
             errBx.innerHTML = "not " + ans;
+            time2increment = false;
         }
         
-    } else {
+    }
+    if( time2increment ) {
         var nextbox;
-        // skip multiplicative carries
-        nextbox = document.getElementsByClassName('c2').length;
-        //alert("skip mcarries nextbox = " + nextbox);
         // need to take 0.87 into account fixit
         if( ans == 0 ) {  // you will need to bring down more digits
                          // before you can start another row  
@@ -375,31 +383,24 @@ function divide( immFeedBkCk, col, qtDig ) {
                     break;
                 }
             }
+            // skip multiplicative carries
+            nextbox = document.getElementsByClassName('c2').length;
+            //alert("skip mcarries nextbox = " + nextbox);
             if( restAreZero ) {
                 nextbox += quotDigs - col;
             } else {
-                // skip quotient boxes
-                nextbox += quotDigs;
-                // skip borrow and carry boxes for original dividend
-                nextbox += 2*(origDvdDigs.length - quotDigs);
-                //nextbox += 2*(origDvdDigs.length - quotDigs);
-                // needs every row of operands, borrows and carries
-                for( var i = 0; i < whatRow; i++ ) {
-                    //var cid = Number(document.getElementById("calcDig" + i + "_0").value) + 1;
-                    var cid = document.getElementsByName("op" + i + "_0").length;
-                    nextbox += cid; // product digit boxes
-                    //alert("skip row " + i + " prod nextbox = " + nextbox);
-                    //cid = Number(document.getElementById("calcDig" + i + "_1").value) + 1;
-                    cid = document.getElementsByName("op" + i + "_1").length;
-                    // there are going to be an entire rest of the row that are bringdowns fixit
-                    //cid += Number(document.getElementById("bringdown" + i).value);
-                    cid += document.getElementsByName("bd" + i).length;
-                    nextbox += 2*(cid-1); // borrows and carries // count actual boxes, not calculated boxes fixit
-                    //nextbox += 2*(cid-1); // borrows and carries
-                    //alert("skip row " + i + " borrows and carries nextbox = " + nextbox);
-                    nextbox += cid; // dividend boxes
-                    //alert("skip row " + i + " dividend nextbox = " + nextbox);
-                } 
+                nextbox = Number(document.getElementById("lastBoxOfCurrRow").value);
+                if( nextbox === 0 ) {
+                    // skip multiplicative carries
+                    nextbox = document.getElementsByClassName('c2').length - 1;
+                    // skip quotient boxes
+                    nextbox += quotDigs;
+                    //alert("skip quotdigs and mcarries nextbox = " + nextbox);
+                    // skip borrow and carry boxes for original dividend
+                    nextbox += 2*(origDvdDigs.length - quotDigs);
+                    //alert("skip qd, mc and borrows and carries nextbox = " + nextbox);
+                }
+                nextbox += 1;
             }
         } else { // make next row of multiplication boxes visible
             var name = 'op' + whatRow + '_0';
@@ -407,41 +408,27 @@ function divide( immFeedBkCk, col, qtDig ) {
             for( var i = 0; i < visibleMrow.length; i++ ) {
                 visibleMrow[i].type = "text";
             }
-
-            // skip quotient boxes
-            nextbox += quotDigs;
-            //alert("skip quotdigs and mcarries nextbox = " + nextbox);
-            // skip borrow and carry boxes for original dividend
-            nextbox += 2*(origDvdDigs.length - quotDigs);
-            //nextbox += 2*(origDvdDigs.length - quotDigs);
-            //alert("skip qd, mc and borrows and carries nextbox = " + nextbox);
-
-            // needs every row of operands, borrows and carries
-            for( var i = 0; i < whatRow; i++ ) {
-                //var cid = Number(document.getElementById("calcDig" + i + "_0").value) + 1;  // need to actually add worst case boxes fixit
-                var cid = document.getElementsByName("op" + i + "_0").length;  // need to actually add worst case boxes fixit
-                nextbox += cid; // product digit boxes
-                //alert("skip row " + i + " prod nextbox = " + nextbox);
-                //cid = Number(document.getElementById("calcDig" + i + "_1").value) + 1;
-                cid = document.getElementsByName("op" + i + "_1").length;
-                //cid += Number(document.getElementById("bringdown" + i).value);
-                cid += document.getElementsByName("bd" + i).length;
-                nextbox += 2*(cid-1); // borrows and carries // count actual boxes, not calculated index/length fixit
-                //nextbox += 2*(cid-1); // borrows and carries
-                //alert("skip row " + i + " nextboxborrows and carries nextbox = " + nextbox);
-                nextbox += cid; // dividend boxes
-                //alert("skip row " + i + " dividend nextbox = " + nextbox);         
-            } 
+            nextbox = Number(document.getElementById("lastBoxOfCurrRow").value);
+            if( nextbox === 0 ) {
+                // skip multiplicative carries
+                nextbox = document.getElementsByClassName('c2').length - 1;
+                // skip quotient boxes
+                nextbox += quotDigs;
+                //alert("skip quotdigs and mcarries nextbox = " + nextbox);
+                // skip borrow and carry boxes for original dividend
+                nextbox += 2*(origDvdDigs.length - quotDigs);
+                //alert("skip qd, mc and borrows and carries nextbox = " + nextbox);
+            }
             // skip current product
-            nextbox += prodMxIdx;
+            nextbox += prodMxIdx + 1;
             //alert("skip current prod nextbox = " + nextbox);
         }
         var bdx = Number(document.getElementById('bdx').value) + 1;
         document.getElementById('bdx').value = bdx;
-
+        document.getElementById("lastBoxOfCurrRow").value = nextbox;
         //alert("final nextbox = " + nextbox);
         document.getElementById("whatbox").value = nextbox;
-    }
+    }    
 
     setFocus();
 }
@@ -461,7 +448,7 @@ function multiply( col ) { // may want to pass sbx instead of reading whatRow af
         }
     }
     var qdx = quotDigs - 1 - dec; // not neccessarily whatRow if there was more than 1 bringdowns
-    var qBx = document.getElementsByName("qt" + qdx)[0];
+    var qBx = document.getElementById("qt" + qdx);
     var qtDig = Number(qBx.value);
     var dvsrdigs = document.getElementsByName("dvsrdigs");
     var whatDig = dvsrdigs.length - 1 - col;
@@ -482,7 +469,7 @@ function multiply( col ) { // may want to pass sbx instead of reading whatRow af
     var startquot = quotDigs - 1;
     
     for( var i = startquot; i > qdx; i-- ) {
-        if( Number(document.getElementsByName("qt" + i)[0].value) > 1 ) {
+        if( Number(document.getElementById("qt" + i).value) > 1 ) {
             cmx = cmx + 1;
         }
         //alert(" i = " + i + " cmx = " + cmx);
@@ -508,7 +495,7 @@ function multiply( col ) { // may want to pass sbx instead of reading whatRow af
         }
         errBx.innerHTML = "";
         var whatBox = Number(document.getElementById("whatbox").value);
-        var nextBox = whatBox;
+        var nextBox = null;
         if( isLastMult ) {
             var visibleDrows = document.getElementsByName('op' + whatRow + '_1');
             for( var i = 0; i < visibleDrows.length; i++ ) {
@@ -541,14 +528,10 @@ function multiply( col ) { // may want to pass sbx instead of reading whatRow af
                     //bddigs = document.getElementsByName('bd' + prevRow);
                     bddigs = document.getElementsByName('bringdown' + prevRow);
                 }
-                var jstop = document.getElementById("calcDig" + whatRow + "_0").value;
-                //if( bddigs !== null ) {
-                //        jstop += Number(bddigs.value);
-                //}
                 var whatBorCaBxs = 'boca' + whatRow;
                 var visibleBorCaBxs = document.getElementsByName( whatBorCaBxs );
                 var origColor = "";
-                if( visibleBorCaBxs ) {
+                if( visibleBorCaBxs.length > 0 ) {
                     document.getElementById("dispBo").style.color = "#600301";
                     origColor = getComputedStyle(visibleBorCaBxs[0].parentNode).backgroundColor;
                 }
@@ -558,11 +541,11 @@ function multiply( col ) { // may want to pass sbx instead of reading whatRow af
                     //visibleBorCaBxs[0].style.backgroundColor = origColor;
                 }
             }
-            nextBox += Number(document.getElementById("calcDig" + whatRow + "_0").value); // product boxes
+            nextBox = Number(document.getElementById("lastBoxOfCurrRow").value);
             //document.getElementById('statusBox0').innerHTML = "with product boxes, nextBox = " + nextBox;
-            var bringDownDigs = document.getElementsByName('bd' + whatRow).length;
+            var bringDownLength = document.getElementsByName('bd' + whatRow).length;
             if( visibleDrows.length > 1 ) {
-                nextBox += 2*(visibleDrows.length + bringDownDigs - 1); // borrow, carry
+                nextBox += 2*(visibleDrows.length + bringDownLength - 1); // borrow, carry fixit
                 //document.getElementById('statusBox1').innerHTML = "with borrow and carry boxes, nextBox = " + nextBox;
                 nextBox += visibleDrows.length; // dividend boxes
             } else {
@@ -570,7 +553,10 @@ function multiply( col ) { // may want to pass sbx instead of reading whatRow af
             }
             whatRow = whatRow + 1;
             document.getElementById('rowNo').value = whatRow;
-        } else {  
+            document.getElementById("lastBoxOfCurrRow").value = nextBox;
+        } else {
+            var whatBox = Number(document.getElementById("whatbox").value);
+            nextBox = whatBox;
             if( col < dvsrdigs.length - 1) {
                 var whatCm = "hcm" + col + "_" + dec;
                 //alert("whatCm = " + whatCm );
@@ -697,15 +683,45 @@ function subtract( col, sbx ) {
         prodBx.style.color = "black";
         errBx.innerHTML = "";
         if( isLastSub ) {
-            var displayBorrow = document.getElementById('dispBo');
-            displayBorrow.style.color = getComputedStyle(displayBorrow).backgroundColor;
-            var visibleBrows = document.getElementsByName('bd' + sbx);
-            if( visibleBrows.length > 0 ) {
-                visibleBrows[0].type = "text";
+            var restAreZero = true; // not that simple, there could be non-zero quotient digits fixit
+            // this may not work either in some cases where user has entered wrong qdigit fixit
+            var quotient = Number(document.getElementById("quotient").value);
+            var quotDigs = Number(document.getElementById("quotDigs").value);
+            var lastqcol = quotDigs-1;
+            for( var i = lastqcol; i >= 0; i-- ) {
+                var quotBx = document.getElementById("qt" + i);
+                if( quotBx.value === "" ) {
+                    var ten2i = Math.pow(10,i);
+                    var discard = quotient % ten2i;
+                    var qdigI = (quotient % Math.pow(10, i+1) - discard)/ten2i;
+                    //alert("qDig[" + i + "] = " + qdigI);
+                    if( qdigI !== 0 ){
+                        restAreZero = false;
+                    }
+                } else {
+                    lastqcol = i;
+                }
             }
-            //document.getElementById('statusBox1').innerHTML = "sbx = " + sbx + " visibleBrows = " + visibleBrows;
+            if( restAreZero ) {
+                nextbox = document.getElementsByClassName("c2").length + quotDigs - lastqcol;
+            } else {
+                var displayBorrow = document.getElementById('dispBo');
+                displayBorrow.style.color = getComputedStyle(displayBorrow).backgroundColor;
+                var visibleBrows = document.getElementsByName('bd' + sbx);
+                if( visibleBrows.length > 0 ) {
+                    visibleBrows[0].type = "text";
+                }
+                //document.getElementById('statusBox1').innerHTML = "sbx = " + sbx + " visibleBrows = " + visibleBrows;
+                var nextbox = Number(document.getElementById("lastBoxOfCurrRow").value) + 1;
+                document.getElementById("lastBoxOfCurrRow").value = nextbox;
+            }
+            var bdx = Number(document.getElementById('bdx').value) + 1;
+            document.getElementById('bdx').value = bdx;
+            //alert("final nextbox = " + nextbox);
+            document.getElementById("whatbox").value = nextbox;
+        } else {
+            incrementbox();
         }
-        incrementbox();
     } else {
         // show borrows  or carries in case of error
         var caValue = 0;
