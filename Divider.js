@@ -715,13 +715,16 @@ function subtract( col, sbx ) {
                 var nextbox = Number(document.getElementById("lastBoxOfCurrRow").value) + 1;
                 document.getElementById("lastBoxOfCurrRow").value = nextbox;
             }
-            var bdx = Number(document.getElementById('bdx').value) + 1;
-            document.getElementById('bdx').value = bdx;
-            //alert("final nextbox = " + nextbox);
-            document.getElementById("whatbox").value = nextbox;
+
+
         } else {
-            incrementbox();
+            nextbox = Number(document.getElementById("whatbox").value) - 1;
+            //incrementbox();
         }
+        //alert("final nextbox = " + nextbox);
+        document.getElementById("whatbox").value = nextbox;
+        var bdx = Number(document.getElementById('bdx').value) + 1;
+        document.getElementById('bdx').value = bdx;
     } else {
         // show borrows  or carries in case of error
         var caValue = 0;
