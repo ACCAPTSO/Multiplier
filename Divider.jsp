@@ -47,7 +47,7 @@
     //dsMaxDg = 3;
     int dsMax = (int)(Math.pow(10, dsMaxDg)) - 1;
     int divisor = 1 + (int)(dsMax*Math.random());
-
+    //divisor = 24;
     //divisor = 6495; // had issue with restAreZero fixit
     //divisor = 94 // sometimes gives wrong box after mcarry fixit
     //divisor = 3717;
@@ -65,7 +65,7 @@
     int qtMaxDg = 7 - dvsrDigs; //(SZ2_MX - dvsrDigs)/dvsrDigs;
     int qtMax = (int)(Math.pow(10, qtMaxDg)) - 1;
     int quotient = 1 + (int)(qtMax*Math.random());
-
+    //quotient = 60062;
     //quotient = 302; // had issue with restAreZero fixit
     //quotient = 27793; // sometimes gives wrong box after mcarry fixit
     //quotient = 137;
@@ -172,7 +172,8 @@
     int [][] operand = new int[quotDigs][maxOps];
     int [][] calcOp = new int[quotDigs][maxOps];
     op = new int[quotDigs][maxOps][SZ2_MX+1];
-    int [][] numDig = new int[quotDigs][maxOps];
+    int [][] actDig = new int[quotDigs][maxOps];
+    int [][] wcDig = new int[quotDigs][maxOps];
     int [][] calcDig = new int[quotDigs][maxOps];
     int [] calcBdDig = new int[quotDigs];
     int [][] spacesb4Op = new int[quotDigs][maxOps];
@@ -181,52 +182,64 @@
     tmpint = dividnd;
     // use only the first few digits
     int lastDig = 0;
+    int worstCaseQdig = 9;
     while( tmpint > qt[quotDigs-1]*divisor ) {
+    //while( tmpint > worstCaseQdig*divisor ) { // worst case, biggest quotient digit
         lastDig = tmpint % 10;
         tmpint = tmpint / 10;
     }
     // back off the last digit removed
     if( tmpint != qt[quotDigs-1]*divisor ) {
+   //if( tmpint != worstCaseQdig*divisor ) {
         tmpint = tmpint*10 + lastDig;
     }
-    int s = quotDigs-1; // there may be more quotient digits than subtractions
+    int whatquotDig = quotDigs-1; // there may be more quotient digits than subtractions
     int nsubs = 0; // actual subtractions
-    while( s >= 0 ) {
-        operand[nsubs][0] = qt[s]*divisor;
+    System.out.println("divisor = " + divisor + " quotient = " + quotient + " dividnd = " + dividnd );
+    while( whatquotDig >= 0 ) {
+        operand[nsubs][0] = qt[whatquotDig]*divisor;
+        int WCoperand0 = worstCaseQdig*divisor; // worst case, biggest operand
         operand[nsubs][1] = tmpint - operand[nsubs][0];
 
-        numDig[nsubs][0] = operand[nsubs][0] > 0? 
+
+        actDig[nsubs][0] = operand[nsubs][0] > 0? 
                 (int)Math.log10(operand[nsubs][0]) + 1: 1;
-        numDig[nsubs][1] = operand[nsubs][1] > 0? 
-                (int)Math.log10(operand[nsubs][1]) + 1: 1;       
+        actDig[nsubs][1] = operand[nsubs][1] > 0? 
+                (int)Math.log10(operand[nsubs][1]) + 1: 1;
+        wcDig[nsubs][0] = WCoperand0 > 0? 
+                (int)Math.log10(WCoperand0) + 1: 1;
+        wcDig[nsubs][1] = actDig[nsubs][1];
         
         if( operand[nsubs][1] < 0 ) {
             System.out.println("diff = " + operand[nsubs*maxOps+1] + " that's messed up");
             break;
         }
 
-        spacesb4Op[nsubs][0] = spacesb4quot + quotDigs - s - numDig[nsubs][0] - 1;
+        //spacesb4Op[nsubs][0] = spacesb4quot + quotDigs - whatquotDig - numDig[nsubs][0] - 1;
+        int mostPossProdDig = (int)Math.log10(9*divisor) + 1;
+        spacesb4Op[nsubs][0] = spacesb4quot + quotDigs - whatquotDig - mostPossProdDig - 1;
+        System.out.println("spacesb4quot = " + spacesb4quot + "+ quotDigs = " + quotDigs + "- whatQuotDig = " + whatquotDig + " - mostPossProdDig = " + mostPossProdDig + " - 1 = " + " spacesb4Op[" + nsubs + "][0] = " + spacesb4Op[nsubs][0]);
         int tmpint2 = operand[nsubs][0];
-        for( int idx = 0; idx < numDig[nsubs][0]; ++idx ) {
-            op[nsubs][0][idx] = tmpint2 % 10;
+        for( int idx = 0; idx < actDig[nsubs][0]; ++idx ) {
+            op[nsubs][0][idx] = tmpint2 % 10; // what are these even used for? fixit
             tmpint2 = tmpint2 / 10;
         }
-        spacesb4Op[nsubs][1] = spacesb4quot + quotDigs - s - numDig[nsubs][1] - 1;
+        spacesb4Op[nsubs][1] = spacesb4quot + quotDigs - whatquotDig - wcDig[nsubs][1] - 1;
         tmpint2 = operand[nsubs][1];
-        for( int idx = 0; idx < numDig[nsubs][1]; ++idx ) {
+        for( int idx = 0; idx < actDig[nsubs][1]; ++idx ) {
             op[nsubs][1][idx] = tmpint2 % 10;
             tmpint2 = tmpint2 / 10;
         }
-        cspan[nsubs] = 2*numDig[nsubs][0] + 1;
+        cspan[nsubs] = 2*wcDig[nsubs][0] + 1;
         bspan[nsubs] = 2*spacesb4Op[nsubs][0] + 1;
         dspan[nsubs] = 2*(SZ2_MX + 1) - bspan[nsubs] - cspan[nsubs];
-        if( s == 0 ) {
+        if( whatquotDig == 0 ) {
             break; // don't need to generate tmpint nsubsor the next loop, you're 
         }          // done
         boolean restAreZero = false;
         if( operand[nsubs][1] == 0 ) {            // if difference is zero
             restAreZero = true;                     // check if there is 
-            for( int idx = s-1; idx >= 0; --idx ) { // anything but zeros left
+            for( int idx = whatquotDig-1; idx >= 0; --idx ) { // anything but zeros left
                 if( dd[idx] != 0 ) {
                     restAreZero = false;
                     break; // rest are not zero, stop checking
@@ -242,8 +255,8 @@
         tmpint = operand[nsubs][1];
         numBringDn[nsubs] = 0;
         while( tmpint < divisor ) {
-            tmpint = 10*tmpint + dd[s-1];
-            s = s - 1;
+            tmpint = 10*tmpint + dd[whatquotDig-1];
+            whatquotDig = whatquotDig - 1;
             numBringDn[nsubs] += 1;
         }
         //System.out.println("operand[" + nsubs + "][1] = " + operand[nsubs][1] + " numDig[" + nsubs + "][1] = " + numDig[nsubs][1] + " numBringDn[" + nsubs + "] = " + numBringDn[nsubs]);
@@ -329,7 +342,7 @@
         int bdidx = quotDigs - 1;
         for( int sbx = 0; sbx < quotDigs; ++ sbx ) {
             nacarries[sbx] = 0;
-            int kdxmax = sbx == 0? dvdDigs - quotDigs + 1 : numDig[sbx-1][1] + numBringDn[sbx-1]; //numBringDn[sbx-1];
+            int kdxmax = sbx == 0? dvdDigs - quotDigs + 1 : wcDig[sbx-1][1] + numBringDn[sbx-1]; //numBringDn[sbx-1];
             if( sbx > 0  ) {
                 bdidx -= numBringDn[sbx-1];
             }
@@ -351,7 +364,7 @@
                 //if( op[sbx][0][kdx] <= minuend - dec ) {
                 //    needsCarry = false;
                 //}
-                if( kdx >= kdxmax-1 || (sbx > 0 && numDig[sbx-1][1] < 2 ) ) {
+                if( kdx >= kdxmax-1 || (sbx > 0 && wcDig[sbx-1][1] < 2 ) ) {
                     needsCarry = false;
                 }
                     //System.out.println("sbx = " + sbx + " kdx = " + kdx + " dec = " + dec + " minuend = " + minuend +  " op[sbx][0][" + kdx + "] = " + op[sbx][0][kdx]);
@@ -400,9 +413,9 @@
         if( idx > 0 ) {
             em[idx] = oh[idx-1];
         }
-        em[idx] += numDig[idx][0];
+        em[idx] += wcDig[idx][0];
         //System.out.println("em[" + idx + "] = " + em[idx] + " numDig[" + idx + "][1] = " + numDig[idx][1]);
-        en[idx] = em[idx] + numDig[idx][1];
+        en[idx] = em[idx] + wcDig[idx][1];
         if( idx < nsubs ) {
             //System.out.println("nacarries = " + nacarries[idx+1]);
             en[idx] += 2*nacarries[idx+1];
@@ -421,7 +434,7 @@
         //System.out.println("quotient whatBx[" + ldx + "] = " + whatBx[ldx] );
         ++ldx;
         //int lastcarry = numDig[idx][0] - 2;
-        for( ; mdx < numDig[idx][0]; ++mdx  ) { // product box indexes
+        for( ; mdx < wcDig[idx][0]; ++mdx  ) { // product box indexes
             whatBx[ldx] = em[idx] - mdx;
             //System.out.println("product whatBx[" + ldx + "] = " + whatBx[ldx] );
             ++ldx;
@@ -431,7 +444,7 @@
                 ++ldx;
             }
         }
-        for( ; ndx < numDig[idx][1]; ++ndx  ) { // difference box indexes
+        for( ; ndx < wcDig[idx][1]; ++ndx  ) { // difference box indexes
             whatBx[ldx] = en[idx] - ndx;
             if( whatBx[ldx] > lastbox ) {
                 lastbox = whatBx[ldx];
@@ -575,12 +588,12 @@
 <%          } else if ( idx == spacesb4Op[sbx][0] ){ 
                 String minusName="minus" + sbx; %>
                 <td class="t3" id="<%=minusName%>" > - </td>
-    <%      } else if( idx <= spacesb4Op[sbx][0] + numDig[sbx][0]) {          
+    <%      } else if( idx <= spacesb4Op[sbx][0] + wcDig[sbx][0]) {          
                 //int col = numDig[0] - idx + spacesb4Op[0]; 
-                int col = spacesb4Op[sbx][0] + numDig[sbx][0] - idx;
+                int col = spacesb4Op[sbx][0] + wcDig[sbx][0] - idx;
                 String name = "op" + sbx + "_0";
                 String whattype = "hidden";
-                if( 0 <= col && col < numDig[sbx][0] ) {
+                if( 0 <= col && col < wcDig[sbx][0] ) {
                     //System.out.print("op[" + sbx + "][0][" + col + "] = " + op[sbx][0][col] );
                 } else {
                     //System.out.print("col out of range");
@@ -605,13 +618,13 @@
         <tr>
 <%      for( int idx = 0; idx <= SZ2_MX; idx++ ) {
             //int col = spacesb4Op[sbx][0] + numDig[sbx][0] - idx;
-            int col = spacesb4Op[sbx][0] + numDig[sbx][0] + numBringDn[sbx] - idx;
+            int col = spacesb4Op[sbx][0] + wcDig[sbx][0] + numBringDn[sbx] - idx;
             if( col < 0 ) {
                 col = SZ2_MX;
             }
             String name = "boca" + rdx; 
             if( spacesb4Op[sbx][0] < idx && 
-                    idx <= spacesb4Op[sbx][0] + numDig[sbx][0] + numBringDn[sbx] && 
+                    idx <= spacesb4Op[sbx][0] + wcDig[sbx][0] + numBringDn[sbx] && 
                     ncarries[rdx][col] != 0 ) {  
 
                 String cid = "ca" + col + "_" + rdx; 
@@ -649,10 +662,10 @@
             <td class="t2"></td>
     <%      if( idx <= spacesb4Op[sbx][1] ) { %>
                 <td class="t1"></td>
-<%      } else if( idx <= spacesb4Op[sbx][1] + numDig[sbx][1] ) { 
+<%      } else if( idx <= spacesb4Op[sbx][1] + wcDig[sbx][1] ) { 
                 //int col = numDig[1] - idx + spacesb4Op[1] - 1;
-                int col = spacesb4Op[sbx][1] + numDig[sbx][1] - idx;
-                int ocol = spacesb4Op[sbx][1] + numDig[sbx][1] + numBringDn[sbx] - idx;
+                int col = spacesb4Op[sbx][1] + wcDig[sbx][1] - idx;
+                int ocol = spacesb4Op[sbx][1] + wcDig[sbx][1] + numBringDn[sbx] - idx;
                 String name = "op" + sbx + "_1"; 
                  %>
                 <td class="t1">
@@ -660,12 +673,12 @@
                 onkeyup="subtract( <%=col%>, <%=sbx%> )" 
                 onclick="promptDivBorrow(<%=ocol%>, <%=rdx%>)">
                 </td>
-    <%      } else if( idx <= spacesb4Op[sbx][1] + numDig[sbx][1]  + numBringDn[sbx] ) { 
+    <%      } else if( idx <= spacesb4Op[sbx][1] + wcDig[sbx][1]  + numBringDn[sbx] ) { 
                 //int col = numDig[1] - idx + spacesb4Op[1] - 1;
-                int col = spacesb4Op[sbx][1] + numDig[sbx][1] + numBringDn[sbx] - idx;
-                int ocol = spacesb4Op[sbx][1] + numDig[sbx][1] + numBringDn[sbx] - idx;
+                int col = spacesb4Op[sbx][1] + wcDig[sbx][1] + numBringDn[sbx] - idx;
+                int ocol = spacesb4Op[sbx][1] + wcDig[sbx][1] + numBringDn[sbx] - idx;
                 String name = "bd" + sbx;
-                if( 0 <= col && col < numDig[sbx][1] ) {
+                if( 0 <= col && col < wcDig[sbx][1] ) {
                     //System.out.print("op[" + sbx + "][1][" + col + "] = " + op[sbx][1][col] );
                 } else {
                     //System.out.print("col out of range");
@@ -742,12 +755,12 @@
     <tr>
 <%      for( int idx = 0; idx <= SZ2_MX; idx++ ) {
             //int col = spacesb4Op[sbx][0] + numDig[sbx][0] - idx;
-            int col = spacesb4Op[sbx][0] + numDig[sbx][0] + numBringDn[sbx] - idx;
+            int col = spacesb4Op[sbx][0] + wcDig[sbx][0] + numBringDn[sbx] - idx;
             if( col < 0 ) {
                 col = SZ2_MX;
             }
             if( spacesb4Op[sbx][0] < idx && 
-                    idx <= spacesb4Op[sbx][0] + numDig[sbx][0] + numBringDn[sbx] && 
+                    idx <= spacesb4Op[sbx][0] + wcDig[sbx][0] + numBringDn[sbx] && 
                     ncarries[rdx][col] != 0 ) {  
                 String hid = "hca" + col + "_" + rdx; 
                 if( col < 0 || col >= SZ2_MX ) {

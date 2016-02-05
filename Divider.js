@@ -101,7 +101,7 @@ function divide( immFeedBkCk, col, qtDig ) {
     var prod = 0;
     var dvsrdigs = document.getElementsByName("dvsrdigs");
     var ansBx = document.getElementById("qt" + col);
-    var ans = ansBx.value;
+    var ans = Number(ansBx.value);
     var quotDigs = Number(document.getElementById('quotDigs').value);
     document.getElementById("nextQuotBox").value = 
         document.getElementsByClassName("c2").length + quotDigs - col;
@@ -285,6 +285,7 @@ function divide( immFeedBkCk, col, qtDig ) {
     document.getElementById("operand" + whatRow + "_1").value = diff;
     
     var origDvdDigs = document.getElementsByName("dvddigs");
+    var bddigs = null;
     if( whatRow == 0 ) {
         dvddigs = origDvdDigs;
     } else {
@@ -301,7 +302,7 @@ function divide( immFeedBkCk, col, qtDig ) {
 
         var errBx = document.getElementById("msg");
         var dvddigs;
-        var bddigs;
+
         var prevRow;
 
 
@@ -314,7 +315,12 @@ function divide( immFeedBkCk, col, qtDig ) {
             }
             if( bddigs ){
                 for( var i = 0; i < bddigs.length; i++ ){
-                        bddigs[i].style.color = "black";
+                    bddigs[i].style.color = "black";
+                    //alert("bddigs[" + i + "].type = " + bddigs[i].type);
+                    if( bddigs[i].type === "hidden") {
+                        //alert("bddigs[" + i + "].type = " + bddigs[i].type + " now I'm going to break");
+                        break;
+                    }
                 }
             }
             for( var i = 0; i < dvsrdigs.length; i++ ){
@@ -322,16 +328,18 @@ function divide( immFeedBkCk, col, qtDig ) {
             }
             errBx.innerHTML = "";
             // need to take 0.87 into account fixit
-            if( ans == 0 ){  // you will need to bring down more digits
+            if( ans !== 0 ){  // you will need to bring down more digits
                              // before you can start another row  
-                var visibleBrows = document.getElementsByName('bd' + prevRow);
-                for( var i = 0; i < visibleBrows.length; i++ ) {
-                    if( visibleBrows[i].type == "hidden") {
-                        visibleBrows[i].type = "text";
+                //var visibleBrows = document.getElementsByName('bd' + prevRow);
+                /*
+                for( var i = 0; i < bddigs.length; i++ ) {
+                    if( bddigs[i].type === "hidden") {
+                        alert("bddigs[" + i + "].type = " + bddigs[i].type + " now I'm going to change it to text and break");
+                        bddigs[i].type = "text";
                         break;
                     }
                 }
-            } else { // make next row of multiplication boxes visible
+            } else { // make next row of multiplication boxes visible */
                 var name = 'op' + whatRow + '_0';
                 var visibleMrow = document.getElementsByName(name);
                 for( var i = 0; i < visibleMrow.length; i++ ) {
@@ -362,11 +370,10 @@ function divide( immFeedBkCk, col, qtDig ) {
         // need to take 0.87 into account fixit
         if( ans == 0 ) {  // you will need to bring down more digits
                          // before you can start another row  
-            var visibleBrows = document.getElementsByName('bd' + prevRow);
             // make next bringdown box visible
-            for( var i = 0; i < visibleBrows.length; i++ ) {
-                if( visibleBrows[i].type == "hidden") {
-                    visibleBrows[i].type = "text";
+            for( var i = 0; i < bddigs.length; i++ ) {
+                if( bddigs[i].type === "hidden") {
+                    bddigs[i].type = "text";
                     break;
                 }
             }
@@ -407,7 +414,8 @@ function divide( immFeedBkCk, col, qtDig ) {
                 //alert("skip qd, mc and borrows and carries nextbox = " + nextbox);
             }
             // skip current product
-            nextbox += prodMxIdx + 1;
+            //nextbox += prodMxIdx + 1;
+            nextbox += visibleMrow.length;
             //alert("skip current prod nextbox = " + nextbox);
         }
         var bdx = Number(document.getElementById('bdx').value) + 1;
@@ -670,8 +678,8 @@ function subtract( col, sbx ) {
         prodBx.style.color = "black";
         errBx.innerHTML = "";
         if( isLastSub ) {
-            var restAreZero = true; // not that simple, there could be non-zero quotient digits fixit
-            // this may not work either in some cases where user has entered wrong qdigit fixit
+            var restAreZero = true;
+            // this may not work in some cases where user has entered wrong qdigit fixit
             var quotient = Number(document.getElementById("quotient").value);
             var quotDigs = Number(document.getElementById("quotDigs").value);
             var lastqcol = quotDigs-1;
