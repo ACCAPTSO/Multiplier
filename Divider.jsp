@@ -694,8 +694,7 @@
             if( idx < dvsrDigs - 1 ) { 
                 int col = dvsrDigs - 2 - idx;
                 String cid = "hcm" + col + "_" + sbx; %>
-                <td><label><%=cid%></label></td>
-                <td><input type="text" id="<%=cid%>" ></td>
+                <td><input type="hidden" id="<%=cid%>" ></td>
 <%          }
         } %>
         <tr>
@@ -705,8 +704,7 @@
         if( idx < dvsrDigs - 1 && crows > 0 ) { 
             int col = dvsrDigs - 2 - idx;
             String cid = "hcm" + col + "_0"; %>
-            <td><label><%=cid%></label></td>
-            <td><input type="text" id="<%=cid%>"></td>
+            <td><input type="hidden" id="<%=cid%>"></td>
 <%      }
     } %>
 </tr>
@@ -811,10 +809,8 @@ if( thereAreCarries && showBrowsCk ) { %>
 <%  } %>
 </label>
 </div>
-<label>whatBx</label> 
-<input type="text" id="whatbox" value="<%=whatBx[bdx]%>" class="shortbox">
-<label>lastBoxOfCurrRow</label>
-<input type="text" id="lastBoxOfCurrRow">
+<input type="hidden" id="whatbox" value="<%=whatBx[bdx]%>" class="shortbox">
+<input type="hidden" id="lastBoxOfCurrRow">
 <div class ="d1">
 <div class="d4">  
 <table>
@@ -900,31 +896,24 @@ if( thereAreCarries && showBrowsCk ) { %>
 
 <input type="hidden" id="strtTime" name="strtTimeP" value="<%=strtTime%>" class="shortbox">
 <input type="hidden" id="ansDp" value="<%=ansDp%>" class="shortbox">
-<% for( int idx = 0; idx <= maxBx; idx++ ) { %>
-<label>idx <%=idx%></label>
-    
-    <input type="text" name="nextbox" value="<%=whatBx[idx]%>" class="shortbox">
-<% } 
+<% 
 for( int idx = 0; idx < quotDigs; idx++ ) {
     for( int jdx = 0; jdx < maxOps; jdx++ ) { 
         String cid = "calcDig" + idx + "_" + jdx;
         String oid = "operand" + idx + "_" + jdx;  %>
-        <label><%=cid%></label>
-        <input type="text" id="<%=cid%>" value="<%=calcDig[idx][jdx]%>" class="shortbox">
-        <label><%=oid%></label>
-        <input type="text" id="<%=oid%>" value="<%=calcOp[idx][jdx]%>" class="shortbox">
+        <input type="hidden" id="<%=cid%>" value="<%=calcDig[idx][jdx]%>" class="shortbox">
+        <input type="hidden" id="<%=oid%>" value="<%=calcOp[idx][jdx]%>" class="shortbox">
 <%  }
      String bid = "bringdown" + idx; %>
-     <label><%=bid%></label>
-     <input type="text" id="<%=bid%>" value="<%=calcBdDig[idx]%>" class="shortbox">
+     <input type="hidden" id="<%=bid%>" value="<%=calcBdDig[idx]%>" class="shortbox">
 <% } %>
-<label>bdx</label>
-    <input type="text" id="bdx" value="<%=bdx%>" class="shortbox">
+<input type="hidden" id="bdx" value="<%=bdx%>">
 <input type="hidden" id="lastbox" value="<%=maxBx%>" class="shortbox">
 <input type="hidden" id="linedUp" value="<%=isLinedUp%>" class="shortbox">
 <input type="hidden" id="divisor" value="<%=divisor%>" >
 <input type="hidden" id="quotDigs" value="<%=quotDigs%>" >
 <input type="hidden" id="quotient" value="<%=quotient%>" >
+<input type="hidden" id="nextQuotBox" >
 <input type="hidden" id="rowNo" value="0" >
 <input type="hidden" id="dividend" value="<%=dividnd%>" >
 </form>

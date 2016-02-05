@@ -7,14 +7,6 @@
 // need borrows and carries calculated in javascript so that you can show the user 
 // where they made a mistake in subtracting and so that the user can estimate
 // answers and try again fixit
-
-function incrementbox(){
-    var bdx = Number(document.getElementById('bdx').value) + 1;
-    document.getElementById('bdx').value = bdx;
-    var nextbox = document.getElementsByName("nextbox")[bdx].value;
-    //alert("nextbox is " + nextbox);
-    document.getElementById("whatbox").value = nextbox;
-}
 function checkMcarry( col, sbx ){
     var ansBx = document.getElementsByName("cm" + col + "_" + sbx)[0];
     var prevBx;
@@ -29,8 +21,6 @@ function checkMcarry( col, sbx ){
 
     var qdigit = new Array();
     var possBx = new Array();
-    // with estimation allowed, there is no way to predict what user will put
-    // in quotient boxes, therefore no way to predict carries fixit in jsp and here
     // find the quotient digits that will generate carries
     for( var i = quotDigs-1, j = 0; i >= 0; i--, j++ ) {
         possBx[j] = document.getElementById('qt' + i);
@@ -63,7 +53,6 @@ function checkMcarry( col, sbx ){
         //document.getElementById('statusBox' + x).innerHTML = "skip orig dividend borrow and carry boxes nextbox = " + nextbox;
         //x = x + 1;
         // needs every row of operands, borrows and carries
-        //var maxi = sbx - 1
         var whatRow = Number(document.getElementById('rowNo').value);
         for( var i = 0; i < whatRow; i++ ) {
             var cid = document.getElementsByName("op" + i + "_0").length;
@@ -114,6 +103,8 @@ function divide( immFeedBkCk, col, qtDig ) {
     var ansBx = document.getElementById("qt" + col);
     var ans = ansBx.value;
     var quotDigs = Number(document.getElementById('quotDigs').value);
+    document.getElementById("nextQuotBox").value = 
+        document.getElementsByClassName("c2").length + quotDigs - col;
     var mcarry = 0;
     var i = 0;
     for( ; i < dvsrdigs.length; i++ ) {
@@ -138,8 +129,8 @@ function divide( immFeedBkCk, col, qtDig ) {
     var x = 0;
     var dvdnd = 0;
     var dvdBxs = document.getElementsByName("dvddigs");
-    var restAreZero = true; // not that simple, there could be non-zero quotient digits fixit
-    // this may not work either in some cases where user has entered wrong qdigit fixit
+    var restAreZero = true;
+    // this may not work in some cases where user has entered wrong qdigit fixit
     var quotient = Number(document.getElementById("quotient").value);
     //alert("quotDigs = " + quotDigs + " col = " + col);
     for( var i = quotDigs - col; i < quotDigs; i++ ) {
@@ -196,8 +187,6 @@ function divide( immFeedBkCk, col, qtDig ) {
                     } else {
                         borBx.value = "-2";
                     }
-                //} else {
-                    //alert("borBx " + whatBorBx + " or caBx " + caBx + " does not exist");
                 }
             }
             discard = prod % ten2pow;
@@ -267,8 +256,6 @@ function divide( immFeedBkCk, col, qtDig ) {
                     } else {
                         borBx.value = "-2";
                     }
-                //} else {
-                    //alert("borBx " + whatBorBx + " or caBx " + caBx + " does not exist");
                 }
             }
             discard = prod % ten2pow;
@@ -794,7 +781,10 @@ function bringdown( sbx ) {
         var newval = thisRowsBdDigsVal + 1;
         //alert("thisRowsBdDigsval = " + thisRowsBdDigsVal + " newval = " + newval);
         document.getElementById("bringdown" + sbx).value = newval;
-        incrementbox();
+        document.getElementById("whatbox").value = document.getElementById("nextQuotBox").value;
+        var bdx = Number(document.getElementById('bdx').value) + 1;
+        document.getElementById('bdx').value = bdx;
+        //incrementbox();
     } else {
         dvddigs[whatDig].style.color = "red";
         errBx.innerHTML = "not " + ans;
@@ -878,8 +868,6 @@ function checkNewDivVal( col, sbx ) {
         newBx.style.color = "red";
         newBx.value = "";
         borFrmBx.style.color = "red";
-        // test to make sure carry shows red only when cancelling 10 to make 9
-        // fixit
         if( coBx.length > 0 && borFrmValue === 0 ) {
             coBx[0].style.color = "red";
         }
@@ -933,7 +921,7 @@ function promptDivBorrow( col, sbx ) {
     errBx.innerHTML = "";
 
     //make sure it's really a column that should be borrowed from 
-    // or do nothing
+    // or do nothing fixit
     //if( newBx &&
     if( document.getElementsByName('showhelp')[0].checked ) { 
         //document.getElementById('statusBox0').innerHTML = "col = " + col + " sbx = " + sbx + " newBx = " + newBx;
