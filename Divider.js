@@ -94,6 +94,9 @@ function checkMcarry( col, sbx ){
 }
 
 function divide( immFeedBkCk, col, qtDig ) {
+    //for( var j = 0; j < 18; j++ ) {
+        //document.getElementById('statusBox' + j).innerHTML = "";
+    //}
     var whatRow = Number(document.getElementById('rowNo').value);
     var prevRow = whatRow - 1;
     // calculate and store the product  and of this quotient digit and divisor
@@ -133,11 +136,11 @@ function divide( immFeedBkCk, col, qtDig ) {
     // this may not work in some cases where user has entered wrong qdigit fixit
     var quotient = Number(document.getElementById("quotient").value);
     //alert("quotDigs = " + quotDigs + " col = " + col);
-    for( var i = quotDigs - col; i < quotDigs; i++ ) {
+    for( var i = 0; i < col; i++ ) {
         var ten2i = Math.pow(10,i);
         var discard = quotient % ten2i;
         var qdigI = (quotient % Math.pow(10, i+1) - discard)/ten2i;
-        //alert("qDig[" + i + "] = " + qdigI);
+        //document.getElementById('statusBox' + x).innerHTML = "qDig[" + i + "] = " + qdigI;
         x = x + 1;
         if( qdigI !== 0 ){
             restAreZero = false;
@@ -156,9 +159,6 @@ function divide( immFeedBkCk, col, qtDig ) {
     var whatBorBx = "";
     var borBx = null;
 
-    for( var j = 0; j < 20; j++ ) {
-        document.getElementById('statusBox' + j).innerHTML = "";
-    }
     var carries = new Array();
     var borrows = new Array();
     if( whatRow === 0 ) {
@@ -212,22 +212,28 @@ function divide( immFeedBkCk, col, qtDig ) {
                         //}               // then what? fixit
             ++pow;
         }  
-    } else {   
-        dvdBxs = document.getElementsByName("op" + prevRow + "_1");
+    } else {
+        var whatDvdBxs = "op" + prevRow + "_1";
+        dvdBxs = document.getElementsByName(whatDvdBxs);
         var bdBxs = document.getElementsByName("bd" + prevRow);
         var whatCalcDig = "calcDig" + prevRow + "_1";
         var calcDig = Number(document.getElementById(whatCalcDig).value);
         var whatBringDown = "bringdown" + prevRow;
         var bringdown = Number(document.getElementById(whatBringDown).value);
-        var maxp = 1 + calcDig + bringdown;
-        //alert("whatRow > 0, pow = " + pow + " maxp = "  + maxp + " calcDig = " + calcDig + " bringdown = " + bringdown + " whatCalcDig = " + whatCalcDig + " whatBringDown = " + whatBringDown );
+        //var maxp = 1 + dvdBxs.length + bringdown;
+        var maxp = dvdBxs.length + bringdown;
+        //document.getElementById('statusBox' + x).innerHTML = "whatDvdBxs = " + whatDvdBxs + " whatRow = " + whatRow + ", pow = " + pow + " maxp = "  + maxp + " calcDig = " + calcDig + " bringdown = " + bringdown + " whatCalcDig = " + whatCalcDig + " whatBringDown = " + whatBringDown;
+        x = x + 1;
         while( pow < maxp ) {
             if( pow < bringdown ) {
                 dvdDigVal = Number(bdBxs[bringdown - 1 - pow].value);
+                //document.getElementById('statusBox' + x).innerHTML = "pow = " + pow + "bringdown = " + bringdown + " dvdDigVal = " + dvdDigVal;
+                x = x + 1;
             } else {
                 var dvdidx = maxp-1-pow;
                 var whatDvdBx = dvdBxs[dvdidx];
-                //document.getElementById('statusBox18').innerHTML = "pow = " + pow + " dvdidx = " + dvdidx + " whatDvdBx = " + whatDvdBx;
+                //document.getElementById('statusBox' + x).innerHTML = "pow = " + pow + " dvdidx = " + dvdidx + " whatDvdBx = " + whatDvdBx;
+                x = x + 1;
                 if( whatDvdBx != null ) {
                     dvdDigVal = Number(whatDvdBx.value);
                 }
@@ -235,7 +241,8 @@ function divide( immFeedBkCk, col, qtDig ) {
         
             var ten2pow = Math.pow( 10, pow);
             dvdnd += ten2pow*dvdDigVal;
-            //alert("pow = " + pow + " dvdDigVal = " + dvdDigVal + " dividend = " + dvdnd);
+            //document.getElementById('statusBox' + x).innerHTML = "pow = " + pow + " dvdDigVal = " + dvdDigVal + " dividend = " + dvdnd;
+            x = x + 1;
             // if there was a borrow, decrement dvdDigVal
             if( pow > 0 ) {
                 caCol = pow - 1;
@@ -279,7 +286,8 @@ function divide( immFeedBkCk, col, qtDig ) {
 
     var diff = dvdnd - prod;       // if you put too small a quotient digit, diff may
                                               // be bigger than divisor fixit    
-    //alert("in divide function, predicting: prev dividend = " + dvdnd + " prod = " + prod + " diff = " + diff );
+    //document.getElementById('statusBox19').innerHTML = "in divide function, predicting: prev dividend = " + dvdnd + " prod = " + prod + " diff = " + diff;
+    //x = x + 1;
     var diffMxIdx = diff > 0? Math.floor(Math.log10(diff)) : 0;
     document.getElementById("calcDig" + whatRow + "_1").value = diffMxIdx;
     document.getElementById("operand" + whatRow + "_1").value = diff;
@@ -328,18 +336,7 @@ function divide( immFeedBkCk, col, qtDig ) {
             }
             errBx.innerHTML = "";
             // need to take 0.87 into account fixit
-            if( ans !== 0 ){  // you will need to bring down more digits
-                             // before you can start another row  
-                //var visibleBrows = document.getElementsByName('bd' + prevRow);
-                /*
-                for( var i = 0; i < bddigs.length; i++ ) {
-                    if( bddigs[i].type === "hidden") {
-                        alert("bddigs[" + i + "].type = " + bddigs[i].type + " now I'm going to change it to text and break");
-                        bddigs[i].type = "text";
-                        break;
-                    }
-                }
-            } else { // make next row of multiplication boxes visible */
+            if( ans !== 0 ){ // make next row of multiplication boxes visible
                 var name = 'op' + whatRow + '_0';
                 var visibleMrow = document.getElementsByName(name);
                 for( var i = 0; i < visibleMrow.length; i++ ) {
@@ -348,7 +345,6 @@ function divide( immFeedBkCk, col, qtDig ) {
             }
         } else {
             // make divisor and either dividend or most recent difference red
-
             for( var i = 0; i < stop; i++ ){
                     dvddigs[i].style.color = "red";
             }
@@ -421,10 +417,10 @@ function divide( immFeedBkCk, col, qtDig ) {
         var bdx = Number(document.getElementById('bdx').value) + 1;
         document.getElementById('bdx').value = bdx;
         document.getElementById("lastBoxOfCurrRow").value = nextbox;
-        //alert("final nextbox = " + nextbox);
+        //document.getElementById('statusBox' + x).innerHTML = "final nextbox = " + nextbox;
         document.getElementById("whatbox").value = nextbox;
-    }    
-
+    }
+    //alert("done with divide");
     setFocus();
 }
 
@@ -436,6 +432,7 @@ function multiply( col ) { // may want to pass sbx instead of reading whatRow af
     var errBx = document.getElementById("msg");
     var quotDigs = Number(document.getElementById("quotDigs").value);
     var dec = whatRow;
+    var nextRow = whatRow + 1;
     for( var prevrow = whatRow - 1; prevrow >= 0; prevrow-- ) {
         var bringDowns = document.getElementsByName("bd" + prevrow ).length;
         if( bringDowns > 1 ) {
@@ -540,13 +537,13 @@ function multiply( col ) { // may want to pass sbx instead of reading whatRow af
             //document.getElementById('statusBox0').innerHTML = "with product boxes, nextBox = " + nextBox;
             var bringDownLength = document.getElementsByName('bd' + whatRow).length;
             if( visibleDrows.length > 1 ) {
-                nextBox += 2*(visibleDrows.length + bringDownLength - 1); // borrow, carry fixit
+                nextBox += document.getElementsByName("boca" + nextRow ).length; // borrow, carry fixit
                 //document.getElementById('statusBox1').innerHTML = "with borrow and carry boxes, nextBox = " + nextBox;
                 nextBox += visibleDrows.length; // dividend boxes
             } else {
                 nextBox += 1;
             }
-            whatRow = whatRow + 1;
+            whatRow = nextRow;
             document.getElementById('rowNo').value = whatRow;
             document.getElementById("lastBoxOfCurrRow").value = nextBox;
         } else {
@@ -583,6 +580,10 @@ function multiply( col ) { // may want to pass sbx instead of reading whatRow af
 }
 
 function subtract( col, sbx ) {
+    //for( var j = 0; j < 18; j++ ) {
+        //document.getElementById('statusBox' + j).innerHTML = "";
+    //}
+    var x = 0;
     var ansBxs = document.getElementsByName("op" + sbx + "_1");
     var bxNo = ansBxs.length - 1 - col;
     //alert("col = " + col + " ansBxs = " + ansBxs + " length = " + ansBxs.length + " bxNo = " + bxNo );
@@ -618,7 +619,7 @@ function subtract( col, sbx ) {
         //document.getElementById('statusBox0').innerHTML = " inc = " + inc + " col = " + col + " dididx = " + dvdidx;
         if( col > inc ){
             var calcDig = Number(document.getElementById("calcDig" + prevRow + "_1").value) + 1;
-            dvdidx = dvdidx + calcDig;
+            dvdidx = dvdidx + subBxs.length;
             //document.getElementById('statusBox2').innerHTML = "inc = " + inc + " col = " + col + " calcDig = " + calcDig + " dvdidx = " + dvdidx;
             dvdBx = subBxs[dvdidx];
         } else {
@@ -649,7 +650,8 @@ function subtract( col, sbx ) {
     var expAns = (mainpart - discard)/ten2col;
     var lastDig = diff > 0 ? Math.floor(Math.log10(diff)) : 0;
     var isLastSub = ( col ===  lastDig );
-    //document.getElementById('statusBox19').innerHTML = "diff " + diff + " lastDig = " + lastDig + " col = " + col + " isLastSub = " + isLastSub;
+    //document.getElementById('statusBox' + x).innerHTML = "diff " + diff + " lastDig = " + lastDig + " col = " + col + " isLastSub = " + isLastSub;
+    //x = x + 1;
     if( ans == expAns ) {
         ansBxs[bxNo].style.color = "black";
         var whatHelp = document.getElementsByName('showhelp');
@@ -755,6 +757,7 @@ function subtract( col, sbx ) {
         errBx.innerHTML = expAns + " not " + ans;
         upDateErrCount();
     }
+    //alert("done with subtract");
     setFocus();
 }
                             

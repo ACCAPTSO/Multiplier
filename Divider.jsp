@@ -47,7 +47,7 @@
     //dsMaxDg = 3;
     int dsMax = (int)(Math.pow(10, dsMaxDg)) - 1;
     int divisor = 1 + (int)(dsMax*Math.random());
-    //divisor = 24;
+
     //divisor = 6495; // had issue with restAreZero fixit
     //divisor = 94 // sometimes gives wrong box after mcarry fixit
     //divisor = 3717;
@@ -65,7 +65,7 @@
     int qtMaxDg = 7 - dvsrDigs; //(SZ2_MX - dvsrDigs)/dvsrDigs;
     int qtMax = (int)(Math.pow(10, qtMaxDg)) - 1;
     int quotient = 1 + (int)(qtMax*Math.random());
-    //quotient = 60062;
+
     //quotient = 302; // had issue with restAreZero fixit
     //quotient = 27793; // sometimes gives wrong box after mcarry fixit
     //quotient = 137;
@@ -200,7 +200,7 @@
         operand[nsubs][0] = qt[whatquotDig]*divisor;
         int WCoperand0 = worstCaseQdig*divisor; // worst case, biggest operand
         operand[nsubs][1] = tmpint - operand[nsubs][0];
-
+        int WCoperand1 = tmpint - divisor; 
 
         actDig[nsubs][0] = operand[nsubs][0] > 0? 
                 (int)Math.log10(operand[nsubs][0]) + 1: 1;
@@ -208,7 +208,8 @@
                 (int)Math.log10(operand[nsubs][1]) + 1: 1;
         wcDig[nsubs][0] = WCoperand0 > 0? 
                 (int)Math.log10(WCoperand0) + 1: 1;
-        wcDig[nsubs][1] = actDig[nsubs][1];
+        wcDig[nsubs][1] = WCoperand1 > 0? 
+                (int)Math.log10(WCoperand1) + 1: 1;
         
         if( operand[nsubs][1] < 0 ) {
             System.out.println("diff = " + operand[nsubs*maxOps+1] + " that's messed up");
@@ -413,9 +414,9 @@
         if( idx > 0 ) {
             em[idx] = oh[idx-1];
         }
-        em[idx] += wcDig[idx][0];
+        em[idx] += actDig[idx][0];
         //System.out.println("em[" + idx + "] = " + em[idx] + " numDig[" + idx + "][1] = " + numDig[idx][1]);
-        en[idx] = em[idx] + wcDig[idx][1];
+        en[idx] = em[idx] + actDig[idx][1];
         if( idx < nsubs ) {
             //System.out.println("nacarries = " + nacarries[idx+1]);
             en[idx] += 2*nacarries[idx+1];
@@ -434,7 +435,7 @@
         //System.out.println("quotient whatBx[" + ldx + "] = " + whatBx[ldx] );
         ++ldx;
         //int lastcarry = numDig[idx][0] - 2;
-        for( ; mdx < wcDig[idx][0]; ++mdx  ) { // product box indexes
+        for( ; mdx < actDig[idx][0]; ++mdx  ) { // product box indexes
             whatBx[ldx] = em[idx] - mdx;
             //System.out.println("product whatBx[" + ldx + "] = " + whatBx[ldx] );
             ++ldx;
@@ -444,7 +445,7 @@
                 ++ldx;
             }
         }
-        for( ; ndx < wcDig[idx][1]; ++ndx  ) { // difference box indexes
+        for( ; ndx < actDig[idx][1]; ++ndx  ) { // difference box indexes
             whatBx[ldx] = en[idx] - ndx;
             if( whatBx[ldx] > lastbox ) {
                 lastbox = whatBx[ldx];
