@@ -6,12 +6,15 @@
 // set the default input focus
 function setFocus() { // this part is javascript
     var x = document.getElementById("th-id2");
-    var j = document.getElementById("whatbox").value;
-    var i = Number(j);
-    x.elements[i].focus(); // set focus to whatbox
-    x.elements[i].style.backgroundColor = "white";
-    x.elements[i].style.color = "red";
-    x.elements[i].value="";
+    var j = document.getElementById("whatbox");
+    var i = Number(j.value);
+    if( !x.elements[i].isEqualNode(j) ) {
+        x.elements[i].style.backgroundColor = "white";
+        x.elements[i].style.color = "red";
+        x.elements[i].type = "text";
+        x.elements[i].value="";
+        x.elements[i].focus(); // set focus to whatbox
+    }
 }
 
 

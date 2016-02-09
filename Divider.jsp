@@ -47,7 +47,7 @@
     //dsMaxDg = 3;
     int dsMax = (int)(Math.pow(10, dsMaxDg)) - 1;
     int divisor = 1 + (int)(dsMax*Math.random());
-
+    //divisor = 51; // last line of product boxes skipping lsd
     //divisor = 6495; // had issue with restAreZero fixit
     //divisor = 94 // sometimes gives wrong box after mcarry fixit
     //divisor = 3717;
@@ -65,7 +65,7 @@
     int qtMaxDg = 7 - dvsrDigs; //(SZ2_MX - dvsrDigs)/dvsrDigs;
     int qtMax = (int)(Math.pow(10, qtMaxDg)) - 1;
     int quotient = 1 + (int)(qtMax*Math.random());
-
+    //quotient = 56205; // last line of product boxes skipping lsd 
     //quotient = 302; // had issue with restAreZero fixit
     //quotient = 27793; // sometimes gives wrong box after mcarry fixit
     //quotient = 137;
@@ -489,7 +489,7 @@
             if( idx < dvsrDigs - 1 ) { 
                 int col = dvsrDigs - 2 - idx;
                 String cname = "cm" + col + "_" + sbx; %>
-                <td class="t2"><input type="text" name="<%=cname%>" class="c2" 
+                <td class="t2"><input type="hidden" name="<%=cname%>" class="c2" 
                                       onkeyup="checkMcarry(<%=col%>,<%=sbx%>)" ></td>
 <%          } else {  %>
                 <td class="t2"></td>
@@ -503,7 +503,7 @@
         if( idx < dvsrDigs - 1 && crows > 0 ) { 
             int col = dvsrDigs - 2 - idx;
             String cname = "cm" + col + "_0"; %>
-            <td class="t2"><input type="text" name="<%=cname%>" class="c2" 
+            <td class="t2"><input type="hidden" name="<%=cname%>" class="c2" 
                                   onkeyup="checkMcarry(<%=col%>,0)"></td>
 <%      } else {  %>
             <td class="t2"></td>
@@ -700,6 +700,8 @@
     </tr>
 <% } %>
 </table>
+<input type="hidden" id="whatbox" value="<%=whatBx[bdx]%>" class="shortbox">
+<input type="hidden" id="lastBoxOfCurrRow">
 <table>
 <%  //for( int sbx = crows - 1; sbx > 0; --sbx ) { 
     for( int sbx = crows - 1; sbx > 0; --sbx ) {%>
@@ -823,8 +825,8 @@ if( thereAreCarries && showBrowsCk ) { %>
 <%  } %>
 </label>
 </div>
-<input type="hidden" id="whatbox" value="<%=whatBx[bdx]%>" class="shortbox">
-<input type="hidden" id="lastBoxOfCurrRow">
+
+
 <div class ="d1">
 <div class="d4">  
 <table>
