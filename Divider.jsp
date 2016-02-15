@@ -47,6 +47,7 @@
     //dsMaxDg = 3;
     int dsMax = (int)(Math.pow(10, dsMaxDg)) - 1;
     int divisor = 1 + (int)(dsMax*Math.random());
+
     //divisor = 51; // last line of product boxes skipping lsd
     //divisor = 6495; // had issue with restAreZero fixit
     //divisor = 94 // sometimes gives wrong box after mcarry fixit
@@ -65,6 +66,7 @@
     int qtMaxDg = 7 - dvsrDigs; //(SZ2_MX - dvsrDigs)/dvsrDigs;
     int qtMax = (int)(Math.pow(10, qtMaxDg)) - 1;
     int quotient = 1 + (int)(qtMax*Math.random());
+
     //quotient = 56205; // last line of product boxes skipping lsd 
     //quotient = 302; // had issue with restAreZero fixit
     //quotient = 27793; // sometimes gives wrong box after mcarry fixit
@@ -103,12 +105,14 @@
     int dqspan = 2*(SZ2_MX + 1) - bqspan - cqspan;
     
     int [] numBringDn = new int[quotDigs];
+    int [] actBringDn = new int[quotDigs];
     int tmpint = quotient;
     for( int idx = 0; idx < quotDigs; ++idx ) {
         qt[idx] = tmpint % 10;
         tmpint = tmpint / 10;
         //System.out.println("quotient = " + quotient + " qt[" + idx + "] = " + qt[idx]);
         numBringDn[idx] = 0;
+        actBringDn[idx] = 0;
     }
 
     tmpint = divisor;
@@ -195,7 +199,7 @@
     }
     int whatquotDig = quotDigs-1; // there may be more quotient digits than subtractions
     int nsubs = 0; // actual subtractions
-    System.out.println("divisor = " + divisor + " quotient = " + quotient + " dividnd = " + dividnd );
+    //System.out.println("divisor = " + divisor + " quotient = " + quotient + " dividnd = " + dividnd );
     while( whatquotDig >= 0 ) {
         operand[nsubs][0] = qt[whatquotDig]*divisor;
         int WCoperand0 = worstCaseQdig*divisor; // worst case, biggest operand
@@ -212,14 +216,14 @@
                 (int)Math.log10(WCoperand1) + 1: 1;
         
         if( operand[nsubs][1] < 0 ) {
-            System.out.println("diff = " + operand[nsubs*maxOps+1] + " that's messed up");
+            //System.out.println("tmpint = " + tmpint + " operand[" + nsubs + "][0] = " + operand[nsubs][0] + " diff = " + operand[nsubs][1] + " that's messed up");
             break;
         }
 
         //spacesb4Op[nsubs][0] = spacesb4quot + quotDigs - whatquotDig - numDig[nsubs][0] - 1;
         int mostPossProdDig = (int)Math.log10(9*divisor) + 1;
         spacesb4Op[nsubs][0] = spacesb4quot + quotDigs - whatquotDig - mostPossProdDig - 1;
-        System.out.println("spacesb4quot = " + spacesb4quot + "+ quotDigs = " + quotDigs + "- whatQuotDig = " + whatquotDig + " - mostPossProdDig = " + mostPossProdDig + " - 1 = " + " spacesb4Op[" + nsubs + "][0] = " + spacesb4Op[nsubs][0]);
+        //System.out.println("nsubs = " + nsubs + " spacesb4quot = " + spacesb4quot + "+ quotDigs = " + quotDigs + "- whatQuotDig = " + whatquotDig + " - mostPossProdDig = " + mostPossProdDig + " - 1 = " + " spacesb4Op[" + nsubs + "][0] = " + spacesb4Op[nsubs][0]);
         int tmpint2 = operand[nsubs][0];
         for( int idx = 0; idx < actDig[nsubs][0]; ++idx ) {
             op[nsubs][0][idx] = tmpint2 % 10; // what are these even used for? fixit
@@ -254,13 +258,15 @@
         // bring down as many new digits as needed to get something divisor
         // will go into
         tmpint = operand[nsubs][1];
-        numBringDn[nsubs] = 0;
+        actBringDn[nsubs] = 0;
+        numBringDn[nsubs] = SZ2_MX + 1 - spacesb4Op[nsubs][1] - wcDig[nsubs][1];
+        //actBringDn[nsubs] = SZ2_MX + 1 - spacesb4Op[nsubs][1] - actDig[nsubs][1];
         while( tmpint < divisor ) {
             tmpint = 10*tmpint + dd[whatquotDig-1];
             whatquotDig = whatquotDig - 1;
-            numBringDn[nsubs] += 1;
+            actBringDn[nsubs] += 1;
         }
-        //System.out.println("operand[" + nsubs + "][1] = " + operand[nsubs][1] + " numDig[" + nsubs + "][1] = " + numDig[nsubs][1] + " numBringDn[" + nsubs + "] = " + numBringDn[nsubs]);
+        //System.out.println("operand[" + nsubs + "][1] = " + operand[nsubs][1] + " actDig[" + nsubs + "][1] = " + actDig[nsubs][1] + " actBringDn[" + nsubs + "] = " + actBringDn[nsubs]);
         nsubs = nsubs + 1;
     } 
 
@@ -343,7 +349,7 @@
         int bdidx = quotDigs - 1;
         for( int sbx = 0; sbx < quotDigs; ++ sbx ) {
             nacarries[sbx] = 0;
-            int kdxmax = sbx == 0? dvdDigs - quotDigs + 1 : wcDig[sbx-1][1] + numBringDn[sbx-1]; //numBringDn[sbx-1];
+            int kdxmax = sbx == 0? dvdDigs - quotDigs + 1 : wcDig[sbx-1][1] + numBringDn[sbx-1] - 1; //numBringDn[sbx-1];
             if( sbx > 0  ) {
                 bdidx -= numBringDn[sbx-1];
             }
@@ -351,6 +357,7 @@
                 boolean needsCarry = true;
                 //System.out.println("sbx = " + sbx + " kdx = " + kdx + " kdxmax = " + kdxmax + " numDig[" + sbx + "][1] = " + numDig[sbx][1]);
                 //System.out.println("bring down dividend index " + bdidx);
+                /*
                 int minuend;
                 if( sbx == 0 ) {
                         //System.out.println("straight dividend minuend");
@@ -362,6 +369,7 @@
                         //System.out.println("previous diff minuend");
                     minuend = op[sbx-1][1][kdx-numBringDn[sbx-1]];
                 }
+                        */
                 //if( op[sbx][0][kdx] <= minuend - dec ) {
                 //    needsCarry = false;
                 //}
@@ -370,7 +378,7 @@
                 }
                     //System.out.println("sbx = " + sbx + " kdx = " + kdx + " dec = " + dec + " minuend = " + minuend +  " op[sbx][0][" + kdx + "] = " + op[sbx][0][kdx]);
                 if( needsCarry ) {
-                    borrows[sbx][kdx+1] = (0 < kdx+1 && kdx+1 < SZ2_MX)? minuend - 1: -1;
+                    //borrows[sbx][kdx+1] = (0 < kdx+1 && kdx+1 < SZ2_MX)? minuend - 1: -1;
                     ncarries[sbx][kdx] = 1;
                     dec = 1;
                     nacarries[sbx] += 1;          
@@ -414,9 +422,9 @@
         if( idx > 0 ) {
             em[idx] = oh[idx-1];
         }
-        em[idx] += actDig[idx][0];
+        em[idx] += wcDig[idx][0];
         //System.out.println("em[" + idx + "] = " + em[idx] + " numDig[" + idx + "][1] = " + numDig[idx][1]);
-        en[idx] = em[idx] + actDig[idx][1];
+        en[idx] = em[idx] + wcDig[idx][1];
         if( idx < nsubs ) {
             //System.out.println("nacarries = " + nacarries[idx+1]);
             en[idx] += 2*nacarries[idx+1];
@@ -453,13 +461,13 @@
             //System.out.println("difference whatBx[" + ldx + "] = " + whatBx[ldx] );
             ++ldx;
         }
-        //System.out.println("pdx = " + pdx + " numBringDn[" + idx + "] = " + numBringDn[idx] );
-        if( rdx <= numBringDn[idx] ) { // bringdown box indexes
+        //System.out.println("pdx = " + pdx + " actBringDn[" + idx + "] = " + actBringDn[idx] );
+        if( rdx <= actBringDn[idx] ) { // bringdown box indexes
             whatBx[ldx] = en[idx] + rdx;
             //System.out.println("bringdown whatBx[" + ldx + "] = " + whatBx[ldx] + " pdx = " + pdx + " oh[" + idx + "] = " + oh[idx]);
             ++ldx;
             ++rdx;
-            if( rdx > numBringDn[idx] ) { // reset for next row of products
+            if( rdx > actBringDn[idx] ) { // reset for next row of products
                 ++idx;                    // and differences
                 rdx = 1;
                 mdx = 0;
@@ -619,7 +627,7 @@
         <tr>
 <%      for( int idx = 0; idx <= SZ2_MX; idx++ ) {
             //int col = spacesb4Op[sbx][0] + numDig[sbx][0] - idx;
-            int col = spacesb4Op[sbx][0] + wcDig[sbx][0] + numBringDn[sbx] - idx;
+            int col = spacesb4Op[sbx][0] + wcDig[sbx][0] + numBringDn[sbx] - idx - 1;
             if( col < 0 ) {
                 col = SZ2_MX;
             }
@@ -666,7 +674,7 @@
 <%      } else if( idx <= spacesb4Op[sbx][1] + wcDig[sbx][1] ) { 
                 //int col = numDig[1] - idx + spacesb4Op[1] - 1;
                 int col = spacesb4Op[sbx][1] + wcDig[sbx][1] - idx;
-                int ocol = spacesb4Op[sbx][1] + wcDig[sbx][1] + numBringDn[sbx] - idx;
+                int ocol = spacesb4Op[sbx][1] + wcDig[sbx][1] + numBringDn[sbx] - idx - 1;
                 String name = "op" + sbx + "_1"; 
                  %>
                 <td class="t1">
@@ -820,6 +828,7 @@ for( int idx = 0; idx < nsubs; ++ idx ) {
         break;
     }
 }
+// Recurring decimals overlaps next table fixit
 if( thereAreCarries && showBrowsCk ) { %>
             Click on a digit to borrow from it
 <%  } %>
