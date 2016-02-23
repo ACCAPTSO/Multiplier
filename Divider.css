@@ -177,8 +177,8 @@ td {
     width: 0.7em;
     min-width: 0.7em;
     max-width: 0.7em;
-    //background-color: #fdefe0;
-    background-color: pink;
+    background-color: #fdefe0;
+    //background-color: pink;
     //background-color: black;
     //background-color: #bcbebe;
     //background-color: #a4a6a7;
@@ -191,16 +191,16 @@ td {
     margin-top: 0px;
     padding-top: 0px;
     //font: inherit;
-    //height: 0px;
-    height: 1em; // fixit
+    height: 0px;
+    //height: 1em; // fixit
 }
 /* collapsed borrow boxes */
 .f1 {
   width: 1.1em;
   min-width: 1.1em;
   max-width: 1.1em;
-  //background-color: #fdefe0;
-  background-color: pink;
+  background-color: #fdefe0;
+  //background-color: pink;
   //background-color: black; #cfd2d1;
   //background-color: #cac8cd;
   background-color: "purple";
@@ -209,8 +209,8 @@ td {
   //border: 1px solid black;
   border: none;
   //font: inherit;
-  //height: 0px;
-  height: 1.7em; //fixit
+  height: 0px;
+  //height: 1.7em; //fixit
   margin-left: 0px;
   margin-right: 0px;
 }

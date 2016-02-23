@@ -484,7 +484,7 @@
 
     whatBx[ldx] = lastbox + 1;
     maxBx = ldx; // + 1; 
-    String browType = "text";    
+    String browType = "hidden";    
     if( showBrowsCk ) {
         browType = "text";
     }%>
@@ -607,7 +607,7 @@
                 //int col = numDig[0] - idx + spacesb4Op[0]; 
                 int col = spacesb4Op[sbx][0] + wcDig[sbx][0] - idx;
                 String name = "op" + sbx + "_0";
-                String whattype = "text";
+                String whattype = "hidden";
                 //System.out.println(" product sbx =  " + sbx + " idx = " + idx + " col = " + col);
                 %>
                 <td class="t1">
@@ -666,7 +666,7 @@
 <% } %>
         <tr class="oprand">
     <%  for( int idx = 0; idx <= SZ2_MX; idx++ ) { 
-            String whattype = "text"; %>
+            String whattype = "hidden"; %>
             <td class="t2"></td>
     <%      int col = spacesb4Op[sbx][1] + wcDig[sbx][1] - idx;
             int ocol = spacesb4Op[sbx][1] + wcDig[sbx][1] + numBringDn[sbx] - idx - 1;

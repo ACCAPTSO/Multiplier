@@ -556,9 +556,6 @@ function multiply( col ) { // may want to pass sbx instead of reading whatRow af
         var nextBox = null;
         if( isLastMult ) {
             var visibleDrows = document.getElementsByName("op" + whatRow + '_1');
-            //for( var i = 0; i < visibleDrows.length; i++ ) {
-            //    visibleDrows[i].type = "text";
-            //}
 
             var name = "cspan" + whatRow;
             var visibleBar = document.getElementById(name);
@@ -659,7 +656,7 @@ function subtract( col, sbx ) {
     // if show borrows is turned on but you're not using it, making a mistake
     // causes the borrows and carries to stay there but the cross off's to go away
     // fixit
-    // hiding the wrong borrows and carries fixit
+    // last sub hiding the wrong carry fixit
     for( var j = 0; j < 18; j++ ) {
         document.getElementById("statusBox" + j).innerHTML = "";
     }
@@ -746,7 +743,7 @@ function subtract( col, sbx ) {
         var whatHelp = document.getElementsByName("showborrows");
         var showBrowsChkd = false;
         for( var i = 0; i < whatHelp.length; i++ ) {
-            if( whatHelp[i].checked ) { // need to check actual value fixit
+            if( whatHelp[i].checked ) {
                 showBrowsChkd = true;
                 break;
             }
@@ -755,6 +752,7 @@ function subtract( col, sbx ) {
             borBx.style.color = "black";
             if( !showBrowsChkd ) {
                 borBx.type = "hidden";
+                dvdBx.style.removeProperty("text-decoration");
             }
         }
 
@@ -762,10 +760,10 @@ function subtract( col, sbx ) {
             caBx.style.color = "black";
             if( !showBrowsChkd ) {
                 caBx.type = "hidden";
+                dvdBx.style.removeProperty("text-decoration");
             }
         }
-        dvdBx.style.color = "black";
-        dvdBx.style.removeProperty("text-decoration");
+        dvdBx.style.color = "black"; 
         prodBx.style.color = "black";
         errBx.innerHTML = "";
 
@@ -828,7 +826,6 @@ function subtract( col, sbx ) {
                 caBx.style.height = "1em";
                 caBx.type = "text";
                 caBx.style.color = "red";
-
                 caBx.value = caValue;
             }
         }
