@@ -12,7 +12,6 @@
 <link rel="stylesheet" href="Divider.css" type="text/css">
 <script src="Multiplier.js"></script>
 <script src="Subtractor.js"></script>
-<script src="dragger.js"></script>
 <script src="Divider.js"></script>
 </head>
 <body>
@@ -20,8 +19,6 @@
 <%  // make the user click on the original box fixit
     // 2nd divisor dig around 5 is harder to estimate fixit
     // count it wrong if the user gueses a quotient digit 3 times fixit
-    // don't show individual multiplier boxes until you need them fixit
-    // need worst case number of borrow and carry boxes in jsp  fixit
     final int SZ2_MX = 12; // maximum dividend + divisor + 1 size
     final int maxOps = 2;
     final double NEXP = 2.6; // used to generate # of digits    
@@ -47,7 +44,8 @@
     //dsMaxDg = 3;
     int dsMax = (int)(Math.pow(10, dsMaxDg)) - 1;
     int divisor = 1 + (int)(dsMax*Math.random());
-
+    //divisor = 74; // 2 bringdowns issues with promptDivBorrow
+    //divisor = 69; // issues with promptDivBorrow not checking right carry
     //divisor = 51; // last line of product boxes skipping lsd
     //divisor = 6495; // had issue with restAreZero fixit
     //divisor = 94 // sometimes gives wrong box after mcarry fixit
@@ -66,6 +64,8 @@
     int qtMaxDg = 7 - dvsrDigs; //(SZ2_MX - dvsrDigs)/dvsrDigs;
     int qtMax = (int)(Math.pow(10, qtMaxDg)) - 1;
     int quotient = 1 + (int)(qtMax*Math.random());
+    //quotient = 7024; // 2 bringdowns issues with promptDivBorrow
+    //quotient = 9276; // issues with promptDivBorrow not checking right carry
 
     //quotient = 56205; // last line of product boxes skipping lsd 
     //quotient = 302; // had issue with restAreZero fixit
@@ -154,7 +154,7 @@
     
     boolean showBrowsCk = false;
     String isShowBrows = "";
-    String helplist[] = request.getParameterValues("showhelp");
+    String helplist[] = request.getParameterValues("showborrows");
     if( helplist  != null ) {
         for( int idx = 0; idx < helplist.length; idx++ ) {
             if( helplist[idx].equals("Show Borrows") ) {
@@ -230,6 +230,7 @@
             tmpint2 = tmpint2 / 10;
         }
         spacesb4Op[nsubs][1] = spacesb4quot + quotDigs - whatquotDig - wcDig[nsubs][1] - 1;
+        System.out.println("nsubs = " + nsubs + " spacesb4quot = " + spacesb4quot + "+ quotDigs = " + quotDigs + "- whatQuotDig = " + whatquotDig + " - wcDig[" + nsubs + "][1] = " + wcDig[nsubs][1] + " - 1 = " + " spacesb4Op[" + nsubs + "][0] = " + spacesb4Op[nsubs][0]);
         tmpint2 = operand[nsubs][1];
         for( int idx = 0; idx < actDig[nsubs][1]; ++idx ) {
             op[nsubs][1][idx] = tmpint2 % 10;
@@ -266,7 +267,8 @@
             whatquotDig = whatquotDig - 1;
             actBringDn[nsubs] += 1;
         }
-        //System.out.println("operand[" + nsubs + "][1] = " + operand[nsubs][1] + " actDig[" + nsubs + "][1] = " + actDig[nsubs][1] + " actBringDn[" + nsubs + "] = " + actBringDn[nsubs]);
+        System.out.println("operand[" + nsubs + "][1] = " + operand[nsubs][1] + " actDig[" + nsubs + "][1] = " + actDig[nsubs][1] + " actBringDn[" + nsubs + "] = " + actBringDn[nsubs]);
+        System.out.println("spacesb4Op[" + nsubs + "][1] = " + spacesb4Op[nsubs][1] + " wcDig[" + nsubs + "][1] = " + wcDig[nsubs][1] + " numBringDn[" + nsubs + "] = " + numBringDn[nsubs]);
         nsubs = nsubs + 1;
     } 
 
@@ -482,7 +484,7 @@
 
     whatBx[ldx] = lastbox + 1;
     maxBx = ldx; // + 1; 
-    String browType = "hidden";    
+    String browType = "text";    
     if( showBrowsCk ) {
         browType = "text";
     }%>
@@ -511,18 +513,22 @@
         if( idx < dvsrDigs - 1 && crows > 0 ) { 
             int col = dvsrDigs - 2 - idx;
             String cname = "cm" + col + "_0"; %>
-            <td class="t2"><input type="hidden" name="<%=cname%>" class="c2" 
+            <td class="t2" onclick="showQuotDigs(-1)">
+                <input type="hidden" name="<%=cname%>" class="c2" 
                                   onkeyup="checkMcarry(<%=col%>,0)"></td>
 <%      } else {  %>
-            <td class="t2"></td>
+            <td class="t2" onclick="showQuotDigs(-1)"></td>
 <%      }
+        
         if( idx < spacesb4quot || spacesb4quot + quotDigs <= idx ) { %>
-            <td class="t1"></td>
+            <td class="t1" onclick="showQuotDigs(-1)"></td>
 <%      } else {
             int col = spacesb4quot + quotDigs - 1 - idx;
             String qid = "qt" + col;  %>
-            <td class="t1"><input type="text" id="<%=qid%>" class="a1" size="1" 
-            onkeyup="divide(<%=immFeedBkCk%>, <%=col%>, <%=qt[col]%> )"></td>
+            <td class="t1" onclick="showQuotDigs(<%=col%>)">
+                <input type="hidden" id="<%=qid%>" class="a1" size="1" 
+            onkeyup="divide(<%=immFeedBkCk%>, <%=col%>, <%=qt[col]%> )"
+            ></td>
 <%      }
     } %>
 </tr>
@@ -601,12 +607,7 @@
                 //int col = numDig[0] - idx + spacesb4Op[0]; 
                 int col = spacesb4Op[sbx][0] + wcDig[sbx][0] - idx;
                 String name = "op" + sbx + "_0";
-                String whattype = "hidden";
-                if( 0 <= col && col < wcDig[sbx][0] ) {
-                    //System.out.print("op[" + sbx + "][0][" + col + "] = " + op[sbx][0][col] );
-                } else {
-                    //System.out.print("col out of range");
-                }
+                String whattype = "text";
                 //System.out.println(" product sbx =  " + sbx + " idx = " + idx + " col = " + col);
                 %>
                 <td class="t1">
@@ -627,20 +628,17 @@
         <tr>
 <%      for( int idx = 0; idx <= SZ2_MX; idx++ ) {
             //int col = spacesb4Op[sbx][0] + numDig[sbx][0] - idx;
-            int col = spacesb4Op[sbx][0] + wcDig[sbx][0] + numBringDn[sbx] - idx - 1;
-            if( col < 0 ) {
-                col = SZ2_MX;
-            }
+            int col = spacesb4Op[sbx][1] + wcDig[sbx][1]  + numBringDn[sbx] - idx - 1;
             String name = "boca" + rdx; 
-            if( spacesb4Op[sbx][0] < idx && 
-                    idx <= spacesb4Op[sbx][0] + wcDig[sbx][0] + numBringDn[sbx] && 
+            //if( spacesb4Op[sbx][0] < idx && 
+                    //idx <= spacesb4Op[sbx][1] + wcDig[sbx][1] + numBringDn[sbx-1] && 
+                    //ncarries[rdx][col] != 0 ) {  
+            if( col >= 0 &&
+                    spacesb4Op[sbx][1] < idx && 
+                    col < wcDig[sbx][1] + numBringDn[sbx] && 
                     ncarries[rdx][col] != 0 ) {  
 
-                String cid = "ca" + col + "_" + rdx; 
-                if( col < 0 || col >= SZ2_MX ) {
-                    System.out.println("ca col = " + col + "being reduced to 0");
-                    col = 0;
-                } %>
+                String cid = "ca" + col + "_" + rdx; %>
                 <td class="s2">
                         <input type="<%=browType%>" name="<%=name%>" id="<%=cid%>"
                         class="f2" onkeyup="checkDivBorrow(<%=col%>, <%=rdx%>)"
@@ -649,6 +647,7 @@
 <%          } else { %>
                 <td class="s2"></td>
 <%          } 
+            System.out.println("first rdx = " + rdx + " col = " + col );
             if( col > 0 && ncarries[rdx][col-1] != 0 ) { 
                 String bid = "bo" + col + "_" + rdx; 
                 if( col < 0 || col > SZ2_MX ) {
@@ -667,14 +666,21 @@
 <% } %>
         <tr class="oprand">
     <%  for( int idx = 0; idx <= SZ2_MX; idx++ ) { 
-            String whattype = "hidden"; %>
+            String whattype = "text"; %>
             <td class="t2"></td>
-    <%      if( idx <= spacesb4Op[sbx][1] ) { %>
+    <%      int col = spacesb4Op[sbx][1] + wcDig[sbx][1] - idx;
+            int ocol = spacesb4Op[sbx][1] + wcDig[sbx][1] + numBringDn[sbx] - idx - 1;
+            int maxBDcol = wcDig[sbx][1] + numBringDn[sbx];
+            System.out.println(" difference sbx =  " + sbx + " idx = " + idx + " col = " + col + " wcDig[sbx][1] = " + wcDig[sbx][1]);
+            //if( sbx > 0 ) {
+            //    ocol += numBringDn[sbx-1];
+            //    maxBDcol += numBringDn[sbx-1];
+            //    System.out.println(" difference numBringDn[sbx-1] =  " + numBringDn[sbx-1] ); 
+            //}
+            if( idx <= spacesb4Op[sbx][1] ) { %>
                 <td class="t1"></td>
-<%      } else if( idx <= spacesb4Op[sbx][1] + wcDig[sbx][1] ) { 
+<%          } else if( idx <= spacesb4Op[sbx][1] + wcDig[sbx][1] ) { 
                 //int col = numDig[1] - idx + spacesb4Op[1] - 1;
-                int col = spacesb4Op[sbx][1] + wcDig[sbx][1] - idx;
-                int ocol = spacesb4Op[sbx][1] + wcDig[sbx][1] + numBringDn[sbx] - idx - 1;
                 String name = "op" + sbx + "_1"; 
                  %>
                 <td class="t1">
@@ -682,18 +688,10 @@
                 onkeyup="subtract( <%=col%>, <%=sbx%> )" 
                 onclick="promptDivBorrow(<%=ocol%>, <%=rdx%>)">
                 </td>
-    <%      } else if( idx <= spacesb4Op[sbx][1] + wcDig[sbx][1]  + numBringDn[sbx] ) { 
+    <%      //} else if( idx <= spacesb4Op[sbx][1] + wcDig[sbx][1]  + numBringDn[sbx-1] ) { 
+            } else if( 0 <= ocol && ocol <  maxBDcol ) { 
                 //int col = numDig[1] - idx + spacesb4Op[1] - 1;
-                int col = spacesb4Op[sbx][1] + wcDig[sbx][1] + numBringDn[sbx] - idx;
-                int ocol = spacesb4Op[sbx][1] + wcDig[sbx][1] + numBringDn[sbx] - idx;
                 String name = "bd" + sbx;
-                if( 0 <= col && col < wcDig[sbx][1] ) {
-                    //System.out.print("op[" + sbx + "][1][" + col + "] = " + op[sbx][1][col] );
-                } else {
-                    //System.out.print("col out of range");
-                }
-                //System.out.println(" difference sbx =  " + sbx + " idx = " + idx + " col = " + col);
-
 %>
                 <td class="t1">
                 <input type="<%=whattype%>" name="<%=name%>" class="a1" size="1" 
@@ -767,12 +765,15 @@
 <%      for( int idx = 0; idx <= SZ2_MX; idx++ ) {
             //int col = spacesb4Op[sbx][0] + numDig[sbx][0] - idx;
             int col = spacesb4Op[sbx][0] + wcDig[sbx][0] + numBringDn[sbx] - idx;
-            if( col < 0 ) {
-                col = SZ2_MX;
-            }
-            if( spacesb4Op[sbx][0] < idx && 
-                    idx <= spacesb4Op[sbx][0] + wcDig[sbx][0] + numBringDn[sbx] && 
-                    ncarries[rdx][col] != 0 ) {  
+            //if( col < 0 ) {
+            //    col = SZ2_MX;
+            //}
+            //if( spacesb4Op[sbx][0] < idx && 
+            //        idx <= spacesb4Op[sbx][0] + wcDig[sbx][0] + numBringDn[sbx-1] && 
+            //        ncarries[rdx][col] != 0 ) {  
+            if( 0 <= col && 
+                    col <  wcDig[sbx][0] + numBringDn[sbx] && 
+                    ncarries[rdx][col] != 0 ) {
                 String hid = "hca" + col + "_" + rdx; 
                 if( col < 0 || col >= SZ2_MX ) {
                     System.out.println("ca col = " + col + "being reduced to 0");
@@ -780,7 +781,8 @@
                 } %>
                 <td><input type="hidden" id="<%=hid%>" value="0"></td>
 <%          } 
-            if( col > 0 && ncarries[rdx][col-1] != 0 ) { 
+            System.out.println("second rdx = " + rdx + " col = " + col );
+            if( 0 < col  && col < SZ2_MX + 1 && ncarries[rdx][col-1] != 0 ) { 
                 String hid = "hbo" + col + "_" + rdx; 
                 if( col < 0 || col > SZ2_MX ) {
                          System.out.println("bo col = " + col + "being reduced to 0");
@@ -817,7 +819,7 @@
 </div>
 <div class="d3">
 <!--this is where error messages get displayed//-->
-<label id="msg"></label>
+<label id="msg">Click where first quotient digit should be</label>
 </div>
 <div class="d3">
 <label id="dispBo">
@@ -834,15 +836,18 @@ if( thereAreCarries && showBrowsCk ) { %>
 <%  } %>
 </label>
 </div>
-
-
-<div class ="d1">
-<div class="d4">  
-<table>
-    <tr><td><input type="checkbox" value="Show Borrows" name="showhelp" 
+<div class="d3">
+    <table>
+    <tr><td><input type="checkbox" value="Show Borrows" name="showborrows" 
                    <%=isShowBrows%> onclick="zeroCounts()">
             <label>Show Borrows</label>
         </td></tr>
+    </table>
+</div>
+<div class ="d1">
+
+<div class="d4">  
+<table>
     <tr><th colspan="1">Highest Difficulty Level</th></tr>
     <tr><td>
     </td></tr>
