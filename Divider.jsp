@@ -23,7 +23,8 @@
     final int maxOps = 2;
     final double NEXP = 2.6; // used to generate # of digits    
     final double DEXP = 1.4; // used to generate digits themselves or # operands
-
+    final boolean debug = false;
+    
     boolean immFeedBkCk = true;
     boolean estRequiredCk = false;
     boolean remaindersCk = false;
@@ -44,6 +45,7 @@
     //dsMaxDg = 3;
     int dsMax = (int)(Math.pow(10, dsMaxDg)) - 1;
     int divisor = 1 + (int)(dsMax*Math.random());
+
     //divisor = 74; // 2 bringdowns issues with promptDivBorrow
     //divisor = 69; // issues with promptDivBorrow not checking right carry
     //divisor = 51; // last line of product boxes skipping lsd
@@ -64,6 +66,7 @@
     int qtMaxDg = 7 - dvsrDigs; //(SZ2_MX - dvsrDigs)/dvsrDigs;
     int qtMax = (int)(Math.pow(10, qtMaxDg)) - 1;
     int quotient = 1 + (int)(qtMax*Math.random());
+
     //quotient = 7024; // 2 bringdowns issues with promptDivBorrow
     //quotient = 9276; // issues with promptDivBorrow not checking right carry
 
@@ -487,7 +490,8 @@
     String browType = "hidden";    
     if( showBrowsCk ) {
         browType = "text";
-    }%>
+    }
+    String cmtype = debug? "text" : "hidden"; %>
 <div >
 <form id="th-id2" method="get" action="Divider.jsp">
 <div class="d2">
@@ -499,7 +503,7 @@
             if( idx < dvsrDigs - 1 ) { 
                 int col = dvsrDigs - 2 - idx;
                 String cname = "cm" + col + "_" + sbx; %>
-                <td class="t2"><input type="hidden" name="<%=cname%>" class="c2" 
+                <td class="t2"><input type="<%=cmtype%>" name="<%=cname%>" class="c2" 
                                       onkeyup="checkMcarry(<%=col%>,<%=sbx%>)" ></td>
 <%          } else {  %>
                 <td class="t2"></td>
@@ -514,7 +518,7 @@
             int col = dvsrDigs - 2 - idx;
             String cname = "cm" + col + "_0"; %>
             <td class="t2" onclick="showQuotDigs(-1)">
-                <input type="hidden" name="<%=cname%>" class="c2" 
+                <input type="<%=cmtype%>" name="<%=cname%>" class="c2" 
                                   onkeyup="checkMcarry(<%=col%>,0)"></td>
 <%      } else {  %>
             <td class="t2" onclick="showQuotDigs(-1)"></td>
@@ -526,7 +530,7 @@
             int col = spacesb4quot + quotDigs - 1 - idx;
             String qid = "qt" + col;  %>
             <td class="t1" onclick="showQuotDigs(<%=col%>)">
-                <input type="hidden" id="<%=qid%>" class="a1" size="1" 
+                <input type="<%=cmtype%>" id="<%=qid%>" class="a1" size="1" 
             onkeyup="divide(<%=immFeedBkCk%>, <%=col%>, <%=qt[col]%> )"
             ></td>
 <%      }
@@ -607,7 +611,7 @@
                 //int col = numDig[0] - idx + spacesb4Op[0]; 
                 int col = spacesb4Op[sbx][0] + wcDig[sbx][0] - idx;
                 String name = "op" + sbx + "_0";
-                String whattype = "hidden";
+                String whattype = cmtype;
                 //System.out.println(" product sbx =  " + sbx + " idx = " + idx + " col = " + col);
                 %>
                 <td class="t1">
@@ -666,7 +670,7 @@
 <% } %>
         <tr class="oprand">
     <%  for( int idx = 0; idx <= SZ2_MX; idx++ ) { 
-            String whattype = "hidden"; %>
+            String whattype = cmtype; %>
             <td class="t2"></td>
     <%      int col = spacesb4Op[sbx][1] + wcDig[sbx][1] - idx;
             int ocol = spacesb4Op[sbx][1] + wcDig[sbx][1] + numBringDn[sbx] - idx - 1;
@@ -706,8 +710,14 @@
     </tr>
 <% } %>
 </table>
-<input type="hidden" id="whatbox" value="<%=whatBx[bdx]%>" class="shortbox">
-<input type="hidden" id="lastBoxOfCurrRow">
+<% if( debug ) { %>
+<label>whatbox</label>
+<% } %>
+<input type="<%=cmtype%>" id="whatbox" value="<%=whatBx[bdx]%>" class="shortbox">
+<% if( debug ) { %>
+<label>lastBoxOfCurrRow</label>
+<% } %>
+<input type="<%=cmtype%>" id="lastBoxOfCurrRow">
 <table>
 <%  //for( int sbx = crows - 1; sbx > 0; --sbx ) { 
     for( int sbx = crows - 1; sbx > 0; --sbx ) {%>
@@ -759,18 +769,10 @@
 </tr>
 <%  for( int sbx = 0; sbx <= nsubs; ++sbx ) {
     int rdx = sbx + 1; 
-
     if( rdx <= nsubs && nacarries[rdx] > 0 ) {  %>
     <tr>
 <%      for( int idx = 0; idx <= SZ2_MX; idx++ ) {
-            //int col = spacesb4Op[sbx][0] + numDig[sbx][0] - idx;
-            int col = spacesb4Op[sbx][0] + wcDig[sbx][0] + numBringDn[sbx] - idx;
-            //if( col < 0 ) {
-            //    col = SZ2_MX;
-            //}
-            //if( spacesb4Op[sbx][0] < idx && 
-            //        idx <= spacesb4Op[sbx][0] + wcDig[sbx][0] + numBringDn[sbx-1] && 
-            //        ncarries[rdx][col] != 0 ) {  
+            int col = spacesb4Op[sbx][0] + wcDig[sbx][0] + numBringDn[sbx] - idx; 
             if( 0 <= col && 
                     col <  wcDig[sbx][0] + numBringDn[sbx] && 
                     ncarries[rdx][col] != 0 ) {
@@ -930,21 +932,41 @@ if( thereAreCarries && showBrowsCk ) { %>
 for( int idx = 0; idx < quotDigs; idx++ ) {
     for( int jdx = 0; jdx < maxOps; jdx++ ) { 
         String cid = "calcDig" + idx + "_" + jdx;
-        String oid = "operand" + idx + "_" + jdx;  %>
-        <input type="hidden" id="<%=cid%>" value="<%=calcDig[idx][jdx]%>" class="shortbox">
-        <input type="hidden" id="<%=oid%>" value="<%=calcOp[idx][jdx]%>" class="shortbox">
+        String oid = "operand" + idx + "_" + jdx;
+        if( debug ) { %>
+            <label><%=cid%></label>
+        <% } %>
+        <input type="<%=cmtype%>" id="<%=cid%>" value="<%=calcDig[idx][jdx]%>" class="shortbox">
+        <% if( debug ) { %>
+            <label><%=oid%></label>
+        <% } %>
+        <input type="<%=cmtype%>" id="<%=oid%>" value="<%=calcOp[idx][jdx]%>" class="shortbox">
 <%  }
-     String bid = "bringdown" + idx; %>
-     <input type="hidden" id="<%=bid%>" value="<%=calcBdDig[idx]%>" class="shortbox">
-<% } %>
-<input type="hidden" id="bdx" value="<%=bdx%>">
+    String bid = "bringdown" + idx; %>
+    <% if( debug ) { %>
+        <label><%=bid%></label>
+    <% } %>
+
+     <input type="<%=cmtype%>" id="<%=bid%>" value="<%=calcBdDig[idx]%>" class="shortbox">
+<% }
+    if( debug ) { %>
+        <label>bdx</label>
+ <% } %>
+<input type="<%=cmtype%>" id="bdx" value="<%=bdx%>">
 <input type="hidden" id="lastbox" value="<%=maxBx%>" class="shortbox">
 <input type="hidden" id="linedUp" value="<%=isLinedUp%>" class="shortbox">
 <input type="hidden" id="divisor" value="<%=divisor%>" >
 <input type="hidden" id="quotDigs" value="<%=quotDigs%>" >
 <input type="hidden" id="quotient" value="<%=quotient%>" >
 <input type="hidden" id="nextQuotBox" >
-<input type="hidden" id="rowNo" value="0" >
+<% if( debug ) { %>
+    <label>quotBoxIndex</label>
+<% } %>
+<input type="<%=cmtype%>" id="quotBoxIndex" value="<%=bdx%>">
+<% if( debug ) { %>
+    <label>rowNo</label>
+<% } %>
+<input type="<%=cmtype%>" id="rowNo" value="0" >
 <input type="hidden" id="dividend" value="<%=dividnd%>" >
 </form>
 
