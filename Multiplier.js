@@ -59,7 +59,9 @@ function startAgain() {
         Math.floor(3600000*Number(document.getElementById("numWoErr").value)/timediff);
     }
     document.getElementById('th-id2').submit();
-    setFocus();
+    if( document.getElementById("msg").value === "" ) {
+        setFocus();
+    }
 }
 
 function checkZero( row, col ) {

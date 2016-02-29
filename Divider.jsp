@@ -23,7 +23,9 @@
     final int maxOps = 2;
     final double NEXP = 2.6; // used to generate # of digits    
     final double DEXP = 1.4; // used to generate digits themselves or # operands
-    final boolean debug = false;
+    final boolean cmdebug = false;
+    final boolean debugcarries = false;
+    final boolean lastboxdebug = false;
     
     boolean immFeedBkCk = true;
     boolean estRequiredCk = false;
@@ -45,7 +47,12 @@
     //dsMaxDg = 3;
     int dsMax = (int)(Math.pow(10, dsMaxDg)) - 1;
     int divisor = 1 + (int)(dsMax*Math.random());
-
+    //ivisor = 7739; // bdx never reaches lastbox
+    //divisor = 516; // enter 167x and 5005 - 3612 2nd significant digis has carry crossed off from previous error
+    //divisor = 4172;
+    //divisor = 874; // 2 bringdowns, borrow carry hints one to the left
+    //divisor = 90; // enter low then high for 2nd qdigit, divide function nextbox gets lost
+    //divisor = 186; // last row borrow hint not in the right column fixit
     //divisor = 74; // 2 bringdowns issues with promptDivBorrow
     //divisor = 69; // issues with promptDivBorrow not checking right carry
     //divisor = 51; // last line of product boxes skipping lsd
@@ -66,7 +73,12 @@
     int qtMaxDg = 7 - dvsrDigs; //(SZ2_MX - dvsrDigs)/dvsrDigs;
     int qtMax = (int)(Math.pow(10, qtMaxDg)) - 1;
     int quotient = 1 + (int)(qtMax*Math.random());
-
+    //quotient = 330; // bdx never reaches lastbox
+    //quotient = 1697; // enter 167x and 5005 - 3612 2nd significant digis has carry crossed off
+    //quotient = 422;
+    //quotient = 1019; // 2 bringdowns, borrow carry hints one to the left
+    //quotient = 58745; // enter low then high for 2nd qdigit, divide function nextbox gets lost
+    //quotient = 8130; // last row borrow hint not in the right column
     //quotient = 7024; // 2 bringdowns issues with promptDivBorrow
     //quotient = 9276; // issues with promptDivBorrow not checking right carry
 
@@ -233,7 +245,7 @@
             tmpint2 = tmpint2 / 10;
         }
         spacesb4Op[nsubs][1] = spacesb4quot + quotDigs - whatquotDig - wcDig[nsubs][1] - 1;
-        System.out.println("nsubs = " + nsubs + " spacesb4quot = " + spacesb4quot + "+ quotDigs = " + quotDigs + "- whatQuotDig = " + whatquotDig + " - wcDig[" + nsubs + "][1] = " + wcDig[nsubs][1] + " - 1 = " + " spacesb4Op[" + nsubs + "][0] = " + spacesb4Op[nsubs][0]);
+        //System.out.println("nsubs = " + nsubs + " spacesb4quot = " + spacesb4quot + "+ quotDigs = " + quotDigs + "- whatQuotDig = " + whatquotDig + " - wcDig[" + nsubs + "][1] = " + wcDig[nsubs][1] + " - 1 = " + " spacesb4Op[" + nsubs + "][0] = " + spacesb4Op[nsubs][0]);
         tmpint2 = operand[nsubs][1];
         for( int idx = 0; idx < actDig[nsubs][1]; ++idx ) {
             op[nsubs][1][idx] = tmpint2 % 10;
@@ -270,8 +282,8 @@
             whatquotDig = whatquotDig - 1;
             actBringDn[nsubs] += 1;
         }
-        System.out.println("operand[" + nsubs + "][1] = " + operand[nsubs][1] + " actDig[" + nsubs + "][1] = " + actDig[nsubs][1] + " actBringDn[" + nsubs + "] = " + actBringDn[nsubs]);
-        System.out.println("spacesb4Op[" + nsubs + "][1] = " + spacesb4Op[nsubs][1] + " wcDig[" + nsubs + "][1] = " + wcDig[nsubs][1] + " numBringDn[" + nsubs + "] = " + numBringDn[nsubs]);
+        //System.out.println("operand[" + nsubs + "][1] = " + operand[nsubs][1] + " actDig[" + nsubs + "][1] = " + actDig[nsubs][1] + " actBringDn[" + nsubs + "] = " + actBringDn[nsubs]);
+        //System.out.println("spacesb4Op[" + nsubs + "][1] = " + spacesb4Op[nsubs][1] + " wcDig[" + nsubs + "][1] = " + wcDig[nsubs][1] + " numBringDn[" + nsubs + "] = " + numBringDn[nsubs]);
         nsubs = nsubs + 1;
     } 
 
@@ -445,16 +457,16 @@
         if( whatBx[ldx] > lastbox ) {
             lastbox = whatBx[ldx];
         }
-        //System.out.println("quotient whatBx[" + ldx + "] = " + whatBx[ldx] );
+        System.out.println("quotient whatBx[" + ldx + "] = " + whatBx[ldx] );
         ++ldx;
         //int lastcarry = numDig[idx][0] - 2;
         for( ; mdx < actDig[idx][0]; ++mdx  ) { // product box indexes
             whatBx[ldx] = em[idx] - mdx;
-            //System.out.println("product whatBx[" + ldx + "] = " + whatBx[ldx] );
+            System.out.println("product whatBx[" + ldx + "] = " + whatBx[ldx] );
             ++ldx;
             if( mcarries[quotDigs-1-qdx+nmcars][mdx] > 0 ) {
                 whatBx[ldx] = pe[pdx] - mdx;
-                //System.out.println("mcarry whatBx[" + ldx + "] = " + whatBx[ldx]);
+                System.out.println("mcarry whatBx[" + ldx + "] = " + whatBx[ldx]);
                 ++ldx;
             }
         }
@@ -463,13 +475,13 @@
             if( whatBx[ldx] > lastbox ) {
                 lastbox = whatBx[ldx];
             }
-            //System.out.println("difference whatBx[" + ldx + "] = " + whatBx[ldx] );
+            System.out.println("difference whatBx[" + ldx + "] = " + whatBx[ldx] );
             ++ldx;
         }
         //System.out.println("pdx = " + pdx + " actBringDn[" + idx + "] = " + actBringDn[idx] );
         if( rdx <= actBringDn[idx] ) { // bringdown box indexes
             whatBx[ldx] = en[idx] + rdx;
-            //System.out.println("bringdown whatBx[" + ldx + "] = " + whatBx[ldx] + " pdx = " + pdx + " oh[" + idx + "] = " + oh[idx]);
+            System.out.println("bringdown whatBx[" + ldx + "] = " + whatBx[ldx] + " pdx = " + pdx + " oh[" + idx + "] = " + oh[idx]);
             ++ldx;
             ++rdx;
             if( rdx > actBringDn[idx] ) { // reset for next row of products
@@ -491,7 +503,8 @@
     if( showBrowsCk ) {
         browType = "text";
     }
-    String cmtype = debug? "text" : "hidden"; %>
+    String cmtype = cmdebug? "text" : "hidden";
+    String lbtype = lastboxdebug? "text" : "hidden";%>
 <div >
 <form id="th-id2" method="get" action="Divider.jsp">
 <div class="d2">
@@ -651,7 +664,7 @@
 <%          } else { %>
                 <td class="s2"></td>
 <%          } 
-            System.out.println("first rdx = " + rdx + " col = " + col );
+            //System.out.println("first rdx = " + rdx + " col = " + col );
             if( col > 0 && ncarries[rdx][col-1] != 0 ) { 
                 String bid = "bo" + col + "_" + rdx; 
                 if( col < 0 || col > SZ2_MX ) {
@@ -675,7 +688,7 @@
     <%      int col = spacesb4Op[sbx][1] + wcDig[sbx][1] - idx;
             int ocol = spacesb4Op[sbx][1] + wcDig[sbx][1] + numBringDn[sbx] - idx - 1;
             int maxBDcol = wcDig[sbx][1] + numBringDn[sbx];
-            System.out.println(" difference sbx =  " + sbx + " idx = " + idx + " col = " + col + " wcDig[sbx][1] = " + wcDig[sbx][1]);
+            //System.out.println(" difference sbx =  " + sbx + " idx = " + idx + " col = " + col + " wcDig[sbx][1] = " + wcDig[sbx][1]);
             //if( sbx > 0 ) {
             //    ocol += numBringDn[sbx-1];
             //    maxBDcol += numBringDn[sbx-1];
@@ -710,11 +723,11 @@
     </tr>
 <% } %>
 </table>
-<% if( debug ) { %>
+<% if( cmdebug ) { %>
 <label>whatbox</label>
 <% } %>
 <input type="<%=cmtype%>" id="whatbox" value="<%=whatBx[bdx]%>" class="shortbox">
-<% if( debug ) { %>
+<% if( cmdebug ) { %>
 <label>lastBoxOfCurrRow</label>
 <% } %>
 <input type="<%=cmtype%>" id="lastBoxOfCurrRow">
@@ -753,16 +766,26 @@
                     if( ocol < 0 || ocol >= SZ2_MX ) {
                          System.out.println("ca col = " + ocol + "being reduced to 0");
                          ocol = 0;
-                    } %>
-                    <td><input type="hidden" id="<%=hid%>" value="0"></td>
+                    } 
+                    String ctype = "hidden";
+                    if( debugcarries ) { 
+                        ctype = "text"; %>
+                        <td><label><%=hid%></label></td>
+                    <% } %>
+                    <td><input type="<%=ctype%>" id="<%=hid%>" value="0" class="shortbox"></td>
     <%          } 
                 if( col > 0 && ncarries[0][col-1] != 0 ) { 
                     String hid = "hbo" + ocol + "_0" ; 
                     if( ocol < 0 || ocol > SZ2_MX ) {
                          System.out.println("bo col = " + ocol + "being reduced to 0");
                          ocol = 0;
-                    } %>
-                    <td><input type="hidden" id="<%=hid%>" value="-2"></td>
+                    }                     
+                    String ctype = "hidden";
+                    if( debugcarries ) { 
+                        ctype = "text"; %>
+                        <td><label><%=hid%></label></td>
+                    <% } %>
+                    <td><input type="<%=ctype%>" id="<%=hid%>" value="-2" class="shortbox"></td>
     <%          } 
             } 
 } %>
@@ -780,17 +803,27 @@
                 if( col < 0 || col >= SZ2_MX ) {
                     System.out.println("ca col = " + col + "being reduced to 0");
                     col = 0;
-                } %>
-                <td><input type="hidden" id="<%=hid%>" value="0"></td>
+                } 
+                String ctype = "hidden";
+                if( debugcarries ) { 
+                    ctype = "text"; %>
+                    <td><label><%=hid%></label></td>
+             <% } %>
+                <td><input type="<%=ctype%>" id="<%=hid%>" value="0" class="shortbox"></td>
 <%          } 
-            System.out.println("second rdx = " + rdx + " col = " + col );
+            //System.out.println("second rdx = " + rdx + " col = " + col );
             if( 0 < col  && col < SZ2_MX + 1 && ncarries[rdx][col-1] != 0 ) { 
                 String hid = "hbo" + col + "_" + rdx; 
                 if( col < 0 || col > SZ2_MX ) {
                          System.out.println("bo col = " + col + "being reduced to 0");
                          col = 0;
-                } %>
-                <td><input type="hidden" id="<%=hid%>" value="-2"></td>
+                }                     
+                String ctype = "hidden";
+                if( debugcarries ) { 
+                    ctype = "text"; %>
+                    <td><label><%=hid%></label></td>
+             <% } %>
+                <td><input type="<%=ctype%>" id="<%=hid%>" value="-2" class="shortbox"></td>
 <%          } 
          } %>
          </tr>
@@ -819,7 +852,7 @@
 <div id="statusBox19"></div>
 
 </div>
-<div class="d3">
+<div class="d6">
 <!--this is where error messages get displayed//-->
 <label id="msg">Click where first quotient digit should be</label>
 </div>
@@ -841,7 +874,7 @@ if( thereAreCarries && showBrowsCk ) { %>
 <div class="d3">
     <table>
     <tr><td><input type="checkbox" value="Show Borrows" name="showborrows" 
-                   <%=isShowBrows%> onclick="zeroCounts()">
+                   <%=isShowBrows%> onclick="zeroDivCounts()">
             <label>Show Borrows</label>
         </td></tr>
     </table>
@@ -855,27 +888,27 @@ if( thereAreCarries && showBrowsCk ) { %>
     </td></tr>
     <tr><td>
         <input type="radio" name="difflvl" value="Immediate Feedback" 
-            <%=isImmFeedBk%> onclick="zeroCounts()">
+            <%=isImmFeedBk%> onclick="zeroDivCounts()">
         <label>Immediate Feedback</label>
     </td></tr>
     <tr><td>
         <input type="radio" name="difflvl" value="Estimation Required"
-            <%=isEstRequired%> onclick="zeroCounts()">
+            <%=isEstRequired%> onclick="zeroDivCounts()">
         <label>Estimation Required</label>
     </td></tr>
     <tr><td>
         <input type="radio" name="difflvl" value="Remainders" 
-            <%=isRemainders%> onclick="zeroCounts()"> 
+            <%=isRemainders%> onclick="zeroDivCounts()"> 
         <label>Remainders</label>
     </td></tr>
     <tr><td>
         <input type="radio" name="difflvl" value="Exact Decimals" 
-            <%=isExDp%> onclick="zeroCounts()">
+            <%=isExDp%> onclick="zeroDivCounts()">
         <label>Exact Decimals</label>
     </td></tr>
     <tr><td>
         <input type="radio" name="difflvl" value="Recurring Decimals" 
-            <%=isRecDp%> onclick="zeroCounts()">
+            <%=isRecDp%> onclick="zeroDivCounts()">
         <label>Recurring Decimals</label>
     </td></tr>
 </table>
@@ -919,7 +952,7 @@ if( thereAreCarries && showBrowsCk ) { %>
 <tr>
     <td></td>
     <td>
-<button type="reset" value="Reset" onclick="startAgain()" >Start again</button>
+<button type="reset" value="Reset" onclick="startDivAgain()" >Start again</button>
 </td>
 </tr>
 </table>
@@ -933,41 +966,46 @@ for( int idx = 0; idx < quotDigs; idx++ ) {
     for( int jdx = 0; jdx < maxOps; jdx++ ) { 
         String cid = "calcDig" + idx + "_" + jdx;
         String oid = "operand" + idx + "_" + jdx;
-        if( debug ) { %>
+        if( cmdebug ) { %>
             <label><%=cid%></label>
         <% } %>
         <input type="<%=cmtype%>" id="<%=cid%>" value="<%=calcDig[idx][jdx]%>" class="shortbox">
-        <% if( debug ) { %>
+        <% if( cmdebug ) { %>
             <label><%=oid%></label>
         <% } %>
         <input type="<%=cmtype%>" id="<%=oid%>" value="<%=calcOp[idx][jdx]%>" class="shortbox">
 <%  }
     String bid = "bringdown" + idx; %>
-    <% if( debug ) { %>
+    <% if( cmdebug ) { %>
         <label><%=bid%></label>
     <% } %>
 
      <input type="<%=cmtype%>" id="<%=bid%>" value="<%=calcBdDig[idx]%>" class="shortbox">
 <% }
-    if( debug ) { %>
-        <label>bdx</label>
+if( lastboxdebug ) { %>
+    <label>bdx</label>
  <% } %>
-<input type="<%=cmtype%>" id="bdx" value="<%=bdx%>">
-<input type="hidden" id="lastbox" value="<%=maxBx%>" class="shortbox">
+<input type="<%=lbtype%>" id="bdx" value="<%=bdx%>">
+<%    if( lastboxdebug ) { %>
+    <label>lastbox</label>
+ <% } %>
+<input type="<%=lbtype%>" id="lastbox" value="<%=maxBx%>" class="shortbox">
 <input type="hidden" id="linedUp" value="<%=isLinedUp%>" class="shortbox">
 <input type="hidden" id="divisor" value="<%=divisor%>" >
 <input type="hidden" id="quotDigs" value="<%=quotDigs%>" >
 <input type="hidden" id="quotient" value="<%=quotient%>" >
 <input type="hidden" id="nextQuotBox" >
-<% if( debug ) { %>
+<input type="hidden" id="noMorQuotDigs" value="false" >
+<% if( cmdebug ) { %>
     <label>quotBoxIndex</label>
 <% } %>
 <input type="<%=cmtype%>" id="quotBoxIndex" value="<%=bdx%>">
-<% if( debug ) { %>
+<% if( cmdebug ) { %>
     <label>rowNo</label>
 <% } %>
 <input type="<%=cmtype%>" id="rowNo" value="0" >
 <input type="hidden" id="dividend" value="<%=dividnd%>" >
+<input type="hidden" id="currDividend" >
 </form>
 
 </div>
