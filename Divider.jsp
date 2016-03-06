@@ -16,7 +16,7 @@
 </head>
 <body>
    
-<%  // make the user click on the original box fixit
+<%
     // 2nd divisor dig around 5 is harder to estimate fixit
     // count it wrong if the user gueses a quotient digit 3 times fixit
     final int SZ2_MX = 12; // maximum dividend + divisor + 1 size
@@ -47,6 +47,7 @@
     //dsMaxDg = 3;
     int dsMax = (int)(Math.pow(10, dsMaxDg)) - 1;
     int divisor = 1 + (int)(dsMax*Math.random());
+    //divisor = 1591; // second subtraction not reading the 3 // think i was hitting the key too fast
     //ivisor = 7739; // bdx never reaches lastbox
     //divisor = 516; // enter 167x and 5005 - 3612 2nd significant digis has carry crossed off from previous error
     //divisor = 4172;
@@ -73,6 +74,7 @@
     int qtMaxDg = 7 - dvsrDigs; //(SZ2_MX - dvsrDigs)/dvsrDigs;
     int qtMax = (int)(Math.pow(10, qtMaxDg)) - 1;
     int quotient = 1 + (int)(qtMax*Math.random());
+    //quotient = 754; // second subtraction not reading the 3
     //quotient = 330; // bdx never reaches lastbox
     //quotient = 1697; // enter 167x and 5005 - 3612 2nd significant digis has carry crossed off
     //quotient = 422;
@@ -178,9 +180,20 @@
             }
         }
     }
+    boolean showMcarriesCk = false;
+    String isShowMcarries = "";
+    String mcarrylist[] = request.getParameterValues("showmcarries");
+    if( mcarrylist  != null ) {
+        for( int idx = 0; idx < mcarrylist.length; idx++ ) {
+            if( mcarrylist[idx].equals("Show Multiplication Carries") ) {
+                showMcarriesCk = true;
+                isShowMcarries = "checked";
+            }
+        }
+    }
     int numOps = 2;
     int colspan = 2*(SZ2_MX + 1);
-    int[][][] op;       // operand's first index is what subtraction   
+    //int[][][] op;       // operand's first index is what subtraction   
                         // second index is what operand (top/bottom)
                         // third index is what digit of that operand
     int [][] borrows;
@@ -190,7 +203,7 @@
     
     int [][] operand = new int[quotDigs][maxOps];
     int [][] calcOp = new int[quotDigs][maxOps];
-    op = new int[quotDigs][maxOps][SZ2_MX+1];
+    //op = new int[quotDigs][maxOps][SZ2_MX+1];
     int [][] actDig = new int[quotDigs][maxOps];
     int [][] wcDig = new int[quotDigs][maxOps];
     int [][] calcDig = new int[quotDigs][maxOps];
@@ -239,18 +252,18 @@
         int mostPossProdDig = (int)Math.log10(9*divisor) + 1;
         spacesb4Op[nsubs][0] = spacesb4quot + quotDigs - whatquotDig - mostPossProdDig - 1;
         //System.out.println("nsubs = " + nsubs + " spacesb4quot = " + spacesb4quot + "+ quotDigs = " + quotDigs + "- whatQuotDig = " + whatquotDig + " - mostPossProdDig = " + mostPossProdDig + " - 1 = " + " spacesb4Op[" + nsubs + "][0] = " + spacesb4Op[nsubs][0]);
-        int tmpint2 = operand[nsubs][0];
-        for( int idx = 0; idx < actDig[nsubs][0]; ++idx ) {
-            op[nsubs][0][idx] = tmpint2 % 10; // what are these even used for? fixit
-            tmpint2 = tmpint2 / 10;
-        }
+        //int tmpint2 = operand[nsubs][0];
+        //for( int idx = 0; idx < actDig[nsubs][0]; ++idx ) {
+        //    op[nsubs][0][idx] = tmpint2 % 10; // what are these even used for? fixit
+        //    tmpint2 = tmpint2 / 10;
+        //}
         spacesb4Op[nsubs][1] = spacesb4quot + quotDigs - whatquotDig - wcDig[nsubs][1] - 1;
         //System.out.println("nsubs = " + nsubs + " spacesb4quot = " + spacesb4quot + "+ quotDigs = " + quotDigs + "- whatQuotDig = " + whatquotDig + " - wcDig[" + nsubs + "][1] = " + wcDig[nsubs][1] + " - 1 = " + " spacesb4Op[" + nsubs + "][0] = " + spacesb4Op[nsubs][0]);
-        tmpint2 = operand[nsubs][1];
-        for( int idx = 0; idx < actDig[nsubs][1]; ++idx ) {
-            op[nsubs][1][idx] = tmpint2 % 10;
-            tmpint2 = tmpint2 / 10;
-        }
+        //tmpint2 = operand[nsubs][1];
+        //for( int idx = 0; idx < actDig[nsubs][1]; ++idx ) {
+        //    op[nsubs][1][idx] = tmpint2 % 10;
+        //    tmpint2 = tmpint2 / 10;
+        //}
         cspan[nsubs] = 2*wcDig[nsubs][0] + 1;
         bspan[nsubs] = 2*spacesb4Op[nsubs][0] + 1;
         dspan[nsubs] = 2*(SZ2_MX + 1) - bspan[nsubs] - cspan[nsubs];
@@ -370,7 +383,7 @@
             if( sbx > 0  ) {
                 bdidx -= numBringDn[sbx-1];
             }
-            for (kdx = 0; kdx < kdxmax; kdx++) { // kdx goes 1 too big fixit
+            for (kdx = 0; kdx < kdxmax; kdx++) {
                 boolean needsCarry = true;
                 //System.out.println("sbx = " + sbx + " kdx = " + kdx + " kdxmax = " + kdxmax + " numDig[" + sbx + "][1] = " + numDig[sbx][1]);
                 //System.out.println("bring down dividend index " + bdidx);
@@ -429,6 +442,9 @@
         
         //if( qt[idx] > 1 ) { // worst case everything has a carry
             nmcars += (dvsrDigs - 1);
+            if( showMcarriesCk ) {
+                nmcars += (dvsrDigs - 1);
+            }
             crows += 1;
         //}
         //System.out.println("qt[" + idx + "] = " + qt[idx] + " nmcars = " + nmcars + " crows = " + crows );
@@ -515,9 +531,14 @@
 <%      for( int idx = 0; idx <= SZ2_MX; idx++ ) { 
             if( idx < dvsrDigs - 1 ) { 
                 int col = dvsrDigs - 2 - idx;
-                String cname = "cm" + col + "_" + sbx; %>
-                <td class="t2"><input type="<%=cmtype%>" name="<%=cname%>" class="c2" 
-                                      onkeyup="checkMcarry(<%=col%>,<%=sbx%>)" ></td>
+                String cname = "cm" + col + "_" + sbx;
+                String cid = "hcm" + col + "_" + sbx; %>
+                <td class="t2">
+<%              if( showMcarriesCk ) { %>
+                    <input type="<%=cmtype%>" name="<%=cname%>" class="c2" 
+                            onkeyup="checkMcarry(<%=col%>,<%=sbx%>)" >
+<%              }  %>
+                <input type="hidden" id="<%=cid%>" class="c2"></td>
 <%          } else {  %>
                 <td class="t2"></td>
 <%          } %>
@@ -529,11 +550,16 @@
 <%  for( int idx = 0; idx <= SZ2_MX; idx++ ) { 
         if( idx < dvsrDigs - 1 && crows > 0 ) { 
             int col = dvsrDigs - 2 - idx;
-            String cname = "cm" + col + "_0"; %>
+            String cname = "cm" + col + "_0"; 
+            String cid = "hcm" + col + "_0"; %>
             <td class="t2" onclick="showQuotDigs(-1)">
+<%          if( showMcarriesCk ) { %>
                 <input type="<%=cmtype%>" name="<%=cname%>" class="c2" 
-                                  onkeyup="checkMcarry(<%=col%>,0)"></td>
-<%      } else {  %>
+                                  onkeyup="checkMcarry(<%=col%>,0)">
+<%          } %>
+            <input type="hidden" id="<%=cid%>" class="c2"></td>
+<%          
+        } else {  %>
             <td class="t2" onclick="showQuotDigs(-1)"></td>
 <%      }
         
@@ -732,29 +758,6 @@
 <% } %>
 <input type="<%=cmtype%>" id="lastBoxOfCurrRow">
 <table>
-<%  //for( int sbx = crows - 1; sbx > 0; --sbx ) { 
-    for( int sbx = crows - 1; sbx > 0; --sbx ) {%>
-        <tr>
-<%      for( int idx = 0; idx <= SZ2_MX; idx++ ) { 
-            if( idx < dvsrDigs - 1 ) { 
-                int col = dvsrDigs - 2 - idx;
-                String cid = "hcm" + col + "_" + sbx; %>
-                <td><input type="hidden" id="<%=cid%>" ></td>
-<%          }
-        } %>
-        <tr>
-<%  } %>
-<tr>
-<%  for( int idx = 0; idx <= SZ2_MX; idx++ ) { 
-        if( idx < dvsrDigs - 1 && crows > 0 ) { 
-            int col = dvsrDigs - 2 - idx;
-            String cid = "hcm" + col + "_0"; %>
-            <td><input type="hidden" id="<%=cid%>"></td>
-<%      }
-    } %>
-</tr>
-</table>
-<table>
     <tr>
 <%    if( nacarries[0] > 0 ) {
     for( int idx = 0; idx <= SZ2_MX; idx++ ) {
@@ -876,6 +879,10 @@ if( thereAreCarries && showBrowsCk ) { %>
     <tr><td><input type="checkbox" value="Show Borrows" name="showborrows" 
                    <%=isShowBrows%> onclick="zeroDivCounts()">
             <label>Show Borrows</label>
+        </td></tr>
+    <tr><td><input type="checkbox" value="Show Multiplication Carries" name="showmcarries" 
+                   <%=isShowMcarries%> onclick="zeroDivCounts()">
+            <label>Show Multiplication Carries</label>
         </td></tr>
     </table>
 </div>

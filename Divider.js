@@ -4,9 +4,6 @@
  * and open the template in the editor.
  */
 
-// need borrows and carries calculated in javascript so that you can show the user 
-// where they made a mistake in subtracting and so that the user can estimate
-// answers and try again fixit
 function showQuotDigs( col ) {
     var quotDigs = Number(document.getElementById("quotDigs").value);
     var lastcol =  quotDigs - 1;
@@ -108,8 +105,6 @@ function checkMcarry( col, sbx ){
 }
 
 function divide( immFeedBkCk, col, qtDig ) { 
-    // in Estimation Required mode,
-    // entering a 0 when you shouldn't doesn't check and messes up whatbox fixit
     for( var j = 0; j < 18; j++ ) {
         document.getElementById("statusBox" + j).innerHTML = "";
     }
@@ -343,10 +338,7 @@ function divide( immFeedBkCk, col, qtDig ) {
         return;
     }
 
-    var diff = dvdnd - prod;       // if you put too small a quotient digit, diff may
-                                              // be bigger than divisor fixit    
-    //document.getElementById("statusBox19").innerHTML = "in divide function, predicting: prev dividend = " + dvdnd + " prod = " + prod + " diff = " + diff;
-    //x = x + 1;
+    var diff = dvdnd - prod;
     var diffMxIdx = diff > 0? Math.floor(Math.log10(diff)) : 0;
     document.getElementById("calcDig" + whatRow + "_1").value = diffMxIdx;
     document.getElementById("operand" + whatRow + "_1").value = diff;
@@ -445,7 +437,6 @@ function divide( immFeedBkCk, col, qtDig ) {
                     return;
                 }
             } else {
-                // needs to be actual last box, not last used box fixit
                 nextbox = Number(document.getElementById("lastBoxOfCurrRow").value);
                 //document.getElementById("statusBox" + x).innerHTML = "last Box Of Current row nextbox = " + nextbox;
                 //x = x + 1;
@@ -497,11 +488,11 @@ function divide( immFeedBkCk, col, qtDig ) {
             }
             var allcarries = document.getElementsByClassName("c2");
             for( var i = 0; i < allcarries.length; ++i ) {
-                if( Number(allcarries[i].name.substring(4,5)) === carryRow ) {
+                if( Number(allcarries[i].name.substring(4,5)) === carryRow &&
+                        allcarries[i].name.substring(0,2) === "cm" ) {
                     allcarries[i].value = "";
                 }
             }
-            // needs to be actual last box, not last used box fixit
             nextbox = Number(document.getElementById("lastBoxOfCurrRow").value);
             //document.getElementById("statusBox" + x).innerHTML = "ans != 0, lastBoxOfCurrentRow, nextbox = " + nextbox + " whatvisibleMrow = " + name + " visibleMrow.length = " + visibleMrow.length;
             //x = x + 1;
@@ -561,7 +552,7 @@ function multiply( col ) { // may want to pass sbx instead of reading whatRow af
     var quotDigs = Number(document.getElementById("quotDigs").value);
     var dec = whatRow;
     var nextRow = whatRow + 1;
-    var nextbox = null;
+    //var nextbox = null;
     //document.getElementById("statusBox" + x).innerHTML = "in multiply whatRow = " + whatRow;
     //x = x + 1;
     for( var prevrow = whatRow - 1; prevrow >= 0; prevrow-- ) {
@@ -592,7 +583,7 @@ function multiply( col ) { // may want to pass sbx instead of reading whatRow af
     //document.getElementById("statusBox2").innerHTML = "prod = " + prod + " mainpart = " + mainpart + " discard = " + discard;
     var expAns = (mainpart - discard)/ten2col;
 
-    var prevcaBx;
+    var prevcaBx = null;
     var cmx = 0;
     var startquot = quotDigs - 1;
     
@@ -600,33 +591,50 @@ function multiply( col ) { // may want to pass sbx instead of reading whatRow af
             cmx = cmx + 1;
     }
     
+    var showMcarriesChkd = document.getElementsByName("showmcarries")[0].checked;
     var isLastMult = (col === Number(document.getElementById("calcDig" + whatRow + "_0").value));
     //document.getElementById('statusBox2').innerHTML = "col = " + col + " whatRow = " + whatRow + " isLastMult = " + isLastMult;
-    if( isLastMult ) {
-        if( col > 1 ) {
+    if( isLastMult && col > 1 ) {
+        //if( col > 1 ) {
             var prevCol = dvsrdigs.length - 2;
-            var whatBx = "cm" + prevCol + "_" + cmx;
+            var whatBx = "hcm" + prevCol + "_" + cmx;
+            if( showMcarriesChkd ) {
+                whatBx = "cm" + prevCol + "_" + cmx;
+                prevcaBx = document.getElementsByName(whatBx)[0]; // fixit
+            } else {
+                prevcaBx = document.getElementById(whatBx);
+            }
             //document.getElementById("statusBox" + x).innerHTML = "prevCaBx = " + whatBx;
             //x = x + 1;
-            prevcaBx = document.getElementsByName(whatBx)[0];
-        }
+        //}
     } else if( col > 0 ){
         var prevCol = col - 1;
-        var whatBx = "cm" + prevCol + "_" + cmx;
-        prevcaBx = document.getElementsByName(whatBx)[0];
-        //document.getElementById("statusBox" + x).innerHTML = "prevCaBx = " + whatBx;
+        var whatBx = "hcm" + prevCol + "_" + cmx;     
+        if( showMcarriesChkd ) {
+            whatBx = "cm" + prevCol + "_" + cmx;
+            prevcaBx = document.getElementsByName(whatBx)[0];
+        } else {
+            prevcaBx = document.getElementById(whatBx);
+        }
+        
+
+        //document.getElementById("statusBox" + x).innerHTML = "showMcarriesChkd = " + showMcarriesChkd + " whatBx = " + whatBx + " prevCaBx = " + prevcaBx;
         //x = x + 1;
     }
     if( ans === expAns ) {
+        if( prevcaBx ) {
+            if( showMcarriesChkd ) {
+                prevcaBx.style.color = "black";
+            } else {
+                prevcaBx.type = "hidden";
+            }
+        }
         for( var i = quotDigs - 1; i >= qdx; --i ) {    
             document.getElementById("qt" + i).style.color = "black";
         }
         //qBx.style.color = "black";
         dvsrdigs[whatDig].style.color = "black";
         ansBxs[bxNo].style.color = "black";
-        if( prevcaBx ){
-            prevcaBx.style.color = "black";
-        }
         errBx.innerHTML = "";
         var whatBox = Number(document.getElementById("whatbox").value);
         var nextBox = null;
@@ -683,23 +691,9 @@ function multiply( col ) { // may want to pass sbx instead of reading whatRow af
             if( visibleMinus ) {
                 visibleMinus.className="t1";
             }
-            //var whatHelp = document.getElementsByName("showborrows");
             var showBrowsChkd = 
                     document.getElementsByName("showborrows")[0].checked;
-            /* for( var i = 0; i < whatHelp.length; i++ ) {
-                if( whatHelp[i].checked ) {
-                    showBrowsChkd = true;
-                    break;
-                }
-            } */
             if( showBrowsChkd ) {
-                //var dvddigs = document.getElementsByName("dvddigs");
-                //var bddigs = null;
-                //if( whatRow > 0 ) {
-                    //var prevRow = whatRow - 1;
-                    //dvddigs = document.getElementsByName("op" + prevRow + "_1");
-                    //bddigs = document.getElementsByName("bringdown" + prevRow);
-                //}
                 var whatBorCaBxs = 'boca' + whatRow;
                 var visibleBorCaBxs = document.getElementsByName( whatBorCaBxs );
                 var isCarry = false;
@@ -742,10 +736,11 @@ function multiply( col ) { // may want to pass sbx instead of reading whatRow af
                 var whatCm = "hcm" + col + "_" + dec;
                 //document.getElementById("statusBox" + x).innerHTML = "in multiply whatCm = " + whatCm ;
                 //x = x + 1;
-                var hasCarry = Number(document.getElementById(whatCm).value) > 0;
-                if( hasCarry ) {
+                //var hasCarry = Number(document.getElementById(whatCm).value) > 0;
+                if( showMcarriesChkd &&
+                        Number(document.getElementById(whatCm).value) > 0 ) {
                     var allCmBoxes = document.getElementsByClassName("c2");
-                    nextBox = allCmBoxes.length - 1 - dec*(dvsrdigs.length - 1) - col;
+                    nextBox = allCmBoxes.length - 1 - 2*dec*(dvsrdigs.length - 1) - 2*col - 1;
                 } else {
                     nextBox -= 1;
                 }
@@ -763,6 +758,7 @@ function multiply( col ) { // may want to pass sbx instead of reading whatRow af
         qBx.style.color = "red";
         dvsrdigs[whatDig].style.color = "red";
         if( prevcaBx ){
+            prevcaBx.type = "text";
             prevcaBx.style.color = "red";
         }
         upDateErrCount();
@@ -971,7 +967,6 @@ function subtract( col, sbx ) {
                     lastqcol = i;
                 }
             }
-            // something is wrong with lastbox, goes to first borrow box at end fixit
             //document.getElementById("statusBox" + x).innerHTML = "isLastSub restAreZero = " + restAreZero + " lastqcol = " + lastqcol;
             //x = x + 1;
             if( restAreZero ) {
@@ -1017,8 +1012,8 @@ function subtract( col, sbx ) {
             borBx.type = "text";
             borBx.style.color = "red";
             var borVal = Number(hiddenBorBx.value);
-            document.getElementById("statusBox" + x).innerHTML = "hiddenBorBx.value = " + hiddenBorBx.value; 
-            x = x + 1;
+            //document.getElementById("statusBox" + x).innerHTML = "hiddenBorBx.value = " + hiddenBorBx.value; 
+            //x = x + 1;
             if( borVal < 0 ) {
                 borVal += 10;
                 caBx.style.setProperty("text-decoration", "line-through");
