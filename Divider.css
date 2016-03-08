@@ -57,7 +57,7 @@ td {
     //padding-top: 1em;
     //padding-bottom: 1em;
     min-height: 1em;
-    text-align: center;
+    text-align: left;
     margin-top: 1em;
     padding-left: 5em;
     //min-height: 3em;
@@ -81,6 +81,15 @@ td {
     min-height: 9em;
     max-height: 9em;
     text-align: center;
+}
+.d6 {
+    //padding-top: 1em;
+    //padding-bottom: 1em;
+    min-height: 1em;
+    text-align: center;
+    margin-top: 1em;
+    //padding-left: 5em;
+    //min-height: 3em;
 }
 .tbl {
   border: 2px solid black;
@@ -298,6 +307,11 @@ td {
   columns: 3 auto;
 }
 #dispBo {
+    //margin-left: 1em;
+    //color: #160404;
+    color: #fdefe0; // default text color is background color (hidden)
+}
+#dispR {
     //margin-left: 1em;
     //color: #160404;
     color: #fdefe0; // default text color is background color (hidden)
