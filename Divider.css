@@ -252,6 +252,19 @@ td {
     //border: 1px solid black;
     //border-radius: 4px;
 }
+/* visible decimal point */
+.ep{
+    width: 0.7em;
+    height: 1.7em;
+    //max-height: 4px;
+    text-align: center;
+    //background-color: orange;
+    margin-left: 0px;
+    margin-right: 0px;
+    color: purple;
+    //border: 1px solid black;
+    //border-radius: 4px;
+}
 /* answer boxes */
 .a1 {
   width: 1.1em;

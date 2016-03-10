@@ -62,19 +62,40 @@ function checkRemainder( col, expectedRemainder ) {
     setFocus();
 }
 function showQuotDigs( col ) {
-    var quotDigs = Number(document.getElementById("quotDigs").value);
-    var lastcol =  quotDigs - 1;
+    var x = 0;
     var errBx = document.getElementById("msg");
-    if( col === lastcol ) {
-        for( var i = 0; i < quotDigs; i++ ) {
-            document.getElementById("qt" + i ).type = "text";
+    var currmsg = errBx.innerHTML;
+    var clickmsg = "quotient doesn't start there, click somewhere else";
+    var decsNotSettled = 0;
+    var whatDecs = document.getElementsByName("decsettled");
+    var whatDecsLength = whatDecs.length;
+ 
+    if( whatDecsLength > 0 ) {
+        for( var i = 0; i < whatDecsLength; ++i ) {
+            if( whatDecs[i].value  === "false" ) {
+                decsNotSettled += 1;
+            }
         }
-        var errBx = document.getElementById("msg");
-        errBx.innerHTML = "";
-        setFocus();
-    } else {
-        errBx.innerHTML = "quotient doesn't start there, click somewhere else";
-        upDateErrCount();
+    }
+    //document.getElementById("statusBox" + x).innerHTML = "in showQuotDigs decsNotSettled = " + decsNotSettled;
+    //x = x + 1;
+    if( decsNotSettled === 0) {
+    //document.getElementById("statusBox" + x).innerHTML = "errBx.innerHTML = '" + currmsg + "' clickmsg = '" + clickmsg + "'"; 
+    //if( currmsg === clickmsg ||
+    //        currmsg === "Click where first quotient digit should be" ) {
+        var quotDigs = Number(document.getElementById("quotDigs").value);
+        var lastcol =  quotDigs - 1;
+        if( col === lastcol ) {
+            for( var i = 0; i < quotDigs; i++ ) {
+                document.getElementById("qt" + i ).type = "text";
+            }
+            var errBx = document.getElementById("msg");
+            errBx.innerHTML = "";
+            setFocus();
+        //} else {
+            //errBx.innerHTML = clickmsg;
+            //upDateErrCount(); // fixit
+        }
     }
 }
 function checkMcarry( col, sbx ) {
@@ -247,7 +268,15 @@ function divide( immFeedBkCk, col, qtDig ) {
     var borrows = new Array();
     if( whatRow === 0 ) {
         var i = dvdBxs.length - quotDigs;
-        //document.getElementById("statusBox" + x).innerHTML = "dvdBxs.length = " + dvdBxs.length + " quotDigs = " + quotDigs;
+        // add leading zeros
+        for( var msQdig = quotDigs - 1; msQdig > col; --msQdig ) {
+            if( Number(document.getElementById("qt" + msQdig).value) === 0 ) {
+                ++i;
+            } else {
+                break;
+            }
+        }
+        //document.getElementById("statusBox" + x).innerHTML = "dvdBxs.length = " + dvdBxs.length + " quotDigs = " + quotDigs + " i = " + i;
         //x = x + 1;
         while( i >= 0 ) {
             dvdDigVal = Number(dvdBxs[i].childNodes[0].nodeValue);
@@ -477,10 +506,12 @@ function divide( immFeedBkCk, col, qtDig ) {
             if( col > 0 ) { //  you will need to bring down more digits
                             // before you can start another row  
                             // make next bringdown box visible
-                for( var i = 0; i < bddigs.length; i++ ) {
-                    if( bddigs[i].type === "hidden") {
-                        bddigs[i].type = "text";
-                        break;
+                if( bddigs ) {
+                    for( var i = 0; i < bddigs.length; i++ ) {
+                        if( bddigs[i].type === "hidden") {
+                            bddigs[i].type = "text";
+                            break;
+                        }
                     }
                 }
             }
@@ -489,18 +520,15 @@ function divide( immFeedBkCk, col, qtDig ) {
             //alert("skip mcarries nextbox = " + nextbox);
             //document.getElementById("statusBox" + x).innerHTML = "in divide restAreZero = " + restAreZero + " col = " + col;
             //x = x + 1;
-            if( restAreZero ) {
-                if( ans === 0 ) {
+            if( restAreZero || col === quotDigs-1 ) {
+                //if( ans === 0 ) {
                     ansBx.style.color = "black";
-                }
+                //}
                 if( col > 0 ) {
                     nextbox += quotDigs - col;
+                    //document.getElementById("statusBox" + x).innerHTML = "quotient digit nextbox = " + nextbox;
+                    //x = x + 1;
                 } else {
-                    //var difflvl = "not set";
-                    //if( document.getElementById("Remainders").checked ) {
-                    //    difflvl = document.getElementById("Remainders").value;
-                    //}
-                    //if( difflvl === "Remainders" && document.getElementById("r0") ) {
                     if( document.getElementById("r0") ) {
 
                         document.getElementById("dispR").style.color = "black";
@@ -717,11 +745,20 @@ function multiply( col ) { // may want to pass sbx instead of reading whatRow af
             // check if user guessed too big
             var dividend = 0;
             var dvdcol = quotDigs - 1;
+            // find the most significant non-zero column of quotient
+            // which is the column of the least significant digit of first 
+            // dividend
+            for( ; dvdcol > 0; --dvdcol ) {
+                if( Number(document.getElementById("qt" + dvdcol).value) !== 0 ) {
+                    break;
+                }
+            }
+            if( Number)
             if( whatRow == 0 ) {
                 dividend = Number(document.getElementById("dividend").value);
                 var discard = dividend % Math.pow(10, dvdcol);
                 dividend = (dividend - discard)/Math.pow(10, dvdcol);
-                //document.getElementById("statusBox" + x).innerHTML = "lastMult, whatRow = " + whatRow + " dividend = " + dividend + " prod = " + prod;
+                //document.getElementById("statusBox" + x).innerHTML = "lastMult, whatRow = " + whatRow + " dvdcol = " + dvdcol + " dividend = " + dividend + " prod = " + prod;
                 //x = x + 1;
             } else {
                 prevRow = whatRow - 1;
@@ -1136,7 +1173,16 @@ function bringdown( sbx ) {
     var ans = Number(ansBxs[bxNo].value);
     var errBx = document.getElementById("msg");
     var dvddigs = document.getElementsByName("dvddigs");
-    var dvdcol = Number(document.getElementById("quotDigs").value) - 2;
+    var dvdcol = Number(document.getElementById("quotDigs").value) - 1;
+    // find the most significant non-zero column of quotient
+    // which is the column of the least significant digit of first 
+    // dividend
+    for( ; dvdcol > 0; --dvdcol ) {
+        if( Number(document.getElementById("qt" + dvdcol).value) !== 0 ) {
+            break;
+        }
+    }
+    dvdcol = dvdcol - 1;
     for( var idx = 0; idx < sbx; idx++ ) {
         dvdcol -= Number(document.getElementById("bringdown" + idx).value); //document.getElementsByName("bd" + idx ).length;
         //alert("idx = " + idx + " dvdidx = " + dvdidx );
@@ -1450,5 +1496,87 @@ function startDivAgain() {
     document.getElementById('th-id2').submit();
     if( document.getElementById("msg").value === "" ) {
         setFocus();
+    }
+}
+// imitate radio buttons, selecting only one decimal point at a time
+function chooseDivThis( which_one, which_type ) {
+    //var x = 0;
+
+    var btns = document.getElementsByName( which_type );
+    var nbtns= btns.length;
+    var msgBx = document.getElementById("msg");
+    //var statusbox = document.getElementById("statusBox" + x);
+    //statusbox.innerHTML = "nbtns = " + nbtns + " which_one = " + which_one;
+    //x = x + 1;
+    
+    var decsNotSettled = 0;
+    var whatDecs = document.getElementsByName("decsettled");
+    var whatDecsLength = whatDecs.length;
+ 
+    if( whatDecsLength > 0 ) {
+        for( var i = 0; i < whatDecsLength; ++i ) {
+            if( whatDecs[i].value  === "false" ) {
+                decsNotSettled += 1;
+            }
+        }
+    }
+    //statusbox = document.getElementById("statusBox" + x);
+    //statusbox.innerHTML = "decsNotSettled = " + decsNotSettled;
+    //x = x + 1;
+    // if any indicator says not settled
+    // light up the decimal point otherwise skip this entire routine 
+    if( decsNotSettled > 0 ) {
+        //var btns = document.getElementsByName( which_type );
+        var totDec = Number(document.getElementById( which_type ).value);
+        //var nbtns= btns.length;
+        for( var i = 0; i < nbtns; ++i ) {
+            var att = "andsp" + i;
+            if( i === which_one ) {
+                btns[i].childNodes[0].nodeValue=".";
+                btns[i].setAttribute( att,'.');
+                var markedDec = nbtns - i;
+                //statusbox = document.getElementById("statusBox" + x);
+                //if( statusbox ) {
+                //    statusbox.innerHTML = "totDec = " + totDec + " markedDec = " + markedDec;
+                //}
+                //x = x + 1;
+                if( totDec === markedDec ) {
+                    btns[i].style.color="black";
+                    var leadZeros = document.getElementsByName("yesThis");
+                    var max = leadZeros.length;
+                    for( var j = 0; j < max; ++j ) {
+                        leadZeros[j].style.color = "black";
+                    }
+                    var markwhat = which_type.substring(0,3);
+                    var whatbox = document.getElementById( markwhat );
+                    if( whatbox ) {
+                        whatbox.value = "true";
+                    }
+                    if( markwhat.localeCompare("dvs") === 0 ) {
+                        msgBx.innerHTML = "Count the same number of places to the right of the dividend decimal point and click there";
+                    } else if( markwhat.localeCompare("dvd") === 0 ) {
+                        msgBx.innerHTML = "Click the place in the quotient directly above the dividend decimal point";
+                    } else if( decsNotSettled === 1 ) {
+                        msgBx.innerHTML = "Click where first quotient digit should be";
+                    }
+                } else {
+                    // turn it back off if it's already on
+                    if( btns[i].style.color == "red") { 
+                        btns[i].childNodes[0].nodeValue="_";
+                        btns[i].setAttribute( att,'');
+                        //btns[i].style.color="#FAF3E4"; // hide "_" with background color
+                        // hide "_" with background color
+                        btns[i].style.color=btns[i].style.backgroundColor; 
+                    } else {
+                        btns[i].style.color="red";
+                        upDateErrCount();
+                    }
+                }
+            } else { // unmark every button that is not which_one
+                btns[i].childNodes[0].nodeValue="_";
+                btns[i].setAttribute( att,'');
+                btns[i].style.color="#FAF3E4"; // hide "_" with background color
+            }
+        }
     }
 }
