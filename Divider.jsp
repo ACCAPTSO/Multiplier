@@ -623,7 +623,7 @@
             int col = dvsrDigs - 2 - idx;
             String cname = "cm" + col + "_0"; 
             String cid = "hcm" + col + "_0"; %>
-            <td class="t2" onclick="showQuotDigs(-1)">
+            <td class="t2" name="notthestartdig">
 <%          if( showMcarriesCk ) { %>
                 <input type="<%=cmtype%>" name="<%=cname%>" class="c2" 
                                   onkeyup="checkMcarry(<%=col%>,0)">
@@ -632,17 +632,17 @@
 <%      } else if( spacesb4quot < idx && idx <= spacesb4quot + quotDigs ) {  
             //int col = spacesb4quot + quotDigs - 1 - idx;
             int jdx = idx - spacesb4quot - 1; %>
-            <td class="t2" onclick="showQuotDigs(-1)">
+            <td class="t2" name="notthestartdig">
                 <span name="quotDp" onclick="chooseDivThis( <%=jdx%>, 'quotDp' )" class="dp" >_</span>
             </td>
 <%      } else {  
             int col = spacesb4quot + quotDigs - 1 - idx; %>
-            <td class="t2" onclick="showQuotDigs(-1)">
+            <td class="t2" name="notthestartdig">
             </td>
 <%      }
         
         if( idx < spacesb4quot || spacesb4quot + quotDigs + rmdrDigs < idx ) { %>
-            <td class="t1" onclick="showQuotDigs(-1)"></td>
+            <td class="t1" name="notthestartdig"></td>
 <%      } else if( spacesb4quot <= idx && idx < spacesb4quot + quotDigs ) {
             int col = spacesb4quot + quotDigs - 1 - idx;
             String qid = "qt" + col;  %>
@@ -651,7 +651,7 @@
             onkeyup="divide(<%=immFeedBkCk%>, <%=col%>, <%=qt[col]%> )"
             ></td>
 <%      } else if( remaindersCk && idx == spacesb4quot + quotDigs ) { %>
-            <td class="t1" onclick="showQuotDigs(-1)"><label id="dispR">
+            <td class="t1" name="notthestartdig"><label id="dispR">
                 R
             </label>
             </td>
@@ -659,13 +659,13 @@
             int col = spacesb4quot + quotDigs + rmdrDigs - idx;
             String rid = "r" + col; 
             String rname = "rmdr"; %>
-            <td class="t1" onclick="showQuotDigs(-1)">
+            <td class="t1" name="notthestartdig">
                 <input type="<%=cmtype%>" id="<%=rid%>" name="<%=rname%>" 
                     class="a1" size="1" 
                     onkeyup="checkRemainder( <%=col%>, <%=rm[col]%> )"
             ></td>
 <%      } else { %>
-            <td class="t1" onclick="showQuotDigs(-1)"></td>
+            <td class="t1" name="notthestartdig"></td>
 <%      }
     } %>
 </tr>
@@ -1086,9 +1086,9 @@ if( thereAreCarries && showBrowsCk ) { %>
 <input type="hidden" id="quotDp" value="<%=expQuotDp%>" class="shortbox">
 <input type="hidden" id="dvsrDp" value="1" class="shortbox">
 <input type="hidden" id="dvdDp" value="<%=expDvdDp%>" class="shortbox">
-<input type="hidden" id="quo" name="decsettled" value="<%=qtdpsettled%>" class="shortbox">
 <input type="hidden" id="dvs" name="decsettled" value="<%=dsdpsettled%>" class="shortbox">
 <input type="hidden" id="dvd" name="decsettled" value="<%=dddpsettled%>" class="shortbox">
+<input type="hidden" id="quo" name="decsettled" value="<%=qtdpsettled%>" class="shortbox">
 <% 
 for( int idx = 0; idx < quotDigs; idx++ ) {
     for( int jdx = 0; jdx < maxOps; jdx++ ) { 

@@ -92,11 +92,16 @@ function showQuotDigs( col ) {
             var errBx = document.getElementById("msg");
             errBx.innerHTML = "";
             setFocus();
-        //} else {
-            //errBx.innerHTML = clickmsg;
-            //upDateErrCount(); // fixit
+        } else {
+            errBx.innerHTML = clickmsg;
+            upDateErrCount();
         }
     }
+}
+function sayNotThere() {
+    var errBx = document.getElementById("msg");
+    errBx.innerHTML = "quotient doesn't start there, click somewhere else";
+    upDateErrCount();
 }
 function checkMcarry( col, sbx ) {
     var ansBx = document.getElementsByName("cm" + col + "_" + sbx)[0];
@@ -1500,19 +1505,19 @@ function startDivAgain() {
 }
 // imitate radio buttons, selecting only one decimal point at a time
 function chooseDivThis( which_one, which_type ) {
-    //var x = 0;
-
-    var btns = document.getElementsByName( which_type );
-    var nbtns= btns.length;
-    var msgBx = document.getElementById("msg");
-    //var statusbox = document.getElementById("statusBox" + x);
-    //statusbox.innerHTML = "nbtns = " + nbtns + " which_one = " + which_one;
-    //x = x + 1;
-    
+    for( var j = 0; j < 18; j++ ) {
+        document.getElementById("statusBox" + j).innerHTML = "";
+    }
+    var x = 0;
+   
     var decsNotSettled = 0;
     var whatDecs = document.getElementsByName("decsettled");
     var whatDecsLength = whatDecs.length;
- 
+    var dvsrSettled = document.getElementById("dvs").value;
+    var dvdSettled = document.getElementById("dvd").value;
+    var quotSettled = document.getElementById("quo").value;
+    var turnOnNextMsg = false;
+
     if( whatDecsLength > 0 ) {
         for( var i = 0; i < whatDecsLength; ++i ) {
             if( whatDecs[i].value  === "false" ) {
@@ -1520,51 +1525,47 @@ function chooseDivThis( which_one, which_type ) {
             }
         }
     }
-    //statusbox = document.getElementById("statusBox" + x);
-    //statusbox.innerHTML = "decsNotSettled = " + decsNotSettled;
-    //x = x + 1;
+
     // if any indicator says not settled
     // light up the decimal point otherwise skip this entire routine 
     if( decsNotSettled > 0 ) {
-        //var btns = document.getElementsByName( which_type );
+        var btns = document.getElementsByName( which_type );
+        var nbtns= btns.length;
+        var msgBx = document.getElementById("msg");
         var totDec = Number(document.getElementById( which_type ).value);
-        //var nbtns= btns.length;
         for( var i = 0; i < nbtns; ++i ) {
             var att = "andsp" + i;
+            //document.getElementById("statusBox" + x).innerHTML = "i = " + i + " which_one = " + which_one + " nbts = " + nbtns;
+            //x = x + 1;
             if( i === which_one ) {
                 btns[i].childNodes[0].nodeValue=".";
                 btns[i].setAttribute( att,'.');
                 var markedDec = nbtns - i;
-                //statusbox = document.getElementById("statusBox" + x);
-                //if( statusbox ) {
-                //    statusbox.innerHTML = "totDec = " + totDec + " markedDec = " + markedDec;
-                //}
-                //x = x + 1;
                 if( totDec === markedDec ) {
                     btns[i].style.color="black";
-                    var leadZeros = document.getElementsByName("yesThis");
-                    var max = leadZeros.length;
-                    for( var j = 0; j < max; ++j ) {
-                        leadZeros[j].style.color = "black";
-                    }
                     var markwhat = which_type.substring(0,3);
                     var whatbox = document.getElementById( markwhat );
                     if( whatbox ) {
                         whatbox.value = "true";
                     }
-                    if( markwhat.localeCompare("dvs") === 0 ) {
-                        msgBx.innerHTML = "Count the same number of places to the right of the dividend decimal point and click there";
-                    } else if( markwhat.localeCompare("dvd") === 0 ) {
+                     if( dvsrSettled.localeCompare("false") === 0 &&
+                            !(markwhat.localeCompare("dvs") === 0) ) {
+                        msgBx.innerHTML = "Count how many places the decimal point needs to move to make the divisor an integer and click there";
+                    } else if( dvdSettled.localeCompare("false") === 0 &&
+                            !(markwhat.localeCompare("dvd") === 0) ) {
+                            msgBx.innerHTML = "Move the dividend decimal point the same number of places that you moved the divisor";
+                    } else if( quotSettled.localeCompare("false") === 0 &&
+                            !(markwhat.localeCompare("quo") === 0) ) {
                         msgBx.innerHTML = "Click the place in the quotient directly above the dividend decimal point";
-                    } else if( decsNotSettled === 1 ) {
-                        msgBx.innerHTML = "Click where first quotient digit should be";
+                    } else {
+                        turnOnNextMsg = true;
+
                     }
                 } else {
                     // turn it back off if it's already on
                     if( btns[i].style.color == "red") { 
                         btns[i].childNodes[0].nodeValue="_";
                         btns[i].setAttribute( att,'');
-                        //btns[i].style.color="#FAF3E4"; // hide "_" with background color
                         // hide "_" with background color
                         btns[i].style.color=btns[i].style.backgroundColor; 
                     } else {
@@ -1577,6 +1578,19 @@ function chooseDivThis( which_one, which_type ) {
                 btns[i].setAttribute( att,'');
                 btns[i].style.color="#FAF3E4"; // hide "_" with background color
             }
+        }
+        if( turnOnNextMsg ) { // this has to be done outside last loop for some reason
+                              // or it terminates the loop prematurely without
+                              // turning off the unused decimal points
+            var notQuotDigits = document.getElementsByName("notthestartdig");
+            var length = notQuotDigits.length;
+            var statusbox = document.getElementById("statusBox" + x);
+            for( var i = 0; i < length; ++i ) {
+                if( notQuotDigits[i].nodeType === 1 ) {
+                    notQuotDigits[i].addEventListener("click", sayNotThere, true);
+                }
+            }
+            msgBx.innerHTML = "Click where first quotient digit should be";
         }
     }
 }
