@@ -127,7 +127,7 @@ td {
   padding: 0px;
   height: 1.5em;
 }
-/* table cell with invisible operator */
+/* table cell with invisible operator/operand */
 .t3{
   text-align: center;
   width: 1.5em;
@@ -137,6 +137,7 @@ td {
   margin-right: 0px;
   background-color: #fdefe0;
   color: #fdefe0;
+  //color: pink; // fixit
   padding: 0px;
   height: 1.5em;
 }
@@ -252,7 +253,7 @@ td {
     //border: 1px solid black;
     //border-radius: 4px;
 }
-/* visible decimal point */
+/* visible incorrect decimal point */
 .ep{
     width: 0.7em;
     height: 1.7em;
@@ -262,6 +263,19 @@ td {
     margin-left: 0px;
     margin-right: 0px;
     color: red;
+    //border: 1px solid black;
+    //border-radius: 4px;
+}
+/* visible correct decimal point */
+.fp{
+    width: 0.7em;
+    height: 1.7em;
+    //max-height: 4px;
+    text-align: center;
+    //background-color: orange;
+    margin-left: 0px;
+    margin-right: 0px;
+    color: black;
     //border: 1px solid black;
     //border-radius: 4px;
 }

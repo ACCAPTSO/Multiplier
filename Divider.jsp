@@ -19,6 +19,8 @@
 <%
     // 2nd divisor dig around 5 is harder to estimate fixit
     // count it wrong if the user gueses a quotient digit 3 times fixit
+    // make the table size constant so it doesn't give hints and the buttons don't 
+    // jump around fixit
     final int SZ2_MX = 12; // maximum dividend + divisor + 1 size
     final int maxOps = 2;
     final double NEXP = 2.6; // used to generate # of digits    
@@ -62,26 +64,34 @@
             isRecDp = "checked";
         }
     }
-    
-
+   
     
     int quotDp = 1; // 1 corresponds to integer with no decimal part
     int dvsrDp = 1;
     int dvdDp = 1;
-    
+    int nTwos = 0;
+    int nFives = 0;
+
     if( exDpCk || recDpCk ) {
-        dvsrDp = 2 + (int)(3*Math.random());
+        //dvsrDp = 2 + (int)(3*Math.random()); // 2-4
+        //dvsrDp = 1 + (int)(4*Math.random()); // 1-4
+        nTwos = (int)(5*Math.random());
+        nFives = (int)(5*Math.random());
         //dvsrDp = 4; // leading 0 in quotient having issues
     }
         
     int dsMaxDg = 2 + (int)(3*Math.random()); // 2-4 digits
-    if( remaindersCk ) {
+    if( remaindersCk || exDpCk  ) {
         dsMaxDg = 1 + (int)(3*Math.random()); // 1-3 digits
+    //} else if( exDpCk ) {
+        //dsMaxDg = 1 + (int)(2*Math.random()); // 1-2 digits
     }
     //int dsMaxDg = 3 + (int)(2*Math.random()); // 3-5 digits
     //dsMaxDg = 3;
     int dsMax = (int)(Math.pow(10, dsMaxDg)) - 2;
     int divisor = 2 + (int)(dsMax*Math.random());
+    //int increase = (int)(Math.pow(5.0,nTwos)*Math.pow(2.0,nFives));
+    
     //divisor = 8720; // leading 0 in quotient having issues
     //divisor = 29; // remainder is a bringdown
     // divisor = 7; // gives remainder 0
@@ -94,17 +104,17 @@
     //divisor = 4172;
     //divisor = 874; // 2 bringdowns, borrow carry hints one to the left
     //divisor = 90; // enter low then high for 2nd qdigit, divide function nextbox gets lost
-    //divisor = 186; // last row borrow hint not in the right column fixit
+    //divisor = 186; // last row borrow hint not in the right column
     //divisor = 74; // 2 bringdowns issues with promptDivBorrow
     //divisor = 69; // issues with promptDivBorrow not checking right carry
     //divisor = 51; // last line of product boxes skipping lsd
-    //divisor = 6495; // had issue with restAreZero fixit
-    //divisor = 94 // sometimes gives wrong box after mcarry fixit
+    //divisor = 6495; // had issue with restAreZero 
+    //divisor = 94 // sometimes gives wrong box after mcarry 
     //divisor = 3717;
-    //divisor = 57; // whatborbx or cabx does not exist does it matter? fixit
+    //divisor = 57; // whatborbx or cabx does not exist does it matter? 
     //divisor = 4975;
 
-    //divisor = 497; // bringdowns not being counted for nextbox fixit
+    //divisor = 497; // bringdowns not being counted for nextbox
 
     //divisor = 77;
     //divisor = 6851;
@@ -112,21 +122,154 @@
     //System.out.println("dsMaxDg = " + dsMaxDg + " dsMax = " + dsMax + " divisor = " + divisor);
 
     int dvsrDigs = (int)Math.log10(divisor) + 1;
-    if( dvsrDp > dvsrDigs ) {
-        dvsrDigs = dvsrDp;
-    }
 
     int qtMaxDg = 7 - dvsrDigs;
-    if( remaindersCk ) {
+    qtMaxDg = 6 - dvsrDigs;
+    if( remaindersCk  ) {
         qtMaxDg = 6 - dvsrDigs;
+    } else if( exDpCk ) {
+        qtMaxDg = 5 - dvsrDigs;
     }
-    if( exDpCk || recDpCk ) {
-        quotDp = 1 + (int)(qtMaxDg*Math.random());
-        //quotDp = 3; // leading 0 in quotient having issues
-    }
-    
+
     int qtMax = (int)(Math.pow(10, qtMaxDg)) - 1;
+    
+    //if( exDpCk || recDpCk ) {
+        //quotDp = 1 + (int)(qtMaxDg*Math.random());
+        //quotDp = (new Double((1+qtMax)*(1 - Math.pow(Math.random(),DEXP)))).intValue();
+        //quotDp = 3; // leading 0 in quotient having issues
+   //}
     int quotient = 1 + (int)(qtMax*Math.random());
+    //dvdDp = 1 + (dvsrDp - 1) + (quotDp - 1);
+    int dvdDigs = 0;
+    //System.out.println("quotient = " + quotient + " nTwos = " + nTwos + " nFives = " + nFives + " divisor = " + divisor);
+    if( exDpCk ) {
+        int t = 0;
+        int f = 0;
+        int totWidth = 1 + (int)Math.log10(divisor) + 1 + (int)Math.log10(quotient*divisor);
+        int prevQuot = quotient;
+        int prevDiv = divisor;
+        int prevT = t;
+        int prevF = f;
+        while( totWidth < SZ2_MX - 2 && (t < nTwos && f < nFives)) {
+            prevQuot = quotient;
+            prevDiv = divisor;
+            prevT = t;
+            prevF = f;
+            boolean heads = (Math.random() < 0.5);
+            //heads = true; // fixit
+            //System.out.println("quotient = " + quotient + " divisor = " + divisor + " ntwos = " + t + " nfives = " + f + " totWidth = " + totWidth);   
+            if( t < nTwos && heads ) {
+                t++;
+                quotient = quotient*2;
+                divisor = divisor*5;
+            } else if( f < nFives) {
+                f++;
+                quotient = quotient*5;
+                divisor = divisor*2;
+            }
+            dvsrDigs = 1 + (int)Math.log10(divisor);
+            dvdDigs = 1 + (int)Math.log10(quotient*divisor);
+            //totWidth = (dvsrDp > dvsrWidth? dvsrDp : dvsrWidth) + 
+            //        (dvdDp > dvdWidth? dvdDp : dvdWidth);
+            totWidth = dvsrDigs + dvdDigs;
+        }
+        if( totWidth >= SZ2_MX - 2 ) {
+            //System.out.println("totWidth = " + totWidth + " quotient = " + quotient + " prevQuot = " + prevQuot + " divisor = " + divisor + "prevDiv = " + prevDiv);
+            quotient = prevQuot;
+            divisor = prevDiv;
+            t = prevT;
+            f = prevF;
+            dvsrDigs = 1 + (int)Math.log10(divisor);
+            dvdDigs = 1 + (int)Math.log10(quotient*divisor);
+            totWidth = dvsrDigs + dvdDigs;
+            //totWidth = (dvsrDp > dvsrWidth? dvsrDp : dvsrWidth) + 
+                    //(dvdDp > dvdWidth? dvdDp : dvdWidth);
+        }
+        //System.out.println(" after loop quotient = " + quotient + " divisor = " + divisor + " ntwos = " + t + " nfives = " + f + " totWidth = " + totWidth);   
+    }
+    /* dbfixit 
+    quotient = 3365;
+    divisor = 30;
+    dvsrDigs = 2;
+    quotient = 98;
+    divisor = 650;
+    dvsrDigs = 3;
+    quotient = 4600;
+    divisor = 108;
+    dvsrDigs = 3;
+    quotient = 4765;
+    divisor = 58;
+    dvsrDigs = 2;
+    quotient = 34;
+    divisor = 434;
+    dvsrDigs = 3;
+    quotient = 1790;
+    divisor = 425;
+    dvsrDigs = 3;
+    /* fixit */
+    int quotDigs = (int)Math.log10(quotient) + 1;
+    /* fixit
+    quotient = 600;
+    divisor = 4000;
+    dvsrDigs = 4; // 5?
+    dvsrDp = 4;
+    quotDp = 3;
+    quotient = 6;
+    divisor = 46840;
+    dvsrDigs = 5;
+    dvsrDp = 4;
+    quotDp = 1;
+    quotient = 500; 
+    divisor = 51;
+    dvsrDigs = 4;
+    dvsrDp = 4;
+    quotDp = 3;
+    //quotient = 906;
+    //divisor = 4;
+    //dvsrDigs = 4;
+    //dvsrDp = 4;
+    //quotDp = 4;
+    quotient = 540; 
+    divisor = 5390;
+    dvsrDigs = 4;
+    dvsrDp = 1;
+    quotDp = 1;
+    
+    quotient = 10;
+    divisor = 511;
+    dvsrDigs = 3;
+    dvsrDp = 1;
+    quotDp = 2;
+        
+    quotient = 197580;
+    divisor = 300;
+    dvsrDigs = 3;
+    dvsrDp = 1;
+    quotDp = 3;         
+    //quotient = 1010;
+    //divisor = 310;
+    //dvsrDigs = 3;
+    //dvsrDp = 1;
+    //quotDp = 3;
+    quotient = 480;
+    divisor = 325;
+    dvsrDigs = 3;
+    dvsrDp = 3;
+    quotDp = 1;
+    
+    quotient = 1300;
+    divisor = 440;
+    dvsrDigs = 4;
+    dvsrDp = 4;
+    quotDp = 2;
+    
+        quotient = 28390;
+    divisor = 10;
+    dvsrDigs = 3;
+    dvsrDp = 3;
+    quotDp = 5;
+    /* fixit */
+
     //uotient = 42; // leading 0 in quotient having issues
     //quotient = 69140; // remainder is a bringdown
 
@@ -145,38 +288,86 @@
     //quotient = 9276; // issues with promptDivBorrow not checking right carry
 
     //quotient = 56205; // last line of product boxes skipping lsd 
-    //quotient = 302; // had issue with restAreZero fixit
-    //quotient = 27793; // sometimes gives wrong box after mcarry fixit
+    //quotient = 302; // had issue with restAreZero 
+    //quotient = 27793; // sometimes gives wrong box after mcarry
     //quotient = 137;
-    //quotient = 65241;// whatborbx or cabx does not exist does it matter? fixit
+    //quotient = 65241;// whatborbx or cabx does not exist does it matter? 
     //quotient = 160;
-    //quotient = 5007; // bringdowns not being counted for nextbox fixit
+    //quotient = 5007; // bringdowns not being counted for nextbox 
     //quotient = 53094;
     //quotient = 237;
-    //quotient = 3100904; // combination with divisor = 28 gives leading 0 in one of the arguments. is that a problem? fixit
+    //quotient = 3100904; // combination with divisor = 28 gives leading 0 in one of the arguments. is that a problem? 
     //System.out.println("dvsrDigs = " + dvsrDigs + " qtMaxDg = " + qtMaxDg + " qtMax = " + qtMax + " quotient = " + quotient);
 
     //int quotient = 5321;
     //int divisor = 321;
     //int quotient = 21;
     //int divisor = 321;
-    int dividnd = quotient*divisor;
-    int quotDigs = (int)Math.log10(quotient) + 1;
-    if( quotDp > quotDigs ) {
-        quotDigs = quotDp;
+    
+    if( exDpCk || recDpCk ) {
+        dvsrDp = 1 + (int)(dsMaxDg*Math.random());
+        //dvsrDp = 2;
+        //dvsrDp = 1;
+        //dvsrDp = 2;
+        //dvsrDp = 1;
+        //dvsrDp = 2;
+        //dvsrDp = 1; // dbfixit
+        if( dvsrDp > dvsrDigs ) {
+            dvsrDigs = dvsrDp;
+        }
+        //int maxQtDp = SZ2_MX + 1 - 2*dvsrDigs;
+        int maxQtDp = SZ2_MX - 2*dvsrDigs;
+        quotDp = 1 + (int)(maxQtDp*Math.random());
+        //quotDp = 6;
+        //quotDp = 4;
+        //quotDp = 9;
+        //quotDp = 3;
+        //quotDp = 5;
+        //quotDp = 7; // dbfixit
+        
+    }
+    //System.out.println("before removing zeros quotDp = " + quotDp);
+    // remove trailing zeros after the decimal point
+    boolean allzeros = true; // assume no digits after the decimal point
+    for( int i = 0; i < quotDp - 1; i++ ) {
+        if( quotient % 10 == 0 ) {
+            quotient = quotient / 10;
+            quotDigs -= 1;
+        } else {
+            allzeros = false;
+        }
+        //System.out.println("quotient[" + i + "] = " + quotient % 10 + " allzeros = " + allzeros );
+    }
+    if( allzeros ) { // this quotient is an integer
+        quotDp = 1;
     }
     dvdDp = 1 + (dvsrDp - 1) + (quotDp - 1);
+    
+    int leadzeros = 0; 
+            
+    if( quotDp > quotDigs ) {
+        leadzeros = quotDp - quotDigs;
+        quotDigs = quotDp;
+    }
+
+    int dividnd = quotient*divisor;
+    dvdDigs = (int)Math.log10(dividnd) + 1;
+    
     int expDvdDp = 1 + (dvdDp - 1) - (dvsrDp - 1);
  
     int expQuotDp = expDvdDp;
-    boolean qtdpsettled = expQuotDp == dvdDp;
+    
     boolean dsdpsettled = 1 == dvsrDp;
     boolean dddpsettled = expDvdDp == dvdDp;
-    int dvdDigs = (int)Math.log10(dividnd) + 1;
+    boolean qtdpsettled = (dsdpsettled && dddpsettled && quotDp == 1 ) ||
+            !( exDpCk || recDpCk );
+    
     if( dvdDp > dvdDigs ) {
         dvdDigs = dvdDp;
     }
-    //System.out.println("quotDigs = " + quotDigs + " quotDp = " + quotDp + " dvsrDigs = " + dvsrDigs + " dvsrDp = " + dvsrDp + " dvdDigs = " + dvdDigs + " dvdDp = " + dvdDp);
+    //System.out.println("divisor = " + divisor + " quotient = " + quotient + " dividnd = " + dividnd );
+    //System.out.println("dvsrDigs = " + dvsrDigs + " dvsrDp = " + dvsrDp + " quotDigs = " + quotDigs + " quotDp = " + quotDp + " dvdDigs = " + dvdDigs + " dvdDp = " + dvdDp);
+    //System.out.println("expQuotDp = " + expQuotDp + " expDvdDp = " + expDvdDp + " leadzeros = " + leadzeros);
     int rmdrMxDg = SZ2_MX - dvsrDigs - 1 - dvdDigs - 1;
     int rmdrMax = 0;
     int remainder = 0;
@@ -201,6 +392,7 @@
     int [] qt;
     int [] ds;
     int [] dd;
+    boolean [] visible;
     int [] rm;
     int [] cspan;
     int [] bspan;
@@ -209,13 +401,14 @@
     qt = new int[SZ2_MX];
     ds = new int[SZ2_MX];
     dd = new int[SZ2_MX];
+    visible = new boolean[SZ2_MX];
     rm = new int[rmdrDigs];
     cspan = new int[quotDigs];
     bspan = new int[quotDigs];
     dspan = new int[quotDigs];
     int bqspan = 2*dvsrDigs + 1;
     int cqspan = 2*dvdDigs + 1;
-    int dqspan = 2*(SZ2_MX + 1) - bqspan - cqspan;
+    
     
     int [] numBringDn = new int[quotDigs];
     int [] actBringDn = new int[quotDigs];
@@ -236,11 +429,19 @@
     }
     //System.out.println("divisor = " + divisor);// + " ds[" + idx + "] = " + ds[idx]);
     tmpint = dividnd;
+    boolean inVisibleSoFar = dvdDp > 1;
     for( int idx = 0; idx < dvdDigs; ++idx ) {
         dd[idx] = tmpint % 10;
         tmpint = tmpint / 10;
-        
+        if( inVisibleSoFar && idx < dvdDp - 1 && dd[idx] == 0 ) {
+            visible[idx] = false;
+            cqspan -= 2;
+        } else {
+            visible[idx] = true;
+            inVisibleSoFar = false;
+        }
     }
+    int dqspan = 2*(SZ2_MX + 1) - bqspan - cqspan;
     //System.out.println("dividend = " + dividnd);// + " dd[" + idx + "] = " + dd[idx]);
     tmpint = remainder;
     for( int idx = 0; idx < rmdrDigs; ++idx ) {
@@ -249,18 +450,26 @@
         //System.out.println("divisor = " + divisor + " dividend = " + dividnd + " remainder = " + remainder + " rm[" + idx + "] = " + rm[idx]);
     }
     
-    int spacesb4quot = dvsrDigs; // + dvdDigs - 
+    int spacesb4quot = dvsrDigs + 1; // + dvdDigs - 
     tmpint = dd[dvdDigs-1];
-    for( int idx = dvdDigs-2; idx >= 0; --idx ) {
-        spacesb4quot += 1;
-        //System.out.println("line 263 idx = " + idx + " tmpint = " + tmpint + " spacesb4quot = " + spacesb4quot);
-        if( tmpint >= divisor ) {
-            break;
-        }
+    for( int idx = dvdDigs-2; idx >= 0 && tmpint < divisor; --idx ) {
+        //spacesb4quot += 1;
+        //System.out.println("line 317 idx = " + idx + " tmpint = " + tmpint + " divisor = " + divisor + " spacesb4quot = " + spacesb4quot);
+        //( tmpint >= divisor ) { //|| idx == 0 ) {
+            //if( tmpint < divisor ) {
+            //    spacesb4quot += 1;
+            //}
+            //System.out.println(" break tmpint = " + tmpint + " divisor = " + divisor + " spacesb4quot = " + spacesb4quot );
+            //break;
+        //}
         tmpint = 10*tmpint + dd[idx];
+        spacesb4quot += 1;
     }
-    if( qt[quotDigs-1] == 0 ) {
+    int qd = quotDigs - 1;
+    while( qt[qd] == 0 && qd > 0 ) {
         spacesb4quot -= 1;
+        qd -= 1;
+        //System.out.println("line 426 quotDigs = " + quotDigs + " qt[" + qd + "] = " + qt[qd] + " spacesb4quot = " + spacesb4quot);
     }
 
     boolean showBrowsCk = false;
@@ -326,7 +535,7 @@
         tmpint = tmpint*10 + lastDig;
     }
     int nsubs = 0; // actual subtractions
-    //System.out.println("divisor = " + divisor + " quotient = " + quotient + " dividnd = " + dividnd );
+
     while( whatquotDig >= 0 ) {
         //System.out.println("in while loop");
         operand[nsubs][0] = qt[whatquotDig]*divisor;
@@ -348,22 +557,11 @@
             break;
         }
 
-        //spacesb4Op[nsubs][0] = spacesb4quot + quotDigs - whatquotDig - numDig[nsubs][0] - 1;
         int mostPossProdDig = (int)Math.log10(9*divisor) + 1;
         spacesb4Op[nsubs][0] = spacesb4quot + quotDigs - whatquotDig - mostPossProdDig - 1;
         //System.out.println("nsubs = " + nsubs + " spacesb4quot = " + spacesb4quot + "+ quotDigs = " + quotDigs + "- whatQuotDig = " + whatquotDig + " - mostPossProdDig = " + mostPossProdDig + " - 1 = " + " spacesb4Op[" + nsubs + "][0] = " + spacesb4Op[nsubs][0]);
-        //int tmpint2 = operand[nsubs][0];
-        //for( int idx = 0; idx < actDig[nsubs][0]; ++idx ) {
-        //    op[nsubs][0][idx] = tmpint2 % 10; // what are these even used for? fixit
-        //    tmpint2 = tmpint2 / 10;
-        //}
+
         spacesb4Op[nsubs][1] = spacesb4quot + quotDigs - whatquotDig - wcDig[nsubs][1] - 1;
-        //System.out.println("nsubs = " + nsubs + " spacesb4quot = " + spacesb4quot + "+ quotDigs = " + quotDigs + "- whatQuotDig = " + whatquotDig + " - wcDig[" + nsubs + "][1] = " + wcDig[nsubs][1] + " - 1 = " + " spacesb4Op[" + nsubs + "][0] = " + spacesb4Op[nsubs][0]);
-        //tmpint2 = operand[nsubs][1];
-        //for( int idx = 0; idx < actDig[nsubs][1]; ++idx ) {
-        //    op[nsubs][1][idx] = tmpint2 % 10;
-        //    tmpint2 = tmpint2 / 10;
-        //}
         cspan[nsubs] = 2*wcDig[nsubs][0] + 1;
         bspan[nsubs] = 2*spacesb4Op[nsubs][0] + 1;
         dspan[nsubs] = 2*(SZ2_MX + 1) - bspan[nsubs] - cspan[nsubs];
@@ -495,7 +693,7 @@
                 ncarries[sbx][kdx] = 1;
                 nacarries[sbx] += 1;          
             }
-            //System.out.println("nacarries[" + sbx + "] = " + nacarries[sbx]);
+            //System.out.println("ncarries[" + sbx + "][" + kdx + "] = " + ncarries[sbx][kdx] + " nacarries[" + sbx + "] = " + nacarries[sbx]);
         }
     }
 
@@ -648,6 +846,7 @@
             String qid = "qt" + col;  %>
             <td class="t1" onclick="showQuotDigs(<%=col%>)">
                 <input type="<%=cmtype%>" id="<%=qid%>" class="a1" size="1" 
+                       name="quotdigs"
             onkeyup="divide(<%=immFeedBkCk%>, <%=col%>, <%=qt[col]%> )"
             ></td>
 <%      } else if( remaindersCk && idx == spacesb4quot + quotDigs ) { %>
@@ -677,10 +876,12 @@
         <tr>
     <%      for( int idx = 0; idx <= SZ2_MX; idx++ ) {
                 int ocol = dvsrDigs + dvdDigs - idx;
-                int col = dvsrDigs + dvdDigs - quotDigs + 1 - idx;
+                int col = dvsrDigs + dvdDigs - quotDigs + 1 - idx + leadzeros;
+                //System.out.println("idx = " + idx + " col = " + col + " ocol = " + ocol);
                 String name = "boca0"; 
-                if( dvsrDigs < idx && idx < dvsrDigs + dvdDigs - quotDigs + 2
-                        && ncarries[0][col] != 0 ) { 
+                //if( dvsrDigs < idx && idx < dvsrDigs + dvdDigs - quotDigs + 2
+                //        && ncarries[0][col] != 0 ) { 
+                if( col >= 0 && ncarries[0][col] != 0 ) { 
                     String cid = "ca" + ocol + "_0"; 
                     if( ocol < 0 || ocol >= SZ2_MX ) {
                          System.out.println("ca ocol = " + ocol + "being reduced to 0");
@@ -695,6 +896,8 @@
                     <td class="s2"></td>
     <%          } 
                 if( col > 0 && ncarries[0][col-1] != 0 ) { 
+                //if( dvsrDigs + leadzeros - 1 < idx && idx < dvsrDigs + dvdDigs - quotDigs + 1 + leadzeros
+                //        && 0 < col && col <= SZ2_MX + 1  && ncarries[0][col+1] != 0 ) { 
                     String bid = "bo" + ocol + "_0" ; 
                     if( ocol < 0 || ocol > SZ2_MX ) {
                          System.out.println("bo ocol = " + ocol + "being reduced to 0");
@@ -713,14 +916,17 @@
 <tr>
 <%  for( int idx = 0; idx <= SZ2_MX; idx++ ) { 
         if( dvsrDigs - (idx - 1) == dvsrDp  && (exDpCk || recDpCk) ) { 
-            int jdx = idx - 1; %>
+            int jdx = idx - 1; 
+            // fp = black, dp = invisible, ep = red
+            String dclass = dsdpsettled ? dvsrDp > 1 ? "fp" : "dp" : "ep"; %>
             <td class="t2">
-                <span name="dvsrDp" onclick="chooseDivThis( <%=jdx%>, 'dvsrDp' )" class="ep" >.</span>
+                <span name="dvsrDp" onclick="chooseDivThis( <%=jdx%>, 'dvsrDp' )" class="<%=dclass%>" >.</span>
             </td>
 <%      } else if( dvdDigs - (idx - dvsrDigs - 2) == dvdDp  && (exDpCk || recDpCk) ) { 
-            int jdx = idx - dvsrDigs - 2; %>
+            int jdx = idx - dvsrDigs - 2; 
+            String dclass = dsdpsettled ? dvdDp > 1? "fp" : "dp" : "ep"; %>
             <td class="t2">
-                <span name="dvdDp" onclick="chooseDivThis( <%=jdx%>, 'dvdDp' )" class="ep" >.</span>
+                <span name="dvdDp" onclick="chooseDivThis( <%=jdx%>, 'dvdDp' )" class="<%=dclass%>" >.</span>
             </td>
 <%      } else if( 0 < idx && idx <= dvsrDigs ) { 
             int jdx = idx - 1; %>
@@ -743,9 +949,10 @@
             <td class="t1" >)</td>
 <%      } else if( idx <= dvsrDigs + dvdDigs ) { 
             int col = dvsrDigs +  dvdDigs - idx;
-            //System.out.println("dividend col = " + col); %>
-            <td class="t1" name="dvddigs" onclick="promptDivBorrow(<%=col%>, 0)">
-                <%=dd[col]%>
+            //System.out.println("dividend col = " + col); 
+            String vclass = visible[col]? "t1" : "t3"; %>
+            <td class="<%=vclass%>" name="dvddigs" onclick="promptDivBorrow(<%=col%>, 0)">
+            <%=dd[col]%>
             </td>
 <%      } else { %>
             <td class="t1" ></td>
@@ -872,10 +1079,13 @@
     <tr>
 <%    if( nacarries[0] > 0 ) {
     for( int idx = 0; idx <= SZ2_MX; idx++ ) {
+                //int ocol = dvsrDigs + dvdDigs - idx;
+                //int col = dvsrDigs + dvdDigs - quotDigs + 1 - idx;
                 int ocol = dvsrDigs + dvdDigs - idx;
-                int col = dvsrDigs + dvdDigs - quotDigs + 1 - idx;
-                if( dvsrDigs < idx && idx < dvsrDigs + dvdDigs - quotDigs + 2
-                        && ncarries[0][col] != 0 ) { 
+                int col = dvsrDigs + dvdDigs - quotDigs + 1 - idx + leadzeros;
+                //if( dvsrDigs < idx && idx < dvsrDigs + dvdDigs - quotDigs + 2
+                //        && ncarries[0][col] != 0 ) { 
+                if( col >= 0 && ncarries[0][col] != 0 ) { 
                     String hid = "hca" + ocol + "_0"; 
                     if( ocol < 0 || ocol >= SZ2_MX ) {
                          System.out.println("ca col = " + ocol + "being reduced to 0");
@@ -910,6 +1120,7 @@
     <tr>
 <%      for( int idx = 0; idx <= SZ2_MX; idx++ ) {
             int col = spacesb4Op[sbx][0] + wcDig[sbx][0] + numBringDn[sbx] - idx; 
+            //System.out.println("rdx = " + rdx + " col = " + col + " spacesb4Op[" + sbx + "][0] = " + spacesb4Op[sbx][0] + " wcDig[" + sbx + "][0] = " + wcDig[sbx][0] + " numBringDn[" + sbx + "] = " + numBringDn[sbx]);
             if( 0 <= col && 
                     col <  wcDig[sbx][0] + numBringDn[sbx] && 
                     ncarries[rdx][col] != 0 ) {
@@ -968,10 +1179,16 @@
 </div>
 <div class="d6">
 <!--this is where error messages get displayed//-->
-<% if( exDpCk || recDpCk ) { %>
-    <label id="msg">Count how many places the decimal point needs to move to make the divisor an integer and click there</label>
-<% } else { %>
-    <label id="msg">Click where first quotient digit should be</label>
+<%  if( exDpCk || recDpCk) {
+        if( !dsdpsettled ) { %>
+            <label id="msg">omsg Count how many places the decimal point needs to move to make the divisor an integer and click there</label>
+<%      } else if( !qtdpsettled ) { %>
+            <label id="msg">omsg Click the place in the quotient directly above the dividend decimal point</label>
+<%      } else { %>
+            <label id="msg">omsg Click where first quotient digit should be</label>
+<%      }
+    } else { %>
+        <label id="msg"> omsg Click where first quotient digit should be</label>
 <% } %>
 </div>
 <div class="d3">
@@ -1085,7 +1302,7 @@ if( thereAreCarries && showBrowsCk ) { %>
 <input type="hidden" id="strtTime" name="strtTimeP" value="<%=strtTime%>" class="shortbox">
 <input type="hidden" id="quotDp" value="<%=expQuotDp%>" class="shortbox">
 <input type="hidden" id="dvsrDp" value="1" class="shortbox">
-<input type="hidden" id="dvdDp" value="<%=expDvdDp%>" class="shortbox">
+<input type="hidden" id="dvdDp" value="<%=expDvdDp%>" class="shortbox"> 
 <input type="hidden" id="dvs" name="decsettled" value="<%=dsdpsettled%>" class="shortbox">
 <input type="hidden" id="dvd" name="decsettled" value="<%=dddpsettled%>" class="shortbox">
 <input type="hidden" id="quo" name="decsettled" value="<%=qtdpsettled%>" class="shortbox">
