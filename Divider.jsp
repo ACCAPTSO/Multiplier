@@ -1,4 +1,4 @@
-<%-- 
+/<%-- 
     Document   : Divider
     Created on : Dec 3, 2015, 12:23:00 PM
     Author     : irene
@@ -21,6 +21,7 @@
     // count it wrong if the user gueses a quotient digit 3 times fixit
     // make the table size constant so it doesn't give hints and the buttons don't 
     // jump around fixit
+    // find why some preset settings don't work at all or stick permanently fixit
     final int SZ2_MX = 12; // maximum dividend + divisor + 1 size
     final int maxOps = 2;
     final double NEXP = 2.6; // used to generate # of digits    
@@ -185,7 +186,7 @@
             //totWidth = (dvsrDp > dvsrWidth? dvsrDp : dvsrWidth) + 
                     //(dvdDp > dvdWidth? dvdDp : dvdWidth);
         }
-        //System.out.println(" after loop quotient = " + quotient + " divisor = " + divisor + " ntwos = " + t + " nfives = " + f + " totWidth = " + totWidth);   
+        System.out.println(" after loop quotient = " + quotient + " divisor = " + divisor + " ntwos = " + t + " nfives = " + f + " totWidth = " + totWidth);   
     }
     /* dbfixit 
     quotient = 3365;
@@ -206,6 +207,18 @@
     quotient = 1790;
     divisor = 425;
     dvsrDigs = 3;
+    quotient = 25;
+    divisor = 1972;
+    dvsrDigs = 4;
+    quotient = 5225;
+    divisor = 4;
+    dvsrDigs = 1;
+    quotient = 13898;
+    divisor = 25;
+    dvsrDigs = 2;
+    quotient = 90037;
+    divisor = 3;
+    dvsrDigs = 1;
     /* fixit */
     int quotDigs = (int)Math.log10(quotient) + 1;
     /* fixit
@@ -308,6 +321,10 @@
         dvsrDp = 1 + (int)(dsMaxDg*Math.random());
         //dvsrDp = 2;
         //dvsrDp = 1;
+        //dvsrDp = 1;
+        //dvsrDp = 2;
+        //dvsrDp = 2;
+        //dvsrDp = 1;
         //dvsrDp = 2;
         //dvsrDp = 1;
         //dvsrDp = 2;
@@ -318,6 +335,10 @@
         //int maxQtDp = SZ2_MX + 1 - 2*dvsrDigs;
         int maxQtDp = SZ2_MX - 2*dvsrDigs;
         quotDp = 1 + (int)(maxQtDp*Math.random());
+        //quotDp = 3;
+        //quotDp = 7;
+        //quotDp = 7;
+        //quotDp = 4;
         //quotDp = 6;
         //quotDp = 4;
         //quotDp = 9;
@@ -366,7 +387,7 @@
         dvdDigs = dvdDp;
     }
     //System.out.println("divisor = " + divisor + " quotient = " + quotient + " dividnd = " + dividnd );
-    //System.out.println("dvsrDigs = " + dvsrDigs + " dvsrDp = " + dvsrDp + " quotDigs = " + quotDigs + " quotDp = " + quotDp + " dvdDigs = " + dvdDigs + " dvdDp = " + dvdDp);
+    System.out.println("dvsrDigs = " + dvsrDigs + " dvsrDp = " + dvsrDp + " quotDigs = " + quotDigs + " quotDp = " + quotDp + " dvdDigs = " + dvdDigs + " dvdDp = " + dvdDp);
     //System.out.println("expQuotDp = " + expQuotDp + " expDvdDp = " + expDvdDp + " leadzeros = " + leadzeros);
     int rmdrMxDg = SZ2_MX - dvsrDigs - 1 - dvdDigs - 1;
     int rmdrMax = 0;
@@ -453,15 +474,6 @@
     int spacesb4quot = dvsrDigs + 1; // + dvdDigs - 
     tmpint = dd[dvdDigs-1];
     for( int idx = dvdDigs-2; idx >= 0 && tmpint < divisor; --idx ) {
-        //spacesb4quot += 1;
-        //System.out.println("line 317 idx = " + idx + " tmpint = " + tmpint + " divisor = " + divisor + " spacesb4quot = " + spacesb4quot);
-        //( tmpint >= divisor ) { //|| idx == 0 ) {
-            //if( tmpint < divisor ) {
-            //    spacesb4quot += 1;
-            //}
-            //System.out.println(" break tmpint = " + tmpint + " divisor = " + divisor + " spacesb4quot = " + spacesb4quot );
-            //break;
-        //}
         tmpint = 10*tmpint + dd[idx];
         spacesb4quot += 1;
     }
@@ -535,9 +547,9 @@
         tmpint = tmpint*10 + lastDig;
     }
     int nsubs = 0; // actual subtractions
-
+    //System.out.println("tmpint = " + tmpint + " nsubs = " + nsubs);
     while( whatquotDig >= 0 ) {
-        //System.out.println("in while loop");
+
         operand[nsubs][0] = qt[whatquotDig]*divisor;
         int WCoperand0 = worstCaseQdig*divisor; // worst case, biggest operand
         operand[nsubs][1] = tmpint - operand[nsubs][0];
@@ -549,9 +561,11 @@
                 (int)Math.log10(operand[nsubs][1]) + 1: 1;
         wcDig[nsubs][0] = WCoperand0 > 0? 
                 (int)Math.log10(WCoperand0) + 1: 1;
+        //wcDig[nsubs][1] = WCoperand1 > 0? 
+        //        (int)Math.log10(WCoperand1) + 1: 1;
         wcDig[nsubs][1] = WCoperand1 > 0? 
-                (int)Math.log10(WCoperand1) + 1: 1;
-        
+                (int)Math.log10(WCoperand1) + 2: 2;
+        //System.out.println("whatQuotDig = " + whatquotDig + " operand[" + nsubs + "][0] = " + operand[nsubs][0] + "  WCoperand0 = " + WCoperand0 + " WCoperand1 = " + WCoperand1 );       
         if( operand[nsubs][1] < 0 ) {
             //System.out.println("tmpint = " + tmpint + " operand[" + nsubs + "][0] = " + operand[nsubs][0] + " diff = " + operand[nsubs][1] + " that's messed up");
             break;
@@ -683,10 +697,16 @@
     
     for( int sbx = 0; sbx < quotDigs; ++ sbx ) {
         nacarries[sbx] = 0;
-        int kdxmax = sbx == 0? dvdDigs - quotDigs + 1 : wcDig[sbx-1][1] + numBringDn[sbx-1] - 1; //numBringDn[sbx-1];
+        int sbxminus1 = sbx - 1;
+        int kdxmax = sbx == 0? 
+                dvdDigs - quotDigs + 1 + leadzeros : 
+                wcDig[sbxminus1][1] + numBringDn[sbxminus1] - 1;
+        if( sbx > 0 ) {
+            //System.out.println("wcDig[" + sbxminus1 + "][1] = " + wcDig[sbxminus1][1] + " numBringDn[" + sbxminus1 + "] = " + numBringDn[sbxminus1]);
+        }
         for (kdx = 0; kdx < kdxmax; kdx++) {
             boolean needsCarry = true;
-            if( kdx >= kdxmax-1 || (sbx > 0 && wcDig[sbx-1][1] < 2 ) ) {
+            if( kdx >= kdxmax-1 || (sbx > 0 && wcDig[sbxminus1][1] < 2 ) ) {
                 needsCarry = false;
             }
             if( needsCarry ) {
@@ -773,8 +793,7 @@
                 ++idx;                    // and differences
                 rdx = 1;
                 mdx = 0;
-                ndx = 0;
-                
+                ndx = 0;              
             }
         }
         if( qt[quotDigs-1-qdx+nmcars] > 1 ){
@@ -1181,14 +1200,14 @@
 <!--this is where error messages get displayed//-->
 <%  if( exDpCk || recDpCk) {
         if( !dsdpsettled ) { %>
-            <label id="msg">omsg Count how many places the decimal point needs to move to make the divisor an integer and click there</label>
+            <label id="msg">Count how many places the decimal point needs to move to make the divisor an integer and click there</label>
 <%      } else if( !qtdpsettled ) { %>
-            <label id="msg">omsg Click the place in the quotient directly above the dividend decimal point</label>
+            <label id="msg">Click the place in the quotient directly above the dividend decimal point</label>
 <%      } else { %>
-            <label id="msg">omsg Click where first quotient digit should be</label>
+            <label id="msg">Click where first quotient digit should be</label>
 <%      }
     } else { %>
-        <label id="msg"> omsg Click where first quotient digit should be</label>
+        <label id="msg">Click where first quotient digit should be</label>
 <% } %>
 </div>
 <div class="d3">

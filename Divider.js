@@ -105,6 +105,7 @@ function sayNotThere() {
     upDateErrCount();
 }
 function checkMcarry(col, sbx) {
+    var x = 0;
     var ansBx = document.getElementsByName("cm" + col + "_" + sbx)[0];
     var prevBx;
     if (col > 0) {
@@ -139,14 +140,20 @@ function checkMcarry(col, sbx) {
         }
         possBx[sbx].style.color = "black";
         errBx.innerHTML = "";
-        //var x = 0;
         var nextbox = document.getElementsByClassName("c2").length;
+        //document.getElementById("statusBox" + x).innerHTML = "skip mcarry boxes nextbox = " + nextbox;
+        //x = x + 1;
         // skip quotient boxes
         nextbox += quotDigs;
-        //document.getElementById("statusBox" + x).innerHTML = "skip mcarry and quotient boxes nextbox = " + nextbox;
+        //document.getElementById("statusBox" + x).innerHTML = "skip quotient boxes nextbox = " + nextbox;
+        //x = x + 1;
+        // skip remainder boxes
+        nextbox += document.getElementsByName("rmdr").length;
+        //document.getElementById("statusBox" + x).innerHTML = "skip remainder boxes nextbox = " + nextbox;
         //x = x + 1;
         // skip borrow and carry boxes for original dividend
-        nextbox += 2 * (document.getElementsByName("dvddigs").length - quotDigs);
+        //nextbox += 2 * (document.getElementsByName("dvddigs").length - quotDigs);
+        nextbox += document.getElementsByName("boca0").length;
         //document.getElementById("statusBox" + x).innerHTML = "skip orig dividend borrow and carry boxes nextbox = " + nextbox;
         //x = x + 1;
         // needs every row of operands, borrows and carries
@@ -177,7 +184,7 @@ function checkMcarry(col, sbx) {
 
         //alert("final nextbox = " + nextbox);
         document.getElementById("whatbox").value = nextbox;
-        //incrementbox();
+
     } else {
         dvsrdigs[dvsrdigs.length - 1 - col].style.color = "red";
         if (prevBx) {
@@ -220,7 +227,8 @@ function divide(immFeedBkCk, col, qtDig) {
     // as well as the max digit of that product
     var prod = 0;
     var dvsrdigs = document.getElementsByName("dvsrdigs");
-    for (var i = 0; i < dvsrdigs.length; ++i) {
+    var dvsrdigslength = dvsrdigs.length;
+    for (var i = 0; i < dvsrdigslength; ++i) {
         dvsrdigs[i].style.color = "black";
     }
     var quotDigs = Number(document.getElementById("quotDigs").value);
@@ -230,14 +238,16 @@ function divide(immFeedBkCk, col, qtDig) {
     var mcarry = 0;
     var i = 0;
     var carryRow = quotDigs - 1 - col;
-    for (; i < dvsrdigs.length; i++) {
-        var dbx = dvsrdigs.length - 1 - i;
+    
+    for (; i < dvsrdigslength; i++) {
+        var dbx = dvsrdigslength - 1 - i;
         var addProd = Number(dvsrdigs[dbx].childNodes[0].nodeValue) * ans + mcarry;
         mcarry = Math.floor(addProd / 10);
         var mDig = addProd % 10;
-        if (dbx > 0) {
+        if( dbx > 0 && i < dvsrdigslength - 1 ) {
             var whatMcarry = "hcm" + i + "_" + carryRow;
-            //alert("whatMcarry = " + whatMcarry);
+            //document.getElementById("statusBox" + x).innerHTML = "whatMcarry = " + whatMcarry;
+            //x = x + 1;
             document.getElementById(whatMcarry).value = mcarry;
         }
         prod += Math.pow(10, i) * mDig;
@@ -569,7 +579,7 @@ function divide(immFeedBkCk, col, qtDig) {
                 //x = x + 1;
                 if (nextbox === 0) {
                     // skip multiplicative carries
-                    nextbox = document.getElementsByClassName('c2').length - 1;
+                    nextbox = document.getElementsByClassName("c2").length - 1;
                     // skip quotient boxes
                     nextbox += quotDigs;
                     //document.getElementById("statusBox" + x).innerHTML = "skip quotdigs and mcarries nextbox = " + nextbox;
@@ -577,7 +587,8 @@ function divide(immFeedBkCk, col, qtDig) {
                     // skip remainder boxes
                     nextbox += rmdrDigs;
                     // skip borrow and carry boxes for original dividend
-                    nextbox += 2 * (origDvdDigs.length - quotDigs);
+                    //nextbox += 2 * (origDvdDigs.length - quotDigs);
+                    nextbox += document.getElementsByName("boca0").length;
                     //document.getElementById("statusBox" + x).innerHTML =  "skip borrows and carries nextbox = " + nextbox;
                     //x = x + 1;                
                 }
@@ -758,7 +769,6 @@ function multiply(col) { // may want to pass sbx instead of reading whatRow afte
         } else {
             prevcaBx = document.getElementById(whatBx);
         }
-
 
         //document.getElementById("statusBox" + x).innerHTML = "showMcarriesChkd = " + showMcarriesChkd + " whatBx = " + whatBx + " prevCaBx = " + prevcaBx;
         //x = x + 1;
