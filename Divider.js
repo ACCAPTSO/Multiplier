@@ -505,15 +505,6 @@ function divide(immFeedBkCk, col, qtDig) {
             for (var i = 0; i < dvsrdigs.length; i++) {
                 dvsrdigs[i].style.color = "black";
             }
-            //errBx.innerHTML = "";
-            // need to take 0.87 into account fixit
-            //if( ans !== 0 ){ // make next row of multiplication boxes visible
-            //    var name = 'op' + whatRow + '_0';
-            //    var visibleMrow = document.getElementsByName(name);
-            //    for( var i = 0; i < visibleMrow.length; i++ ) {
-            //        visibleMrow[i].type = "text";
-            //    }
-            //}
         } else {
             // make divisor and either dividend or most recent difference red
             for (var i = 0; i < stop; i++) {
@@ -534,7 +525,6 @@ function divide(immFeedBkCk, col, qtDig) {
     }
     if (time2increment) {
         var nextbox;
-        // need to take 0.87 into account fixit
         if (ans === 0) {
             if (col > 0) { //  you will need to bring down more digits
                 // before you can start another row  
@@ -1178,8 +1168,10 @@ function subtract(col, sbx) {
 
             if (lastqcol === 0) { // done calculating this quotient
                 // if there is a remainder
-                if (Number(document.getElementById("operand" + sbx + "_1").value) !== 0) {
-                    document.getElementById("dispR").style.color = "black";
+                var dispR = document.getElementById("dispR");
+                if (Number(document.getElementById("operand" + sbx + "_1").value) !== 0 &&
+                       dispR ) {
+                    dispR.style.color = "black";
                     nextbox = document.getElementsByClassName("c2").length + quotDigs - lastqcol;
                 } else { // nextbox is ID=whatbox 
                     nextbox = Number(document.getElementById("lastBoxOfCurrRow").value) + 1;
@@ -1530,6 +1522,8 @@ function zeroDivCounts() {
 }
 // start again button code
 function startDivAgain() {
+    // make it verify that repeating pattern has been overlined,
+    // may not need to find lastrow fixit
     //var max = Number(document.getElementById('lastbox').value);
     var errCt = Number(document.getElementById("errs").value);
     //var boxNo = Number(document.getElementById("bdx").value);
@@ -1541,7 +1535,6 @@ function startDivAgain() {
 
     // find the last opX_1 in the page
     var nextrow = document.getElementsByName("op" + 0 + "_1");
-    ;
     var lastrow = null;
     for (var j = 1; ; ++j) {
         var lastrow = nextrow;
