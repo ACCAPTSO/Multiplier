@@ -22,7 +22,7 @@
     // make the table size constant so it doesn't give hints and the buttons don't 
     // jump around fixit
     // find why some preset settings don't work at all or stick permanently 
-    //System.out.println("------------------------Start Anew!-------------------------");
+    System.out.println("------------------------Start Anew!-------------------------");
     final int SZ2_MX = 12; // maximum dividend + divisor + 1 size
     final int maxOps = 2;
     final double NEXP = 2.6; // used to generate # of digits    
@@ -31,23 +31,23 @@
     final boolean debugcarries = false;
     final boolean lastboxdebug = false;
     
-    boolean immFeedBkCk = true;
+    boolean immFeedBkCk = false;
     boolean estRequiredCk = false;
     boolean remaindersCk = false;
     boolean exDpCk = false;
-    boolean recDpCk = false;
-    String isImmFeedBk = "checked";
+    boolean recDpCk = true;
+    String isImmFeedBk = "";
     String isEstRequired = "";
     String isRemainders = "";
     String isExDp = "";
-    String isRecDp = "";
+    String isRecDp = "checked";
     String tmp = "";      // temporary storage for newly gotten 
                           // request parameter
     String whatlvl = "";
     double justLessThn1 = 1 - 1/Double.MAX_VALUE;
     if(( tmp = request.getParameter("difflvl")) != null ) {
-        immFeedBkCk = false;
-        isImmFeedBk = "";
+        recDpCk = false;
+        isRecDp = "";
         whatlvl = tmp;
         if( whatlvl.equals("Immediate Feedback") ) {
             immFeedBkCk = true;
@@ -74,7 +74,7 @@
     int nTwos = 0;
     int nFives = 0;
 
-    if( exDpCk || recDpCk ) {
+    if( exDpCk ) {
         //dvsrDp = 2 + (int)(3*Math.random()); // 2-4
         //dvsrDp = 1 + (int)(4*Math.random()); // 1-4
         nTwos = (int)(5*Math.random());
@@ -323,12 +323,12 @@
     //int divisor = 321;
     
     if( recDpCk ) {
-        dvsrDp = 1;// + (int)(Math.random());
+        dvsrDp = 1; // + (int)(2*Math.random()); // making it more is tricky - overflows page
         if( dvsrDp > dvsrDigs ) {
             dvsrDigs = dvsrDp;
         }
         //int maxQtDp = SZ2_MX + 1 - 2*dvsrDigs;
-        int maxQtDp = 4; //SZ2_MX - 2 - 2*dvsrDigs;
+        int maxQtDp = 4; //SZ2_MX - 2 - 2*dvsrDigs; // making it more is tricky - overflows page
         quotDp = 1 + (int)(maxQtDp*Math.random());
     }
     if( exDpCk ) {
@@ -365,86 +365,67 @@
     
     
     int dividnd = quotient*divisor;
-    System.out.println("before adding recurring factor quotient = " + quotient + " quotDp = " + quotDp + " divisor = " + divisor + " dvsrDp = " + dvsrDp + " dividend =  " + dividnd );
+    //System.out.println("before adding recurring factor quotient = " + quotient + " quotDp = " + quotDp + " divisor = " + divisor + " dvsrDp = " + dvsrDp + " dividend =  " + dividnd );
     if( recDpCk ) {
         int diceRoll = 1 + (int)(7*Math.random());
-        //diceRoll = 1 + (int)(2*Math.random());
-        
-        double denominator = 1.0;
-        double doublequot = (double)quotient;
+        int denominator = 1;
+        int multiplier = 10000000;
+        dsMax = 7;
         // make random divisors so that quotient is never exact, never overflows fixit
-        double doubledvsr = 1.0;//(double)divisor;
+        int minQdp = 8;
         if( diceRoll == 7 ) {
-            denominator = 13.; // repeats every six digits
-            dividnd = (int)(doublequot*doubledvsr*10000000.);
-            doublequot = doublequot*10000000./denominator;
-            quotient = (int)doublequot;
-            doubledvsr = doubledvsr*denominator;  
-            if( quotDp < 8 ) {
-                quotDp = 8;
-            }
+            denominator = 13; // repeats every six digits
+            minQdp = 8;
+            multiplier = 10000000;
+            dsMax = 7;
         } else if( diceRoll == 6 ) {
-            denominator = 7.; // repeats every six digits
-            dividnd = (int)(doublequot*doubledvsr*10000000.);
-            doublequot = doublequot*10000000./denominator;
-            quotient = (int)doublequot;
-            doubledvsr = doubledvsr*denominator;  
-            if( quotDp < 8 ) {
-                quotDp = 8;
-            }
+            denominator = 7; // repeats every six digits
+            minQdp = 8;
+            multiplier = 10000000;
+            dsMax = 14; 
         } else if( diceRoll == 5 ) {
-            denominator = 41.; // repeats every four digits
-            dividnd = (int)(doublequot*doubledvsr*100000.);
-            doublequot = doublequot*100000./denominator;
-            quotient = (int)doublequot;
-            doubledvsr = doubledvsr*denominator;  
-            if( quotDp < 6 ) {
-                quotDp = 6;
-            }
+            denominator = 41; // repeats every five digits
+            minQdp = 7;
+            multiplier = 1000000;
+            dsMax = 24;            
         } else if( diceRoll == 4 ) {
-            denominator = 37.; // repeats every three digits
-            dividnd = (int)(doublequot*doubledvsr*10000.);
-            doublequot = doublequot*10000./denominator;
-            quotient = (int)doublequot;
-            doubledvsr = doubledvsr*denominator;  
-            if( quotDp < 5 ) { // need at least 4 decimal cases in case 0.2702
-                quotDp = 5;    // = 100 / 37
-            }
+            denominator = 37; // repeats every three digits
+            minQdp = 5; // need at least 4 decimal places in case 0.2702 = 100 / 37
+            multiplier = 10000;
+            dsMax = 27;   // 27 = 1000/37
         } else if( diceRoll == 3 ) {
-            denominator = 11.; // repeats every two digits
-            dividnd = (int)(doublequot*doubledvsr*1000.);
-            doublequot = doublequot*1000./denominator;
-            quotient = (int)doublequot;
-            doubledvsr = doubledvsr*denominator;
-            if( quotDp < 4 ) { // need at least 3 decimal cases in case 0.909
-                quotDp = 4;    // = 100 / 11
-            }
+            denominator = 11; // repeats every two digits
+            minQdp = 4; // need at least 3 decimal places in case 0.909 = 100 / 11
+            multiplier = 1000;
+            dsMax = 90;   // 90 = 1000/11
         } else if( diceRoll == 2 ) {
-            denominator = 9.; // repeats every digit
-            dividnd = (int)(doublequot*doubledvsr*100.);
-            doublequot = doublequot*100./denominator;
-            quotient = (int)doublequot;
-            doubledvsr = doubledvsr*denominator;
-            if( quotDp < 2 ) {
-                quotDp = 2;
-            }
+            denominator = 9; // repeats every digit
+            minQdp = 2;
+            multiplier = 100;
+            dsMax = 111; // = 1000/9
         } else if( diceRoll == 1 ) {
-            denominator = 3.; // repeats every digit
-            dividnd = (int)(doublequot*doubledvsr*100.);
-            doublequot = doublequot*100./denominator;
-            quotient = (int)doublequot;
-            doubledvsr = doubledvsr*denominator;
-            if( quotDp < 2 ) {
-                quotDp = 2;
-            }
+            denominator = 3; // repeats every digit
+            minQdp = 2;
+            multiplier = 100;
+            dsMax = 333; // = 1000/3
         }
-        divisor = (int)doubledvsr;
+        while( quotient % denominator == 0 ) { // make sure division is not exact
+            quotient = 1 + (int)(qtMax*Math.random());
+        }
+        divisor = 1 + (int)(dsMax*Math.random());
+        dividnd = quotient*divisor*multiplier; // calculate without denominator it cancels algebraically but may have round off error
+        int origQuot = quotient;
+        quotient = quotient*multiplier/denominator;
         quotDigs = (int)Math.log10(quotient) + 1;
-        dvsrDigs = (int)Math.log10(divisor) + 1;
-        
+        if( quotDp < minQdp ) {
+            quotDp = minQdp;
+        }
+        divisor = divisor*denominator;         
+        dvsrDigs = (int)Math.log10(divisor) + 1;     
         if( dvsrDp > dvsrDigs ) {
             dvsrDigs = dvsrDp;
         }
+        // check the width and adjust decimal points, qtMax(?) and dsMax in a loop fixit
         System.out.println("after denominator = " + denominator + " quotient = " + quotient + " quotDp = " + quotDp + " divisor = " + divisor + " dvsrDp = " + dvsrDp + " dividend =  " + dividnd );
 
     }
@@ -466,7 +447,7 @@
             //allzeros = false;
             break;
         }
-        //System.out.println("line 432 quotient = " + quotient + " quotient[" + i + "] = " + quotient % 10 + " quotDigs = " + quotDigs + " quotDp = " + quotDp ); // + " allzeros = " + allzeros );
+        System.out.println("line 432 quotient = " + quotient + " quotient[" + i + "] = " + quotient % 10 + " quotDigs = " + quotDigs + " quotDp = " + quotDp ); // + " allzeros = " + allzeros );
     }
     //if( allzeros ) { // this quotient is an integer
     //    quotDp = 1;
@@ -589,15 +570,15 @@
     for( int idx = dvdDigs-2; idx >= 0 && tmpint < divisor; --idx ) {
         tmpint = 10*tmpint + dd[idx];
         spacesb4quot += 1;
-        //System.out.println("line 553 dividend = " + tmpint + " spacesb4quot = " + spacesb4quot);
+        //System.out.println("line 605 dividend = " + tmpint + " spacesb4quot = " + spacesb4quot);
     }
     int qd = quotDigs - 1;
     // back off leading zeros
-    //System.out.println("line 557 quotDigs = " + quotDigs + " qt[" + qd + "] = " + qt[qd] + " spacesb4quot = " + spacesb4quot);
+    //System.out.println("line 609 quotDigs = " + quotDigs + " qt[" + qd + "] = " + qt[qd] + " spacesb4quot = " + spacesb4quot);
     while( qt[qd] == 0 && qd > 0 ) {
         spacesb4quot -= 1;
         qd -= 1;
-        //System.out.println("line 561 quotDigs = " + quotDigs + " qt[" + qd + "] = " + qt[qd] + " spacesb4quot = " + spacesb4quot);
+        //System.out.println("line 613 quotDigs = " + quotDigs + " qt[" + qd + "] = " + qt[qd] + " spacesb4quot = " + spacesb4quot);
     }
 
     boolean showBrowsCk = false;
@@ -665,7 +646,10 @@
     int nsubs = 0; // actual subtractions
     //System.out.println("tmpint = " + tmpint + " nsubs = " + nsubs);
     while( whatquotDig >= 0 ) {
-
+        if( nsubs > quotDigs || whatquotDig > SZ2_MX ){
+            System.out.println("nsubs = " + nsubs + " is greater than quotDigs = " + quotDigs + " or whatQuotDig = " + whatquotDig + " is greater than SZ2_MX = " + SZ2_MX);
+            break;
+        }
         operand[nsubs][0] = qt[whatquotDig]*divisor;
         int WCoperand0 = worstCaseQdig*divisor; // worst case, biggest operand
         operand[nsubs][1] = tmpint - operand[nsubs][0];
