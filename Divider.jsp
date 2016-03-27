@@ -519,7 +519,7 @@
     cspan = new int[quotDigs];
     bspan = new int[quotDigs];
     dspan = new int[quotDigs];
-    int bqspan = 2*dvsrDigs + 1;
+    int bqspan = 2*dvsrDigs;
     int cqspan = 2*dvdDigs + 1;
     
     
@@ -916,8 +916,9 @@
 <tr><th id="F1" colspan="<%=colspan%>">Division Problem</th></tr>
 <%  for( int sbx = crows - 1; sbx > 0; --sbx ) { %>
         <tr>
-<%      for( int idx = 0; idx <= SZ2_MX; idx++ ) { 
-            if( idx < dvsrDigs - 1 ) { 
+<%      for( int idx = 0; idx <= SZ2_MX; idx++ ) { %>
+            <td class="t1"></td>
+<%          if( idx < dvsrDigs - 1 ) { 
                 int col = dvsrDigs - 2 - idx;
                 String cname = "cm" + col + "_" + sbx;
                 String cid = "hcm" + col + "_" + sbx; %>
@@ -930,34 +931,12 @@
 <%          } else {  %>
                 <td class="t2"></td>
 <%          } %>
-            <td class="t1"></td>
+
 <%      } %>
         </tr>
 <%  } %>
 <tr>
-<%  for( int idx = 0; idx <= SZ2_MX; idx++ ) { 
-        if( idx < dvsrDigs - 1 && crows > 0 ) { 
-            int col = dvsrDigs - 2 - idx;
-            String cname = "cm" + col + "_0"; 
-            String cid = "hcm" + col + "_0"; %>
-            <td class="t2" name="notthestartdig">
-<%          if( showMcarriesCk ) { %>
-                <input type="<%=cmtype%>" name="<%=cname%>" class="c2" 
-                                  onkeyup="checkMcarry(<%=col%>,0)">
-<%          } %>
-            <input type="hidden" id="<%=cid%>" class="c2"></td>
-<%      } else if( spacesb4quot < idx && idx <= spacesb4quot + quotDigs ) {  
-            //int col = spacesb4quot + quotDigs - 1 - idx;
-            int jdx = idx - spacesb4quot - 1; %>
-            <td class="t2" name="notthestartdig">
-                <span name="quotDp" onclick="chooseDivThis( <%=jdx%>, 'quotDp' )" class="dp" >_</span>
-            </td>
-<%      } else {  
-            int col = spacesb4quot + quotDigs - 1 - idx; %>
-            <td class="t2" name="notthestartdig">
-            </td>
-<%      }
-        
+<%  for( int idx = 0; idx <= SZ2_MX; idx++ ) {       
         if( idx < spacesb4quot || spacesb4quot + quotDigs + rmdrDigs < idx ) { %>
             <td class="t1" name="notthestartdig"></td>
 <%      } else if( spacesb4quot <= idx && idx < spacesb4quot + quotDigs ) {
@@ -985,6 +964,25 @@
 <%      } else { %>
             <td class="t1" name="notthestartdig"></td>
 <%      }
+        if( idx < dvsrDigs - 1 && crows > 0 ) { 
+            int col = dvsrDigs - 2 - idx;
+            String cname = "cm" + col + "_0"; 
+            String cid = "hcm" + col + "_0"; %>
+            <td class="t2" name="notthestartdig">
+<%          if( showMcarriesCk ) { %>
+                <input type="<%=cmtype%>" name="<%=cname%>" class="c2" 
+                                  onkeyup="checkMcarry(<%=col%>,0)">
+<%          } %>
+            <input type="hidden" id="<%=cid%>" class="c2"></td>
+<%      } else if( spacesb4quot <= idx && idx < spacesb4quot + quotDigs ) {  
+            int jdx = idx - spacesb4quot; %>
+            <td class="t2" name="notthestartdig">
+                <span name="quotDp" onclick="chooseDivThis( <%=jdx%>, 'quotDp' )" class="dp" >_</span>
+            </td>
+<%      } else { %>
+            <td class="t2" name="notthestartdig">
+            </td>
+<%      }
     } %>
 </tr>
 <tr><th class="th-id1" colspan="<%=bqspan%>"></th>
@@ -995,28 +993,11 @@
         <tr>
     <%      for( int idx = 0; idx <= SZ2_MX; idx++ ) {
                 int ocol = dvsrDigs + dvdDigs - idx;
-                int col = dvsrDigs + dvdDigs - quotDigs + 1 - idx + leadzeros;
+                int ccol = ocol - 1;
+                int col = dvsrDigs + dvdDigs - quotDigs - idx + leadzeros;
                 //System.out.println("idx = " + idx + " col = " + col + " ocol = " + ocol);
                 String name = "boca0"; 
-                //if( dvsrDigs < idx && idx < dvsrDigs + dvdDigs - quotDigs + 2
-                //        && ncarries[0][col] != 0 ) { 
                 if( col >= 0 && ncarries[0][col] != 0 ) { 
-                    String cid = "ca" + ocol + "_0"; 
-                    if( ocol < 0 || ocol >= SZ2_MX ) {
-                         System.out.println("ca ocol = " + ocol + "being reduced to 0");
-                         ocol = 0;
-                    } %>
-                    <td class="s2">
-                        <input type="<%=browType%>" name="<%=name%>" id="<%=cid%>"
-                        class="f2" onkeyup="checkDivBorrow(<%=ocol%>, 0)"
-                        onclick="promptDivBorrow(<%=ocol%>, 0)">
-                    </td>
-    <%          } else { %>
-                    <td class="s2"></td>
-    <%          } 
-                if( col > 0 && ncarries[0][col-1] != 0 ) { 
-                //if( dvsrDigs + leadzeros - 1 < idx && idx < dvsrDigs + dvdDigs - quotDigs + 1 + leadzeros
-                //        && 0 < col && col <= SZ2_MX + 1  && ncarries[0][col+1] != 0 ) { 
                     String bid = "bo" + ocol + "_0" ; 
                     if( ocol < 0 || ocol > SZ2_MX ) {
                          System.out.println("bo ocol = " + ocol + "being reduced to 0");
@@ -1029,38 +1010,26 @@
     <%          } else { %>
                     <td class="s1"></td>
     <%          } 
+                if( col >= 0 && ncarries[0][col] != 0 ) { 
+                    String cid = "ca" + ccol + "_0"; 
+                    if( ccol < 0 || ccol >= SZ2_MX ) {
+                         System.out.println("ca ocol = " + ocol + "being reduced to 0");
+                         ocol = 0;
+                    } %>
+                    <td class="s2">
+                        <input type="<%=browType%>" name="<%=name%>" id="<%=cid%>"
+                        class="f2" onkeyup="checkDivBorrow(<%=ccol%>, 0)"
+                        onclick="promptDivBorrow(<%=ccol%>, 0)">
+                    </td>
+    <%          } else { %>
+                    <td class="s2"></td>
+    <%          } 
+                
             } %>
         </tr>
 <% } %>
 <tr>
 <%  for( int idx = 0; idx <= SZ2_MX; idx++ ) { 
-        if( dvsrDigs - (idx - 1) == dvsrDp  && (exDpCk || recDpCk) ) { 
-            int jdx = idx - 1; 
-            // fp = black, dp = invisible, ep = red
-            String dclass = dsdpsettled ? dvsrDp > 1 ? "fp" : "dp" : "ep"; %>
-            <td class="t2">
-                <span name="dvsrDp" onclick="chooseDivThis( <%=jdx%>, 'dvsrDp' )" class="<%=dclass%>" >.</span>
-            </td>
-<%      } else if( dvdDigs - (idx - dvsrDigs - 2) == dvdDp  && (exDpCk || recDpCk) ) { 
-            int jdx = idx - dvsrDigs - 2; 
-            String dclass = dsdpsettled ? dvdDp > 1? "fp" : "dp" : "ep"; %>
-            <td class="t2">
-                <span name="dvdDp" onclick="chooseDivThis( <%=jdx%>, 'dvdDp' )" class="<%=dclass%>" >.</span>
-            </td>
-<%      } else if( 0 < idx && idx <= dvsrDigs ) { 
-            int jdx = idx - 1; %>
-            <td class="t2">
-                <span name="dvsrDp" onclick="chooseDivThis( <%=jdx%>, 'dvsrDp' )" class="dp" >_</span>
-            </td>
- 
-<%      } else if( dvsrDigs + 1 < idx && idx < dvsrDigs + dvdDigs + 2 ) { 
-            int jdx = idx - dvsrDigs - 2; %>
-            <td class="t2">
-                <span name="dvdDp" onclick="chooseDivThis( <%=jdx%>, 'dvdDp' )" class="dp" >_</span>
-            </td>
-<%      } else { %>
-            <td class="t2"></td>
-<%      }
         if( idx < dvsrDigs ) { 
             int col = dvsrDigs - 1 - idx; %>
             <td class="t1" name="dvsrdigs" ><%=ds[col]%></td>
@@ -1076,21 +1045,47 @@
 <%      } else { %>
             <td class="t1" ></td>
 <%      }
+        if( dvsrDigs - idx == dvsrDp  && (exDpCk || recDpCk) ) { 
+            int jdx = idx; // - 1; 
+            // fp = black, dp = invisible, ep = red
+            String dclass = dsdpsettled ? dvsrDp > 1 ? "fp" : "dp" : "ep"; %>
+            <td class="t2">
+                <span name="dvsrDp" onclick="chooseDivThis( <%=jdx%>, 'dvsrDp' )" class="<%=dclass%>" >.</span>
+            </td>
+<%      } else if( dvdDigs - (idx - dvsrDigs - 1) == dvdDp  && (exDpCk || recDpCk) ) { 
+            int jdx = idx - dvsrDigs - 1; 
+            String dclass = dsdpsettled ? dvdDp > 1? "fp" : "dp" : "ep"; %>
+            <td class="t2">
+                <span name="dvdDp" onclick="chooseDivThis( <%=jdx%>, 'dvdDp' )" class="<%=dclass%>" >.</span>
+            </td>
+<%      } else if( 0 <= idx && idx < dvsrDigs ) { 
+            int jdx = idx; // - 1; %>
+            <td class="t2">
+                <span name="dvsrDp" onclick="chooseDivThis( <%=jdx%>, 'dvsrDp' )" class="dp" >_</span>
+            </td>
+ 
+<%      } else if( dvsrDigs < idx && idx < dvsrDigs + dvdDigs + 1 ) { 
+            int jdx = idx - dvsrDigs - 1; %>
+            <td class="t2">
+                <span name="dvdDp" onclick="chooseDivThis( <%=jdx%>, 'dvdDp' )" class="dp" >_</span>
+            </td>
+<%      } else { %>
+            <td class="t2"></td>
+<%      }
+
     } %>
 </tr>
 <%  for( int sbx = 0; sbx <= nsubs; ++sbx ) {
     int rdx = sbx + 1; %>
 
     <tr class="oprand">
-    <%  for( int idx = 0; idx <= SZ2_MX; idx++ ) { %>
-            <td class="t2"></td>
-    <%      if( idx < spacesb4Op[sbx][0] ) { %>
+    <%  for( int idx = 0; idx <= SZ2_MX; idx++ ) { 
+            if( idx < spacesb4Op[sbx][0] ) { %>
                 <td class="t1"></td>
 <%          } else if ( idx == spacesb4Op[sbx][0] ){ 
                 String minusName="minus" + sbx; %>
                 <td class="t3" id="<%=minusName%>" > - </td>
     <%      } else if( idx <= spacesb4Op[sbx][0] + wcDig[sbx][0]) {          
-                //int col = numDig[0] - idx + spacesb4Op[0]; 
                 int col = spacesb4Op[sbx][0] + wcDig[sbx][0] - idx;
                 String name = "op" + sbx + "_0";
                 String whattype = cmtype;
@@ -1100,10 +1095,11 @@
                 <input type="<%=whattype%>" name="<%=name%>" class="a1" size="1" 
                 onkeyup="multiply( <%=col%> )">
                 </td>
- <%           } else { %>
+ <%         } else { %>
                 <td class="t1"></td>
-<%          }
-        } 
+<%          } %>
+            <td class="t2"></td>
+    <%      } 
         String barName = "cspan" + sbx; %>
     </tr>
     <tr><th class="th-id1" colspan="<%=bspan[sbx]%>"></th>
@@ -1113,12 +1109,22 @@
 <%  if( rdx <= nsubs && nacarries[rdx] > 0 ) {  %>
         <tr>
 <%      for( int idx = 0; idx <= SZ2_MX; idx++ ) {
-            //int col = spacesb4Op[sbx][0] + numDig[sbx][0] - idx;
-            int col = spacesb4Op[sbx][1] + wcDig[sbx][1]  + numBringDn[sbx] - idx - 1;
+            int col = spacesb4Op[sbx][1] + wcDig[sbx][1]  + numBringDn[sbx] - idx - 2;
+            int ocol = col + 1;
             String name = "boca" + rdx; 
-            //if( spacesb4Op[sbx][0] < idx && 
-                    //idx <= spacesb4Op[sbx][1] + wcDig[sbx][1] + numBringDn[sbx-1] && 
-                    //ncarries[rdx][col] != 0 ) {  
+            if( col >= 0 && ncarries[rdx][col] != 0 ) { 
+                String bid = "bo" + ocol + "_" + rdx; 
+                if( ocol < 0 || ocol > SZ2_MX ) {
+                         System.out.println("bo col = " + col + "being reduced to 0");
+                         col = 0;
+                } %>
+                <td class="s1">
+                    <input type="<%=browType%>" name="<%=name%>" id="<%=bid%>" 
+                    class="f1" onkeyup="checkNewDivVal(<%=ocol%>, <%=rdx%>)">
+                </td>
+<%          } else { %>
+                    <td class="s1"></td>
+<%          } 
             if( col >= 0 &&
                     spacesb4Op[sbx][1] < idx && 
                     col < wcDig[sbx][1] + numBringDn[sbx] && 
@@ -1133,34 +1139,19 @@
 <%          } else { %>
                 <td class="s2"></td>
 <%          } 
-            //System.out.println("first rdx = " + rdx + " col = " + col );
-            if( col > 0 && ncarries[rdx][col-1] != 0 ) { 
-                String bid = "bo" + col + "_" + rdx; 
-                if( col < 0 || col > SZ2_MX ) {
-                         System.out.println("bo col = " + col + "being reduced to 0");
-                         col = 0;
-                } %>
-                <td class="s1">
-                    <input type="<%=browType%>" name="<%=name%>" id="<%=bid%>" 
-                    class="f1" onkeyup="checkNewDivVal(<%=col%>, <%=rdx%>)">
-                </td>
-<%          } else { %>
-                    <td class="s1"></td>
-<%          } 
+
          } %>
         </tr>
 <% } %>
         <tr class="oprand">
     <%  for( int idx = 0; idx <= SZ2_MX; idx++ ) { 
-            String whattype = cmtype; %>
-            <td class="t2"></td>
-    <%      int col = spacesb4Op[sbx][1] + wcDig[sbx][1] - idx;
+            String whattype = cmtype; 
+            int col = spacesb4Op[sbx][1] + wcDig[sbx][1] - idx;
             int ocol = spacesb4Op[sbx][1] + wcDig[sbx][1] + numBringDn[sbx] - idx - 1;
             int maxBDcol = wcDig[sbx][1] + numBringDn[sbx];
             if( idx <= spacesb4Op[sbx][1] ) { %>
                 <td class="t1"></td>
 <%          } else if( idx <= spacesb4Op[sbx][1] + wcDig[sbx][1] ) { 
-                //int col = numDig[1] - idx + spacesb4Op[1] - 1;
                 String name = "op" + sbx + "_1"; 
                  %>
                 <td class="t1">
@@ -1168,9 +1159,7 @@
                 onkeyup="subtract( <%=col%>, <%=sbx%> )" 
                 onclick="promptDivBorrow(<%=ocol%>, <%=rdx%>)">
                 </td>
-    <%      //} else if( idx <= spacesb4Op[sbx][1] + wcDig[sbx][1]  + numBringDn[sbx-1] ) { 
-            } else if( 0 <= ocol && ocol <  maxBDcol ) { 
-                //int col = numDig[1] - idx + spacesb4Op[1] - 1;
+    <%      } else if( 0 <= ocol && ocol <  maxBDcol ) { 
                 String name = "bd" + sbx;
 %>
                 <td class="t1">
@@ -1181,8 +1170,9 @@
  <%                 
             } else { %>
                 <td class="t1"></td>
-<%          }
-        } %>
+<%          } %>
+            <td class="t2"></td>
+<%      } %>
     </tr>
 <% } %>
 </table>
@@ -1198,12 +1188,8 @@
     <tr>
 <%    if( nacarries[0] > 0 ) {
     for( int idx = 0; idx <= SZ2_MX; idx++ ) {
-                //int ocol = dvsrDigs + dvdDigs - idx;
-                //int col = dvsrDigs + dvdDigs - quotDigs + 1 - idx;
                 int ocol = dvsrDigs + dvdDigs - idx;
                 int col = dvsrDigs + dvdDigs - quotDigs + 1 - idx + leadzeros;
-                //if( dvsrDigs < idx && idx < dvsrDigs + dvdDigs - quotDigs + 2
-                //        && ncarries[0][col] != 0 ) { 
                 if( col >= 0 && ncarries[0][col] != 0 ) { 
                     String hid = "hca" + ocol + "_0"; 
                     if( ocol < 0 || ocol >= SZ2_MX ) {
