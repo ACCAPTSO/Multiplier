@@ -409,24 +409,34 @@
             multiplier = 100;
             dsMax = 333; // = 1000/3
         }
+        dsMaxDg = (SZ2_MX - minQdp)/2;
+        dvsrDp = 1 + (int)(dsMaxDg*Math.random());
+        System.out.println("denominator = " + denominator + " minQdp = " + minQdp + " dsMaxDg = " + dsMaxDg + " dvsrDp = " + dvsrDp);
+        dsMaxDg = dsMaxDg - 1 - (int)(Math.log10(denominator));
+        dsMax = (int)(Math.pow(10, dsMaxDg)) - 1;
+        divisor = 1 + (int)(dsMax*Math.random());
+        
+        int origDvsr = divisor;
+        divisor = divisor*denominator; 
+        dvsrDigs = (int)Math.log10(divisor) + 1;     
+        if( dvsrDp > dvsrDigs ) {
+            dvsrDigs = dvsrDp;
+        }
+        qtMaxDg = SZ2_MX - 2*dvsrDigs - (int)(Math.log10(multiplier/denominator));
+        quotDp = 1 + (int)(qtMaxDg*Math.random());
         while( quotient % denominator == 0 ) { // make sure division is not exact
             quotient = 1 + (int)(qtMax*Math.random());
         }
-        divisor = 1 + (int)(dsMax*Math.random());
-        dividnd = quotient*divisor*multiplier; // calculate without denominator it cancels algebraically but may have round off error
-        int origQuot = quotient;
+        dividnd = quotient*origDvsr*multiplier; // calculate without denominator it cancels algebraically but may have round off error
+        System.out.println("dsMaxDg = " + dsMaxDg + " initial divisor = " + origDvsr + " qtMaxDg = " + qtMaxDg + " initial quotient = " + quotient+ " dividend = " + dividnd);
+
         quotient = quotient*multiplier/denominator;
         quotDigs = (int)Math.log10(quotient) + 1;
         if( quotDp < minQdp ) {
             quotDp = minQdp;
         }
-        divisor = divisor*denominator;         
-        dvsrDigs = (int)Math.log10(divisor) + 1;     
-        if( dvsrDp > dvsrDigs ) {
-            dvsrDigs = dvsrDp;
-        }
         // check the width and adjust decimal points, qtMax(?) and dsMax in a loop fixit
-        System.out.println("after denominator = " + denominator + " quotient = " + quotient + " quotDp = " + quotDp + " divisor = " + divisor + " dvsrDp = " + dvsrDp + " dividend =  " + dividnd );
+        System.out.println("after: quotient = " + quotient + " quotDp = " + quotDp + " divisor = " + divisor + " dvsrDp = " + dvsrDp + " dividend =  " + dividnd );
 
     }
     
