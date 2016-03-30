@@ -188,7 +188,7 @@ td {
     min-width: 0.7em;
     max-width: 0.7em;
     background-color: #fdefe0;
-    //background-color: pink;
+    //background-color: pink; // dbfixit
     //background-color: black;
     //background-color: #bcbebe;
     //background-color: #a4a6a7;
@@ -202,7 +202,7 @@ td {
     padding-top: 0px;
     //font: inherit;
     height: 0px;
-    //height: 1em; // fixit
+    //height: 1em; // dbfixit
 }
 /* collapsed borrow boxes */
 .f1 {
@@ -210,7 +210,7 @@ td {
   min-width: 1.1em;
   max-width: 1.1em;
   background-color: #fdefe0;
-  //background-color: pink;
+  //background-color: pink; // dbfixit
   //background-color: black; #cfd2d1;
   //background-color: #cac8cd;
   background-color: "purple";
@@ -220,7 +220,7 @@ td {
   border: none;
   //font: inherit;
   height: 0px;
-  //height: 1.7em; //fixit
+  //height: 1.7em; //dbfixit
   margin-left: 0px;
   margin-right: 0px;
 }

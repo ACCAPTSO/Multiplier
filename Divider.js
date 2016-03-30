@@ -198,7 +198,7 @@ function checkMcarry(col, sbx) {
 }
 
 function divide(immFeedBkCk, col, qtDig) {
-    for (var j = 0; j < 18; j++) {
+    for (var j = 0; j < 30; j++) {
         document.getElementById("statusBox" + j).innerHTML = "";
     }
     var x = 0;
@@ -422,6 +422,8 @@ function divide(immFeedBkCk, col, qtDig) {
             discard = prod % ten2pow;
             mainpart = prod % Math.pow(10, pow + 1);
             prodDigVal = (mainpart - discard) / ten2pow;
+            //document.getElementById("statusBox" + x).innerHTML = "mainpart = " + mainpart + " discard = " + discard + " prodDigVal = " + prodDigVal;
+            //x = x + 1;
             caCol = pow + 1;
             //document.getElementById("statusBox" + x).innerHTML = " pow = " + pow + " caCol = " + caCol;
             //x = x + 1;
@@ -436,6 +438,8 @@ function divide(immFeedBkCk, col, qtDig) {
             //x = x + 1;
             whatCarry = "hca" + caCol + "_" + whatRow;
             caBx = document.getElementById(whatCarry);
+            //document.getElementById("statusBox" + x).innerHTML = "whatCarry " + whatCarry + " caBx = " + caBx;
+            //x = x + 1;
             if (caBx) {
                 if (dvdDigVal < prodDigVal) {// this digit has a carry
                     caBx.value = 1;
@@ -918,7 +922,7 @@ function multiply(col) { // may want to pass sbx instead of reading whatRow afte
 }
 
 function subtract(col, sbx) {
-    for (var j = 0; j < 18; j++) {
+    for (var j = 0; j < 30; j++) {
         document.getElementById("statusBox" + j).innerHTML = "";
     }
     var x = 0;

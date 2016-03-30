@@ -144,7 +144,7 @@
         //quotDp = (new Double((1+qtMax)*(1 - Math.pow(Math.random(),DEXP)))).intValue();
         //quotDp = 3; // leading 0 in quotient having issues
    //}
-    int quotient = 1 + (int)(qtMax*Math.random());
+    long quotient = 1 + (int)(qtMax*Math.random());
     //dvdDp = 1 + (dvsrDp - 1) + (quotDp - 1);
     int dvdDigs = 0;
     //System.out.println("quotient = " + quotient + " nTwos = " + nTwos + " nFives = " + nFives + " divisor = " + divisor);
@@ -152,7 +152,7 @@
         int t = 0;
         int f = 0;
         int totWidth = 1 + (int)Math.log10(divisor) + 1 + (int)Math.log10(quotient*divisor);
-        int prevQuot = quotient;
+        long prevQuot = quotient;
         int prevDiv = divisor;
         int prevT = t;
         int prevF = f;
@@ -364,52 +364,53 @@
 
     
     
-    int dividnd = quotient*divisor;
+    long dividnd = quotient*divisor;
     //System.out.println("before adding recurring factor quotient = " + quotient + " quotDp = " + quotDp + " divisor = " + divisor + " dvsrDp = " + dvsrDp + " dividend =  " + dividnd );
     if( recDpCk ) {
         int diceRoll = 1 + (int)(7*Math.random());
         int denominator = 1;
         int multiplier = 10000000;
         dsMax = 7;
-        // make random divisors so that quotient is never exact, never overflows fixit
+
         int minQdp = 8;
         if( diceRoll == 7 ) {
             denominator = 13; // repeats every six digits
             minQdp = 8;
             multiplier = 10000000;
-            dsMax = 7;
+            //dsMax = 7;
         } else if( diceRoll == 6 ) {
             denominator = 7; // repeats every six digits
             minQdp = 8;
             multiplier = 10000000;
-            dsMax = 14; 
+            //dsMax = 14; 
         } else if( diceRoll == 5 ) {
             denominator = 41; // repeats every five digits
             minQdp = 7;
             multiplier = 1000000;
-            dsMax = 24;            
+            //dsMax = 24;            
         } else if( diceRoll == 4 ) {
             denominator = 37; // repeats every three digits
             minQdp = 5; // need at least 4 decimal places in case 0.2702 = 100 / 37
             multiplier = 10000;
-            dsMax = 27;   // 27 = 1000/37
+            //dsMax = 27;   // 27 = 1000/37
         } else if( diceRoll == 3 ) {
             denominator = 11; // repeats every two digits
             minQdp = 4; // need at least 3 decimal places in case 0.909 = 100 / 11
             multiplier = 1000;
-            dsMax = 90;   // 90 = 1000/11
+            //dsMax = 90;   // 90 = 1000/11
         } else if( diceRoll == 2 ) {
             denominator = 9; // repeats every digit
             minQdp = 2;
             multiplier = 100;
-            dsMax = 111; // = 1000/9
+            //dsMax = 111; // = 1000/9
         } else if( diceRoll == 1 ) {
             denominator = 3; // repeats every digit
             minQdp = 2;
             multiplier = 100;
-            dsMax = 333; // = 1000/3
+            //dsMax = 333; // = 1000/3
         }
         dsMaxDg = (SZ2_MX - minQdp)/2;
+        // mAKE MORE LIKELY TO BE SMALL FIXIT
         dvsrDp = 1 + (int)(dsMaxDg*Math.random());
         System.out.println("denominator = " + denominator + " minQdp = " + minQdp + " dsMaxDg = " + dsMaxDg + " dvsrDp = " + dvsrDp);
         dsMaxDg = dsMaxDg - 1 - (int)(Math.log10(denominator));
@@ -423,6 +424,7 @@
             dvsrDigs = dvsrDp;
         }
         qtMaxDg = SZ2_MX - 2*dvsrDigs - (int)(Math.log10(multiplier/denominator));
+        // make more likely to be small fixit
         quotDp = 1 + (int)(qtMaxDg*Math.random());
         while( quotient % denominator == 0 ) { // make sure division is not exact
             quotient = 1 + (int)(qtMax*Math.random());
@@ -430,17 +432,32 @@
         dividnd = quotient*origDvsr*multiplier; // calculate without denominator it cancels algebraically but may have round off error
         System.out.println("dsMaxDg = " + dsMaxDg + " initial divisor = " + origDvsr + " qtMaxDg = " + qtMaxDg + " initial quotient = " + quotient+ " dividend = " + dividnd);
 
-        quotient = quotient*multiplier/denominator;
+        quotient = quotient*multiplier;
+        int dvMaxDg = SZ2_MX - dvsrDigs;
+        System.out.println("quotient = " + quotient + " dvMaxDg = " + dvMaxDg );
+        dvdDigs = (int)Math.log10(dividnd) + 1;
+        while( dvdDigs < dvMaxDg ) {
+            quotient = quotient*10;
+            dividnd = dividnd*10;
+            dvdDigs = (int)Math.log10(dividnd) + 1;
+            System.out.println("quotient = " + quotient/denominator + " dividend = " + dividnd);
+        }
+        quotient = quotient / denominator;
         quotDigs = (int)Math.log10(quotient) + 1;
         if( quotDp < minQdp ) {
             quotDp = minQdp;
         }
-        // check the width and adjust decimal points, qtMax(?) and dsMax in a loop fixit
+        /* divisor = 7; // (int)tmplong op something corrupting last digit should be (int)(tmplong op something)
+        quotient = 5714285714L;
+        quotDp = 8;
+        dvsrDp = 1;
+        quotDigs = 10;
+        dvsrDigs = 1;
+        dividnd = 40000000000L;
+        dvdDigs = 11;
+        dvdDp = 9; */
         System.out.println("after: quotient = " + quotient + " quotDp = " + quotDp + " divisor = " + divisor + " dvsrDp = " + dvsrDp + " dividend =  " + dividnd );
-
     }
-    
-    
     
     //System.out.println("before removing zeros quotDp = " + quotDp);
     // remove trailing zeros after the decimal point
@@ -535,27 +552,28 @@
     
     int [] numBringDn = new int[quotDigs];
     int [] actBringDn = new int[quotDigs];
-    tmpint = quotient;
+    long tmplong = quotient;
     for( int idx = 0; idx < quotDigs; ++idx ) {
-        qt[idx] = tmpint % 10;
-        tmpint = tmpint / 10;
+        qt[idx] = (int)(tmplong % 10);
+        tmplong = tmplong / 10;
         
         numBringDn[idx] = 0;
         actBringDn[idx] = 0;
     }
     //System.out.println("quotient = " + quotient);// + " qt[" + idx + "] = " + qt[idx]);
-    tmpint = divisor;
+    tmplong = divisor;
     for( int idx = 0; idx < dvsrDigs; ++idx ) {
-        ds[idx] = tmpint % 10;
-        tmpint = tmpint / 10;
+        ds[idx] = (int)(tmplong % 10);
+        tmplong = tmplong / 10;
         
     }
     //System.out.println("divisor = " + divisor);// + " ds[" + idx + "] = " + ds[idx]);
-    tmpint = dividnd;
+    tmplong = dividnd;
     boolean inVisibleSoFar = dvdDp > 1;
     for( int idx = 0; idx < dvdDigs; ++idx ) {
-        dd[idx] = tmpint % 10;
-        tmpint = tmpint / 10;
+        dd[idx] = (int)(tmplong % 10);
+        System.out.println("dividend = " + tmplong + " dd[" + idx + "] = " + dd[idx]);
+        tmplong = tmplong / 10;
         if( inVisibleSoFar && idx < dvdDp - 1 && dd[idx] == 0 ) {
             visible[idx] = false;
             cqspan -= 2;
@@ -565,10 +583,10 @@
         }
     }
     int dqspan = 2*(SZ2_MX + 1) - bqspan - cqspan;
-    //System.out.println("dividend = " + dividnd);// + " dd[" + idx + "] = " + dd[idx]);
+    
     tmpint = remainder;
     for( int idx = 0; idx < rmdrDigs; ++idx ) {
-        rm[idx] = tmpint % 10;
+        rm[idx] = (int)tmpint % 10;
         tmpint = tmpint / 10;
         //System.out.println("divisor = " + divisor + " dividend = " + dividnd + " remainder = " + remainder + " rm[" + idx + "] = " + rm[idx]);
     }
@@ -639,22 +657,19 @@
         whatquotDig -= 1;
     }
     //System.out.println("line 333 qt[" + whatquotDig + "] = " + qt[whatquotDig]);
-    tmpint = dividnd;
+    tmplong = dividnd;
     // use only the first few digits
-    int lastDig = 0;
+    long lastDig = 0;
     int worstCaseQdig = 9;
-    while( tmpint > qt[whatquotDig]*divisor ) {
-    //while( tmpint > worstCaseQdig*divisor ) { // worst case, biggest quotient digit
-        lastDig = tmpint % 10;
-        tmpint = tmpint / 10;
+    while( tmplong > qt[whatquotDig]*divisor ) {
+        lastDig = tmplong % 10;
+        tmplong = tmplong / 10;
     }
     // back off the last digit removed
-    if( tmpint != qt[whatquotDig]*divisor ) {
-   //if( tmpint != worstCaseQdig*divisor ) {
-        tmpint = tmpint*10 + lastDig;
+    if( tmplong != qt[whatquotDig]*divisor ) {
+        tmplong = tmplong*10 + lastDig;
     }
     int nsubs = 0; // actual subtractions
-    //System.out.println("tmpint = " + tmpint + " nsubs = " + nsubs);
     while( whatquotDig >= 0 ) {
         if( nsubs > quotDigs || whatquotDig > SZ2_MX ){
             System.out.println("nsubs = " + nsubs + " is greater than quotDigs = " + quotDigs + " or whatQuotDig = " + whatquotDig + " is greater than SZ2_MX = " + SZ2_MX);
@@ -662,8 +677,9 @@
         }
         operand[nsubs][0] = qt[whatquotDig]*divisor;
         int WCoperand0 = worstCaseQdig*divisor; // worst case, biggest operand
-        operand[nsubs][1] = tmpint - operand[nsubs][0];
-        int WCoperand1 = tmpint - divisor; 
+        operand[nsubs][1] = (int)(tmplong - operand[nsubs][0]);
+        System.out.println("nsubs = " + nsubs + " qt[" + whatquotDig + "] = " + qt[whatquotDig] + " last dividend = " + tmplong + " product = " + operand[nsubs][0] );
+        int WCoperand1 = (int)(tmplong - divisor); 
 
         actDig[nsubs][0] = operand[nsubs][0] > 0? 
                 (int)Math.log10(operand[nsubs][0]) + 1: 1;
@@ -677,7 +693,7 @@
                 (int)Math.log10(WCoperand1) + 2: 2;
         //System.out.println("whatQuotDig = " + whatquotDig + " operand[" + nsubs + "][0] = " + operand[nsubs][0] + "  WCoperand0 = " + WCoperand0 + " WCoperand1 = " + WCoperand1 );       
         if( operand[nsubs][1] < 0 ) {
-            //System.out.println("tmpint = " + tmpint + " operand[" + nsubs + "][0] = " + operand[nsubs][0] + " diff = " + operand[nsubs][1] + " that's messed up");
+            System.out.println("tmplong = " + tmplong + " operand[" + nsubs + "][0] = " + operand[nsubs][0] + " diff = " + operand[nsubs][1] + " that's messed up");
             break;
         }
 
@@ -708,18 +724,18 @@
 
         // bring down as many new digits as needed to get something divisor
         // will go into
-        tmpint = operand[nsubs][1];
+        tmplong = operand[nsubs][1];
         actBringDn[nsubs] = 0;
         numBringDn[nsubs] = SZ2_MX + 1 - spacesb4Op[nsubs][1] - wcDig[nsubs][1];
         //actBringDn[nsubs] = SZ2_MX + 1 - spacesb4Op[nsubs][1] - actDig[nsubs][1];
         boolean breakout = false;
-        while( tmpint < divisor ) {
+        while( tmplong < divisor ) {
             if( whatquotDig < 1 ) {
                 //System.out.println("no more quote digits tmpint = " + tmpint + " actBringDn[" + nsubs + "] = " + actBringDn[nsubs]);
                 breakout = true;
                 break;
             }
-            tmpint = 10*tmpint + dd[whatquotDig-1];
+            tmplong = 10*tmplong + dd[whatquotDig-1];
             whatquotDig = whatquotDig - 1;
             actBringDn[nsubs] += 1;
         }
@@ -1234,7 +1250,7 @@
     if( rdx <= nsubs && nacarries[rdx] > 0 ) {  %>
     <tr>
 <%      for( int idx = 0; idx <= SZ2_MX; idx++ ) {
-            int col = spacesb4Op[sbx][0] + wcDig[sbx][0] + numBringDn[sbx] - idx; 
+            int col = spacesb4Op[sbx][0] + wcDig[sbx][0] + numBringDn[sbx] - 1 - idx; 
             //System.out.println("rdx = " + rdx + " col = " + col + " spacesb4Op[" + sbx + "][0] = " + spacesb4Op[sbx][0] + " wcDig[" + sbx + "][0] = " + wcDig[sbx][0] + " numBringDn[" + sbx + "] = " + numBringDn[sbx]);
             if( 0 <= col && 
                     col <  wcDig[sbx][0] + numBringDn[sbx] && 
@@ -1270,26 +1286,10 @@
 <%   }
 } %>
 </table>
-<div id="statusBox0"></div>
-<div id="statusBox1"></div>
-<div id="statusBox2"></div>
-<div id="statusBox3"></div>
-<div id="statusBox4"></div>
-<div id="statusBox5"></div>
-<div id="statusBox6"></div>
-<div id="statusBox7"></div>
-<div id="statusBox8"></div>
-<div id="statusBox9"></div>
-<div id="statusBox10"></div>
-<div id="statusBox11"></div>
-<div id="statusBox12"></div>
-<div id="statusBox13"></div>
-<div id="statusBox14"></div>
-<div id="statusBox15"></div>
-<div id="statusBox16"></div>
-<div id="statusBox17"></div>
-<div id="statusBox18"></div>
-<div id="statusBox19"></div>
+<% for( int i = 0; i < 30; ++i ) {
+    String sid = "statusBox" + i; %>
+    <div id="<%=sid%>"></div>
+<% } %>
 
 </div>
 <div class="d6">
