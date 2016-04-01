@@ -678,7 +678,7 @@ function divide(immFeedBkCk, col, qtDig) {
 }
 
 function multiply(col) { // may want to pass sbx instead of reading whatRow after all fixit
-    for (var j = 0; j < 18; j++) {
+    for (var j = 0; j < 30; j++) {
         document.getElementById("statusBox" + j).innerHTML = "";
     }
     var x = 0;
@@ -866,12 +866,14 @@ function multiply(col) { // may want to pass sbx instead of reading whatRow afte
                 }
                 for (var j = 0; j < visibleBorCaBxs.length; j++) {
                     visibleBorCaBxs[j].type = "text";
-                    visibleBorCaBxs[j].style.height = "1.7em";
+                    //isibleBorCaBxs[j].style.height = "1.7em";
+                    visibleBorCaBxs[j].style.height = "1em";
                     //visibleBorCaBxs[0].style.backgroundColor = origColor;
                 }
             }
             nextBox = Number(document.getElementById("lastBoxOfCurrRow").value);
-            //document.getElementById('statusBox0').innerHTML = "with product boxes, nextBox = " + nextBox;
+            //document.getElementById("statusBox" + x).innerHTML = "with product boxes, nextBox = " + nextBox;
+            //x = x + 1;
             if (visibleDrows.length > 1) {
                 nextBox += document.getElementsByName("boca" + nextRow).length; // borrow, carry
                 //document.getElementById("statusBox1").innerHTML = "with borrow and carry boxes, nextBox = " + nextBox;
@@ -902,11 +904,10 @@ function multiply(col) { // may want to pass sbx instead of reading whatRow afte
             } else {
                 nextBox -= 1;
             }
-        }
+        }   
         var bdx = Number(document.getElementById("bdx").value) + 1;
         document.getElementById("bdx").value = bdx;
         document.getElementById("whatbox").value = nextBox;
-        //incrementbox();
     } else {
         //errBx.innerHTML = expAns + " not " + ans;
         errBx.innerHTML = "not " + ans;
@@ -1199,7 +1200,7 @@ function subtract(col, sbx) {
         } else { // not last subtraction, nextbox is another subtraction box
             nextbox = Number(document.getElementById("whatbox").value) - 1;
         }
-        //alert("final nextbox = " + nextbox);
+        //document.getElementById("statusBox" + x).innerHTML = "final nextbox = " + nextbox;
         document.getElementById("whatbox").value = nextbox;
         var bdx = Number(document.getElementById("bdx").value) + 1;
         document.getElementById("bdx").value = bdx;
@@ -1471,7 +1472,7 @@ function promptDivBorrow(col, sbx) {
                     newBx.style.backgroundColor = "white";
                     newBx.style.color = "red";
                     newBx.style.border = "1px solid black";
-                    newBx.style.height = "1.7em";
+                    //newBx.style.height = "1.7em";
                     newBx.value = "";
                 }
             } else {
@@ -1480,7 +1481,7 @@ function promptDivBorrow(col, sbx) {
                 newBx.style.backgroundColor = "white";
                 newBx.style.color = "red";
                 newBx.style.border = "1px solid black";
-                newBx.style.height = "1.7em";
+                //newBx.style.height = "1.7em";
                 newBx.value = "";
             }
 

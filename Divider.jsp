@@ -448,14 +448,14 @@
             quotDp = minQdp;
         }
         /* divisor = 7; // (int)tmplong op something corrupting last digit should be (int)(tmplong op something)
-        quotient = 5714285714L;
+        quotient = 11428571428L;
         quotDp = 8;
         dvsrDp = 1;
-        quotDigs = 10;
+        quotDigs = 11;
         dvsrDigs = 1;
-        dividnd = 40000000000L;
+        dividnd = 80000000000L;
         dvdDigs = 11;
-        dvdDp = 9; */
+        dvdDp = 8; */
         System.out.println("after: quotient = " + quotient + " quotDp = " + quotDp + " divisor = " + divisor + " dvsrDp = " + dvsrDp + " dividend =  " + dividnd );
     }
     
@@ -474,7 +474,7 @@
             //allzeros = false;
             break;
         }
-        System.out.println("line 432 quotient = " + quotient + " quotient[" + i + "] = " + quotient % 10 + " quotDigs = " + quotDigs + " quotDp = " + quotDp ); // + " allzeros = " + allzeros );
+        //System.out.println("line 432 quotient = " + quotient + " quotient[" + i + "] = " + quotient % 10 + " quotDigs = " + quotDigs + " quotDp = " + quotDp ); // + " allzeros = " + allzeros );
     }
     //if( allzeros ) { // this quotient is an integer
     //    quotDp = 1;
@@ -546,7 +546,7 @@
     cspan = new int[quotDigs];
     bspan = new int[quotDigs];
     dspan = new int[quotDigs];
-    int bqspan = 2*dvsrDigs;
+    int bqspan = 2*dvsrDigs + 1;
     int cqspan = 2*dvdDigs + 1;
     
     
@@ -572,7 +572,7 @@
     boolean inVisibleSoFar = dvdDp > 1;
     for( int idx = 0; idx < dvdDigs; ++idx ) {
         dd[idx] = (int)(tmplong % 10);
-        System.out.println("dividend = " + tmplong + " dd[" + idx + "] = " + dd[idx]);
+        //System.out.println("dividend = " + tmplong + " dd[" + idx + "] = " + dd[idx]);
         tmplong = tmplong / 10;
         if( inVisibleSoFar && idx < dvdDp - 1 && dd[idx] == 0 ) {
             visible[idx] = false;
@@ -582,7 +582,7 @@
             inVisibleSoFar = false;
         }
     }
-    int dqspan = 2*(SZ2_MX + 1) - bqspan - cqspan;
+    int dqspan = 1 + 2*(SZ2_MX + 1) - bqspan - cqspan;
     
     tmpint = remainder;
     for( int idx = 0; idx < rmdrDigs; ++idx ) {
@@ -632,7 +632,7 @@
         }
     }
     int numOps = 2;
-    int colspan = 2*(SZ2_MX + 1);
+    int colspan = 2*(SZ2_MX + 1) + 1;
     //int[][][] op;       // operand's first index is what subtraction   
                         // second index is what operand (top/bottom)
                         // third index is what digit of that operand
@@ -678,7 +678,7 @@
         operand[nsubs][0] = qt[whatquotDig]*divisor;
         int WCoperand0 = worstCaseQdig*divisor; // worst case, biggest operand
         operand[nsubs][1] = (int)(tmplong - operand[nsubs][0]);
-        System.out.println("nsubs = " + nsubs + " qt[" + whatquotDig + "] = " + qt[whatquotDig] + " last dividend = " + tmplong + " product = " + operand[nsubs][0] );
+        //System.out.println("nsubs = " + nsubs + " qt[" + whatquotDig + "] = " + qt[whatquotDig] + " last dividend = " + tmplong + " product = " + operand[nsubs][0] );
         int WCoperand1 = (int)(tmplong - divisor); 
 
         actDig[nsubs][0] = operand[nsubs][0] > 0? 
@@ -703,8 +703,8 @@
 
         spacesb4Op[nsubs][1] = spacesb4quot + quotDigs - whatquotDig - wcDig[nsubs][1] - 1;
         cspan[nsubs] = 2*wcDig[nsubs][0] + 1;
-        bspan[nsubs] = 2*spacesb4Op[nsubs][0] + 1;
-        dspan[nsubs] = 2*(SZ2_MX + 1) - bspan[nsubs] - cspan[nsubs];
+        bspan[nsubs] = 2*(spacesb4Op[nsubs][0] + 1);
+        dspan[nsubs] = 1 + 2*(SZ2_MX + 1) - bspan[nsubs] - cspan[nsubs];
         if( whatquotDig == 0 ) {
             break; // don't need to generate tmpint nsubsor the next loop, you're 
         }          // done
@@ -780,8 +780,8 @@
                                             // all the multiplications and
                                             // subtractions
     int maxBx = 20;                      
-    
-    for( int sbx = 0; sbx < quotDigs; ++sbx ) {
+    int sbx;
+    for( sbx = 0; sbx < quotDigs; ++sbx ) {
         for( int idx = 0; idx <= SZ2_MX; idx++ ) {
             cas[idx] = "";
             ans[idx] = "";
@@ -821,7 +821,7 @@
     int [] nacarries;
     nacarries = new int[quotDigs];
     
-    for( int sbx = 0; sbx < quotDigs; ++ sbx ) {
+    for( sbx = 0; sbx < quotDigs; ++ sbx ) {
         nacarries[sbx] = 0;
         int sbxminus1 = sbx - 1;
         int kdxmax = sbx == 0? 
@@ -937,11 +937,29 @@
     String lbtype = lastboxdebug? "text" : "hidden";%>
 <div >
 <form id="th-id2" method="get" action="Divider.jsp">
-<div class="d2">
+<table class="d1">
+<tbody>
+<tr>
+<td class="d2">
 <table class="tbl">
 <tr><th id="F1" colspan="<%=colspan%>">Division Problem</th></tr>
-<%  for( int sbx = crows - 1; sbx > 0; --sbx ) { %>
+<%  // these are filler    
+    for( sbx = SZ2_MX - 3; sbx >= crows; --sbx ) { 
+        String rid = "r" + sbx; %>
         <tr>
+        <td class="t2"></td>
+<%      for( int idx = 0; idx <= SZ2_MX; idx++ ) {
+            String cid = "c" + idx; %>
+            
+                <td class="t1"></td>
+                <td class="t2"></td>
+            
+<%      } %>
+        </tr>
+<%  }
+    for( sbx = crows - 1; sbx > 0; --sbx ) { %>
+        <tr>
+        <td class="t2"></td>
 <%      for( int idx = 0; idx <= SZ2_MX; idx++ ) { %>
             <td class="t1"></td>
 <%          if( idx < dvsrDigs - 1 ) { 
@@ -962,6 +980,7 @@
         </tr>
 <%  } %>
 <tr>
+    <td class="t2"></td>
 <%  for( int idx = 0; idx <= SZ2_MX; idx++ ) {       
         if( idx < spacesb4quot || spacesb4quot + quotDigs + rmdrDigs < idx ) { %>
             <td class="t1" name="notthestartdig"></td>
@@ -1017,6 +1036,7 @@
 </tr>
 <%    if( nacarries[0] > 0 ) { %>
         <tr>
+            <td class="s2"></td>
     <%      for( int idx = 0; idx <= SZ2_MX; idx++ ) {
                 int ocol = dvsrDigs + dvdDigs - idx;
                 int ccol = ocol - 1;
@@ -1055,6 +1075,7 @@
         </tr>
 <% } %>
 <tr>
+    <td class="t2"></td>
 <%  for( int idx = 0; idx <= SZ2_MX; idx++ ) { 
         if( idx < dvsrDigs ) { 
             int col = dvsrDigs - 1 - idx; %>
@@ -1101,10 +1122,12 @@
 
     } %>
 </tr>
-<%  for( int sbx = 0; sbx <= nsubs; ++sbx ) {
+<%  
+    for( sbx = 0; sbx <= nsubs; ++sbx ) {
     int rdx = sbx + 1; %>
 
     <tr class="oprand">
+        <td class="t2"></td>
     <%  for( int idx = 0; idx <= SZ2_MX; idx++ ) { 
             if( idx < spacesb4Op[sbx][0] ) { %>
                 <td class="t1"></td>
@@ -1134,6 +1157,7 @@
     </tr>
 <%  if( rdx <= nsubs && nacarries[rdx] > 0 ) {  %>
         <tr>
+        <td class="s2"></td>
 <%      for( int idx = 0; idx <= SZ2_MX; idx++ ) {
             int col = spacesb4Op[sbx][1] + wcDig[sbx][1]  + numBringDn[sbx] - idx - 2;
             int ocol = col + 1;
@@ -1168,8 +1192,19 @@
 
          } %>
         </tr>
-<% } %>
+<%  } else { %>
+    
+        <td class="s2"></td>
+<%      // these are fake to fill space
+        String filler = "boca" + rdx;
+        for( int idx = 0; idx <= SZ2_MX; idx++ ) { %>
+            <td class="s1"><input type="<%=browType%>" class="f1" name="<%=filler%>"></td>
+            <td class="s2"><input type="<%=browType%>" class="f2" name="<%=filler%>"></td>
+<%      } %>
+    </tr>  
+<%  } %>
         <tr class="oprand">
+        <td class="t2"></td>
     <%  for( int idx = 0; idx <= SZ2_MX; idx++ ) { 
             String whattype = cmtype; 
             int col = spacesb4Op[sbx][1] + wcDig[sbx][1] - idx;
@@ -1195,13 +1230,51 @@
                 </td>
  <%                 
             } else { %>
-                <td class="t1"></td>
+            <td class="t1"></td>
 <%          } %>
             <td class="t2"></td>
 <%      } %>
     </tr>
-<% } %>
+<% } 
+    // these are filler
+    for( ; sbx < SZ2_MX - 2; ++sbx ) { 
+        String rid = "r" + sbx; %>
+        <tr>
+        <td class="t2"></td>
+<%      for( int idx = 0; idx <= SZ2_MX; idx++ ) {
+            String cid = "c" + idx; %>
+            
+                <td class="t1"></td>
+                <td class="t2"></td>   
+<%      } %>
+        </tr>
+        <tr>
+            <th class="th-id1" colspan="<%=colspan%>"></th>
+        </tr>
+        <tr>
+        <td class="s2"></td>
+<%      for( int idx = 0; idx <= SZ2_MX; idx++ ) { %>
+            <td class="s1">
+                <input type="<%=browType%>" class="f1" >
+            </td>
+            <td class="s2">
+                <input type="<%=browType%>" class="f2" >
+            </td>
+<%      } %>
+        </tr>
+        <tr>
+        <td class="t2"></td>
+<%      for( int idx = 0; idx <= SZ2_MX; idx++ ) {
+            String cid = "c" + idx; %>
+            
+                <td class="t1"></td>
+                <td class="t2"></td>   
+<%      } %>
+        </tr>
+<%  } %>
 </table>
+</td>
+<td class="d7">
 <% if( cmdebug ) { %>
 <label>whatbox</label>
 <% } %>
@@ -1245,7 +1318,7 @@
             } 
 } %>
 </tr>
-<%  for( int sbx = 0; sbx <= nsubs; ++sbx ) {
+<%  for( sbx = 0; sbx <= nsubs; ++sbx ) {
     int rdx = sbx + 1; 
     if( rdx <= nsubs && nacarries[rdx] > 0 ) {  %>
     <tr>
@@ -1291,21 +1364,6 @@
     <div id="<%=sid%>"></div>
 <% } %>
 
-</div>
-<div class="d6">
-<!--this is where error messages get displayed//-->
-<%  if( exDpCk || recDpCk) {
-        if( !dsdpsettled ) { %>
-            <label id="msg">Count how many places the decimal point needs to move to make the divisor an integer and click there</label>
-<%      } else if( !qtdpsettled ) { %>
-            <label id="msg">Click the place in the quotient directly above the dividend decimal point</label>
-<%      } else { %>
-            <label id="msg">Click where first quotient digit should be</label>
-<%      }
-    } else { %>
-        <label id="msg">Click where first quotient digit should be</label>
-<% } %>
-</div>
 <div class="d3">
 <label id="dispBo">
 <% boolean thereAreCarries = false;
@@ -1321,19 +1379,79 @@ if( thereAreCarries && showBrowsCk ) { %>
 <%  } %>
 </label>
 </div>
+<div class="d6">
+<!--this is where error messages get displayed//-->
+<%  if( exDpCk || recDpCk) {
+        if( !dsdpsettled ) { %>
+            <label id="msg">Count how many places the decimal point needs to move to make the divisor an integer and click there</label>
+<%      } else if( !qtdpsettled ) { %>
+            <label id="msg">Click the place in the quotient directly above the dividend decimal point</label>
+<%      } else { %>
+            <label id="msg">Click where first quotient digit should be</label>
+<%      }
+    } else { %>
+        <label id="msg">Click where first quotient digit should be</label>
+<% } %>
+</div>
+
+<div class="d5">
+<table>
+<tr>    
+    <td>
+    <button type="reset" value="Reset" onclick="startDivAgain()" >Start again</button>
+    </td>
+    <td></td>
+</tr>
+<tr>    
+    <td><label>Problems Attempted</label></td>
+    <td>
+    <input type="text" id="numAttmptd" name="numAttmptdP" value="<%=numAttmptdV%>"
+           class="blackbox">
+    </td>
+</tr>
+<tr>
+    <td><label>Completed Without Error</label></td>   
+    <td>
+    <input type="text" id="numWoErr" name="numWoErrP" value="<%=numWoErr%>"
+           class="blackbox">
+    </td>
+</tr>
+<tr>
+    <td><label>Consecutive Without Error</label></td>   
+    <td>
+    <input type="text" id="consWoErr" name="consWoErrP" value="<%=consWoErr%>"
+           class="blackbox">
+    </td>
+</tr>
+<tr>
+    <td><label>Correct Per Hour</label></td>   
+    <td>
+    <input type="text" id="corrPerHr" name="corrPerHrP" value="<%=corrPerHr%>"
+           class="blackbox">
+    </td>
+</tr>
+<tr>
+    <td><label>Errors This Problem</label></td>
+    <td><input type="text" id="errs" name="errs" value="<%=errs%>"
+               class="blackbox"></td>
+</tr>
+
+</table>
+</div>  
 <div class="d3">
     <table>
     <tr><td><input type="checkbox" value="Show Borrows" name="showborrows" 
                    <%=isShowBrows%> onclick="zeroDivCounts()">
             <label>Show Borrows</label>
-        </td></tr>
-    <tr><td><input type="checkbox" value="Show Multiplication Carries" name="showmcarries" 
+        </td>
+    </tr>
+    <tr>
+        <td><input type="checkbox" value="Show Multiplication Carries" name="showmcarries" 
                    <%=isShowMcarries%> onclick="zeroDivCounts()">
             <label>Show Multiplication Carries</label>
         </td></tr>
     </table>
 </div>
-<div class ="d1">
 
 <div class="d4">  
 <table>
@@ -1369,50 +1487,7 @@ if( thereAreCarries && showBrowsCk ) { %>
 </table>
 </div>
 
-<div class="d5">
-<table>
-<tr>    
-    <td><label>Problems Attempted</label></td>
-    <td>
-    <input type="text" id="numAttmptd" name="numAttmptdP" value="<%=numAttmptdV%>"
-           class="blackbox">
-    </td>
-</tr>
-<tr>
-    <td><label>Completed Without Error</label></td>   
-    <td>
-    <input type="text" id="numWoErr" name="numWoErrP" value="<%=numWoErr%>"
-           class="blackbox">
-    </td>
-</tr>
-<tr>
-    <td><label>Consecutive Without Error</label></td>   
-    <td>
-    <input type="text" id="consWoErr" name="consWoErrP" value="<%=consWoErr%>"
-           class="blackbox">
-    </td>
-</tr>
-<tr>
-    <td><label>Correct Per Hour</label></td>   
-    <td>
-    <input type="text" id="corrPerHr" name="corrPerHrP" value="<%=corrPerHr%>"
-           class="blackbox">
-    </td>
-</tr>
-<tr>
-    <td><label>Errors This Problem</label></td>
-    <td><input type="text" id="errs" name="errs" value="<%=errs%>"
-               class="blackbox"></td>
-</tr>
-<tr>
-    <td></td>
-    <td>
-<button type="reset" value="Reset" onclick="startDivAgain()" >Start again</button>
-</td>
-</tr>
-</table>
-</div>
-</div>                  
+              
 
 <input type="hidden" id="strtTime" name="strtTimeP" value="<%=strtTime%>" class="shortbox">
 <input type="hidden" id="quotDp" value="<%=expQuotDp%>" class="shortbox">
@@ -1466,6 +1541,10 @@ if( lastboxdebug ) { %>
 <input type="<%=cmtype%>" id="rowNo" value="0" >
 <input type="hidden" id="dividend" value="<%=dividnd%>" >
 <input type="hidden" id="currDividend" >
+</td>
+</tr>
+</tbody>
+</table>
 </form>
 
 </div>
