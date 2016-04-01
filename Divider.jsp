@@ -949,27 +949,33 @@
         <tr>
         <td class="t2"></td>
 <%      for( int idx = 0; idx <= SZ2_MX; idx++ ) {
-            String cid = "c" + idx; %>
-            
+            String cid = "c" + idx; %>            
                 <td class="t1"></td>
-                <td class="t2"></td>
-            
+                <td class="t2"></td>            
 <%      } %>
         </tr>
 <%  }
     for( sbx = crows - 1; sbx > 0; --sbx ) { %>
         <tr>
-        <td class="t2"></td>
+<%      int mcol = dvsrDigs - 2;
+        String cname = "cm" + mcol + "_" + sbx;
+        String cid = "hcm" + mcol + "_" + sbx; %>
+        <td class="t2">
+<%      if( showMcarriesCk ) { %>
+            <input type="<%=cmtype%>" name="<%=cname%>" class="c2" 
+                onkeyup="checkMcarry(<%=mcol%>,<%=sbx%>)" >
+<%      }  %>
+        <input type="hidden" id="<%=cid%>" class="c2"></td>
 <%      for( int idx = 0; idx <= SZ2_MX; idx++ ) { %>
             <td class="t1"></td>
-<%          if( idx < dvsrDigs - 1 ) { 
-                int col = dvsrDigs - 2 - idx;
-                String cname = "cm" + col + "_" + sbx;
-                String cid = "hcm" + col + "_" + sbx; %>
+<%          if( idx < dvsrDigs - 2 ) { 
+                mcol = dvsrDigs - 3 - idx;
+                cname = "cm" + mcol + "_" + sbx;
+                cid = "hcm" + mcol + "_" + sbx; %>
                 <td class="t2">
 <%              if( showMcarriesCk ) { %>
                     <input type="<%=cmtype%>" name="<%=cname%>" class="c2" 
-                            onkeyup="checkMcarry(<%=col%>,<%=sbx%>)" >
+                            onkeyup="checkMcarry(<%=mcol%>,<%=sbx%>)" >
 <%              }  %>
                 <input type="hidden" id="<%=cid%>" class="c2"></td>
 <%          } else {  %>
@@ -980,7 +986,15 @@
         </tr>
 <%  } %>
 <tr>
-    <td class="t2"></td>
+<%  int mcol = dvsrDigs - 2;
+    String cname = "cm" + mcol + "_0"; 
+    String cid = "hcm" + mcol + "_0"; %>
+    <td class="t2" name="notthestartdig">
+<%  if( showMcarriesCk ) { %>
+        <input type="<%=cmtype%>" name="<%=cname%>" class="c2" 
+            onkeyup="checkMcarry(<%=mcol%>,0)">
+<%  } %>
+            <input type="hidden" id="<%=cid%>" class="c2"></td>
 <%  for( int idx = 0; idx <= SZ2_MX; idx++ ) {       
         if( idx < spacesb4quot || spacesb4quot + quotDigs + rmdrDigs < idx ) { %>
             <td class="t1" name="notthestartdig"></td>
@@ -1009,10 +1023,10 @@
 <%      } else { %>
             <td class="t1" name="notthestartdig"></td>
 <%      }
-        if( idx < dvsrDigs - 1 && crows > 0 ) { 
-            int col = dvsrDigs - 2 - idx;
-            String cname = "cm" + col + "_0"; 
-            String cid = "hcm" + col + "_0"; %>
+        if( idx < dvsrDigs - 2 && crows > 0 ) { 
+            int col = dvsrDigs - 3 - idx;
+            cname = "cm" + col + "_0"; 
+            cid = "hcm" + col + "_0"; %>
             <td class="t2" name="notthestartdig">
 <%          if( showMcarriesCk ) { %>
                 <input type="<%=cmtype%>" name="<%=cname%>" class="c2" 
@@ -1057,7 +1071,7 @@
                     <td class="s1"></td>
     <%          } 
                 if( col >= 0 && ncarries[0][col] != 0 ) { 
-                    String cid = "ca" + ccol + "_0"; 
+                    cid = "ca" + ccol + "_0"; 
                     if( ccol < 0 || ccol >= SZ2_MX ) {
                          System.out.println("ca ocol = " + ocol + "being reduced to 0");
                          ocol = 0;
@@ -1180,7 +1194,7 @@
                     col < wcDig[sbx][1] + numBringDn[sbx] && 
                     ncarries[rdx][col] != 0 ) {  
 
-                String cid = "ca" + col + "_" + rdx; %>
+                cid = "ca" + col + "_" + rdx; %>
                 <td class="s2">
                         <input type="<%=browType%>" name="<%=name%>" id="<%=cid%>"
                         class="f2" onkeyup="checkDivBorrow(<%=col%>, <%=rdx%>)"
@@ -1205,7 +1219,7 @@
 <%  } %>
         <tr class="oprand">
         <td class="t2"></td>
-    <%  for( int idx = 0; idx <= SZ2_MX; idx++ ) { 
+<%      for( int idx = 0; idx <= SZ2_MX; idx++ ) { 
             String whattype = cmtype; 
             int col = spacesb4Op[sbx][1] + wcDig[sbx][1] - idx;
             int ocol = spacesb4Op[sbx][1] + wcDig[sbx][1] + numBringDn[sbx] - idx - 1;
@@ -1213,24 +1227,21 @@
             if( idx <= spacesb4Op[sbx][1] ) { %>
                 <td class="t1"></td>
 <%          } else if( idx <= spacesb4Op[sbx][1] + wcDig[sbx][1] ) { 
-                String name = "op" + sbx + "_1"; 
-                 %>
+                String name = "op" + sbx + "_1";  %>
                 <td class="t1">
                 <input type="<%=whattype%>" name="<%=name%>" class="a1" size="1" 
                 onkeyup="subtract( <%=col%>, <%=sbx%> )" 
                 onclick="promptDivBorrow(<%=ocol%>, <%=rdx%>)">
                 </td>
     <%      } else if( 0 <= ocol && ocol <  maxBDcol ) { 
-                String name = "bd" + sbx;
-%>
+                String name = "bd" + sbx; %>
                 <td class="t1">
                 <input type="<%=whattype%>" name="<%=name%>" class="a1" size="1" 
                 onkeyup="bringdown( <%=sbx%> )"
                 onclick="promptDivBorrow(<%=ocol%>, <%=rdx%>)">
                 </td>
- <%                 
-            } else { %>
-            <td class="t1"></td>
+ <%         } else { %>
+                <td class="t1"></td>
 <%          } %>
             <td class="t2"></td>
 <%      } %>
@@ -1242,7 +1253,7 @@
         <tr>
         <td class="t2"></td>
 <%      for( int idx = 0; idx <= SZ2_MX; idx++ ) {
-            String cid = "c" + idx; %>
+            cid = "c" + idx; %>
             
                 <td class="t1"></td>
                 <td class="t2"></td>   
@@ -1265,10 +1276,9 @@
         <tr>
         <td class="t2"></td>
 <%      for( int idx = 0; idx <= SZ2_MX; idx++ ) {
-            String cid = "c" + idx; %>
-            
-                <td class="t1"></td>
-                <td class="t2"></td>   
+            cid = "c" + idx; %>
+            <td class="t1"></td>
+            <td class="t2"></td>   
 <%      } %>
         </tr>
 <%  } %>
@@ -1499,7 +1509,7 @@ if( thereAreCarries && showBrowsCk ) { %>
 <% 
 for( int idx = 0; idx < quotDigs; idx++ ) {
     for( int jdx = 0; jdx < maxOps; jdx++ ) { 
-        String cid = "calcDig" + idx + "_" + jdx;
+        cid = "calcDig" + idx + "_" + jdx;
         String oid = "operand" + idx + "_" + jdx;
         if( cmdebug ) { %>
             <label><%=cid%></label>
