@@ -214,8 +214,8 @@ button {
   min-width: 0.7em;
   max-width: 0.7em;
   //background-color: black;
-  background-color: #e1ceb1;
-  //background-color: #ccccE8;
+  //background-color: #e1ceb1;
+  //background-color: orange; // dbfixit
   text-align: center;
   border:1px solid black;
   margin-left: 0px;
@@ -326,9 +326,7 @@ button {
   width: 1.1em;
   min-width: 1.1em;
   max-width: 1.1em;
-  //background-color: black; #cfd2d1;
-  background-color: #e1ceb1;
-  //background-color: #a4a6a7;
+  //background-color: #e1ceb1;
   color: black; 
   text-align: center;
   border: 1px solid black;
@@ -385,7 +383,14 @@ button {
     //color: #160404;
     color: #fdefe0; // default text color is background color (hidden)
 }
-#msg {;
+#msg {
     //margin-left: 1em;
     color: red;
+}
+#dispRec {
+    color: #fdefe0; // default text color is background color (hidden)
+}
+#overbar{
+    //background-color: crimson;
+    //height: 1em;
 }

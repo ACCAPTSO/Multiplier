@@ -3,6 +3,125 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
+// how many of the hidden inputs might as well be global javascript variables? fixit
+var posRecorded = false;
+var leftPos = 0;
+var rightPos = 0;
+var overbar = null;
+var barPosition = null;
+var boxHeight = 0;
+var boxWidth = 0;
+var rightside = 0;
+var bottomside = 0;
+var tol = 13;
+function mouseCoords(ev){ 
+    if(ev.pageX || ev.pageY){ 
+	return {x:ev.pageX, y:ev.pageY}; 
+    } 
+    return { 
+        x:Number(ev.clientX) + Number(document.body.scrollLeft) - Number(document.body.clientLeft), 
+        y:Number(ev.clientY) + Number(document.body.scrollTop)  - Number(document.body.clientTop)
+    }; 
+}
+function getPosition(e){ 
+    var left = 0; 
+    var top  = 0; 
+    while (e.offsetParent){ 
+        left += e.offsetLeft; 
+        top  += e.offsetTop; 
+        e     = e.offsetParent; 
+    } 
+    left += e.offsetLeft; 
+    top  += e.offsetTop; 
+    return {x:Number(left), y:Number(top)}; 
+}
+function recDownPos( ev ) {
+    var x = 0;
+    ev = ev || window.event; 
+    var mousePos = mouseCoords(ev);
+    //for( var j = 0; j < 10; j++ ) {
+    //    document.getElementById("statusBox" + j).innerHTML = "";
+    //}
+    overbar = document.getElementById("overbar");
+    barPosition = getPosition( overbar );
+    boxHeight = Number(getComputedStyle(overbar).height.match(/[0-9]+/));
+    boxWidth = Number(getComputedStyle(overbar).width.match(/[0-9]+/));
+    rightside = barPosition.x + boxWidth;
+    bottomside = barPosition.y + boxHeight;
+    //document.getElementById("statusBox" + x).innerHTML = "in recDownPos x position = " + mousePos.x + " y position = " + mousePos.y;
+    //x = x + 1;
+    //document.getElementById("statusBox" + x).innerHTML = "posRecorded = " + posRecorded;
+    //x = x + 1;
+    //document.getElementById("statusBox" + x).innerHTML = " left side = " + barPosition.x + " right side = " + rightside + " top = " + barPosition.y;
+    //x = x + 1;
+    //alert("overbar height = " + getComputedStyle(overbar).height );
+    //alert("x position = " + mousePos.x + " y position = " + mousePos.y + " left bar = " + barPosition.x + " right bar = " + rightside + " top bar = " + barPosition.y + " bottom bar = " + bottomside);
+    if( barPosition.x - tol < mousePos.x && mousePos.x < rightside + tol && barPosition.y - tol < mousePos.y && mousePos.y < barPosition.y + tol ) {
+        if( mousePos.x < barPosition.x + tol ) {
+            posRecorded = true;
+            leftPos = mousePos.x;
+            //document.getElementById("statusBox" + x).innerHTML = "posRecorded = " + posRecorded + " left side = " + leftPos;
+            //x = x + 1;
+        } else if( rightside - tol < mousePos.x ) {
+            posRecorded = true;
+            rightPos = mousePos.x;
+            //document.getElementById("statusBox" + x).innerHTML = "posRecorded = " + posRecorded + " right side = " + rightPos;
+            //x = x + 1;
+        //} else {
+        //   document.getElementById("statusBox" + x).innerHTML = "mousedown at neither right nor left end";
+        //   x = x + 1; 
+        }
+    }
+}
+function checkEnds( ev ) {
+    var x = 10;
+    ev = ev || window.event; 
+    var mousePos = mouseCoords(ev);
+    //for( var j = 10; j < 20; j++ ) {
+    //    document.getElementById("statusBox" + j).innerHTML = "";
+    //}
+    //document.getElementById("statusBox" + x).innerHTML = "in checkEnds x position = " + mousePos.x + " y position = " + mousePos.y;
+    //x = x + 1;
+    //document.getElementById("statusBox" + x).innerHTML = "posRecorded = " + posRecorded;
+    //x = x + 1;
+    //document.getElementById("statusBox" + x).innerHTML = " left side = " + barPosition.x + " right side = " + rightside + " top = " + barPosition.y;
+    //x = x + 1;
+    if( posRecorded &&
+            barPosition.x - tol < mousePos.x && mousePos.x < rightside + tol && 
+            barPosition.y - tol < mousePos.y && mousePos.y < barPosition.y + tol ) {
+        //document.getElementById("statusBox" + x).innerHTML = "mouseup inside bar leftPos = " + leftPos + " rightPos = " + rightPos;
+        //x = x + 1;
+        if( leftPos > 0 && rightside - tol < mousePos.x ) {
+            overbar.style.backgroundColor = "blue";
+            //document.getElementById("statusBox" + x).innerHTML = "overbar should be blue";
+            //x = x + 1;
+            var displayRec = document.getElementById("dispRec");
+            displayRec.style.color = getComputedStyle(displayRec).backgroundColor;
+        } else if( rightPos > 0 && mousePos.x < barPosition.x + tol ) {
+            overbar.style.backgroundColor = "green";
+            //document.getElementById("statusBox" + x).innerHTML = "overbar should be green";
+            //x = x + 1;
+            var displayRec = document.getElementById("dispRec");
+            displayRec.style.color = getComputedStyle(displayRec).backgroundColor;
+        //} else {
+        //   document.getElementById("statusBox" + x).innerHTML = "mouseup at neither right nor left end";
+        //   x = x + 1; 
+        }
+    }
+    posRecorded = false;
+}
+//window.onload = readSettings;
+function enableBar() {
+    var difflvl = null;
+    if (document.getElementById("Recurring Decimals").checked) {
+        difflvl = document.getElementById("Recurring Decimals").value;
+        if( difflvl === "Recurring Decimals" ) { 
+            document.onmousedown = recDownPos;
+            document.onmouseup   = checkEnds;
+            document.getElementById("dispRec").style.color = "red";
+        }       
+    }
+}
 function checkRemainder(col, expectedRemainder) {
     //for( var j = 0; j < 18; j++ ) {
     //    document.getElementById("statusBox" + j).innerHTML = "";
@@ -61,7 +180,7 @@ function checkRemainder(col, expectedRemainder) {
     }
     setFocus();
 }
-function showQuotDigs(col) {
+function showQuotDigs( col ) {
     var x = 0;
     var errBx = document.getElementById("msg");
     var currmsg = errBx.innerHTML;
@@ -80,26 +199,40 @@ function showQuotDigs(col) {
     //document.getElementById("statusBox" + x).innerHTML = "in showQuotDigs decsNotSettled = " + decsNotSettled;
     //x = x + 1;
     if (decsNotSettled === 0) {
-        //document.getElementById("statusBox" + x).innerHTML = "errBx.innerHTML = '" + currmsg + "' clickmsg = '" + clickmsg + "'"; 
-        //if( currmsg === clickmsg ||
-        //        currmsg === "Click where first quotient digit should be" ) {
+
         var quotDigs = Number(document.getElementById("quotDigs").value);
         var lastcol = quotDigs - 1;
+        //document.getElementById("statusBox" + x).innerHTML = "in showQuotDigs col = " + col + " lastcol = " + lastcol;
+        //x = x + 1;
         if (col === lastcol) {
-            //for( var i = 0; i < quotDigs; i++ ) {
             var i = quotDigs - 1;
             document.getElementById("qt" + i).type = "text";
-            //}
             var errBx = document.getElementById("msg");
             errBx.innerHTML = "";
+            //var quotdigs = document.getElementsByName("quotdigs");
+            //var length = quotdigs.length;
+            //for( var i = 0; i < length; i++ ) {
+            //    quotdigs[i].removeEventListener("click", showQuotDigs, true );
+            //}
+            var notQuotDigits = document.getElementsByName("notthestartdig");
+            var length = notQuotDigits.length;
+            for (var i = 0; i < length; ++i) {
+                if (notQuotDigits[i].nodeType === 1) {
+                    notQuotDigits[i].removeEventListener("click", sayNotThere, true );
+                }
+            }
+            //document.getElementById("statusBox" + x).innerHTML = "about to setFocus";
+            //x = x + 1;
             setFocus();
         } else {
             errBx.innerHTML = clickmsg;
+            //document.getElementById("statusBox" + x).innerHTML = "about to upDateErrCount";
+            //x = x + 1;
             upDateErrCount();
         }
     }
 }
-function sayNotThere() {
+function sayNotThere( ev ) {
     var errBx = document.getElementById("msg");
     errBx.innerHTML = "quotient doesn't start there, click somewhere else";
     upDateErrCount();
@@ -233,7 +366,7 @@ function divide(immFeedBkCk, col, qtDig) {
     }
     var quotDigs = Number(document.getElementById("quotDigs").value);
     document.getElementById("nextQuotBox").value =
-            document.getElementsByClassName("c2").length + quotDigs - col;
+    document.getElementsByClassName("c2").length + quotDigs - col;
     var rmdrDigs = document.getElementsByName("rmdr").length;
     var mcarry = 0;
     var i = 0;
@@ -672,7 +805,9 @@ function divide(immFeedBkCk, col, qtDig) {
         //document.getElementById("statusBox" + x).innerHTML = "final nextbox = " + nextbox;
         document.getElementById("whatbox").value = nextbox;
     }
-
+    if( Number(document.getElementById("quotDp").value) - 2 ===  col ) {
+        enableBar();
+    }
     //alert("done with divide");
     setFocus();
 }
@@ -1189,7 +1324,9 @@ function subtract(col, sbx) {
             } else { // nextbox is bringdown box
                 // hide the "Click on a digit to borrow from it" message
                 var displayBorrow = document.getElementById("dispBo");
-                displayBorrow.style.color = getComputedStyle(displayBorrow).backgroundColor;
+                if( displayBorrow ) {
+                    displayBorrow.style.color = getComputedStyle(displayBorrow).backgroundColor;
+                }
                 // make bringdown box visible
                 var visibleBrows = document.getElementsByName("bd" + sbx);
                 if (visibleBrows.length > 0) {
@@ -1527,8 +1664,7 @@ function zeroDivCounts() {
 }
 // start again button code
 function startDivAgain() {
-    // make it verify that repeating pattern has been overlined,
-    // may not need to find lastrow fixit
+    // needs to check for correct last digits in recurring decimal fixit
     //var max = Number(document.getElementById('lastbox').value);
     var errCt = Number(document.getElementById("errs").value);
     //var boxNo = Number(document.getElementById("bdx").value);
@@ -1550,14 +1686,25 @@ function startDivAgain() {
     }
 
     var difflvl = "not set";
+    var barDrawn = false;
     if (document.getElementById("Remainders").checked) {
         difflvl = document.getElementById("Remainders").value;
+    }
+    if (document.getElementById("Recurring Decimals").checked) {
+        difflvl = document.getElementById("Recurring Decimals").value;
+        var overbar = document.getElementById("overbar");
+        if( overbar ) {
+            var barColor = getComputedStyle(overbar).backgroundColor;
+            barDrawn = barColor === "blue" ||
+                       barColor === "green";
+       }
     }
     //alert("difflvl = " + difflvl);
     var remainder = Number(lastrow[lastrow.length - 1].value);
     var remainderZero = remainder === 0 ||
             (difflvl === "Remainders" &&
-                    remainder < Number(document.getElementById("divisor").value));
+                    remainder < Number(document.getElementById("divisor").value)) ||
+            (difflvl === "RecurringDecimals " && barDrawn);
     //alert("boxNo = " + boxNo + " max = " + max + " errCt = " + errCt + " errMsg = " + errMsg);
 
     // update problem counts
@@ -1585,7 +1732,7 @@ function startDivAgain() {
     }
 }
 // imitate radio buttons, selecting only one decimal point at a time
-function chooseDivThis(which_one, which_type) {
+function chooseDivThis( which_one, which_type) {
     for (var j = 0; j < 18; j++) {
         document.getElementById("statusBox" + j).innerHTML = "";
     }
@@ -1668,8 +1815,14 @@ function chooseDivThis(which_one, which_type) {
         if (turnOnNextMsg) { // this has to be done outside last loop for some reason
             // or it terminates the loop prematurely without
             // turning off the unused decimal points
+            //var quotdigs = document.getElementsByName("quotdigs");
+            //var length = quotdigs.length;
+            //for( var i = 0; i < length; i++ ) {
+            //    var col = length - 1 - i;
+            //    quotdigs[i].addEventListener("click", showQuotDigs( col ), true );
+            //}
             var notQuotDigits = document.getElementsByName("notthestartdig");
-            var length = notQuotDigits.length;
+            length = notQuotDigits.length;
             for (var i = 0; i < length; ++i) {
                 if (notQuotDigits[i].nodeType === 1) {
                     notQuotDigits[i].addEventListener("click", sayNotThere, true);
@@ -1677,7 +1830,7 @@ function chooseDivThis(which_one, which_type) {
             }
             var dvdDigs = document.getElementsByName("dvddigs");
             var expDvdDp = Number(document.getElementById("dvdDp").value);
-            length = dvdDigs.length;
+            var length = dvdDigs.length;
             //alert("dvdDigs length = " + length + " espDvdDp = " + expDvdDp);
             var leadzeros = true;
             for (var i = 0; i < length; ++i) {

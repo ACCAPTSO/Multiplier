@@ -19,9 +19,7 @@
 <%
     // 2nd divisor dig around 5 is harder to estimate fixit
     // count it wrong if the user gueses a quotient digit 3 times fixit
-    // make the table size constant so it doesn't give hints and the buttons don't 
-    // jump around fixit
-    // find why some preset settings don't work at all or stick permanently 
+    // setFocus does not work for single digit divisors in recurring decimal problems fixit
     System.out.println("------------------------Start Anew!-------------------------");
     final int SZ2_MX = 12; // maximum dividend + divisor + 1 size
     final int maxOps = 2;
@@ -322,15 +320,15 @@
     //int quotient = 21;
     //int divisor = 321;
     
-    if( recDpCk ) {
-        dvsrDp = 1; // + (int)(2*Math.random()); // making it more is tricky - overflows page
-        if( dvsrDp > dvsrDigs ) {
-            dvsrDigs = dvsrDp;
-        }
+    //if( recDpCk ) {
+    //    dvsrDp = 1; // + (int)(2*Math.random()); // making it more is tricky - overflows page
+    //    if( dvsrDp > dvsrDigs ) {
+    //        dvsrDigs = dvsrDp;
+   //     }
         //int maxQtDp = SZ2_MX + 1 - 2*dvsrDigs;
-        int maxQtDp = 4; //SZ2_MX - 2 - 2*dvsrDigs; // making it more is tricky - overflows page
-        quotDp = 1 + (int)(maxQtDp*Math.random());
-    }
+    //    int maxQtDp = 4; //SZ2_MX - 2 - 2*dvsrDigs; // making it more is tricky - overflows page
+    //    quotDp = 1 + (int)(maxQtDp*Math.random());
+    // }
     if( exDpCk ) {
         dvsrDp = 1 + (int)(dsMaxDg*Math.random()); 
         //dvsrDp = 2;
@@ -409,9 +407,11 @@
             multiplier = 100;
             //dsMax = 333; // = 1000/3
         }
-        dsMaxDg = (SZ2_MX - minQdp)/2;
-        // mAKE MORE LIKELY TO BE SMALL FIXIT
-        dvsrDp = 1 + (int)(dsMaxDg*Math.random());
+        dsMaxDg = (SZ2_MX - minQdp)/2 - 1;
+        // divisor decimal point should be mostly small
+        dvsrDp = 1 + (new Double(dsMaxDg*(Math.pow(Math.random(),NEXP)))).intValue();
+        System.out.println("dsMaxDg = " + dsMaxDg + " dvsrDp = " + dvsrDp + " is it closer to 1?");
+        //dvsrDp = 1 + (int)(dsMaxDg*Math.random());
         System.out.println("denominator = " + denominator + " minQdp = " + minQdp + " dsMaxDg = " + dsMaxDg + " dvsrDp = " + dvsrDp);
         dsMaxDg = dsMaxDg - 1 - (int)(Math.log10(denominator));
         dsMax = (int)(Math.pow(10, dsMaxDg)) - 1;
@@ -424,8 +424,10 @@
             dvsrDigs = dvsrDp;
         }
         qtMaxDg = SZ2_MX - 2*dvsrDigs - (int)(Math.log10(multiplier/denominator));
-        // make more likely to be small fixit
-        quotDp = 1 + (int)(qtMaxDg*Math.random());
+        // quotient decimal point should mostly be large
+        //quotDp = 2 + (int)(qtMaxDg*Math.random());
+        quotDp = 1 + (new Double((qtMaxDg)*(1 - Math.pow(Math.random(),NEXP)))).intValue();
+        System.out.println("qtMaxDg = " + qtMaxDg + " quotDp = " + quotDp + " is it closer to " + qtMaxDg +  "?");
         while( quotient % denominator == 0 ) { // make sure division is not exact
             quotient = 1 + (int)(qtMax*Math.random());
         }
@@ -560,6 +562,41 @@
         numBringDn[idx] = 0;
         actBringDn[idx] = 0;
     }
+    int pattLength = 0;
+    if( recDpCk ) {
+        String quotString = "";
+        for( int idx = quotDigs-1; idx >= 0; --idx ) {
+            quotString = quotString + qt[idx];
+            if( idx == quotDp-1 ) {
+                 quotString = quotString + ".";
+            }
+        }
+        System.out.println("quotient = " + quotient + " quotDp = " + quotDp + " with decimal point in place  = " + quotString); // quotient/(int)(Math.pow(10,(quotDp-1))) + "." + quotient%(int)(Math.pow(10,quotDp-1))); // .0 zero gets skipped
+        // find the length of the repeat pattern    
+        boolean breakall = false;
+        for( int idx = quotDigs-1; idx > 0; --idx ) {
+            int firstPattDig = qt[idx];
+            for( int jdx = idx-1; jdx >= 0; --jdx ) {
+                if( qt[jdx] == firstPattDig ) {
+                    int secPattDig = qt[idx-1];
+                    if( jdx > 0 && qt[jdx-1] == secPattDig ) {
+                        pattLength = idx - jdx;
+                        int restOfDec = quotDp - 1 - pattLength;
+                        quotString = "";
+                        for( int mdx = quotDp-2, ndx = 0; mdx >= 0 && ndx < pattLength; --mdx, ++ndx ) {
+                            quotString = quotString + qt[mdx];
+                        }
+                        System.out.println("qt[" + idx + "] = " + qt[idx] + " firstPattDig = " + firstPattDig + " secPattDig = " + secPattDig + " repeat pattern = " + quotString); // (quotient%(int)(Math.pow(10,quotDp-1)))/(int)(Math.pow(10, restOfDec)) );
+                        breakall = true;
+                        break;
+                    }
+                }
+            }
+            if( breakall ) {
+                break;
+            }
+        }
+    }
     //System.out.println("quotient = " + quotient);// + " qt[" + idx + "] = " + qt[idx]);
     tmplong = divisor;
     for( int idx = 0; idx < dvsrDigs; ++idx ) {
@@ -609,6 +646,11 @@
         //System.out.println("line 613 quotDigs = " + quotDigs + " qt[" + qd + "] = " + qt[qd] + " spacesb4quot = " + spacesb4quot);
     }
 
+    int bbspan = 1 + 2*(spacesb4quot + quotDigs - quotDp + 1);
+    System.out.println("spacesb4quot = " + spacesb4quot + " quotDigs " + quotDigs + " quotDp = " + quotDp);
+    int cbspan = 2*pattLength - 1;
+    int dbspan =  1 + 2*(SZ2_MX + 1) - bbspan - cbspan;
+    
     boolean showBrowsCk = false;
     String isShowBrows = "";
     String helplist[] = request.getParameterValues("showborrows");
@@ -986,6 +1028,12 @@
         </tr>
 <%  } %>
 <tr>
+<%  if( recDpCk ) { %>
+    <tr><th class="th-id1" colspan="<%=bbspan%>"></th>
+        <th class="th-id1" colspan="<%=cbspan%>" id="overbar"></th>
+        <th class="th-id1" colspan="<%=dbspan%>"></th>
+    </tr>
+<%  } %>
 <%  int mcol = dvsrDigs - 2;
     String cname = "cm" + mcol + "_0"; 
     String cid = "hcm" + mcol + "_0"; %>
@@ -1375,7 +1423,6 @@
 <% } %>
 
 <div class="d3">
-<label id="dispBo">
 <% boolean thereAreCarries = false;
 for( int idx = 0; idx < nsubs; ++ idx ) { 
     if( nacarries[idx] > 0 ) {
@@ -1385,9 +1432,14 @@ for( int idx = 0; idx < nsubs; ++ idx ) {
 }
 // Recurring decimals overlaps next table fixit
 if( thereAreCarries && showBrowsCk ) { %>
-            Click on a digit to borrow from it
+    <label id="dispBo">Click on a digit to borrow from it</label>
 <%  } %>
+
+<% if( recDpCk ) { %>
+<label id="dispRec">
+When decimal part of quotient starts to repeat, drag mouse to draw a line over the repeat pattern
 </label>
+<%  } %>
 </div>
 <div class="d6">
 <!--this is where error messages get displayed//-->
@@ -1490,7 +1542,8 @@ if( thereAreCarries && showBrowsCk ) { %>
         <label>Exact Decimals</label>
     </td></tr>
     <tr><td>
-        <input type="radio" name="difflvl" value="Recurring Decimals" 
+        <input type="radio" name="difflvl" value="Recurring Decimals"
+               id="Recurring Decimals"
             <%=isRecDp%> onclick="zeroDivCounts()">
         <label>Recurring Decimals</label>
     </td></tr>

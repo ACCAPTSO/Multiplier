@@ -8,7 +8,9 @@ function setFocus() { // this part is javascript
     var x = document.getElementById("th-id2");
     var j = document.getElementById("whatbox");
     var i = Number(j.value);
-    if( !x.elements[i].isEqualNode(j) ) {
+    var name = x.elements[i].getAttribute("name");
+    //document.getElementById("statusBox0").innerHTML = "name = " + name;
+    if( name !== null && !x.elements[i].isEqualNode(j) ) {
         x.elements[i].style.backgroundColor = "white";
         x.elements[i].style.color = "red";
         x.elements[i].type = "text";
