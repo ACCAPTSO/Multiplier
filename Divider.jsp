@@ -903,7 +903,7 @@
             nmcars += (dvsrDigs - 1);
         }
         crows += 1;
-        //System.out.println("qt[" + idx + "] = " + qt[idx] + " nmcars = " + nmcars + " crows = " + crows );
+        System.out.println("qt[" + idx + "] = " + qt[idx] + " nmcars = " + nmcars + " crows = " + crows );
     }
     em[0] = nmcars + 2*nacarries[0] + quotDigs - 1;
     //em[0] = nmcars + 4*nacarries[0] + quotDigs - 1; // with hidden borrows anc carries in same table
@@ -1003,14 +1003,16 @@
         String cname = "cm" + mcol + "_" + sbx;
         String cid = "hcm" + mcol + "_" + sbx; %>
         <td class="t2">
-<%      if( showMcarriesCk ) { %>
-            <input type="<%=cmtype%>" name="<%=cname%>" class="c2" 
-                onkeyup="checkMcarry(<%=mcol%>,<%=sbx%>)" >
-<%      }  %>
-        <input type="hidden" id="<%=cid%>" class="c2"></td>
+<%      if( nmcars > 0 ) {
+            if( showMcarriesCk ) { %>
+                <input type="<%=cmtype%>" name="<%=cname%>" class="c2" 
+                    onkeyup="checkMcarry(<%=mcol%>,<%=sbx%>)" >
+<%          } %>
+            <input type="hidden" id="<%=cid%>" class="c2"></td>
+ <%     } %>       
 <%      for( int idx = 0; idx <= SZ2_MX; idx++ ) { %>
             <td class="t1"></td>
-<%          if( idx < dvsrDigs - 2 ) { 
+<%          if( idx < dvsrDigs - 2 && nmcars > 0 ) { 
                 mcol = dvsrDigs - 3 - idx;
                 cname = "cm" + mcol + "_" + sbx;
                 cid = "hcm" + mcol + "_" + sbx; %>
@@ -1038,11 +1040,14 @@
     String cname = "cm" + mcol + "_0"; 
     String cid = "hcm" + mcol + "_0"; %>
     <td class="t2" name="notthestartdig">
-<%  if( showMcarriesCk ) { %>
-        <input type="<%=cmtype%>" name="<%=cname%>" class="c2" 
-            onkeyup="checkMcarry(<%=mcol%>,0)">
+<%  if( nmcars > 0 ) {
+        if( showMcarriesCk ) { %>
+            <input type="<%=cmtype%>" name="<%=cname%>" class="c2" 
+                onkeyup="checkMcarry(<%=mcol%>,0)">
+<%      } %>
+            <input type="hidden" id="<%=cid%>" class="c2">
 <%  } %>
-            <input type="hidden" id="<%=cid%>" class="c2"></td>
+    </td>
 <%  for( int idx = 0; idx <= SZ2_MX; idx++ ) {       
         if( idx < spacesb4quot || spacesb4quot + quotDigs + rmdrDigs < idx ) { %>
             <td class="t1" name="notthestartdig"></td>
@@ -1071,7 +1076,7 @@
 <%      } else { %>
             <td class="t1" name="notthestartdig"></td>
 <%      }
-        if( idx < dvsrDigs - 2 && crows > 0 ) { 
+        if( idx < dvsrDigs - 2 && nmcars > 0 ) { 
             int col = dvsrDigs - 3 - idx;
             cname = "cm" + col + "_0"; 
             cid = "hcm" + col + "_0"; %>
