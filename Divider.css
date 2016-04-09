@@ -361,6 +361,10 @@ button {
   background-color:  #451f15;
   border:2px solid black;
 }
+.th-class4{
+    background-color: #eddfd0;
+    border: 2px solid #eddfd0;
+}
 .DragBox {
     color : #fdfaef;
     //border : none;

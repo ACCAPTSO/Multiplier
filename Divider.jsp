@@ -30,21 +30,25 @@
     final boolean lastboxdebug = false;
     
     boolean immFeedBkCk = false;
-    boolean estRequiredCk = false;
+    boolean estRequiredCk = true;
     boolean remaindersCk = false;
     boolean exDpCk = false;
-    boolean recDpCk = true;
+    boolean recDpCk = false;
     String isImmFeedBk = "";
-    String isEstRequired = "";
+    String isEstRequired = "checked";
     String isRemainders = "";
     String isExDp = "";
-    String isRecDp = "checked";
+    String isRecDp = "";
     String tmp = "";      // temporary storage for newly gotten 
                           // request parameter
     String whatlvl = "";
     double justLessThn1 = 1 - 1/Double.MAX_VALUE;
     if(( tmp = request.getParameter("difflvl")) != null ) {
+        estRequiredCk = false;
+        remaindersCk = false;
         recDpCk = false;
+        isEstRequired = "";
+        isRemainders = "";
         isRecDp = "";
         whatlvl = tmp;
         if( whatlvl.equals("Immediate Feedback") ) {
@@ -88,6 +92,8 @@
     } else if( recDpCk ) {
         dsMaxDg = 1; // + (int)(2*Math.random()); // 1-2 digits
     }
+    //
+    dsMaxDg = 3; // dbfixit
     //int dsMaxDg = 3 + (int)(2*Math.random()); // 3-5 digits
     //dsMaxDg = 3;
     int dsMax = (int)(Math.pow(10, dsMaxDg)) - 2;
@@ -522,6 +528,7 @@
         //remainder = (int)(rmdrMax*Math.random());
         //remainder = rmdrMax*(int)(1 - Math.pow(Math.random(),DEXP));
         remainder = (new Double((1+rmdrMax)*(1 - Math.pow(Math.random(),DEXP)))).intValue();
+        //remainder = rmdrMax; // dbfixit
         //remainder = 21;     // remainder is a bringdown
         // remainder = 0;
         //System.out.println("rmdrMxDg = " + rmdrMxDg + " rmdrMax = " + rmdrMax + " remainder = " + remainder);
@@ -531,6 +538,20 @@
         rmdrDigs = remainder > 0? (1 + (int)Math.log10(remainder)) : 1;
         dividnd += remainder;
     }
+    /* dbfixit 
+    divisor = 342;
+    quotient = 500;
+    dividnd = 171009;
+    //remainder = 9;
+    dvsrDigs = 3;
+    quotDigs = 3;
+    dvdDigs = 6;
+    //rmdrDigs = 1;
+    divisor = 111;
+    quotient = 510;
+    dividnd = 56610;
+    dvdDigs = 5;
+    /* */
     int [] qt;
     int [] ds;
     int [] dd;
@@ -713,14 +734,14 @@
     }
     int nsubs = 0; // actual subtractions
     while( whatquotDig >= 0 ) {
-        if( nsubs > quotDigs || whatquotDig > SZ2_MX ){
+        if( nsubs > quotDigs - 1 || whatquotDig > SZ2_MX - 1 ){
             System.out.println("nsubs = " + nsubs + " is greater than quotDigs = " + quotDigs + " or whatQuotDig = " + whatquotDig + " is greater than SZ2_MX = " + SZ2_MX);
             break;
         }
         operand[nsubs][0] = qt[whatquotDig]*divisor;
         int WCoperand0 = worstCaseQdig*divisor; // worst case, biggest operand
         operand[nsubs][1] = (int)(tmplong - operand[nsubs][0]);
-        //System.out.println("nsubs = " + nsubs + " qt[" + whatquotDig + "] = " + qt[whatquotDig] + " last dividend = " + tmplong + " product = " + operand[nsubs][0] );
+        System.out.println("nsubs = " + nsubs + " qt[" + whatquotDig + "] = " + qt[whatquotDig] + " last dividend = " + tmplong + " product = " + operand[nsubs][0] );
         int WCoperand1 = (int)(tmplong - divisor); 
 
         actDig[nsubs][0] = operand[nsubs][0] > 0? 
@@ -733,7 +754,7 @@
         //        (int)Math.log10(WCoperand1) + 1: 1;
         wcDig[nsubs][1] = WCoperand1 > 0? 
                 (int)Math.log10(WCoperand1) + 2: 2;
-        //System.out.println("whatQuotDig = " + whatquotDig + " operand[" + nsubs + "][0] = " + operand[nsubs][0] + "  WCoperand0 = " + WCoperand0 + " WCoperand1 = " + WCoperand1 );       
+        System.out.println("whatQuotDig = " + whatquotDig + " operand[" + nsubs + "][0] = " + operand[nsubs][0] + "  WCoperand0 = " + WCoperand0 + " WCoperand1 = " + WCoperand1 );       
         if( operand[nsubs][1] < 0 ) {
             System.out.println("tmplong = " + tmplong + " operand[" + nsubs + "][0] = " + operand[nsubs][0] + " diff = " + operand[nsubs][1] + " that's messed up");
             break;
@@ -741,7 +762,7 @@
 
         int mostPossProdDig = (int)Math.log10(9*divisor) + 1;
         spacesb4Op[nsubs][0] = spacesb4quot + quotDigs - whatquotDig - mostPossProdDig - 1;
-        //System.out.println("nsubs = " + nsubs + " spacesb4quot = " + spacesb4quot + "+ quotDigs = " + quotDigs + "- whatQuotDig = " + whatquotDig + " - mostPossProdDig = " + mostPossProdDig + " - 1 = " + " spacesb4Op[" + nsubs + "][0] = " + spacesb4Op[nsubs][0]);
+        System.out.println("nsubs = " + nsubs + " spacesb4quot = " + spacesb4quot + "+ quotDigs = " + quotDigs + "- whatQuotDig = " + whatquotDig + " - mostPossProdDig = " + mostPossProdDig + " - 1 = " + " spacesb4Op[" + nsubs + "][0] = " + spacesb4Op[nsubs][0]);
 
         spacesb4Op[nsubs][1] = spacesb4quot + quotDigs - whatquotDig - wcDig[nsubs][1] - 1;
         cspan[nsubs] = 2*wcDig[nsubs][0] + 1;
@@ -768,12 +789,13 @@
         // will go into
         tmplong = operand[nsubs][1];
         actBringDn[nsubs] = 0;
-        numBringDn[nsubs] = SZ2_MX + 1 - spacesb4Op[nsubs][1] - wcDig[nsubs][1];
+        //numBringDn[nsubs] = SZ2_MX + 1 - spacesb4Op[nsubs][1] - wcDig[nsubs][1];
+        numBringDn[nsubs] = dvsrDigs + 1 + dvdDigs - spacesb4Op[nsubs][1] - wcDig[nsubs][1];
         //actBringDn[nsubs] = SZ2_MX + 1 - spacesb4Op[nsubs][1] - actDig[nsubs][1];
         boolean breakout = false;
         while( tmplong < divisor ) {
             if( whatquotDig < 1 ) {
-                //System.out.println("no more quote digits tmpint = " + tmpint + " actBringDn[" + nsubs + "] = " + actBringDn[nsubs]);
+                System.out.println("no more quote digits tmpint = " + tmpint + " actBringDn[" + nsubs + "] = " + actBringDn[nsubs]);
                 breakout = true;
                 break;
             }
@@ -903,7 +925,7 @@
             nmcars += (dvsrDigs - 1);
         }
         crows += 1;
-        System.out.println("qt[" + idx + "] = " + qt[idx] + " nmcars = " + nmcars + " crows = " + crows );
+        //System.out.println("qt[" + idx + "] = " + qt[idx] + " nmcars = " + nmcars + " crows = " + crows );
     }
     em[0] = nmcars + 2*nacarries[0] + quotDigs - 1;
     //em[0] = nmcars + 4*nacarries[0] + quotDigs - 1; // with hidden borrows anc carries in same table
@@ -1031,9 +1053,10 @@
 <%  } %>
 <tr>
 <%  if( recDpCk ) { %>
-    <tr><th class="th-id1" colspan="<%=bbspan%>"></th>
-        <th class="th-id1" colspan="<%=cbspan%>" id="overbar"></th>
-        <th class="th-id1" colspan="<%=dbspan%>"></th>
+    <tr><th class="th-class4" colspan="<%=bbspan%>"></th>
+        <th class="th-class4" colspan="<%=cbspan%>" id="overbar">
+        </th>
+        <th class="th-class4" colspan="<%=dbspan%>"></th>
     </tr>
 <%  } %>
 <%  int mcol = dvsrDigs - 2;
