@@ -19,7 +19,6 @@
 <%
     // 2nd divisor dig around 5 is harder to estimate fixit
     // count it wrong if the user gueses a quotient digit 3 times fixit
-    // setFocus does not work for single digit divisors in recurring decimal problems fixit
     System.out.println("------------------------Start Anew!-------------------------");
     final int SZ2_MX = 12; // maximum dividend + divisor + 1 size
     final int maxOps = 2;
@@ -30,25 +29,29 @@
     final boolean lastboxdebug = false;
     
     boolean immFeedBkCk = false;
-    boolean estRequiredCk = true;
+    boolean estRequiredCk = false;
     boolean remaindersCk = false;
-    boolean exDpCk = false;
+    boolean exDpCk = true;
     boolean recDpCk = false;
     String isImmFeedBk = "";
-    String isEstRequired = "checked";
+    String isEstRequired = "";
     String isRemainders = "";
-    String isExDp = "";
+    String isExDp = "checked";
     String isRecDp = "";
     String tmp = "";      // temporary storage for newly gotten 
                           // request parameter
     String whatlvl = "";
     double justLessThn1 = 1 - 1/Double.MAX_VALUE;
     if(( tmp = request.getParameter("difflvl")) != null ) {
+        immFeedBkCk = false;
         estRequiredCk = false;
         remaindersCk = false;
+        exDpCk = false;
         recDpCk = false;
+        isImmFeedBk = "";
         isEstRequired = "";
         isRemainders = "";
+        isExDp = "";
         isRecDp = "";
         whatlvl = tmp;
         if( whatlvl.equals("Immediate Feedback") ) {
@@ -166,7 +169,6 @@
             prevT = t;
             prevF = f;
             boolean heads = (Math.random() < 0.5);
-            //heads = true; // fixit
             //System.out.println("quotient = " + quotient + " divisor = " + divisor + " ntwos = " + t + " nfives = " + f + " totWidth = " + totWidth);   
             if( t < nTwos && heads ) {
                 t++;
@@ -416,7 +418,7 @@
         dsMaxDg = (SZ2_MX - minQdp)/2 - 1;
         // divisor decimal point should be mostly small
         dvsrDp = 1 + (new Double(dsMaxDg*(Math.pow(Math.random(),NEXP)))).intValue();
-        System.out.println("dsMaxDg = " + dsMaxDg + " dvsrDp = " + dvsrDp + " is it closer to 1?");
+        //System.out.println("dsMaxDg = " + dsMaxDg + " dvsrDp = " + dvsrDp + " is it closer to 1?");
         //dvsrDp = 1 + (int)(dsMaxDg*Math.random());
         System.out.println("denominator = " + denominator + " minQdp = " + minQdp + " dsMaxDg = " + dsMaxDg + " dvsrDp = " + dvsrDp);
         dsMaxDg = dsMaxDg - 1 - (int)(Math.log10(denominator));
@@ -433,7 +435,7 @@
         // quotient decimal point should mostly be large
         //quotDp = 2 + (int)(qtMaxDg*Math.random());
         quotDp = 1 + (new Double((qtMaxDg)*(1 - Math.pow(Math.random(),NEXP)))).intValue();
-        System.out.println("qtMaxDg = " + qtMaxDg + " quotDp = " + quotDp + " is it closer to " + qtMaxDg +  "?");
+        //System.out.println("qtMaxDg = " + qtMaxDg + " quotDp = " + quotDp + " is it closer to " + qtMaxDg +  "?");
         while( quotient % denominator == 0 ) { // make sure division is not exact
             quotient = 1 + (int)(qtMax*Math.random());
         }
@@ -522,9 +524,11 @@
 
     if( remaindersCk ) {
         rmdrMax = (int)(Math.pow(10, rmdrMxDg)) - 1;
+        //System.out.println("rmdrMax = " + rmdrMax + " divisor = " + divisor);
         if( rmdrMax >= divisor ) {
             rmdrMax = divisor - 1;
         }
+        //System.out.println("rmdrMax = " + rmdrMax);
         //remainder = (int)(rmdrMax*Math.random());
         //remainder = rmdrMax*(int)(1 - Math.pow(Math.random(),DEXP));
         remainder = (new Double((1+rmdrMax)*(1 - Math.pow(Math.random(),DEXP)))).intValue();
@@ -592,7 +596,7 @@
                  quotString = quotString + ".";
             }
         }
-        System.out.println("quotient = " + quotient + " quotDp = " + quotDp + " with decimal point in place  = " + quotString); // quotient/(int)(Math.pow(10,(quotDp-1))) + "." + quotient%(int)(Math.pow(10,quotDp-1))); // .0 zero gets skipped
+        //System.out.println("quotient = " + quotient + " quotDp = " + quotDp + " with decimal point in place  = " + quotString); // quotient/(int)(Math.pow(10,(quotDp-1))) + "." + quotient%(int)(Math.pow(10,quotDp-1))); // .0 zero gets skipped
         // find the length of the repeat pattern    
         boolean breakall = false;
         for( int idx = quotDigs-1; idx > 0; --idx ) {
@@ -607,7 +611,7 @@
                         for( int mdx = quotDp-2, ndx = 0; mdx >= 0 && ndx < pattLength; --mdx, ++ndx ) {
                             quotString = quotString + qt[mdx];
                         }
-                        System.out.println("qt[" + idx + "] = " + qt[idx] + " firstPattDig = " + firstPattDig + " secPattDig = " + secPattDig + " repeat pattern = " + quotString); // (quotient%(int)(Math.pow(10,quotDp-1)))/(int)(Math.pow(10, restOfDec)) );
+                        //System.out.println("qt[" + idx + "] = " + qt[idx] + " firstPattDig = " + firstPattDig + " secPattDig = " + secPattDig + " repeat pattern = " + quotString); // (quotient%(int)(Math.pow(10,quotDp-1)))/(int)(Math.pow(10, restOfDec)) );
                         breakall = true;
                         break;
                     }
@@ -668,7 +672,7 @@
     }
 
     int bbspan = 1 + 2*(spacesb4quot + quotDigs - quotDp + 1);
-    System.out.println("spacesb4quot = " + spacesb4quot + " quotDigs " + quotDigs + " quotDp = " + quotDp);
+    //System.out.println("spacesb4quot = " + spacesb4quot + " quotDigs " + quotDigs + " quotDp = " + quotDp);
     int cbspan = 2*pattLength - 1;
     int dbspan =  1 + 2*(SZ2_MX + 1) - bbspan - cbspan;
     
@@ -741,7 +745,7 @@
         operand[nsubs][0] = qt[whatquotDig]*divisor;
         int WCoperand0 = worstCaseQdig*divisor; // worst case, biggest operand
         operand[nsubs][1] = (int)(tmplong - operand[nsubs][0]);
-        System.out.println("nsubs = " + nsubs + " qt[" + whatquotDig + "] = " + qt[whatquotDig] + " last dividend = " + tmplong + " product = " + operand[nsubs][0] );
+        //System.out.println("nsubs = " + nsubs + " qt[" + whatquotDig + "] = " + qt[whatquotDig] + " last dividend = " + tmplong + " product = " + operand[nsubs][0] );
         int WCoperand1 = (int)(tmplong - divisor); 
 
         actDig[nsubs][0] = operand[nsubs][0] > 0? 
@@ -754,19 +758,19 @@
         //        (int)Math.log10(WCoperand1) + 1: 1;
         wcDig[nsubs][1] = WCoperand1 > 0? 
                 (int)Math.log10(WCoperand1) + 2: 2;
-        System.out.println("whatQuotDig = " + whatquotDig + " operand[" + nsubs + "][0] = " + operand[nsubs][0] + "  WCoperand0 = " + WCoperand0 + " WCoperand1 = " + WCoperand1 );       
+        //System.out.println("whatQuotDig = " + whatquotDig + " operand[" + nsubs + "][0] = " + operand[nsubs][0] + "  WCoperand0 = " + WCoperand0 + " WCoperand1 = " + WCoperand1 );       
         if( operand[nsubs][1] < 0 ) {
-            System.out.println("tmplong = " + tmplong + " operand[" + nsubs + "][0] = " + operand[nsubs][0] + " diff = " + operand[nsubs][1] + " that's messed up");
+            //System.out.println("tmplong = " + tmplong + " operand[" + nsubs + "][0] = " + operand[nsubs][0] + " diff = " + operand[nsubs][1] + " that's messed up");
             break;
         }
 
         int mostPossProdDig = (int)Math.log10(9*divisor) + 1;
         spacesb4Op[nsubs][0] = spacesb4quot + quotDigs - whatquotDig - mostPossProdDig - 1;
-        System.out.println("nsubs = " + nsubs + " spacesb4quot = " + spacesb4quot + "+ quotDigs = " + quotDigs + "- whatQuotDig = " + whatquotDig + " - mostPossProdDig = " + mostPossProdDig + " - 1 = " + " spacesb4Op[" + nsubs + "][0] = " + spacesb4Op[nsubs][0]);
+        //System.out.println("nsubs = " + nsubs + " spacesb4quot = " + spacesb4quot + "+ quotDigs = " + quotDigs + "- whatQuotDig = " + whatquotDig + " - mostPossProdDig = " + mostPossProdDig + " - 1 = " + " spacesb4Op[" + nsubs + "][0] = " + spacesb4Op[nsubs][0]);
 
         spacesb4Op[nsubs][1] = spacesb4quot + quotDigs - whatquotDig - wcDig[nsubs][1] - 1;
         cspan[nsubs] = 2*wcDig[nsubs][0] + 1;
-        bspan[nsubs] = 2*(spacesb4Op[nsubs][0] + 1);
+        bspan[nsubs] = 2*(spacesb4Op[nsubs][0]) + 1;
         dspan[nsubs] = 1 + 2*(SZ2_MX + 1) - bspan[nsubs] - cspan[nsubs];
         if( whatquotDig == 0 ) {
             break; // don't need to generate tmpint nsubsor the next loop, you're 
@@ -795,7 +799,7 @@
         boolean breakout = false;
         while( tmplong < divisor ) {
             if( whatquotDig < 1 ) {
-                System.out.println("no more quote digits tmpint = " + tmpint + " actBringDn[" + nsubs + "] = " + actBringDn[nsubs]);
+                //System.out.println("no more quote digits tmpint = " + tmpint + " actBringDn[" + nsubs + "] = " + actBringDn[nsubs]);
                 breakout = true;
                 break;
             }
@@ -1071,19 +1075,21 @@
             <input type="hidden" id="<%=cid%>" class="c2">
 <%  } %>
     </td>
-<%  for( int idx = 0; idx <= SZ2_MX; idx++ ) {       
+<%  for( int idx = 0; idx <= SZ2_MX; idx++ ) {  
+        String whatFun = qtdpsettled? "showQuotDigs( event )" : null;
+        //String whatFun = null;
         if( idx < spacesb4quot || spacesb4quot + quotDigs + rmdrDigs < idx ) { %>
-            <td class="t1" name="notthestartdig"></td>
+                <td class="t1" value="-1" onclick="<%=whatFun%>" name="notthestartdig"></td>
 <%      } else if( spacesb4quot <= idx && idx < spacesb4quot + quotDigs ) {
             int col = spacesb4quot + quotDigs - 1 - idx;
             String qid = "qt" + col;  %>
-            <td class="t1" onclick="showQuotDigs(<%=col%>)">
+            <td class="t1" value="<%=col%>" onclick="<%=whatFun%>" name="quotTd" >
                 <input type="<%=cmtype%>" id="<%=qid%>" class="a1" size="1" 
                        name="quotdigs"
             onkeyup="divide(<%=immFeedBkCk%>, <%=col%>, <%=qt[col]%> )"
             ></td>
 <%      } else if( remaindersCk && idx == spacesb4quot + quotDigs ) { %>
-            <td class="t1" name="notthestartdig"><label id="dispR">
+            <td class="t1" value="-1" onclick="<%=whatFun%>" name="notthestartdig"><label id="dispR">
                 R
             </label>
             </td>
@@ -1091,19 +1097,19 @@
             int col = spacesb4quot + quotDigs + rmdrDigs - idx;
             String rid = "r" + col; 
             String rname = "rmdr"; %>
-            <td class="t1" name="notthestartdig">
+            <td class="t1" value="<%=col%>" onclick="<%=whatFun%>" name="notthestartdig">
                 <input type="<%=cmtype%>" id="<%=rid%>" name="<%=rname%>" 
                     class="a1" size="1" 
                     onkeyup="checkRemainder( <%=col%>, <%=rm[col]%> )"
             ></td>
 <%      } else { %>
-            <td class="t1" name="notthestartdig"></td>
+            <td class="t1" value="-1" onclick="<%=whatFun%>" name="notthestartdig"></td>
 <%      }
         if( idx < dvsrDigs - 2 && nmcars > 0 ) { 
             int col = dvsrDigs - 3 - idx;
             cname = "cm" + col + "_0"; 
             cid = "hcm" + col + "_0"; %>
-            <td class="t2" name="notthestartdig">
+            <td class="t2" value="-1" onclick="<%=whatFun%>" name="notthestartdig">
 <%          if( showMcarriesCk ) { %>
                 <input type="<%=cmtype%>" name="<%=cname%>" class="c2" 
                                   onkeyup="checkMcarry(<%=col%>,0)">
@@ -1111,11 +1117,11 @@
             <input type="hidden" id="<%=cid%>" class="c2"></td>
 <%      } else if( spacesb4quot <= idx && idx < spacesb4quot + quotDigs ) {  
             int jdx = idx - spacesb4quot; %>
-            <td class="t2" name="notthestartdig">
-                <span name="quotDp" onclick="chooseDivThis( <%=jdx%>, 'quotDp' )" class="dp" >_</span>
+            <td class="t2" value="-1" onclick="<%=whatFun%>" name="notthestartdig">
+                <span name="quotDp" onclick="chooseDivThis( event, <%=jdx%>, 'quotDp' )" class="dp" >_</span>
             </td>
 <%      } else { %>
-            <td class="t2" name="notthestartdig">
+            <td class="t2" value="-1" onclick="<%=whatFun%>" name="notthestartdig">
             </td>
 <%      }
     } %>
@@ -1187,24 +1193,24 @@
             // fp = black, dp = invisible, ep = red
             String dclass = dsdpsettled ? dvsrDp > 1 ? "fp" : "dp" : "ep"; %>
             <td class="t2">
-                <span name="dvsrDp" onclick="chooseDivThis( <%=jdx%>, 'dvsrDp' )" class="<%=dclass%>" >.</span>
+                <span name="dvsrDp" onclick="chooseDivThis( event, <%=jdx%>, 'dvsrDp' )" class="<%=dclass%>" >.</span>
             </td>
 <%      } else if( dvdDigs - (idx - dvsrDigs - 1) == dvdDp  && (exDpCk || recDpCk) ) { 
             int jdx = idx - dvsrDigs - 1; 
             String dclass = dsdpsettled ? dvdDp > 1? "fp" : "dp" : "ep"; %>
             <td class="t2">
-                <span name="dvdDp" onclick="chooseDivThis( <%=jdx%>, 'dvdDp' )" class="<%=dclass%>" >.</span>
+                <span name="dvdDp" onclick="chooseDivThis( event, <%=jdx%>, 'dvdDp' )" class="<%=dclass%>" >.</span>
             </td>
 <%      } else if( 0 <= idx && idx < dvsrDigs ) { 
             int jdx = idx; // - 1; %>
             <td class="t2">
-                <span name="dvsrDp" onclick="chooseDivThis( <%=jdx%>, 'dvsrDp' )" class="dp" >_</span>
+                <span name="dvsrDp" onclick="chooseDivThis( event, <%=jdx%>, 'dvsrDp' )" class="dp" >_</span>
             </td>
  
 <%      } else if( dvsrDigs < idx && idx < dvsrDigs + dvdDigs + 1 ) { 
             int jdx = idx - dvsrDigs - 1; %>
             <td class="t2">
-                <span name="dvdDp" onclick="chooseDivThis( <%=jdx%>, 'dvdDp' )" class="dp" >_</span>
+                <span name="dvdDp" onclick="chooseDivThis( event, <%=jdx%>, 'dvdDp' )" class="dp" >_</span>
             </td>
 <%      } else { %>
             <td class="t2"></td>

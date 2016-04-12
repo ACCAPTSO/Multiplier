@@ -5,8 +5,6 @@
  */
 // right side jumps right after last digit entered fixit
 // how many of the hidden inputs might as well be global javascript variables? fixit
-// skipping bringdown box before remainder? fixit
-// not comparing displayed remainder to bottom remainder fixit
 var posRecorded = false;
 var leftPos = 0;
 var rightPos = 0;
@@ -208,7 +206,8 @@ function checkRemainder(col, expectedRemainder) {
     }
     setFocus();
 }
-function showQuotDigs( col ) {
+function showQuotDigs( ev ) {
+    ev = ev || window.event;
     var x = 0;
     var errBx = document.getElementById("msg");
     var currmsg = errBx.innerHTML;
@@ -216,6 +215,7 @@ function showQuotDigs( col ) {
     var decsNotSettled = 0;
     var whatDecs = document.getElementsByName("decsettled");
     var whatDecsLength = whatDecs.length;
+    var col = Number(ev.target.getAttribute("value"));
 
     if (whatDecsLength > 0) {
         for (var i = 0; i < whatDecsLength; ++i) {
@@ -230,23 +230,25 @@ function showQuotDigs( col ) {
 
         var quotDigs = Number(document.getElementById("quotDigs").value);
         var lastcol = quotDigs - 1;
-        //document.getElementById("statusBox" + x).innerHTML = "in showQuotDigs col = " + col + " lastcol = " + lastcol;
+        //document.getElementById("statusBox" + x).innerHTML = "in showQuotDigs col = " + col + " lastcol = " + lastcol + " target = " + ev.target + " value = " + ev.target.getAttribute("value");
         //x = x + 1;
         if (col === lastcol) {
             var i = quotDigs - 1;
             document.getElementById("qt" + i).type = "text";
             var errBx = document.getElementById("msg");
             errBx.innerHTML = "";
-            //var quotdigs = document.getElementsByName("quotdigs");
-            //var length = quotdigs.length;
-            //for( var i = 0; i < length; i++ ) {
-            //    quotdigs[i].removeEventListener("click", showQuotDigs, true );
-            //}
+            var quotTd = document.getElementsByName("quotTd");
+            var length = quotTd.length;
+            for( var i = 0; i < length; i++ ) {
+                //quotdigs[i].removeEventListener("click", showQuotDigs, false );
+                quotTd[i].onclick = null;
+            }
             var notQuotDigits = document.getElementsByName("notthestartdig");
             var length = notQuotDigits.length;
             for (var i = 0; i < length; ++i) {
                 if (notQuotDigits[i].nodeType === 1) {
-                    notQuotDigits[i].removeEventListener("click", sayNotThere, true );
+                    //notQuotDigits[i].removeEventListener("click", sayNotThere, true );
+                    notQuotDigits[i].onclick = null;
                 }
             }
             //document.getElementById("statusBox" + x).innerHTML = "about to setFocus";
@@ -374,7 +376,7 @@ function divide(immFeedBkCk, col, qtDig) {
     var ansBx = document.getElementById("qt" + col);
     var ansTxt = "";
     ansTxt = ansBx.value;
-    //document.getElementById("statusBox" + x).innerHTML = "ansTxt = " + ansTxt ;
+    //document.getElementById("statusBox" + x).innerHTML = "ansTxt = " + ansTxt + " id = " + event.target.id;
     //x = x + 1;
     
     if( isNaN( ansTxt ) ) {
@@ -467,7 +469,7 @@ function divide(immFeedBkCk, col, qtDig) {
         }
         //document.getElementById("statusBox" + x).innerHTML = "dvdBxs.length = " + dvdBxs.length + " quotDigs = " + quotDigs + " i = " + i;
         //x = x + 1;
-        var quotient = Number(document.getElementById("quotient").value);
+        //var quotient = Number(document.getElementById("quotient").value);
         var intQuotDigs = 1 + Math.floor(Math.log10(quotient));
         var leadzeros = quotDigs - intQuotDigs;
        //document.getElementById("statusBox" + x).innerHTML = "quotient = " + quotient + " intQuotDigs = " + intQuotDigs + " leadzeros = " + leadzeros;
@@ -709,14 +711,9 @@ function divide(immFeedBkCk, col, qtDig) {
             if (col == 0 && isRemainder) {
                 document.getElementById("dispR").style.color = "black";
                 nextbox = Number(document.getElementById("whatbox").value) + 1;
-                //document.getElementById("statusBox" + x).innerHTML = "in divide isRemainder nextbox = " + nextbox;
-                //x = x + 1;
-            //} else {
-            //    return; // nothing left to do? fixit
-            //}
-            //}
 
-            } else if ((restQAreZero && !isRemainder) || whatRow === 0) { //col === quotDigs-1 ) {     
+            // whatRow === 0 => 0.x
+            } else if ((restQAreZero && !isRemainder) || whatRow === 0) {     
                 ansBx.style.color = "black";
                 if (col > 0) {
                     // skip multiplicative carries
@@ -1708,7 +1705,6 @@ function zeroDivCounts() {
 // start again button code
 function startDivAgain() {
     var x = 0;
-    // needs to check for correct last digits in recurring decimal fixit
     //var max = Number(document.getElementById('lastbox').value);
     var errCt = Number(document.getElementById("errs").value);
     //var boxNo = Number(document.getElementById("bdx").value);
@@ -1769,16 +1765,16 @@ function startDivAgain() {
             //x = x + 1;
         }
     }
+    var allCorrect = true;
+    var quotdigs = document.getElementsByName("quotdigs");
+    var qlength = quotdigs.length;
     if (document.getElementById("Recurring Decimals").checked) {
         difflvl = document.getElementById("Recurring Decimals").value;
         var overbar = document.getElementById("overbar");
         if( overbar ) {
             var barlength = (Number(overbar.getAttribute("colspan")) + 1)/2;
-            var allCorrect = true;
             var quotient = Number(document.getElementById("quotient").value);
             var quotDp = Number(document.getElementById("quotDp").value);
-            var quotdigs = document.getElementsByName("quotdigs");
-            var qlength = quotdigs.length;
             var ndiscard = quotDp - 1 - barlength;
             var decimalpart = quotient % (Math.pow(10, quotDp - 1));
             var minpattern = Math.floor( decimalpart / Math.pow(10, ndiscard) );
@@ -1786,11 +1782,12 @@ function startDivAgain() {
             //x = x + 1;
             for( var i = 0; i < barlength; ++i ) {
                 var whatQuotDig = qlength - 1 - ndiscard - i;
-                var qDigit = Number(quotdigs[whatQuotDig].value);
+                var qDigit = quotdigs[whatQuotDig].value;
                 var expDigit = minpattern % 10;
                 //document.getElementById("statusBox" + x).innerHTML = "minpattern = " + minpattern + " i = " + i + " whatQuotDig = " + whatQuotDig + " qDigit = " + qDigit + " expDigit = " + expDigit;
                 //x = x + 1;
-                if( qDigit !== expDigit ) {
+                // if qDigit is blank or has wrong number
+                if( !qDigit || Number(qDigit) !== expDigit ) {
                     allCorrect = false;
                 }
                 minpattern = Math.floor( minpattern / 10 );
@@ -1799,17 +1796,21 @@ function startDivAgain() {
             //document.getElementById("statusBox" + x).innerHTML = "barColor = " + barColor + " allCorrect = " + allCorrect;
             //x = x + 1;
             //alert("barColor = " + barColor + " allCorrect = " + allCorrect);
-            barDrawn = barColor === "rgb(0, 0, 0)" && allCorrect;
+            barDrawn = barColor === "rgb(0, 0, 0)";
        }
+    } else { // check all quotient digits are filled if not recurring decimal
+        for( var i = 0; i < qlength; ++i ) {
+            var qDigit = quotdigs[i].value;
+            if( !qDigit ) {
+                allCorrect = false;
+            }
+        }
     }
-    //alert("difflvl = " + difflvl);
-
-    // counts it correct  even if R boxes don't match bottom remainder fixit
-    var remainderZero = (difflvl !== "Recurring Decimals" && remainder === 0) ||
+    var remainderZero = allCorrect && ((difflvl !== "Recurring Decimals" && remainder === 0) ||
             (difflvl === "Remainders" &&
                     remainder < Number(document.getElementById("divisor").value) &&
                     remainder === dispRmdr) ||
-            (difflvl === "Recurring Decimals" && barDrawn);
+            (difflvl === "Recurring Decimals" && barDrawn));
     //alert("boxNo = " + boxNo + " max = " + max + " errCt = " + errCt + " errMsg = " + errMsg);
     //alert("click when you're ready barDrawn = " + barDrawn);
     // update problem counts
@@ -1837,7 +1838,7 @@ function startDivAgain() {
     }
 }
 // imitate radio buttons, selecting only one decimal point at a time
-function chooseDivThis( which_one, which_type) {
+function chooseDivThis( event, which_one, which_type) {
     for (var j = 0; j < 18; j++) {
         document.getElementById("statusBox" + j).innerHTML = "";
     }
@@ -1850,7 +1851,7 @@ function chooseDivThis( which_one, which_type) {
     var dvsrSettled = document.getElementById("dvs").value;
     var dvdSettled = document.getElementById("dvd").value;
     var quotSettled = document.getElementById("quo").value;
-    var turnOnNextMsg = false;
+    var turnOnNextMsg = true;
 
     if (whatDecsLength > 0) {
         for (var i = 0; i < whatDecsLength; ++i) {
@@ -1863,6 +1864,7 @@ function chooseDivThis( which_one, which_type) {
     // if any indicator says not settled
     // light up the decimal point otherwise skip this entire routine 
     if (decsNotSettled > 0) {
+        turnOnNextMsg = false;
         var btns = document.getElementsByName(which_type);
         var nbtns = btns.length;
         var msgBx = document.getElementById("msg");
@@ -1917,56 +1919,59 @@ function chooseDivThis( which_one, which_type) {
                 }
             }
         }
-        if (turnOnNextMsg) { // this has to be done outside last loop for some reason
-            // or it terminates the loop prematurely without
-            // turning off the unused decimal points
-            // make this work fixit
-            //var quotdigs = document.getElementsByName("quotdigs");
-            //var length = quotdigs.length;
-            //for( var i = 0; i < length; i++ ) {
-            //    var col = length - 1 - i;
-            //    quotdigs[i].addEventListener("click", showQuotDigs( col ), true );
-            //}
-            var notQuotDigits = document.getElementsByName("notthestartdig");
-            length = notQuotDigits.length;
-            for (var i = 0; i < length; ++i) {
-                if (notQuotDigits[i].nodeType === 1) {
-                    notQuotDigits[i].addEventListener("click", sayNotThere, true);
-                }
-            }
-            var dvdDigs = document.getElementsByName("dvddigs");
-            var expDvdDp = Number(document.getElementById("dvdDp").value);
-            var length = dvdDigs.length;
-            //alert("dvdDigs length = " + length + " espDvdDp = " + expDvdDp);
-            var leadzeros = true;
-            for (var i = 0; i < length; ++i) {
-                if (length - i >= expDvdDp) {
-                    //dvdDigs[i].className = "t1";
-                    dvdDigs[i].style.color = "black";
-                    if (leadzeros && length - i !== expDvdDp &&
-                            Number(dvdDigs[i].childNodes[0].nodeValue) === 0) {
-                        dvdDigs[i].style.setProperty("text-decoration", "line-through");
-                    } else {
-                        leadzeros = false;
-                    }
-                }
-            }
-            var dvsrDigs = document.getElementsByName("dvsrdigs");
-            var expDvsrDp = Number(document.getElementById("dvsrDp").value);
-            length = dvsrDigs.length;
-            //alert("dvdDigs length = " + length + " espDvdDp = " + expDvdDp);
-            leadzeros = true;
-            for (var i = 0; i < length; ++i) {
-                if (length - i >= expDvsrDp) {
-                    if (leadzeros && length - i !== expDvsrDp &&
-                            Number(dvsrDigs[i].childNodes[0].nodeValue) === 0) {
-                        dvsrDigs[i].style.setProperty("text-decoration", "line-through");
-                    } else {
-                        leadzeros = false;
-                    }
-                }
-            }
-            msgBx.innerHTML = "Click where first quotient digit should be";
+        event.stopPropagation();
+    }
+    if (turnOnNextMsg) { // this has to be done outside last loop for some reason
+        // or it terminates the loop prematurely without
+        // turning off the unused decimal points
+        
+        var quotTd = document.getElementsByName("quotTd");
+        var length = quotTd.length;
+        for( var i = 0; i < length; i++ ) {
+            var col = length - 1 - i;
+        //    quotdigs[i].addEventListener("click", showQuotDigs( col ), false );
+            quotTd[i].onclick = showQuotDigs;
         }
+        var notQuotDigits = document.getElementsByName("notthestartdig");
+        var length = notQuotDigits.length;
+        for (var i = 0; i < length; ++i) {
+            if (notQuotDigits[i].nodeType === 1) {
+                //notQuotDigits[i].addEventListener("click", sayNotThere, true);
+                notQuotDigits[i].onclick = showQuotDigs;
+            }
+        }
+        var dvdDigs = document.getElementsByName("dvddigs");
+        var expDvdDp = Number(document.getElementById("dvdDp").value);
+        length = dvdDigs.length;
+        //alert("dvdDigs length = " + length + " espDvdDp = " + expDvdDp);
+        var leadzeros = true;
+        for (var i = 0; i < length; ++i) {
+            if (length - i >= expDvdDp) {
+                //dvdDigs[i].className = "t1";
+                dvdDigs[i].style.color = "black";
+                if (leadzeros && length - i !== expDvdDp &&
+                        Number(dvdDigs[i].childNodes[0].nodeValue) === 0) {
+                    dvdDigs[i].style.setProperty("text-decoration", "line-through");
+                } else {
+                    leadzeros = false;
+                }
+            }
+        }
+        var dvsrDigs = document.getElementsByName("dvsrdigs");
+        var expDvsrDp = Number(document.getElementById("dvsrDp").value);
+        length = dvsrDigs.length;
+        //alert("dvdDigs length = " + length + " espDvdDp = " + expDvdDp);
+        leadzeros = true;
+        for (var i = 0; i < length; ++i) {
+            if (length - i >= expDvsrDp) {
+                if (leadzeros && length - i !== expDvsrDp &&
+                        Number(dvsrDigs[i].childNodes[0].nodeValue) === 0) {
+                    dvsrDigs[i].style.setProperty("text-decoration", "line-through");
+                } else {
+                    leadzeros = false;
+                }
+            }
+        }
+        msgBx.innerHTML = "Click where first quotient digit should be";
     }
 }
