@@ -652,7 +652,7 @@
     if( dvdDp > dvdDigs ) {
         dvdDigs = dvdDp;
     }
-    //System.out.println("divisor = " + divisor + " quotient = " + quotient + " dividnd = " + dividnd );
+    System.out.println("divisor = " + divisor + " quotient = " + quotient + " dividnd = " + dividnd );
     System.out.println("dvsrDigs = " + dvsrDigs + " dvsrDp = " + dvsrDp + " quotDigs = " + quotDigs + " quotDp = " + quotDp + " dvdDigs = " + dvdDigs + " dvdDp = " + dvdDp);
     //System.out.println("expQuotDp = " + expQuotDp + " expDvdDp = " + expDvdDp + " leadzeros = " + leadzeros);
     int rmdrMxDg = SZ2_MX - dvsrDigs - 1 - dvdDigs - 1;
@@ -1033,12 +1033,12 @@
         int kdxmax = sbx == 0? 
                 dvdDigs - quotDigs + 1 + leadzeros : 
                 wcDig[sbxminus1][1] + numBringDn[sbxminus1] - 1;
-        if( kdxmax >= SZ2_MX ) {
-            System.out.println("kdxmax = " + kdxmax + " is greater than or equal SZ2_MX = " + SZ2_MX );
+        if( kdxmax > SZ2_MX + 1 ) {
+            System.out.println("kdxmax = " + kdxmax + " is greater than 1 + SZ2_MX = " + SZ2_MX );
             break;
         }
         if( sbx > 0 ) {
-            //System.out.println("wcDig[" + sbxminus1 + "][1] = " + wcDig[sbxminus1][1] + " numBringDn[" + sbxminus1 + "] = " + numBringDn[sbxminus1]);
+            System.out.println("wcDig[" + sbxminus1 + "][1] = " + wcDig[sbxminus1][1] + " numBringDn[" + sbxminus1 + "] = " + numBringDn[sbxminus1]);
         }
         for (kdx = 0; kdx < kdxmax; kdx++) {
             boolean needsCarry = true;
@@ -1049,7 +1049,7 @@
                 ncarries[sbx][kdx] = 1;
                 nacarries[sbx] += 1;          
             }
-            //System.out.println("ncarries[" + sbx + "][" + kdx + "] = " + ncarries[sbx][kdx] + " nacarries[" + sbx + "] = " + nacarries[sbx]);
+            System.out.println("ncarries[" + sbx + "][" + kdx + "] = " + ncarries[sbx][kdx] + " nacarries[" + sbx + "] = " + nacarries[sbx]);
         }
     }
 
@@ -1400,9 +1400,11 @@
 <%      for( int idx = 0; idx <= SZ2_MX; idx++ ) {
             int col = spacesb4Op[sbx][1] + wcDig[sbx][1]  + numBringDn[sbx] - idx - 2;
             int ocol = col + 1;
-            String name = "boca" + rdx; 
-            if( 0 <= col && col <= quotDigs && 0 <= rdx && rdx <= SZ2_MX && ncarries[rdx][col] != 0 ) { 
-                String bid = "bo" + ocol + "_" + rdx; 
+            String name = "boca" + rdx;
+            //System.out.println("col = " + col + " rdx = " + rdx + " ocol = " + ocol + " quotDigs = " + quotDigs);
+            if( 0 <= col && col <= SZ2_MX && 0 <= rdx && rdx <= quotDigs && ncarries[rdx][col] != 0 ) { 
+                String bid = "bo" + ocol + "_" + rdx;
+                //System.out.println("bid = " + bid);
                 if( ocol < 0 || ocol > SZ2_MX ) {
                          System.out.println("bo col = " + col + "being reduced to 0");
                          col = 0;
@@ -1419,7 +1421,8 @@
                     col < wcDig[sbx][1] + numBringDn[sbx] && 
                     ncarries[rdx][col] != 0 ) {  
 
-                cid = "ca" + col + "_" + rdx; %>
+                cid = "ca" + col + "_" + rdx; 
+                //System.out.println("cid = " + cid); %>
                 <td class="s2">
                         <input type="<%=browType%>" name="<%=name%>" id="<%=cid%>"
                         class="f2" onkeyup="checkDivBorrow(<%=col%>, <%=rdx%>)"
