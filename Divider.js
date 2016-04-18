@@ -5,6 +5,8 @@
  */
 // right side jumps right after last digit entered fixit
 // how many of the hidden inputs might as well be global javascript variables? fixit
+// still counting error for quotient doesn't start there when clicking decimal point
+// real problem or careless mouse placement? fixit
 var posRecorded = false;
 var leftPos = 0;
 var rightPos = 0;
@@ -210,13 +212,18 @@ function showQuotDigs( ev ) {
     ev = ev || window.event;
     var x = 0;
     var errBx = document.getElementById("msg");
-    var currmsg = errBx.innerHTML;
     var clickmsg = "quotient doesn't start there, click somewhere else";
     var decsNotSettled = 0;
     var whatDecs = document.getElementsByName("decsettled");
     var whatDecsLength = whatDecs.length;
-    var col = Number(ev.target.getAttribute("value"));
-
+    //document.getElementById("statusBox" + x).innerHTML = "event target = " + ev.target;
+    //x = x + 1;
+    var id = ev.target.getAttribute("id");
+    var idlen = id.length;
+    var col = Number((id.substring(2,idlen)));
+    //document.getElementById("statusBox" + x).innerHTML = "id = " + id + " idlen = " + idlen + " col = " + col;
+    //x = x + 1;
+    //ev.stopPropagation();
     if (whatDecsLength > 0) {
         for (var i = 0; i < whatDecsLength; ++i) {
             if (whatDecs[i].value === "false") {
@@ -255,7 +262,8 @@ function showQuotDigs( ev ) {
             //x = x + 1;
             setFocus();
         } else {
-            errBx.innerHTML = clickmsg;
+            //errBx.innerHTML = clickmsg;
+            errBx.innerHTML = "col = " + col + " lastcol = " + lastcol;
             //document.getElementById("statusBox" + x).innerHTML = "about to upDateErrCount";
             //x = x + 1;
             upDateErrCount();
@@ -1563,6 +1571,7 @@ function checkNewDivVal(col, sbx) {
 }
 // cross off the digit being borrowed from, make new box visible for the
 // new operand digit and set the focus to the new box
+// not working some rows showing errors or allowing borrows fixit
 function promptDivBorrow(col, sbx) {
     for (var j = 0; j < 18; j++) {
         document.getElementById("statusBox" + j).innerHTML = "";
@@ -1929,8 +1938,10 @@ function chooseDivThis( event, which_one, which_type) {
         var length = quotTd.length;
         for( var i = 0; i < length; i++ ) {
             var col = length - 1 - i;
-        //    quotdigs[i].addEventListener("click", showQuotDigs( col ), false );
+            //quotTd[i].addEventListener("click", showQuotDigs, false );
             quotTd[i].onclick = showQuotDigs;
+            //document.getElementById("statusBox" + x).innerHTML = "added onclick = showQuotDigs to " + quotTd[i].getAttribute("id");
+            //x = x + 1;
         }
         var notQuotDigits = document.getElementsByName("notthestartdig");
         var length = notQuotDigits.length;
