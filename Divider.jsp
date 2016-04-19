@@ -475,76 +475,9 @@
     }
     
     long tmplong = 1L;
-    /*
-    if( rndOffCk ) {
-        int dvMaxDg = 1 + (int)((SZ2_MX - dvsrDigs)*Math.random());
-        int dvMax = (int)(Math.pow(10, dvMaxDg)) - 2;
-        dividnd = 2 + (int)(dvMax*Math.random());
-        dvdDigs = (int)Math.log10(dividnd) + 1;
-        // where does quotient start? => how many digits can it have => 
-        // what kind of multiplier does it need?   
-        int nDigs = 0;
-        tmplong = dividnd/(long)Math.pow(10, dvdDigs-nDigs-1);
-        //while( nDigs < dvdDigs - 1 && tmplong < divisor ) {   
-        while( tmplong < divisor ) {
-            System.out.println(" dividnd = " + dividnd + " nDigs = " + nDigs + " tmplong = " + tmplong + " divisor = " + divisor);
-            ++nDigs;
-            if( nDigs > dvdDigs - 1 ) {
-                tmplong = tmplong*10;
-                dvdDigs += 1; // include trailing zeroes
-            } else {
-                tmplong = tmplong*10 + (dividnd % (long)Math.pow(10, dvdDigs-nDigs))/(long)Math.pow(10, dvdDigs-nDigs-1);
-            }
-        }
-        dvdDp = 1 + (dvsrDp - 1) + (quotDp - 1);
-        int expDvdDp = 1 + (dvdDp - 1) - (dvsrDp - 1);
-        System.out.println("final dividnd = " + dividnd + " dvdDigs =  " + dvdDigs + " nDigs = " + nDigs + " tmplong = " + tmplong + " divisor = " + divisor + " dvsrDp = " + dvsrDp + " quotDp = " + quotDp + " expDvdDp = " + expDvdDp);
-        // if quotient digits start after the dividend decimal point, it needs to be 
-        // made to start just before the decimal point
-        if( dvdDigs - nDigs < expDvdDp ) {
-            if( expDvdDp >= dvdDigs ) { 
-                System.out.println("expDvdDp = " + expDvdDp + " >= dvdDigs = " + dvdDigs + " => nDigs = 0");
-                nDigs = 0;
-            } else {
-                nDigs = dvdDigs - (expDvdDp - 1);
-                System.out.println("dvdDigs - expDvdDp + 1 = " + dvdDigs + " - " + expDvdDp + " = nDigs = " + nDigs );
-            }
-        }
-        //if( dvdDp > dvdDigs ) {
-        //    nDigs += (dvdDp - dvdDigs - 1);
-        //}
-        qtMaxDg = SZ2_MX - dvsrDigs - nDigs - 1;
-        // quotDp = qtMaxDg;
-        double dquot = (double)dividnd / (double)divisor;
-        quotient = (long)dquot;
-        quotDigs = (int)Math.log10(quotient) + 1;
-
-        System.out.println("qtMaxDg = " + qtMaxDg + " = SZ2_MX = " + SZ2_MX + " - dvsrDigs = " + dvsrDigs + " - nDigs = " + nDigs );
-        while ( quotDigs > qtMaxDg ) {
-            quotient /= 10;
-            dividnd /= 10;
-            quotDigs = (int)Math.log10(quotient) + 1;
-        }
-        boolean notEnoughDigs = quotDigs < qtMaxDg && quotDp < qtMaxDg;
-        boolean moreDquot = quotient < dquot;
-        while( notEnoughDigs && moreDquot ) {
-            dquot = 10*dquot;
-            dividnd = 10*dividnd;
-            quotient = (int)dquot;
-            System.out.println("quotient = " + quotient);
-            quotDigs = (int)Math.log10(quotient) + 1;
-            //if( quotDigs >= quotDp ) {
-                quotDp += 1;
-                dvdDp += 1;
-            //}
-                //qtMaxDg = qtMaxDg - 1;
-            notEnoughDigs = quotDigs < qtMaxDg && quotDp < qtMaxDg;
-            moreDquot = quotient < dquot;
-        }
-        //System.out.println("round off problem divisor = " + divisor + " dividend = " + dividnd + " quotient = " + quotient + " dquot = " + dquot + " qtMaxDg = " + qtMaxDg + " notEnoughDigs = " + notEnoughDigs + " moreDquot = " + moreDquot);*/
-    int leadzeros = 0; 
+    int leadzeros = 0;
+    int spacesb4quot = 0;
             
-
     if( rndOffCk ) {
         if( dvsrDp > dvsrDigs ) {
             dvsrDigs = dvsrDp;
@@ -565,8 +498,11 @@
         int quotWidth = SZ2_MX + 2;
         dvdDp = 1 + (dvsrDp - 1) + (quotDp - 1);
         boolean firstPass = true;
+        int origSpaces = 0;
+
         while( quotWidth > SZ2_MX + 1 || quotWidth < SZ2_MX + 1 ) {
             if( !firstPass ) {
+                spacesb4quot = origSpaces;
                 if( quotWidth > SZ2_MX + 1 ) {
                     dquot = dquot / 10;
                     quotient = (long)dquot;
@@ -584,36 +520,44 @@
             }
             dvdDigs = (int)Math.log10(dividnd) + 1;
             //System.out.println("divisor = " + divisor + " dividend = " + dividnd + " quotient = " + quotient + " quotDigs = " + quotDigs + " quotDp = " + quotDp);
-            int spacesb4quot = dvsrDigs + 1;
+            
             tmplong = dividnd/(long)Math.pow(10, dvdDigs-1);
             // add as many dividend digits as needed to form a number that the
             // divisor goes into at least once
-            //System.out.println("line 582 dividend = " + tmplong + " divisor = " + divisor);
-            for( int idx = dvdDigs-1; idx > 0 && tmplong < divisor; --idx ) {
-                tmplong = tmplong*10 + (dividnd % (long)Math.pow(10, idx))/(long)Math.pow(10, idx-1);
-                spacesb4quot += 1;
-                //ystem.out.println("line 586 dividend = " + tmplong + " spacesb4quot = " + spacesb4quot);
+            if( firstPass ) {
+                spacesb4quot = dvsrDigs + 1;
+                //System.out.println("line 591 dividend = " + tmplong + " divisor = " + divisor);
+                for( int idx = dvdDigs-1; tmplong < divisor; --idx ) {
+                    if( idx > 0 ) {
+                        tmplong = tmplong*10 + (dividnd % (long)Math.pow(10, idx))/(long)Math.pow(10, idx-1);
+                    } else {
+                        tmplong = tmplong*10;
+                    }
+                    spacesb4quot += 1;
+                    //System.out.println("line 595 dividend = " + tmplong + " spacesb4quot = " + spacesb4quot);
+                }
+                origSpaces = spacesb4quot;
             }
+            //System.out.println("before adjustments spacesb4quot = " + spacesb4quot);
             dvdDp = 1 + (dvsrDp - 1) + (quotDp - 1);
             if( dvdDp > dvdDigs ) {
                 spacesb4quot += (dvdDp - dvdDigs);
             }
+            //System.out.println("after adding leading dividend zeros spacesb4quot = " + spacesb4quot);
             // back off leading zeros
-            int whatsBigger = quotDigs;
             if( quotDp > quotDigs ) {
-                whatsBigger = quotDp;
-                spacesb4quot -= (quotDp - quotDigs);
+                leadzeros = quotDp - quotDigs;
+                spacesb4quot -= leadzeros;
+                quotDigs = quotDp;
             }
-            quotWidth = spacesb4quot + whatsBigger;
-            //System.out.println("quotWidth = " + quotWidth + " = spacesb4quot + whatsBigger = " + spacesb4quot + " + "  + whatsBigger );
+            //System.out.println("after subtracting leading quotient zeros spacesb4quot = " + spacesb4quot);
+            quotWidth = spacesb4quot + quotDigs;
+            //System.out.println("quotWidth = " + quotWidth + " = spacesb4quot + whatsBigger = " + spacesb4quot + " + "  + quotDigs );
             firstPass = false;
         }
     }  else {
-        //System.out.println("before removing zeros quotDp = " + quotDp);
         // remove trailing zeros after the decimal point
-        //boolean allzeros = true; // assume no digits after the decimal point
         int tmpint = quotDp - 1;
-        //System.out.println("line 423 quotient = " + quotient + " quotDp - 1 = " + tmpint );
         for( int i = 0; i < tmpint; i++ ) {       
             if( quotient % 10 == 0 ) {
                 quotient = quotient / 10;
@@ -621,25 +565,19 @@
                 quotDigs -= 1;
                 quotDp -= 1;
             } else {
-                //allzeros = false;
                 break;
-            }
-            //System.out.println("line 432 quotient = " + quotient + " quotient[" + i + "] = " + quotient % 10 + " quotDigs = " + quotDigs + " quotDp = " + quotDp ); // + " allzeros = " + allzeros );
+            } 
         }
-        //if( allzeros ) { // this quotient is an integer
-        //    quotDp = 1;
-        //}
+        if( quotDp > quotDigs ) {
+            leadzeros = quotDp - quotDigs;
+            quotDigs = quotDp;
+        }
         dvdDp = 1 + (dvsrDp - 1) + (quotDp - 1);
+        dvdDigs = (int)Math.log10(dividnd) + 1;
     }
     
     System.out.println("quotDp = " + quotDp + " dvsrDp = " + dvsrDp + " dvdDp = " + dvdDp );
-            
-    if( quotDp > quotDigs ) {
-        leadzeros = quotDp - quotDigs;
-        quotDigs = quotDp;
-    }
-    dvdDigs = (int)Math.log10(dividnd) + 1;
-    
+
     int expDvdDp = 1 + (dvdDp - 1) - (dvsrDp - 1);
  
     int expQuotDp = expDvdDp;
@@ -791,24 +729,25 @@
         //System.out.println("divisor = " + divisor + " dividend = " + dividnd + " remainder = " + remainder + " rm[" + idx + "] = " + rm[idx]);
     }
     
-    int spacesb4quot = dvsrDigs + 1;
-    tmpint = dd[dvdDigs-1];
-    // add as many dividend digits as needed to form a number that the
-    // divisor goes into at least once
-    for( int idx = dvdDigs-2; idx >= 0 && tmpint < divisor; --idx ) {
-        tmpint = 10*tmpint + dd[idx];
-        spacesb4quot += 1;
-        //System.out.println("line 605 dividend = " + tmpint + " spacesb4quot = " + spacesb4quot);
+    if( !rndOffCk ) {
+        spacesb4quot = dvsrDigs + 1;
+        tmpint = dd[dvdDigs-1];
+        // add as many dividend digits as needed to form a number that the
+        // divisor goes into at least once
+        for( int idx = dvdDigs-2; idx >= 0 && tmpint < divisor; --idx ) {
+            tmpint = 10*tmpint + dd[idx];
+            spacesb4quot += 1;
+            //System.out.println("line 605 dividend = " + tmpint + " spacesb4quot = " + spacesb4quot);
+        }
+        int qd = quotDigs - 1;
+        // back off leading zeros
+        //System.out.println("line 609 quotDigs = " + quotDigs + " qt[" + qd + "] = " + qt[qd] + " spacesb4quot = " + spacesb4quot);
+        while( qt[qd] == 0 && qd > 0 ) {
+            spacesb4quot -= 1;
+            qd -= 1;
+            //System.out.println("line 613 quotDigs = " + quotDigs + " qt[" + qd + "] = " + qt[qd] + " spacesb4quot = " + spacesb4quot);
+        }
     }
-    int qd = quotDigs - 1;
-    // back off leading zeros
-    //System.out.println("line 609 quotDigs = " + quotDigs + " qt[" + qd + "] = " + qt[qd] + " spacesb4quot = " + spacesb4quot);
-    while( qt[qd] == 0 && qd > 0 ) {
-        spacesb4quot -= 1;
-        qd -= 1;
-        //System.out.println("line 613 quotDigs = " + quotDigs + " qt[" + qd + "] = " + qt[qd] + " spacesb4quot = " + spacesb4quot);
-    }
-
     int bbspan = 1 + 2*(spacesb4quot + quotDigs - quotDp + 1);
     //System.out.println("spacesb4quot = " + spacesb4quot + " quotDigs " + quotDigs + " quotDp = " + quotDp);
     int cbspan = 2*pattLength - 1;
@@ -1038,7 +977,7 @@
             break;
         }
         if( sbx > 0 ) {
-            System.out.println("wcDig[" + sbxminus1 + "][1] = " + wcDig[sbxminus1][1] + " numBringDn[" + sbxminus1 + "] = " + numBringDn[sbxminus1]);
+            //System.out.println("wcDig[" + sbxminus1 + "][1] = " + wcDig[sbxminus1][1] + " numBringDn[" + sbxminus1 + "] = " + numBringDn[sbxminus1]);
         }
         for (kdx = 0; kdx < kdxmax; kdx++) {
             boolean needsCarry = true;
@@ -1049,7 +988,7 @@
                 ncarries[sbx][kdx] = 1;
                 nacarries[sbx] += 1;          
             }
-            System.out.println("ncarries[" + sbx + "][" + kdx + "] = " + ncarries[sbx][kdx] + " nacarries[" + sbx + "] = " + nacarries[sbx]);
+            //System.out.println("ncarries[" + sbx + "][" + kdx + "] = " + ncarries[sbx][kdx] + " nacarries[" + sbx + "] = " + nacarries[sbx]);
         }
     }
 
