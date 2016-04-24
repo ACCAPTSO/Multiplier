@@ -249,16 +249,34 @@ function showQuotDigs( ev ) {
             var length = quotTd.length;
             for( var i = 0; i < length; i++ ) {
                 //quotdigs[i].removeEventListener("click", showQuotDigs, false );
-                quotTd[i].onclick = setFocus();
+                quotTd[i].onclick = setFocus;
             }
             var notQuotDigits = document.getElementsByName("notthestartdig");
             var length = notQuotDigits.length;
             for (var i = 0; i < length; ++i) {
                 if (notQuotDigits[i].nodeType === 1) {
                     //notQuotDigits[i].removeEventListener("click", sayNotThere, true );
-                    notQuotDigits[i].onclick = setFocus();
+                    notQuotDigits[i].onclick = setFocus;
                 }
             }
+            // make all the decimal points run setFocus as well           
+            var Dp = document.getElementsByName("quotDp");
+            length = Dp.length;
+            for( var i = 0; i < length; ++i ) {
+                Dp[i].onclick = setFocus;
+            }
+            var Dp = document.getElementsByName("dvsrDp");
+            length = Dp.length;
+            for( var i = 0; i < length; ++i ) {
+                Dp[i].onclick = setFocus;
+
+            }
+            var Dp = document.getElementsByName("dvdDp");
+            length = Dp.length;
+            for( var i = 0; i < length; ++i ) {
+                Dp[i].onclick = setFocus;
+            }
+            
             var dispRnd = document.getElementById("dispRnd");
             if( dispRnd ) {
                 dispRnd.style.color = "black";
@@ -1659,8 +1677,9 @@ function promptDivBorrow(col, sbx) {
 
         //make sure it's really a column that should be borrowed from 
         // or do nothing
-        if (Number(hiddenCaBx.value) !== 0 &&
-                document.getElementsByName("showborrows")[0].checked) {
+        if ( hiddenCaBx &&
+                Number(hiddenCaBx.value) !== 0 &&
+                document.getElementsByName("showborrows")[0].checked ) {
             var errBx = document.getElementById("msg");
             errBx.innerHTML = "";
             //document.getElementById("statusBox0").innerHTML = "col = " + col + " sbx = " + sbx + " newBx = " + newBx;
@@ -1908,6 +1927,7 @@ function chooseDivThis( event, which_one, which_type) {
         var btns = document.getElementsByName(which_type);
         var nbtns = btns.length;
         
+        // expected value of decimal point
         var totDec = Number(document.getElementById(which_type).value);
         for (var i = 0; i < nbtns; ++i) {
             var att = "andsp" + i;
@@ -1916,7 +1936,7 @@ function chooseDivThis( event, which_one, which_type) {
             if (i === which_one) {
                 btns[i].childNodes[0].nodeValue = ".";
                 btns[i].setAttribute(att, '.');
-                var markedDec = nbtns - i;
+                var markedDec = nbtns - i; // reverse the index
                 if (totDec === markedDec) {
                     btns[i].style.color = "black";
                     var markwhat = which_type.substring(0, 3);
@@ -1935,7 +1955,6 @@ function chooseDivThis( event, which_one, which_type) {
                         msgBx.innerHTML = "Click the place in the quotient directly above the dividend decimal point";
                     } else {
                         turnOnNextMsg = true;
-
                     }
                 } else {
                     // turn it back off if it's already on
@@ -1968,7 +1987,6 @@ function chooseDivThis( event, which_one, which_type) {
         var quotTd = document.getElementsByName("quotTd");
         var length = quotTd.length;
         for( var i = 0; i < length; i++ ) {
-            var col = length - 1 - i;
             //quotTd[i].addEventListener("click", showQuotDigs, false );
             quotTd[i].onclick = showQuotDigs;
             //document.getElementById("statusBox" + x).innerHTML = "added onclick = showQuotDigs to " + quotTd[i].getAttribute("id");

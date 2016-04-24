@@ -1184,8 +1184,9 @@
 <%  } %>
 <%  int mcol = dvsrDigs - 2;
     String vid = "cm" + mcol + "_0"; 
-    String cid = "hcm" + mcol + "_0"; %>
-    <td class="t2" name="notthestartdig">
+    String cid = "hcm" + mcol + "_0"; 
+    String tid = "tc" + SZ2_MX; %>
+    <td class="t2" id="td15" name="notthestartdig">
 <%  if( nmcars > 0 ) {
         if( showMcarriesCk ) { %>
             <input type="<%=cmtype%>" id="<%=vid%>" class="c2" 
@@ -1197,39 +1198,41 @@
 <%  for( int idx = 0; idx <= SZ2_MX; idx++ ) {  
         String whatFun = qtdpsettled? "showQuotDigs( event )" : null;
         //String whatFun = null;
+        int col = spacesb4quot + quotDigs - 1 - idx;
+        tid = "td" + col;
+        String tic = "tc" + col;
         if( idx < spacesb4quot || spacesb4quot + quotDigs + rmdrDigs < idx ) { %>
-                <td class="t1" value="-1" onclick="<%=whatFun%>" name="notthestartdig"></td>
+                <td class="t1" id="<%=tid%>" onclick="<%=whatFun%>" name="notthestartdig"></td>
 <%      } else if( spacesb4quot <= idx && idx < spacesb4quot + quotDigs ) {
-            int col = spacesb4quot + quotDigs - 1 - idx;
-            String qid = "qt" + col; 
-            String tid = "td" + col; %>
+            String qid = "qt" + col; %>
             <td class="t1"  id="<%=tid%>" name="quotTd" onclick="<%=whatFun%>">
                 <input type="<%=cmtype%>" id="<%=qid%>" class="a1" size="1"
                     name="quotdigs"
                     onkeyup="divide(<%=immFeedBkCk%>, <%=col%>, <%=qt[col]%> )" >
             </td>
 <%      } else if( remaindersCk && idx == spacesb4quot + quotDigs ) { %>
-            <td class="t1" value="-1" onclick="<%=whatFun%>" name="notthestartdig"><label id="dispR">
+            <td class="t1" id="<%=tid%>" onclick="<%=whatFun%>" name="notthestartdig"><label id="dispR">
                 R
             </label>
             </td>
 <%      } else if( remaindersCk && remainder > 0 ) { 
-            int col = spacesb4quot + quotDigs + rmdrDigs - idx;
+            col = spacesb4quot + quotDigs + rmdrDigs - idx;
             String rid = "r" + col; 
             String rname = "rmdr"; %>
-            <td class="t1" value="<%=col%>" onclick="<%=whatFun%>" name="notthestartdig">
+            <td class="t1" id="<%=tid%>" onclick="<%=whatFun%>" name="notthestartdig">
                 <input type="<%=cmtype%>" id="<%=rid%>" name="<%=rname%>" 
                     class="a1" size="1" 
                     onkeyup="checkRemainder( <%=col%>, <%=rm[col]%> )"
             ></td>
 <%      } else { %>
-            <td class="t1" value="-1" onclick="<%=whatFun%>" name="notthestartdig"></td>
+            <td class="t1" id="<%=tid%>" onclick="<%=whatFun%>" name="notthestartdig"></td>
 <%      }
+
         if( idx < dvsrDigs - 2 && nmcars > 0 ) { 
-            int col = dvsrDigs - 3 - idx;
+            col = dvsrDigs - 3 - idx;
             vid = "cm" + col + "_0"; 
             cid = "hcm" + col + "_0"; %>
-            <td class="t2" value="-1" onclick="<%=whatFun%>" name="notthestartdig">
+            <td class="t2" id="<%=tic%>" onclick="<%=whatFun%>" name="notthestartdig">
 <%          if( showMcarriesCk ) { %>
                 <input type="<%=cmtype%>" id="<%=vid%>" class="c2" 
                                   onkeyup="checkMcarry(<%=col%>,0)">
@@ -1237,11 +1240,11 @@
             <input type="hidden" id="<%=cid%>" class="c2"></td>
 <%      } else if( spacesb4quot <= idx && idx < spacesb4quot + quotDigs ) {  
             int jdx = idx - spacesb4quot; %>
-            <td class="t2" value="-1" onclick="<%=whatFun%>" name="notthestartdig">
+            <td class="t2" id="<%=tic%>" onclick="<%=whatFun%>" name="notthestartdig">
                 <span name="quotDp" onclick="chooseDivThis( event, <%=jdx%>, 'quotDp' )" class="dp" >_</span>
             </td>
 <%      } else { %>
-            <td class="t2" value="-1" onclick="<%=whatFun%>" name="notthestartdig">
+            <td class="t2" id="<%=tic%>" onclick="<%=whatFun%>" name="notthestartdig">
             </td>
 <%      }
     } %>
@@ -1358,7 +1361,7 @@
                 %>
                 <td class="t1">
                 <input type="<%=whattype%>" name="<%=name%>" class="a1" size="1" 
-                onkeyup="multiply( <%=col%> )">
+                onkeyup="multiply( <%=col%> )" onclick="setFocus()">
                 </td>
  <%         } else { %>
                 <td class="t1"></td>
