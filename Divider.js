@@ -5,6 +5,7 @@
  */
 // right side jumps right after last digit entered fixit
 // how many of the hidden inputs might as well be global javascript variables? fixit
+// errBx and whatbox could be global - used every function aren't they?
 // still counting error for quotient doesn't start there when clicking decimal point
 // real problem or careless mouse placement? fixit
 var posRecorded = false;
@@ -248,15 +249,19 @@ function showQuotDigs( ev ) {
             var length = quotTd.length;
             for( var i = 0; i < length; i++ ) {
                 //quotdigs[i].removeEventListener("click", showQuotDigs, false );
-                quotTd[i].onclick = null;
+                quotTd[i].onclick = setFocus();
             }
             var notQuotDigits = document.getElementsByName("notthestartdig");
             var length = notQuotDigits.length;
             for (var i = 0; i < length; ++i) {
                 if (notQuotDigits[i].nodeType === 1) {
                     //notQuotDigits[i].removeEventListener("click", sayNotThere, true );
-                    notQuotDigits[i].onclick = null;
+                    notQuotDigits[i].onclick = setFocus();
                 }
+            }
+            var dispRnd = document.getElementById("dispRnd");
+            if( dispRnd ) {
+                dispRnd.style.color = "black";
             }
             //document.getElementById("statusBox" + x).innerHTML = "about to setFocus";
             //x = x + 1;
@@ -701,6 +706,11 @@ function divide(immFeedBkCk, col, qtDig) {
     if (time2increment) {
         var nextbox;
         if (ans === 0) {
+            ansBx.style.color = "black"; // it's already been checked
+            if (document.getElementById("Round Off").checked) {
+                ansBx.onclick = roundOff;
+                ansBx.onkeyup = checkRoundOff;
+            }
             var isRemainder = document.getElementById("r0");
             
 
@@ -741,6 +751,7 @@ function divide(immFeedBkCk, col, qtDig) {
                         Number(document.getElementById("lastBoxOfCurrRow").value) +
                             offTheTable;
                 }
+
             } else {
                 nextbox = Number(document.getElementById("lastBoxOfCurrRow").value);
                 //document.getElementById("statusBox" + x).innerHTML = "last Box Of Current row nextbox = " + nextbox;
@@ -951,9 +962,9 @@ function multiply(col) { // may want to pass sbx instead of reading whatRow afte
                 prevcaBx.type = "hidden";
             }
         }
-        for (var i = quotDigs - 1; i >= qdx; --i) {
-            document.getElementById("qt" + i).style.color = "black";
-        }
+        //for (var i = quotDigs - 1; i >= qdx; --i) {
+        //    document.getElementById("qt" + i).style.color = "black";
+        //}
         //qBx.style.color = "black";
         dvsrdigs[whatDig].style.color = "black";
         ansBxs[bxNo].style.color = "black";
@@ -1251,7 +1262,7 @@ function subtract(col, sbx) {
             var divisor = Number(document.getElementById("divisor").value);
             var quotDigs = Number(document.getElementById("quotDigs").value);
             var lastqcol = quotDigs - 1;
-            if (diff >= divisor) {
+            if (diff >= divisor) { // quotient digit was guessed too small, back up
                 var prod = Number(document.getElementById("operand" + sbx + "_0").value);
                 //document.getElementById("statusBox" + x).innerHTML = "prod = " + prod + " divisor = " + divisor;
                 //x = x + 1;
@@ -1297,7 +1308,7 @@ function subtract(col, sbx) {
                 if (sbx === 0) {
                     dvddigs = document.getElementsByName("dvddigs");
                     dvdlen = dvddigs.length - quotDigs + 1;
-                    var quotdigs = document.getElementsByName("quotdigs");
+                    //var quotdigs = document.getElementsByName("quotdigs");
                     var quotmx = quotdigs.length - 1;
                     var qx = 0;
                     while( qx < quotmx && Number(quotdigs[qx].value) == 0 ) {
@@ -1316,6 +1327,7 @@ function subtract(col, sbx) {
                 setFocus();
                 return;
             }
+            
             var restAreZero = true;
             // this may not work in some cases where user has entered wrong qdigit fixit
             var quotient = Number(document.getElementById("quotient").value);
@@ -1324,6 +1336,7 @@ function subtract(col, sbx) {
             // the user left off typing in numbers, calculate what the rest of 
             // the quotient digits will be. If they are not all zero, then
             // restAreZero is false
+            var lastFilledBx = null;
             for (var i = lastqcol; i >= 0; i--) {
                 var quotBx = document.getElementById("qt" + i);
                 if (quotBx.value === "") {
@@ -1338,11 +1351,13 @@ function subtract(col, sbx) {
                         break;
                     }
                 } else {
+                    lastFilledBx = quotBx;
                     lastqcol = i; // at the end of the loop, this will have the
                     // last quotient column that has a value typed
                     // in it
                 }
             }
+            lastFilledBx.style.color = "black";
             //document.getElementById("statusBox" + x).innerHTML = "isLastSub restAreZero = " + restAreZero + " lastqcol = " + lastqcol + " nextbox = " + nextbox;
             //document.getElementById("statusBox" + x).innerHTML = "isLastSub lastqcol = " + lastqcol + " nextbox = " + nextbox;
             //x = x + 1;
@@ -1374,6 +1389,11 @@ function subtract(col, sbx) {
                     visibleBrows[0].type = "text";
                 }
                 nextbox = Number(document.getElementById("lastBoxOfCurrRow").value) + 1;
+            }
+            if (document.getElementById("Round Off").checked) {
+                var prevQtDg = document.getElementById("qt" + lastqcol);
+                prevQtDg.onclick = roundOff;
+                prevQtDg.onkeyup = checkRoundOff;
             }
         } else { // not last subtraction, nextbox is another subtraction box
             nextbox = Number(document.getElementById("whatbox").value) - 1;
@@ -1571,7 +1591,6 @@ function checkNewDivVal(col, sbx) {
 }
 // cross off the digit being borrowed from, make new box visible for the
 // new operand digit and set the focus to the new box
-// not working some rows showing errors or allowing borrows fixit
 function promptDivBorrow(col, sbx) {
     for (var j = 0; j < 18; j++) {
         document.getElementById("statusBox" + j).innerHTML = "";
@@ -1676,9 +1695,6 @@ function promptDivBorrow(col, sbx) {
             //alert("nCols.length = " + nCols.length);
             for (var idx = 0; idx < nCols.length; idx++) {
                 var quotDigs = Number(document.getElementById("quotDigs").value);
-                //alert("quotDigs = " + quotDigs);
-                //for( var jdx = 0; jdx < quotDigs; jdx++ ) {
-                //var whatBorrow = "bo" + idx + "_" + jdx;
                 var whatBorrow = "bo" + idx + "_" + sbx;
                 //alert("checking if whatBorrow " + whatBorrow + " is empty");
                 newBx = document.getElementById(whatBorrow);
@@ -1735,8 +1751,21 @@ function startDivAgain() {
             break;
         }
     }
-
+    var quotdigs = document.getElementsByName("quotdigs");
+    var qlength = quotdigs.length;
     var difflvl = "not set";
+    var allCorrect = true;
+    if (document.getElementById("Round Off").checked) {
+        difflvl = document.getElementById("Round Off").value;
+        allCorrect = false;
+        for( var i = 0; i < qlength; ++i ) {
+            if( quotdigs[i].style.getPropertyValue("text-decoration") === "line-through") {
+                allCorrect = true;
+                //alert("line through detected");
+                break;
+            }
+        }
+    }
     var barDrawn = false;
     var dispRmdr = 0;
     if (document.getElementById("Remainders").checked) {
@@ -1774,9 +1803,8 @@ function startDivAgain() {
             //x = x + 1;
         }
     }
-    var allCorrect = true;
-    var quotdigs = document.getElementsByName("quotdigs");
-    var qlength = quotdigs.length;
+
+
     if (document.getElementById("Recurring Decimals").checked) {
         difflvl = document.getElementById("Recurring Decimals").value;
         var overbar = document.getElementById("overbar");
@@ -1807,7 +1835,9 @@ function startDivAgain() {
             //alert("barColor = " + barColor + " allCorrect = " + allCorrect);
             barDrawn = barColor === "rgb(0, 0, 0)";
        }
-    } else { // check all quotient digits are filled if not recurring decimal
+    } else if( difflvl !== "Round Off" ) { // check all quotient digits are filled 
+                                           // if not recurring decimal or
+                                           // round off
         for( var i = 0; i < qlength; ++i ) {
             var qDigit = quotdigs[i].value;
             if( !qDigit ) {
@@ -1815,11 +1845,14 @@ function startDivAgain() {
             }
         }
     }
+    
+
     var remainderZero = allCorrect && ((difflvl !== "Recurring Decimals" && remainder === 0) ||
             (difflvl === "Remainders" &&
                     remainder < Number(document.getElementById("divisor").value) &&
                     remainder === dispRmdr) ||
-            (difflvl === "Recurring Decimals" && barDrawn));
+            (difflvl === "Recurring Decimals" && barDrawn) ||
+            (difflvl === "Round Off"));
     //alert("boxNo = " + boxNo + " max = " + max + " errCt = " + errCt + " errMsg = " + errMsg);
     //alert("click when you're ready barDrawn = " + barDrawn);
     // update problem counts
@@ -1861,6 +1894,7 @@ function chooseDivThis( event, which_one, which_type) {
     var dvdSettled = document.getElementById("dvd").value;
     var quotSettled = document.getElementById("quo").value;
     var turnOnNextMsg = true;
+    var msgBx = document.getElementById("msg");
 
     if (whatDecsLength > 0) {
         for (var i = 0; i < whatDecsLength; ++i) {
@@ -1876,7 +1910,7 @@ function chooseDivThis( event, which_one, which_type) {
         turnOnNextMsg = false;
         var btns = document.getElementsByName(which_type);
         var nbtns = btns.length;
-        var msgBx = document.getElementById("msg");
+        
         var totDec = Number(document.getElementById(which_type).value);
         for (var i = 0; i < nbtns; ++i) {
             var att = "andsp" + i;
@@ -1985,4 +2019,112 @@ function chooseDivThis( event, which_one, which_type) {
         }
         msgBx.innerHTML = "Click where first quotient digit should be";
     }
+}
+// significant digits are sometimes not decimals, e.g. 9386 rounded to two 
+// significant digits is 9400 fixit
+function roundOff( ev ) {
+    ev = ev || window.event;
+    var evTarg = ev.target;
+    var x = 0;
+    var quotdigs = document.getElementsByName("quotdigs");
+    var quotLength = quotdigs.length;
+    var startnow = false;
+    var whatPlace = Number(document.getElementById("whatPlace").value);
+    var errBx = document.getElementById("msg");
+    for( var i = 0; i < quotLength; ++i ) {
+        if( !startnow && quotdigs[i].isEqualNode(evTarg ) ) {
+            var clickedPlace = quotLength - 1 - i;
+            if( clickedPlace === whatPlace ) {
+                startnow = true;
+                errBx.innerHTML = "";
+                var dispRnd = document.getElementById("dispRnd");
+                dispRnd.style.color = "red";
+                dispRnd.innerHTML = "Enter rounded value";
+                evTarg.style.setProperty("text-decoration", "line-through");
+                var all = document.getElementById("th-id2");
+                for( var j = 0; j < all.length; ++j ) {
+                    if( all.elements[j].isEqualNode(evTarg) ) {                  
+                        var nextbox = j - 1;
+                        if( Number(evTarg.value) >= 5 ) {
+                            while( all.elements[nextbox].value === "9") {
+                                --nextbox;
+                            }
+                        }
+                        //document.getElementById("statusBox" + x).innerHTML = "evTarg = " + evTarg.getAttribute("id") + " j = " + j + " nextbox = " + nextbox;
+                        //x = x + 1;
+                        document.getElementById("whatbox").value = nextbox;
+                    }
+                }
+            } else { // click on the wrong place (early), it's not letting you finish fixit
+                //errBx.innerHTML = "not there, click somewhere else";
+                errBx.innerHTML = "whatPlace = " + whatPlace + " clickedPlace = " + clickedPlace;
+                upDateErrCount();
+                break;
+            }
+        } 
+        if( startnow ) {
+            var hasContent = quotdigs[i].value;
+            if( hasContent ) {
+                quotdigs[i].style.setProperty("text-decoration", "line-through");
+            } else {
+                break;
+            }
+        }
+    }
+    //document.getElementById("statusBox" + x).innerHTML = "in roundOff about to setfocus whatbox = " + document.getElementById("whatbox").value;
+    setFocus();
+}
+function checkRoundOff( ev ) {
+    ev = ev || window.event;
+    var ansBx = ev.target;
+    var x = 0;
+    var errBx = document.getElementById("msg")
+    var id = ansBx.getAttribute("id");
+    var idlen = id.length;
+    var col = Number((id.substring(2,idlen)));
+    var quotient = Number(document.getElementById("quotient").value);
+    var roundedQuot = Math.floor((quotient + 5*Math.pow(10,col-1))/Math.pow(10,col));
+    var quotDigs = document.getElementsByName("quotdigs");
+    var qLength = quotDigs.length;
+    var enteredQuot = 0;
+    //document.getElementById("statusBox" + x).innerHTML = "quotDigs.length = " + qLength + " quotDigs[0] = " + quotDigs[0].value;
+    //x = x + 1;
+    var powOf10 = 1;
+    for( var i = col; i < qLength; ++i ) {
+        var idx = qLength - 1 - i;
+        enteredQuot = powOf10*Number(quotDigs[idx].value) + enteredQuot;
+        powOf10 *= 10;
+        //document.getElementById("statusBox" + x).innerHTML = "in checkROundOff idx = " + idx + " quotDig = " +  quotDigs[idx].value + " enteredQuot = " + enteredQuot;
+        //x = x + 1;
+    }
+    if( roundedQuot === enteredQuot ) {
+        errBx.innerHTML = "";
+        ansBx.style.color = "black";
+        var dispRnd = document.getElementById("dispRnd");
+        
+        var whatbox = document.getElementById("whatbox");
+        var whatPlace = Number(document.getElementById("whatPlace").value) + 1;
+        if( col === whatPlace ) { // only one place to round
+            if( dispRnd ) {
+                dispRnd.style.color = getComputedStyle(dispRnd).backgroundColor;
+            }
+            var all = document.getElementById("th-id2");
+            for( var i = 0; i < all.length; ++i ) {
+                if( all.elements[i].isEqualNode(whatbox) ) {
+                    whatbox.value = i;
+                }
+            }
+        } else {
+            // needs to be tested fixit
+            whatbox.value = Number(whatbox.value) + 1;
+        }
+    } else {
+        var entireNum = Math.floor((quotient + 5*Math.pow(10,col-2))/Math.pow(10,col-1));
+        errBx.innerHTML = entireNum + " does not round to " + enteredQuot;
+        upDateErrCount();
+        //document.getElementById("statusBox" + x).innerHTML = "in checkROundOff enteredQuot = " + enteredQuot + " != roundedQuot = " + roundedQuot;
+        //x = x + 1;
+    }
+    //alert("ok?");
+    setFocus();
 }

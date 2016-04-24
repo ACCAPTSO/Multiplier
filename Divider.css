@@ -394,6 +394,13 @@ button {
 #dispRec {
     color: #fdefe0; // default text color is background color (hidden)
 }
+#dispRnd {
+    //border: none;
+    //background-color: #fdefe0;
+    //height: 3em;
+    //width: 40em;
+    color: #fdefe0; // default text color is background color (hidden)
+}
 #overbar{
     //background-color: crimson;
     //height: 1em;

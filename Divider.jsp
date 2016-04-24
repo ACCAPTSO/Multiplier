@@ -477,8 +477,12 @@
     long tmplong = 1L;
     int leadzeros = 0;
     int spacesb4quot = 0;
-            
+    String roundString = "";
+    int whatPlace = 0;
+    String header = "Division Problem";
+    
     if( rndOffCk ) {
+
         if( dvsrDp > dvsrDigs ) {
             dvsrDigs = dvsrDp;
         }
@@ -493,13 +497,15 @@
             quotDigs = 1 + (int)Math.log10(quotient);
             quotDp = 1 + (int)(1 + quotDigs*Math.random()); // don't allow it to be too big
         }
+        System.out.println("before while loop divisor = " + divisor + " dvsrDp = " + dvsrDp + " dividnd = " + dividnd + " quotDp = " + quotDp );
         
         // find worst case Dp and Digs, find width of problem and adjust up or down
         int quotWidth = SZ2_MX + 2;
         dvdDp = 1 + (dvsrDp - 1) + (quotDp - 1);
         boolean firstPass = true;
         int origSpaces = 0;
-
+        int whatsBigger = quotDigs;
+        
         while( quotWidth > SZ2_MX + 1 || quotWidth < SZ2_MX + 1 ) {
             if( !firstPass ) {
                 spacesb4quot = origSpaces;
@@ -545,16 +551,43 @@
             }
             //System.out.println("after adding leading dividend zeros spacesb4quot = " + spacesb4quot);
             // back off leading zeros
+            whatsBigger = quotDigs;
             if( quotDp > quotDigs ) {
                 leadzeros = quotDp - quotDigs;
                 spacesb4quot -= leadzeros;
-                quotDigs = quotDp;
+                whatsBigger = quotDp;
             }
             //System.out.println("after subtracting leading quotient zeros spacesb4quot = " + spacesb4quot);
-            quotWidth = spacesb4quot + quotDigs;
+            quotWidth = spacesb4quot + whatsBigger;
             //System.out.println("quotWidth = " + quotWidth + " = spacesb4quot + whatsBigger = " + spacesb4quot + " + "  + quotDigs );
             firstPass = false;
+            //if most significant digit is a 9, need another quotient box that is skipped over first time around
+            // and only selected and visible when there's a round off fixit
         }
+        boolean sigDig = Math.random() > 0.5;
+        int n = 0;
+        if( sigDig ) {
+            n = 1 + (int)((quotDigs-1)*Math.random());
+            header = " significant digit";
+            whatPlace = quotDigs - 1 - n;
+        } else {        
+            n = (int)((quotDp-1)*Math.random());
+            header = " decimal place";
+            whatPlace = quotDp - 2 - n;
+        }
+        quotDigs = whatsBigger;
+        int nPlus1 = n + 1;
+        roundString = "When you have " + nPlus1;
+
+        roundString = roundString + header;
+        if( nPlus1 != 1 ) {
+            roundString = roundString + "s";
+        }
+        roundString = roundString + ", click on last digit to cross it off";
+        if( n != 1 ) {
+            header = header + "s";
+        }
+        header = "Round to " + n + header;
     }  else {
         // remove trailing zeros after the decimal point
         int tmpint = quotDp - 1;
@@ -1091,7 +1124,7 @@
 <tr>
 <td class="d2">
 <table class="tbl">
-<tr><th id="F1" colspan="<%=colspan%>">Division Problem</th></tr>
+<tr><th id="F1" colspan="<%=colspan%>"><%=header%></th></tr>
 <%  // these are filler    
     for( sbx = SZ2_MX - 3; sbx >= crows; --sbx ) { 
         String rid = "r" + sbx; %>
@@ -1559,6 +1592,11 @@ if( thereAreCarries && showBrowsCk ) { %>
 When decimal part of quotient starts to repeat, drag mouse to draw a line over the repeat pattern
 </label>
 <%  } %>
+<% if( rndOffCk ) { %>
+<label id="dispRnd">
+    <%=roundString%>
+</label>
+<%  } %>
 </div>
 <div class="d6">
 <!--this is where error messages get displayed//-->
@@ -1719,6 +1757,7 @@ if( lastboxdebug ) { %>
 <input type="hidden" id="quotient" value="<%=quotient%>" >
 <input type="hidden" id="nextQuotBox" >
 <input type="hidden" id="noMorQuotDigs" value="false" >
+<input type="hidden" id="whatPlace" value="<%=whatPlace%>" >
 <% if( cmdebug ) { %>
     <label>quotBoxIndex</label>
 <% } %>

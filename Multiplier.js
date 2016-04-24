@@ -17,9 +17,16 @@ function setFocus() { // this part is javascript
         x.elements[i].style.backgroundColor = "white";
         x.elements[i].style.color = "red";
         x.elements[i].type = "text";
-        x.elements[i].value="";
+        //x.elements[i].value="";
+        x.elements[i].onkeydown = clearthis;
         x.elements[i].focus(); // set focus to whatbox
     }
+}
+
+function clearthis( ev ) {
+    ev = ev || window.ev;
+    var evTarg = ev.target;
+    evTarg.value = "";
 }
 
 
@@ -423,11 +430,12 @@ function promptForDp( bdx ) {
 }
 
 function upDateErrCount() {
-    if( document.getElementById("errs").value == "" ) {
-        document.getElementById("errs").value = '1';
+    var errCntBx = document.getElementById("errs");
+    var errCnt = errCntBx.value;
+    if( errCnt == "" ) {
+        errCntBx.value = "1";
     } else {
-        document.getElementById("errs").value =
-                Number(document.getElementById("errs").value) + 1;
+        errCntBx.value = Number(errCnt) + 1;
     }
 }
 
