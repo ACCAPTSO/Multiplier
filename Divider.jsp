@@ -950,7 +950,7 @@
     ans = new String[SZ2_MX+1];
     //int jdx;
     int kdx;
-    int ldx = 0;
+    //int ldx = 0;
     int bdx = 0;            // box index used to track what box is selected
     
     int[] whatBx;
@@ -1024,16 +1024,17 @@
             //System.out.println("ncarries[" + sbx + "][" + kdx + "] = " + ncarries[sbx][kdx] + " nacarries[" + sbx + "] = " + nacarries[sbx]);
         }
     }
-
+/*
     int [] em;
     int [] en;
     int [] oh;
-    int [] pe;
+    int [] pe; 
     
     em = new int[quotDigs]; // least significant digit of each multiplication
     en = new int[quotDigs]; // least significant digit of each subtraction
     oh = new int[quotDigs]; // least significant digit on new dividend
     pe = new int[quotDigs]; // first used of the multiplicative carries
+    */
     
     int nmcars = 0;
     int crows = 0;
@@ -1045,6 +1046,7 @@
         crows += 1;
         //System.out.println("qt[" + idx + "] = " + qt[idx] + " nmcars = " + nmcars + " crows = " + crows );
     }
+    /*
     em[0] = nmcars + 2*nacarries[0] + quotDigs - 1;
     //em[0] = nmcars + 4*nacarries[0] + quotDigs - 1; // with hidden borrows anc carries in same table
     for( int idx = 0; idx <= nsubs; ++idx ) {
@@ -1062,9 +1064,11 @@
         oh[idx] = en[idx] + numBringDn[idx];
         pe[idx] = nmcars - 1 - (dvsrDigs - 1)*idx;
         //System.out.println("em[" + idx + "] = " + em[idx] + " en[" + idx + "] = " + en[idx] + " oh[" + idx + "] = " + oh[idx] + " pe[" + idx + "] = " + pe[idx]);
-    }
-    int lastbox = 0;
+    } */
+    //int lastbox = 0;
     // all you need is the first whatBx fixit
+    whatBx[0] = nmcars;
+    /*
     for( int idx = 0, mdx = 0, ndx = 0, pdx = 0, qdx = nmcars, rdx = 1; qdx < nmcars + quotDigs; ++qdx ) {
         whatBx[ldx] = qdx; // quotient box indexes
         if( whatBx[ldx] > lastbox ) {
@@ -1111,6 +1115,7 @@
 
     whatBx[ldx] = lastbox + 1;
     maxBx = ldx; // + 1; 
+    */
     String browType = "hidden";    
     if( showBrowsCk ) {
         browType = "text";
