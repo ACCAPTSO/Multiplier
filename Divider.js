@@ -282,11 +282,11 @@ function sayNotThere( ev ) {
 }
 function checkMcarry(col, sbx) {
     var x = 0;
-    var ansBx = document.getElementsByName("cm" + col + "_" + sbx)[0];
+    var ansBx = document.getElementById("cm" + col + "_" + sbx);
     var prevBx;
     if (col > 0) {
         var prevCol = col - 1;
-        prevBx = document.getElementsByName("cm" + prevCol + "_" + sbx)[0];
+        prevBx = document.getElementById("cm" + prevCol + "_" + sbx);
     }
     var ans = ansBx.value;
     var errBx = document.getElementById("msg");
@@ -935,10 +935,9 @@ function multiply(col) { // may want to pass sbx instead of reading whatRow afte
         var whatBx = "hcm" + prevCol + "_" + cmx;
         if (showMcarriesChkd) {
             whatBx = "cm" + prevCol + "_" + cmx;
-            prevcaBx = document.getElementsByName(whatBx)[0]; // fixit
-        } else {
-            prevcaBx = document.getElementById(whatBx);
         }
+        prevcaBx = document.getElementById(whatBx);
+
         //document.getElementById("statusBox" + x).innerHTML = "prevCaBx = " + whatBx;
         //x = x + 1;
     } else if (col > 0) {
@@ -946,10 +945,8 @@ function multiply(col) { // may want to pass sbx instead of reading whatRow afte
         var whatBx = "hcm" + prevCol + "_" + cmx;
         if (showMcarriesChkd) {
             whatBx = "cm" + prevCol + "_" + cmx;
-            prevcaBx = document.getElementsByName(whatBx)[0];
-        } else {
-            prevcaBx = document.getElementById(whatBx);
         }
+        prevcaBx = document.getElementById(whatBx);
 
         //document.getElementById("statusBox" + x).innerHTML = "showMcarriesChkd = " + showMcarriesChkd + " whatBx = " + whatBx + " prevCaBx = " + prevcaBx;
         //x = x + 1;

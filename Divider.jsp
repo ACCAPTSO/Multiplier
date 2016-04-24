@@ -1140,12 +1140,12 @@
     for( sbx = crows - 1; sbx > 0; --sbx ) { %>
         <tr>
 <%      int mcol = dvsrDigs - 2;
-        String cname = "cm" + mcol + "_" + sbx;
+        String vid = "cm" + mcol + "_" + sbx;
         String cid = "hcm" + mcol + "_" + sbx; %>
         <td class="t2">
 <%      if( nmcars > 0 ) {
             if( showMcarriesCk ) { %>
-                <input type="<%=cmtype%>" name="<%=cname%>" class="c2" 
+                <input type="<%=cmtype%>" id="<%=vid%>" class="c2" 
                     onkeyup="checkMcarry(<%=mcol%>,<%=sbx%>)" >
 <%          } %>
             <input type="hidden" id="<%=cid%>" class="c2"></td>
@@ -1154,11 +1154,11 @@
             <td class="t1"></td>
 <%          if( idx < dvsrDigs - 2 && nmcars > 0 ) { 
                 mcol = dvsrDigs - 3 - idx;
-                cname = "cm" + mcol + "_" + sbx;
+                vid = "cm" + mcol + "_" + sbx;
                 cid = "hcm" + mcol + "_" + sbx; %>
                 <td class="t2">
 <%              if( showMcarriesCk ) { %>
-                    <input type="<%=cmtype%>" name="<%=cname%>" class="c2" 
+                    <input type="<%=cmtype%>" id="<%=vid%>" class="c2" 
                             onkeyup="checkMcarry(<%=mcol%>,<%=sbx%>)" >
 <%              }  %>
                 <input type="hidden" id="<%=cid%>" class="c2"></td>
@@ -1178,12 +1178,12 @@
     </tr>
 <%  } %>
 <%  int mcol = dvsrDigs - 2;
-    String cname = "cm" + mcol + "_0"; 
+    String vid = "cm" + mcol + "_0"; 
     String cid = "hcm" + mcol + "_0"; %>
     <td class="t2" name="notthestartdig">
 <%  if( nmcars > 0 ) {
         if( showMcarriesCk ) { %>
-            <input type="<%=cmtype%>" name="<%=cname%>" class="c2" 
+            <input type="<%=cmtype%>" id="<%=vid%>" class="c2" 
                 onkeyup="checkMcarry(<%=mcol%>,0)">
 <%      } %>
             <input type="hidden" id="<%=cid%>" class="c2">
@@ -1222,11 +1222,11 @@
 <%      }
         if( idx < dvsrDigs - 2 && nmcars > 0 ) { 
             int col = dvsrDigs - 3 - idx;
-            cname = "cm" + col + "_0"; 
+            vid = "cm" + col + "_0"; 
             cid = "hcm" + col + "_0"; %>
             <td class="t2" value="-1" onclick="<%=whatFun%>" name="notthestartdig">
 <%          if( showMcarriesCk ) { %>
-                <input type="<%=cmtype%>" name="<%=cname%>" class="c2" 
+                <input type="<%=cmtype%>" id="<%=vid%>" class="c2" 
                                   onkeyup="checkMcarry(<%=col%>,0)">
 <%          } %>
             <input type="hidden" id="<%=cid%>" class="c2"></td>
