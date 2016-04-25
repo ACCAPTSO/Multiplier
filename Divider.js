@@ -1952,7 +1952,7 @@ function chooseDivThis( event, which_one, which_type) {
                         msgBx.innerHTML = "Move the dividend decimal point the same number of places that you moved the divisor";
                     } else if (quotSettled.localeCompare("false") === 0 &&
                             !(markwhat.localeCompare("quo") === 0)) {
-                        msgBx.innerHTML = "Click the place in the quotient directly above the dividend decimal point";
+                        msgBx.innerHTML = "Click directly above the dividend decimal point to place the quotient decimal point";
                     } else {
                         turnOnNextMsg = true;
                     }
@@ -2070,9 +2070,9 @@ function roundOff( ev ) {
                         document.getElementById("whatbox").value = nextbox;
                     }
                 }
-            } else { // click on the wrong place (early), it's not letting you finish fixit
-                //errBx.innerHTML = "not there, click somewhere else";
-                errBx.innerHTML = "whatPlace = " + whatPlace + " clickedPlace = " + clickedPlace;
+            } else {
+                errBx.innerHTML = "not there, click somewhere else";
+                //errBx.innerHTML = "whatPlace = " + whatPlace + " clickedPlace = " + clickedPlace;
                 upDateErrCount();
                 break;
             }
@@ -2130,7 +2130,6 @@ function checkRoundOff( ev ) {
                 }
             }
         } else {
-            // needs to be tested fixit
             whatbox.value = Number(whatbox.value) + 1;
         }
     } else {

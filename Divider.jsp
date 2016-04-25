@@ -19,6 +19,7 @@
 <%
     // 2nd divisor dig around 5 is harder to estimate fixit
     // count it wrong if the user gueses a quotient digit 3 times fixit
+    // dividend digit onclick is setting focus before you have the decimal points set fixit
     System.out.println("------------------------Start Anew!-------------------------");
     final int SZ2_MX = 12; // maximum dividend + divisor + 1 size
     final int maxOps = 2;
@@ -102,7 +103,7 @@
     } else if( recDpCk ) {
         dsMaxDg = 1; // + (int)(2*Math.random()); // 1-2 digits
     }
-    //dsMaxDg = 3; // dbfixit
+    //dsMaxDg = 3; // dbfxt
     //int dsMaxDg = 3 + (int)(2*Math.random()); // 3-5 digits
     //dsMaxDg = 3;
     int dsMax = (int)(Math.pow(10, dsMaxDg)) - 2;
@@ -205,7 +206,7 @@
         }
         //System.out.println(" after loop quotient = " + quotient + " divisor = " + divisor + " ntwos = " + t + " nfives = " + f + " totWidth = " + totWidth);   
     }
-    /* dbfixit 
+    /* dbfxt 
     quotient = 3365;
     divisor = 30;
     dvsrDigs = 2;
@@ -236,9 +237,9 @@
     quotient = 90037;
     divisor = 3;
     dvsrDigs = 1;
-    /* fixit */
+    /* dbfxt */
     int quotDigs = (int)Math.log10(quotient) + 1;
-    /* fixit
+    /* dbfxt
     quotient = 600;
     divisor = 4000;
     dvsrDigs = 4; // 5?
@@ -298,7 +299,7 @@
     dvsrDigs = 3;
     dvsrDp = 3;
     quotDp = 5;
-    /* fixit */
+    /* dbfxt */
 
     //uotient = 42; // leading 0 in quotient having issues
     //quotient = 69140; // remainder is a bringdown
@@ -354,7 +355,7 @@
         //dvsrDp = 2;
         //dvsrDp = 1;
         //dvsrDp = 2;
-        //dvsrDp = 1; // dbfixit
+        //dvsrDp = 1; // dbfxt
         if( dvsrDp > dvsrDigs ) {
             dvsrDigs = dvsrDp;
         }
@@ -370,7 +371,7 @@
         //quotDp = 9;
         //quotDp = 3;
         //quotDp = 5;
-        //quotDp = 7; // dbfixit
+        //quotDp = 7; // dbfxt
         
     }
     
@@ -488,7 +489,12 @@
         }
         int dvMaxDg = 1 + (int)((SZ2_MX - dvsrDigs)*Math.random());
         int dvMax = (int)(Math.pow(10, dvMaxDg)) - 2;
-        dividnd = 2 + (int)(dvMax*Math.random());       
+        dividnd = 2 + (int)(dvMax*Math.random());    
+        /* dbfxt 
+        divisor = 25;
+        dvsrDp = 2;
+        dividnd = 224975;
+        /* dbfxt */
         double dquot = (double)dividnd / (double)divisor;
         quotient = (long)dquot;
         quotDigs = 1;
@@ -497,8 +503,11 @@
             quotDigs = 1 + (int)Math.log10(quotient);
             quotDp = 1 + (int)(1 + quotDigs*Math.random()); // don't allow it to be too big
         }
+
+        /* dbfxt
+        quotDp = 3;
+        /* dbfxt */
         System.out.println("before while loop divisor = " + divisor + " dvsrDp = " + dvsrDp + " dividnd = " + dividnd + " quotDp = " + quotDp );
-        
         // find worst case Dp and Digs, find width of problem and adjust up or down
         int quotWidth = SZ2_MX + 2;
         dvdDp = 1 + (dvsrDp - 1) + (quotDp - 1);
@@ -532,7 +541,7 @@
             // divisor goes into at least once
             if( firstPass ) {
                 spacesb4quot = dvsrDigs + 1;
-                //System.out.println("line 591 dividend = " + tmplong + " divisor = " + divisor);
+                //System.out.println("line 542 dividend = " + tmplong + " divisor = " + divisor);
                 for( int idx = dvdDigs-1; tmplong < divisor; --idx ) {
                     if( idx > 0 ) {
                         tmplong = tmplong*10 + (dividnd % (long)Math.pow(10, idx))/(long)Math.pow(10, idx-1);
@@ -540,7 +549,7 @@
                         tmplong = tmplong*10;
                     }
                     spacesb4quot += 1;
-                    //System.out.println("line 595 dividend = " + tmplong + " spacesb4quot = " + spacesb4quot);
+                    //System.out.println("line 549 dividend = " + tmplong + " spacesb4quot = " + spacesb4quot);
                 }
                 origSpaces = spacesb4quot;
             }
@@ -609,7 +618,7 @@
         dvdDigs = (int)Math.log10(dividnd) + 1;
     }
     
-    System.out.println("quotDp = " + quotDp + " dvsrDp = " + dvsrDp + " dvdDp = " + dvdDp );
+    //System.out.println("quotDp = " + quotDp + " dvsrDp = " + dvsrDp + " dvdDp = " + dvdDp );
 
     int expDvdDp = 1 + (dvdDp - 1) - (dvsrDp - 1);
  
@@ -641,7 +650,7 @@
         //remainder = (int)(rmdrMax*Math.random());
         //remainder = rmdrMax*(int)(1 - Math.pow(Math.random(),DEXP));
         remainder = (new Double((1+rmdrMax)*(1 - Math.pow(Math.random(),DEXP)))).intValue();
-        //remainder = rmdrMax; // dbfixit
+        //remainder = rmdrMax; // dbfxt
         //remainder = 21;     // remainder is a bringdown
         // remainder = 0;
         //System.out.println("rmdrMxDg = " + rmdrMxDg + " rmdrMax = " + rmdrMax + " remainder = " + remainder);
@@ -651,7 +660,7 @@
         rmdrDigs = remainder > 0? (1 + (int)Math.log10(remainder)) : 1;
         dividnd += remainder;
     }
-    /* dbfixit 
+    /* dbfxt 
     divisor = 342;
     quotient = 500;
     dividnd = 171009;
@@ -948,9 +957,8 @@
     String[] cas;   // additive carry string 
     cas = new String[SZ2_MX+1];
     ans = new String[SZ2_MX+1];
-    //int jdx;
+
     int kdx;
-    //int ldx = 0;
     int bdx = 0;            // box index used to track what box is selected
     
     int[] whatBx;
@@ -1024,17 +1032,6 @@
             //System.out.println("ncarries[" + sbx + "][" + kdx + "] = " + ncarries[sbx][kdx] + " nacarries[" + sbx + "] = " + nacarries[sbx]);
         }
     }
-/*
-    int [] em;
-    int [] en;
-    int [] oh;
-    int [] pe; 
-    
-    em = new int[quotDigs]; // least significant digit of each multiplication
-    en = new int[quotDigs]; // least significant digit of each subtraction
-    oh = new int[quotDigs]; // least significant digit on new dividend
-    pe = new int[quotDigs]; // first used of the multiplicative carries
-    */
     
     int nmcars = 0;
     int crows = 0;
@@ -1046,76 +1043,9 @@
         crows += 1;
         //System.out.println("qt[" + idx + "] = " + qt[idx] + " nmcars = " + nmcars + " crows = " + crows );
     }
-    /*
-    em[0] = nmcars + 2*nacarries[0] + quotDigs - 1;
-    //em[0] = nmcars + 4*nacarries[0] + quotDigs - 1; // with hidden borrows anc carries in same table
-    for( int idx = 0; idx <= nsubs; ++idx ) {
-        if( idx > 0 ) {
-            em[idx] = oh[idx-1];
-        }
-        em[idx] += wcDig[idx][0];
-        //System.out.println("em[" + idx + "] = " + em[idx] + " numDig[" + idx + "][1] = " + numDig[idx][1]);
-        en[idx] = em[idx] + wcDig[idx][1];
-        if( idx < nsubs ) {
-            //System.out.println("nacarries = " + nacarries[idx+1]);
-            en[idx] += 2*nacarries[idx+1];
-            //en[idx] += 4*nacarries[idx+1]; // with hidden borrows and carries in same table
-        }
-        oh[idx] = en[idx] + numBringDn[idx];
-        pe[idx] = nmcars - 1 - (dvsrDigs - 1)*idx;
-        //System.out.println("em[" + idx + "] = " + em[idx] + " en[" + idx + "] = " + en[idx] + " oh[" + idx + "] = " + oh[idx] + " pe[" + idx + "] = " + pe[idx]);
-    } */
-    //int lastbox = 0;
-    // all you need is the first whatBx fixit
+    
     whatBx[0] = nmcars;
-    /*
-    for( int idx = 0, mdx = 0, ndx = 0, pdx = 0, qdx = nmcars, rdx = 1; qdx < nmcars + quotDigs; ++qdx ) {
-        whatBx[ldx] = qdx; // quotient box indexes
-        if( whatBx[ldx] > lastbox ) {
-            lastbox = whatBx[ldx];
-        }
-        //System.out.println("quotient whatBx[" + ldx + "] = " + whatBx[ldx] );
-        ++ldx;
-        //int lastcarry = numDig[idx][0] - 2;
-        for( ; mdx < actDig[idx][0]; ++mdx  ) { // product box indexes
-            whatBx[ldx] = em[idx] - mdx;
-            //System.out.println("product whatBx[" + ldx + "] = " + whatBx[ldx] );
-            ++ldx;
-            if( mcarries[quotDigs-1-qdx+nmcars][mdx] > 0 ) {
-                whatBx[ldx] = pe[pdx] - mdx;
-                //System.out.println("mcarry whatBx[" + ldx + "] = " + whatBx[ldx]);
-                ++ldx;
-            }
-        }
-        for( ; ndx < actDig[idx][1]; ++ndx  ) { // difference box indexes
-            whatBx[ldx] = en[idx] - ndx;
-            if( whatBx[ldx] > lastbox ) {
-                lastbox = whatBx[ldx];
-            }
-            //System.out.println("difference whatBx[" + ldx + "] = " + whatBx[ldx] );
-            ++ldx;
-        }
-        //System.out.println("pdx = " + pdx + " actBringDn[" + idx + "] = " + actBringDn[idx] );
-        if( rdx <= actBringDn[idx] ) { // bringdown box indexes
-            whatBx[ldx] = en[idx] + rdx;
-            //System.out.println("bringdown whatBx[" + ldx + "] = " + whatBx[ldx] + " pdx = " + pdx + " oh[" + idx + "] = " + oh[idx]);
-            ++ldx;
-            ++rdx;
-            if( rdx > actBringDn[idx] ) { // reset for next row of products
-                ++idx;                    // and differences
-                rdx = 1;
-                mdx = 0;
-                ndx = 0;              
-            }
-        }
-        if( qt[quotDigs-1-qdx+nmcars] > 1 ){
-            ++pdx;
-        }
-    }
-
-    whatBx[ldx] = lastbox + 1;
-    maxBx = ldx; // + 1; 
-    */
+    
     String browType = "hidden";    
     if( showBrowsCk ) {
         browType = "text";
@@ -1590,7 +1520,7 @@ for( int idx = 0; idx < nsubs; ++ idx ) {
         break;
     }
 }
-// Recurring decimals overlaps next table fixit
+
 if( thereAreCarries && showBrowsCk ) { %>
     <label id="dispBo">Click on a digit to borrow from it</label>
 <%  } %>
@@ -1612,7 +1542,7 @@ When decimal part of quotient starts to repeat, drag mouse to draw a line over t
         if( !dsdpsettled ) { %>
             <label id="msg">Count how many places the decimal point needs to move to make the divisor an integer and click there</label>
 <%      } else if( !qtdpsettled ) { %>
-            <label id="msg">Click the place in the quotient directly above the dividend decimal point</label>
+            <label id="msg">Click directly above the dividend decimal point to place the quotient decimal point</label>
 <%      } else { %>
             <label id="msg">Click where first quotient digit should be</label>
 <%      }
