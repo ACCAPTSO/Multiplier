@@ -7,6 +7,7 @@
 // how many of the hidden inputs might as well be global javascript variables? fixit
 // still counting error for quotient doesn't start there when clicking decimal point
 // real problem or careless mouse placement? fixit
+// blanks for zeros looks wierd whn you're subtracting especially if you're borrowing from it fixit
 var errBx = null;
 var whatBoxBx = null;
 var whatbox = 0;
@@ -296,7 +297,11 @@ function showQuotDigs( ev ) {
                 for( var i = 0; i < length; ++i ) {
                     Dp[i].onclick = setFocus;
                 }
-
+                var dvdDigs = doc.getElementsByName("dvddigs");
+                length = dvdDigs.length;
+                for (var i = 0; i < length; ++i) {
+                    dvdDigs[i].onclick = promptDivBorrow;
+                }
                 var dispRnd = doc.getElementById("dispRnd");
                 if( dispRnd ) {
                     dispRnd.style.color = "black";
@@ -1410,6 +1415,7 @@ function subtract(col, sbx) {
                 whatbox = doc.getElementsByClassName("c2").length + quotDigs - lastqcol;
             } else { // whatbox is bringdown box
                 // hide the "Click on a digit to borrow from it" message
+                // doesn't always disappear fixit
                 var displayBorrow = doc.getElementById("dispBo");
                 if( displayBorrow ) {
                     displayBorrow.style.color = getComputedStyle(displayBorrow).backgroundColor;
@@ -1617,90 +1623,110 @@ function checkNewDivVal(col, sbx) {
 }
 // cross off the digit being borrowed from, make new box visible for the
 // new operand digit and set the focus to the new box
-function promptDivBorrow(col, sbx) {
+//function promptDivBorrow(col, sbx) {
+function promptDivBorrow( ev) {
+    ev = ev || window.event;
     var doc = document;
     for (var j = 0; j < 18; j++) {
         doc.getElementById("statusBox" + j).innerHTML = "";
     }
     var x = 0;
-    //doc.getElementById("statusBox" + x).innerHTML = "in promptDivBorrow col = " + col + ", sbx = " + sbx;
-    //x = x + 1;
-    var borFrmBxs;
-    var whatBorFrm;
-    var borFrmValue;
-    var borFrmBx;
-    var hiddenCaBx;
-    var prevCol = col - 1;
-    // doesn't safeguard borrowing from least significant digit of first dividend fixit
-    if (col > 0) {
-        if (sbx == 0) {
-            borFrmBxs = doc.getElementsByName("dvddigs");
-            whatBorFrm = borFrmBxs.length - 1 - col;
-            //doc.getElementById("statusBox" + x).innerHTML = "sbx = " + sbx + " col = " + col + " whatBorFrm = " + whatBorFrm;
-            //x = x + 1;
-            borFrmBx = borFrmBxs[whatBorFrm];
-            borFrmValue = Number(borFrmBx.childNodes[0].nodeValue); // read fixed node value
-            var whatHca = "hca" + prevCol + "_" + 0;
-            hiddenCaBx = doc.getElementById(whatHca);
-            //doc.getElementById("statusBox" + x).innerHTML = "sbx = 0 checking hidden carry " + whatHca;
-            //x = x + 1;
-        } else {
-            var ddx = sbx - 1;
-            borFrmBxs = doc.getElementsByName("op" + ddx + "_1");
-            var bdlength; // = Number(doc.getElementById("bringdown" + ddx).value);
-            var bdBxs = doc.getElementsByName("bd" + ddx);
-            bdlength = bdBxs.length;
-            if (col < bdlength) {
-                whatBorFrm = bdBxs.length - 1 - col;
-                //doc.getElementById("statusBox" + x).innerHTML = "bdBxs.length = " + bdBxs.length + " col = " + col + " whatBorFrm = " + whatBorFrm;
-                //x = x + 1;
-                borFrmBx = bdBxs[whatBorFrm];
-            } else {
-                whatBorFrm = borFrmBxs.length + bdBxs.length - 1 - col;
-                //doc.getElementById("statusBox" + x).innerHTML = "borFrmBxs.length = " + borFrmBxs.length + " bdBxs.length = " + bdBxs.length + " col = " + col + " whatBorFrm = " + whatBorFrm;
+    var evTarg = ev.target;
+    var id = evTarg.getAttribute("id");
+    if( id ) {
+        var idlen = id.length;
+        var col = id.substring(2,idlen);
+        var startpt = col.indexOf("_") + 1;
+        var sbx = col.substring( startpt, idlen );
+        col = col.match(/[^_]*/);
+        doc.getElementById("statusBox" + x).innerHTML = "in promptDivBorrow col = " + col + ", sbx = " + sbx;
+        x = x + 1;
+        var borFrmBxs;
+        var whatBorFrm;
+        var borFrmValue;
+        var borFrmBx;
+        var hiddenCaBx;
+        var prevCol = col - 1;
+        // doesn't safeguard borrowing from least significant digit of first dividend fixit
+        if (col > 0) {
+            if (sbx == 0) {
+                borFrmBxs = doc.getElementsByName("dvddigs");
+                whatBorFrm = borFrmBxs.length - 1 - col;
+                //doc.getElementById("statusBox" + x).innerHTML = "sbx = " + sbx + " col = " + col + " whatBorFrm = " + whatBorFrm;
                 //x = x + 1;
                 borFrmBx = borFrmBxs[whatBorFrm];
+                borFrmValue = Number(borFrmBx.childNodes[0].nodeValue); // read fixed node value
+                var whatHca = "hca" + prevCol + "_" + 0;
+                hiddenCaBx = doc.getElementById(whatHca);
+                //doc.getElementById("statusBox" + x).innerHTML = "sbx = 0 checking hidden carry " + whatHca;
+                //x = x + 1;
+            } else {
+                var ddx = sbx - 1;
+                borFrmBxs = doc.getElementsByName("op" + ddx + "_1");
+                var bdlength; // = Number(doc.getElementById("bringdown" + ddx).value);
+                var bdBxs = doc.getElementsByName("bd" + ddx);
+                bdlength = bdBxs.length;
+                if (col < bdlength) {
+                    whatBorFrm = bdBxs.length - 1 - col;
+                    //doc.getElementById("statusBox" + x).innerHTML = "bdBxs.length = " + bdBxs.length + " col = " + col + " whatBorFrm = " + whatBorFrm;
+                    //x = x + 1;
+                    borFrmBx = bdBxs[whatBorFrm];
+                } else {
+                    whatBorFrm = borFrmBxs.length + bdBxs.length - 1 - col;
+                    //doc.getElementById("statusBox" + x).innerHTML = "borFrmBxs.length = " + borFrmBxs.length + " bdBxs.length = " + bdBxs.length + " col = " + col + " whatBorFrm = " + whatBorFrm;
+                    //x = x + 1;
+                    borFrmBx = borFrmBxs[whatBorFrm];
+                }
+                borFrmValue = Number(borFrmBx.value); // read from input
+                var whatHca = "hca" + prevCol + "_" + sbx;
+                hiddenCaBx = doc.getElementById(whatHca);
+                //doc.getElementById("statusBox" + x).innerHTML = "checking hidden carry " + whatHca + " col = " + col + " bdlength = " + bdlength;
+                //x = x + 1;
             }
-            borFrmValue = Number(borFrmBx.value); // read from input
-            var whatHca = "hca" + prevCol + "_" + sbx;
-            hiddenCaBx = doc.getElementById(whatHca);
-            //doc.getElementById("statusBox" + x).innerHTML = "checking hidden carry " + whatHca + " col = " + col + " bdlength = " + bdlength;
+            var whatcoBx = "ca" + col + "_" + sbx;
+            var coBx = doc.getElementById(whatcoBx);
+            var whatNewBx = "bo" + col + "_" + sbx;
+            var newBx = doc.getElementById(whatNewBx);
+            //doc.getElementById("statusBox" + x).innerHTML = "whatcoBx = " + whatcoBx + " whatNewBx = " + whatNewBx;
             //x = x + 1;
-        }
-        var whatcoBx = "ca" + col + "_" + sbx;
-        var coBx = doc.getElementById(whatcoBx);
-        var whatNewBx = "bo" + col + "_" + sbx;
-        var newBx = doc.getElementById(whatNewBx);
-        //doc.getElementById("statusBox" + x).innerHTML = "whatcoBx = " + whatcoBx + " whatNewBx = " + whatNewBx;
-        //x = x + 1;
-        // turn any red numbers for a subtraction error black
-        var allT1s = doc.getElementsByClassName("t1");
-        for (var i = 0; i < allT1s.length; i++) {
-            allT1s[i].style.color = "black";
-        }
-        var allF1s = doc.getElementsByClassName("f1");
-        for (var i = 0; i < allF1s.length; i++) {
-            allF1s[i].style.color = "black";
-        }
-        var allF2s = doc.getElementsByClassName("f2");
-        for (var i = 0; i < allF2s.length; i++) {
-            allF2s[i].style.color = "black";
-        }
+            // turn any red numbers for a subtraction error black
+            var allT1s = doc.getElementsByClassName("t1");
+            for (var i = 0; i < allT1s.length; i++) {
+                allT1s[i].style.color = "black";
+            }
+            var allF1s = doc.getElementsByClassName("f1");
+            for (var i = 0; i < allF1s.length; i++) {
+                allF1s[i].style.color = "black";
+            }
+            var allF2s = doc.getElementsByClassName("f2");
+            for (var i = 0; i < allF2s.length; i++) {
+                allF2s[i].style.color = "black";
+            }
 
-        //make sure it's really a column that should be borrowed from 
-        // or do nothing
-        if ( hiddenCaBx &&
-                Number(hiddenCaBx.value) !== 0 &&
-                doc.getElementsByName("showborrows")[0].checked ) {
-            //var errBx = doc.getElementById("msg");
-            errBx.innerHTML = "";
-            //doc.getElementById("statusBox0").innerHTML = "col = " + col + " sbx = " + sbx + " newBx = " + newBx;
-            if (borFrmValue === 0) {
-                // if 0 then cross off the carry in as well
-                // if it's 0 & no carry in, there is nothing to borrow so do nothing
-                if (coBx && Number(coBx.value) === 1) {
+            //make sure it's really a column that should be borrowed from 
+            // or do nothing
+            if ( hiddenCaBx &&
+                    Number(hiddenCaBx.value) !== 0 &&
+                    doc.getElementsByName("showborrows")[0].checked ) {
+                //var errBx = doc.getElementById("msg");
+                errBx.innerHTML = "";
+                //doc.getElementById("statusBox" + x).innerHTML = "col = " + col + " sbx = " + sbx + " newBx = " + newBx;
+                //x = x + 1;
+                if (borFrmValue === 0) {
+                    // if 0 then cross off the carry in as well
+                    // if it's 0 & no carry in, there is nothing to borrow so do nothing
+                    if (coBx && Number(coBx.value) === 1) {
+                        borFrmBx.style.setProperty("text-decoration", "line-through");
+                        coBx.style.textDecoration = "line-through";
+                        newBx.focus();
+                        newBx.style.backgroundColor = "white";
+                        newBx.style.color = "red";
+                        newBx.style.border = "1px solid black";
+                        //newBx.style.height = "1.7em";
+                        newBx.value = "";
+                    }
+                } else {
                     borFrmBx.style.setProperty("text-decoration", "line-through");
-                    coBx.style.textDecoration = "line-through";
                     newBx.focus();
                     newBx.style.backgroundColor = "white";
                     newBx.style.color = "red";
@@ -1708,38 +1734,30 @@ function promptDivBorrow(col, sbx) {
                     //newBx.style.height = "1.7em";
                     newBx.value = "";
                 }
-            } else {
-                borFrmBx.style.setProperty("text-decoration", "line-through");
-                newBx.focus();
-                newBx.style.backgroundColor = "white";
-                newBx.style.color = "red";
-                newBx.style.border = "1px solid black";
-                //newBx.style.height = "1.7em";
-                newBx.value = "";
-            }
 
-            var nCols = doc.getElementsByName("dvddigs");
-            var mtBoxes = 0;
-            //alert("nCols.length = " + nCols.length);
-            for (var idx = 0; idx < nCols.length; idx++) {
-                var quotDigs = Number(doc.getElementById("quotDigs").value);
-                var whatBorrow = "bo" + idx + "_" + sbx;
-                //alert("checking if whatBorrow " + whatBorrow + " is empty");
-                newBx = doc.getElementById(whatBorrow);
-                if (newBx) {
-                    if (newBx.value === "") {
-                        mtBoxes += 1;
+                var nCols = doc.getElementsByName("dvddigs");
+                var mtBoxes = 0;
+                //alert("nCols.length = " + nCols.length);
+                for (var idx = 0; idx < nCols.length; idx++) {
+                    //var quotDigs = Number(doc.getElementById("quotDigs").value);
+                    var whatBorrow = "bo" + idx + "_" + sbx;
+                    //alert("checking if whatBorrow " + whatBorrow + " is empty");
+                    newBx = doc.getElementById(whatBorrow);
+                    if (newBx) {
+                        if (newBx.value === "") {
+                            mtBoxes += 1;
+                        }
                     }
+                    //}
                 }
-                //}
+                if (mtBoxes < 2) { // one empty box is allowed because it's above the
+                    // digit that you just clicked on
+                    var displayBorrow = doc.getElementById("dispBo");
+                    displayBorrow.style.color = getComputedStyle(displayBorrow).backgroundColor;
+                }
+            } else {
+                setFocus();
             }
-            if (mtBoxes < 2) { // one empty box is allowed because it's above the
-                // digit that you just clicked on
-                var displayBorrow = doc.getElementById("dispBo");
-                displayBorrow.style.color = getComputedStyle(displayBorrow).backgroundColor;
-            }
-        } else {
-            setFocus();
         }
     }
 }
@@ -1875,7 +1893,6 @@ function startDivAgain() {
             }
         }
     }
-    
 
     var remainderZero = allCorrect && ((difflvl !== "Recurring Decimals" && remainder === 0) ||
             (difflvl === "Remainders" &&
@@ -2010,25 +2027,26 @@ function chooseDivThis( event, which_one, which_type) {
             //x = x + 1;
         }
         var notQuotDigits = doc.getElementsByName("notthestartdig");
-        var length = notQuotDigits.length;
+        length = notQuotDigits.length;
         for (var i = 0; i < length; ++i) {
             if (notQuotDigits[i].nodeType === 1) {
                 //notQuotDigits[i].addEventListener("click", sayNotThere, true);
                 notQuotDigits[i].onclick = showQuotDigs;
             }
-        }
+        }      
         var dvdDigs = doc.getElementsByName("dvddigs");
         var expDvdDp = Number(doc.getElementById("dvdDp").value);
         length = dvdDigs.length;
         //alert("dvdDigs length = " + length + " espDvdDp = " + expDvdDp);
         var leadzeros = true;
         for (var i = 0; i < length; ++i) {
+            var whichDig = dvdDigs[i];
             if (length - i >= expDvdDp) {
                 //dvdDigs[i].className = "t1";
-                dvdDigs[i].style.color = "black";
+                whichDig.style.color = "black";
                 if (leadzeros && length - i !== expDvdDp &&
-                        Number(dvdDigs[i].childNodes[0].nodeValue) === 0) {
-                    dvdDigs[i].style.setProperty("text-decoration", "line-through");
+                        Number(whichDig.childNodes[0].nodeValue) === 0) {
+                    whichDig.style.setProperty("text-decoration", "line-through");
                 } else {
                     leadzeros = false;
                 }

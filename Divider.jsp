@@ -19,7 +19,7 @@
 <%
     // 2nd divisor dig around 5 is harder to estimate fixit
     // count it wrong if the user gueses a quotient digit 3 times fixit
-    // dividend digit onclick is setting focus before you have the decimal points set fixit
+    // showBorrows mode is really slow. any way to speed it up? fixit
     System.out.println("------------------------Start Anew!-------------------------");
     final int SZ2_MX = 12; // maximum dividend + divisor + 1 size
     final int maxOps = 2;
@@ -490,7 +490,7 @@
         int dvMaxDg = 1 + (int)((SZ2_MX - dvsrDigs)*Math.random());
         int dvMax = (int)(Math.pow(10, dvMaxDg)) - 2;
         dividnd = 2 + (int)(dvMax*Math.random());    
-        /* dbfxt 
+        /* dbfxt
         divisor = 25;
         dvsrDp = 2;
         dividnd = 224975;
@@ -1213,8 +1213,8 @@
                     } %>
                     <td class="s2">
                         <input type="<%=browType%>" name="<%=name%>" id="<%=cid%>"
-                        class="f2" onkeyup="checkDivBorrow(<%=ccol%>, 0)"
-                        onclick="promptDivBorrow(<%=ccol%>, 0)">
+                        class="f2" onkeyup="checkDivBorrow(<%=ccol%>, 0)" 
+                        onclick="promptDivBorrow( event )" >
                     </td>
     <%          } else { %>
                     <td class="s2"></td>
@@ -1234,8 +1234,9 @@
 <%      } else if( idx <= dvsrDigs + dvdDigs ) { 
             int col = dvsrDigs +  dvdDigs - idx;
             //System.out.println("dividend col = " + col); 
-            String vclass = visible[col]? "t1" : "t3"; %>
-            <td class="<%=vclass%>" name="dvddigs" onclick="promptDivBorrow(<%=col%>, 0)">
+            String vclass = visible[col]? "t1" : "t3";
+            String did = "dd" + col + "_0"; %>
+            <td class="<%=vclass%>" name="dvddigs" id="<%=did%>" >
             <%=dd[col]%>
             </td>
 <%      } else { %>
@@ -1336,7 +1337,7 @@
                 <td class="s2">
                         <input type="<%=browType%>" name="<%=name%>" id="<%=cid%>"
                         class="f2" onkeyup="checkDivBorrow(<%=col%>, <%=rdx%>)"
-                        onclick="promptDivBorrow(<%=col%>, <%=rdx%>)">
+                        onclick="promptDivBorrow( event )">
                 </td>
 <%          } else { %>
                 <td class="s2"></td>
@@ -1365,18 +1366,20 @@
             if( idx <= spacesb4Op[sbx][1] ) { %>
                 <td class="t1"></td>
 <%          } else if( idx <= spacesb4Op[sbx][1] + wcDig[sbx][1] ) { 
-                String name = "op" + sbx + "_1";  %>
+                String name = "op" + sbx + "_1";  
+                String oid = "op" + ocol + "_" + rdx; %>
                 <td class="t1">
-                <input type="<%=whattype%>" name="<%=name%>" class="a1" size="1" 
+                <input type="<%=whattype%>" name="<%=name%>" id="<%=oid%>" class="a1" size="1" 
                 onkeyup="subtract( <%=col%>, <%=sbx%> )" 
-                onclick="promptDivBorrow(<%=ocol%>, <%=rdx%>)">
+                onclick="promptDivBorrow( event )">
                 </td>
     <%      } else if( 0 <= ocol && ocol <  maxBDcol ) { 
-                String name = "bd" + sbx; %>
+                String name = "bd" + sbx; 
+                String bid = "bd" + ocol + "_" + rdx; %>
                 <td class="t1">
-                <input type="<%=whattype%>" name="<%=name%>" class="a1" size="1" 
+                <input type="<%=whattype%>" name="<%=name%>" id="<%=bid%>" class="a1" size="1" 
                 onkeyup="bringdown( <%=sbx%> )"
-                onclick="promptDivBorrow(<%=ocol%>, <%=rdx%>)">
+                onclick="promptDivBorrow( event )">
                 </td>
  <%         } else { %>
                 <td class="t1"></td>
