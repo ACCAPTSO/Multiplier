@@ -1515,7 +1515,7 @@
     <div id="<%=sid%>"></div>
 <% } %>
 
-<div class="d3">
+
 <% boolean thereAreCarries = false;
 for( int idx = 0; idx < nsubs; ++ idx ) { 
     if( nacarries[idx] > 0 ) {
@@ -1525,20 +1525,26 @@ for( int idx = 0; idx < nsubs; ++ idx ) {
 }
 
 if( thereAreCarries && showBrowsCk ) { %>
+    <div class="d3">
     <label id="dispBo">Click on a digit to borrow from it</label>
+    </div>
 <%  } %>
 
 <% if( recDpCk ) { %>
-<label id="dispRec">
-When decimal part of quotient starts to repeat, drag mouse to draw a line over the repeat pattern
-</label>
+    <div class="d3">
+    <label id="dispRec">
+    When decimal part of quotient starts to repeat, drag mouse to draw a line over the repeat pattern
+    </label>
+    </div>
 <%  } %>
 <% if( rndOffCk ) { %>
-<label id="dispRnd">
+    <div class="d3">
+    <label id="dispRnd">
     <%=roundString%>
-</label>
+    </label>
+    </div>
 <%  } %>
-</div>
+
 <div class="d6">
 <!--this is where error messages get displayed//-->
 <%  if( exDpCk || recDpCk || rndOffCk) {
@@ -1598,7 +1604,7 @@ When decimal part of quotient starts to repeat, drag mouse to draw a line over t
 
 </table>
 </div>  
-<div class="d3">
+<div class="d4">
     <table>
     <tr><td><input type="checkbox" value="Show Borrows" name="showborrows" 
                    <%=isShowBrows%> onclick="zeroDivCounts()">
@@ -1613,7 +1619,7 @@ When decimal part of quotient starts to repeat, drag mouse to draw a line over t
     </table>
 </div>
 
-<div class="d4">  
+<div class="d5">  
 <table>
     <tr><th colspan="1">Highest Difficulty Level</th></tr>
     <tr><td>

@@ -6,7 +6,6 @@
 // right side jumps right after last digit entered fixit
 // how many of the hidden inputs might as well be global javascript variables? fixit
 // still counting error for quotient doesn't start there when clicking decimal point
-// real problem or careless mouse placement? fixit
 // blanks for zeros looks wierd whn you're subtracting especially if you're borrowing from it fixit
 var errBx = null;
 var whatBoxBx = null;
@@ -1074,10 +1073,22 @@ function multiply(col) { // may want to pass sbx instead of reading whatRow afte
                 var isCarry = false;
                 for (var i = 0; i < visibleBorCaBxs.length; ++i) {
                     var hiddenCaBx = null;
-                    hiddenCaBx = doc.getElementById("hca" + i + "_" + whatRow);
+                    var whatCaBx = "hca" + i + "_" + whatRow;
+                    if( whatRow === 0 ) {
+                        var j = i + qdx;
+                        whatCaBx = "hca" + j + "_" + whatRow;
+                    }
+                    hiddenCaBx = doc.getElementById( whatCaBx );
+                    //doc.getElementById("statusBox" + x).innerHTML = "whatCaBx = " + whatCaBx + " hiddenCaBx= " + hiddenCaBx;
+                    //x = x + 1;
+
                     if (hiddenCaBx && Number(hiddenCaBx.value) !== 0) {
                         isCarry = true;
                     }
+                    //if( hiddenCaBx ) {
+                        //doc.getElementById("statusBox" + x).innerHTML = "hiddenCaBx.value = " + hiddenCaBx.value + " isCarry = " + isCarry;
+                        //x = x + 1;
+                    //}
                 }
                 var origColor = "";
                 if (isCarry) {
@@ -1294,6 +1305,11 @@ function subtract(col, sbx) {
         errBx.innerHTML = "";
 
         if (isLastSub) {
+            // hide the "Click on a digit to borrow from it" message
+            var displayBorrow = doc.getElementById("dispBo");
+            if( displayBorrow ) {
+                displayBorrow.style.color = getComputedStyle(displayBorrow).backgroundColor;
+            }
             var divisor = Number(doc.getElementById("divisor").value);
             var quotDigs = Number(doc.getElementById("quotDigs").value);
             var lastqcol = quotDigs - 1;
@@ -1414,12 +1430,7 @@ function subtract(col, sbx) {
             } else if (ans === 0 && restAreZero) {// whatbox is quotient box
                 whatbox = doc.getElementsByClassName("c2").length + quotDigs - lastqcol;
             } else { // whatbox is bringdown box
-                // hide the "Click on a digit to borrow from it" message
-                // doesn't always disappear fixit
-                var displayBorrow = doc.getElementById("dispBo");
-                if( displayBorrow ) {
-                    displayBorrow.style.color = getComputedStyle(displayBorrow).backgroundColor;
-                }
+
                 // make bringdown box visible
                 var visibleBrows = doc.getElementsByName("bd" + sbx);
                 if (visibleBrows.length > 0) {
@@ -1639,8 +1650,8 @@ function promptDivBorrow( ev) {
         var startpt = col.indexOf("_") + 1;
         var sbx = col.substring( startpt, idlen );
         col = col.match(/[^_]*/);
-        doc.getElementById("statusBox" + x).innerHTML = "in promptDivBorrow col = " + col + ", sbx = " + sbx;
-        x = x + 1;
+        //doc.getElementById("statusBox" + x).innerHTML = "in promptDivBorrow col = " + col + ", sbx = " + sbx;
+        //x = x + 1;
         var borFrmBxs;
         var whatBorFrm;
         var borFrmValue;
