@@ -26,7 +26,7 @@ var tol = 15;
 //var currX = 0;
 //var prevY = 0;
 //var currY = 0;
-window.onload = function() {
+window.onload = function() { // does this save any time fixit
     var doc = document;
     errBx = doc.getElementById("msg");
     whatBoxBx = doc.getElementById("whatbox");
@@ -218,109 +218,107 @@ function checkRemainder(col, expectedRemainder) {
     } else {
         hintBx.style.color = "red";
         ansBx.style.color = "red";
-        errBx.innerHTML = "not " + ans;
+        //errBx.innerHTML = "not " + ans;
         upDateErrCount();
     }
     setFocus();
 }
 function showQuotDigs( ev ) {
     ev = ev || window.event;
-    var doc = document;
-    var x = 0;
-    //var errBx = doc.getElementById("msg");
-    var clickmsg = "quotient doesn't start there, click somewhere else";
-    var decsNotSettled = 0;
-    var whatDecs = doc.getElementsByName("decsettled");
-    var whatDecsLength = whatDecs.length;
-    //doc.getElementById("statusBox" + x).innerHTML = "event target = " + ev.target;
-    //x = x + 1;
-    var id = ev.target.getAttribute("id");
-    var idlen = 0;
-    var col = 0;
-    if( !id ) {
-        alert("event target " + ev.target + " does not have an id");
-        alert("name = " + ev.target.name + " class = " + ev.target.class);
-    } else {
-        idlen = id.length;
-        col = Number((id.substring(2,idlen)));
-    }
-    
-    //doc.getElementById("statusBox" + x).innerHTML = "id = " + id + " idlen = " + idlen + " col = " + col;
-    //x = x + 1;
     ev.stopPropagation();
-    if (whatDecsLength > 0) {
-        for (var i = 0; i < whatDecsLength; ++i) {
-            if (whatDecs[i].value === "false") {
-                decsNotSettled += 1;
-            }
-        }
-    }
-    //doc.getElementById("statusBox" + x).innerHTML = "in showQuotDigs decsNotSettled = " + decsNotSettled;
-    //x = x + 1;
-    if (decsNotSettled === 0) {
-
-        var quotDigs = Number(doc.getElementById("quotDigs").value);
-        var lastcol = quotDigs - 1;
-        //doc.getElementById("statusBox" + x).innerHTML = "in showQuotDigs col = " + col + " lastcol = " + lastcol + " target = " + ev.target + " value = " + ev.target.getAttribute("value");
+    var id = ev.target.getAttribute("id");
+    if( id ) {
+        var doc = document;
+        var x = 0;
+        //var errBx = doc.getElementById("msg");
+        var clickmsg = "quotient doesn't start there, click somewhere else";
+        var decsNotSettled = 0;
+        var whatDecs = doc.getElementsByName("decsettled");
+        var whatDecsLength = whatDecs.length;
+        //doc.getElementById("statusBox" + x).innerHTML = "event target = " + ev.target;
         //x = x + 1;
-        if (col === lastcol) {
-            var i = quotDigs - 1;
-            doc.getElementById("qt" + i).type = "text";
-            //var errBx = doc.getElementById("msg");
-            errBx.innerHTML = "";
-            var quotTd = doc.getElementsByName("quotTd");
-            var length = quotTd.length;
-            for( var i = 0; i < length; i++ ) {
-                //quotdigs[i].removeEventListener("click", showQuotDigs, false );
-                quotTd[i].onclick = setFocus;
-            }
-            var notQuotDigits = doc.getElementsByName("notthestartdig");
-            var length = notQuotDigits.length;
-            for (var i = 0; i < length; ++i) {
-                if (notQuotDigits[i].nodeType === 1) {
-                    //notQuotDigits[i].removeEventListener("click", sayNotThere, true );
-                    notQuotDigits[i].onclick = setFocus;
+
+        var idlen = id.length;
+        var col = Number((id.substring(2,idlen)));
+
+    
+        //doc.getElementById("statusBox" + x).innerHTML = "id = " + id + " idlen = " + idlen + " col = " + col;
+        //x = x + 1;
+
+        if (whatDecsLength > 0) {
+            for (var i = 0; i < whatDecsLength; ++i) {
+                if (whatDecs[i].value === "false") {
+                    decsNotSettled += 1;
                 }
             }
-            // make all the decimal points run setFocus as well           
-            var Dp = doc.getElementsByName("quotDp");
-            length = Dp.length;
-            for( var i = 0; i < length; ++i ) {
-                Dp[i].onclick = setFocus;
-            }
-            var Dp = doc.getElementsByName("dvsrDp");
-            length = Dp.length;
-            for( var i = 0; i < length; ++i ) {
-                Dp[i].onclick = setFocus;
+        }
+        //doc.getElementById("statusBox" + x).innerHTML = "in showQuotDigs decsNotSettled = " + decsNotSettled;
+        //x = x + 1;
+        if (decsNotSettled === 0) {
 
-            }
-            var Dp = doc.getElementsByName("dvdDp");
-            length = Dp.length;
-            for( var i = 0; i < length; ++i ) {
-                Dp[i].onclick = setFocus;
-            }
-            
-            var dispRnd = doc.getElementById("dispRnd");
-            if( dispRnd ) {
-                dispRnd.style.color = "black";
-            }
-            //doc.getElementById("statusBox" + x).innerHTML = "about to setFocus";
+            var quotDigs = Number(doc.getElementById("quotDigs").value);
+            var lastcol = quotDigs - 1;
+            //doc.getElementById("statusBox" + x).innerHTML = "in showQuotDigs col = " + col + " lastcol = " + lastcol + " target = " + ev.target + " value = " + ev.target.getAttribute("value");
             //x = x + 1;
-            setFocus();
-        } else {
-            //errBx.innerHTML = clickmsg;
-            errBx.innerHTML = "col = " + col + " lastcol = " + lastcol;
-            //doc.getElementById("statusBox" + x).innerHTML = "about to upDateErrCount";
-            //x = x + 1;
-            upDateErrCount();
+            if (col === lastcol) {
+                var i = quotDigs - 1;
+                doc.getElementById("qt" + i).type = "text";
+                //var errBx = doc.getElementById("msg");
+                errBx.innerHTML = "";
+                var quotTd = doc.getElementsByName("quotTd");
+                var length = quotTd.length;
+                for( var i = 0; i < length; i++ ) {
+                    //quotdigs[i].removeEventListener("click", showQuotDigs, false );
+                    quotTd[i].onclick = setFocus;
+                }
+                var notQuotDigits = doc.getElementsByName("notthestartdig");
+                var length = notQuotDigits.length;
+                for (var i = 0; i < length; ++i) {
+                    if (notQuotDigits[i].nodeType === 1) {
+                        //notQuotDigits[i].removeEventListener("click", sayNotThere, true );
+                        notQuotDigits[i].onclick = setFocus;
+                    }
+                }
+                // make all the decimal points run setFocus as well           
+                var Dp = doc.getElementsByName("quotDp");
+                length = Dp.length;
+                for( var i = 0; i < length; ++i ) {
+                    Dp[i].onclick = setFocus;
+                }
+                var Dp = doc.getElementsByName("dvsrDp");
+                length = Dp.length;
+                for( var i = 0; i < length; ++i ) {
+                    Dp[i].onclick = setFocus;
+
+                }
+                var Dp = doc.getElementsByName("dvdDp");
+                length = Dp.length;
+                for( var i = 0; i < length; ++i ) {
+                    Dp[i].onclick = setFocus;
+                }
+
+                var dispRnd = doc.getElementById("dispRnd");
+                if( dispRnd ) {
+                    dispRnd.style.color = "black";
+                }
+                //doc.getElementById("statusBox" + x).innerHTML = "about to setFocus";
+                //x = x + 1;
+                setFocus();
+            } else {
+                //errBx.innerHTML = clickmsg;
+                errBx.innerHTML = "col = " + col + " lastcol = " + lastcol;
+                //doc.getElementById("statusBox" + x).innerHTML = "about to upDateErrCount";
+                //x = x + 1;
+                upDateErrCount();
+            }
         }
     }
 }
-function sayNotThere( ev ) {
+//function sayNotThere( ev ) {
     //var errBx = doc.getElementById("msg");
-    errBx.innerHTML = "quotient doesn't start there, click somewhere else";
-    upDateErrCount();
-}
+//    errBx.innerHTML = "quotient doesn't start there, click somewhere else";
+//    upDateErrCount();
+//}
 function checkMcarry(col, sbx) {
     var x = 0;
     var doc = document;
@@ -411,7 +409,7 @@ function checkMcarry(col, sbx) {
             prevBx.style.color = "red";
         }
         possBx[sbx].style.color = "red";
-        errBx.innerHTML = "not " + ans;
+        //errBx.innerHTML = "not " + ans;
         upDateErrCount();
     }
     setFocus();
@@ -438,7 +436,7 @@ function divide(immFeedBkCk, col, qtDig) {
     //x = x + 1;
     
     if( isNaN( ansTxt ) ) {
-        errBx.innerHTML = "not " + ansTxt;
+        //errBx.innerHTML = "not " + ansTxt;
         upDateErrCount();
         setFocus();
         return;
@@ -743,7 +741,7 @@ function divide(immFeedBkCk, col, qtDig) {
             for (var i = 0; i < dvsrdigs.length; i++) {
                 dvsrdigs[i].style.color = "red";
             }
-            errBx.innerHTML = "not " + ans;
+            //errBx.innerHTML = "not " + ans;
             time2increment = false;
         }
 
@@ -1128,7 +1126,7 @@ function multiply(col) { // may want to pass sbx instead of reading whatRow afte
         whatBoxBx.value = nextbox;
     } else {
         //errBx.innerHTML = expAns + " not " + ans;
-        errBx.innerHTML = "not " + ans;
+        //errBx.innerHTML = "not " + ans;
         qBx.style.color = "red";
         dvsrdigs[whatDig].style.color = "red";
         if (prevcaBx) {
@@ -1468,7 +1466,7 @@ function subtract(col, sbx) {
         //alert("whatBorCol = " + borCol + " whatBorrow = " + whatBorBx + " whatCarry = " + whatCarry );
         prodBx.style.color = "red";
         //errBx.innerHTML = expAns + " not " + ans;
-        errBx.innerHTML = "not " + ans;
+        //errBx.innerHTML = "not " + ans;
         upDateErrCount();
     }
     //alert("done with subtract");
@@ -1530,7 +1528,7 @@ function bringdown(sbx) {
         //incrementbox();
     } else {
         dvddigs[whatDig].style.color = "red";
-        errBx.innerHTML = "not " + ans;
+        //errBx.innerHTML = "not " + ans;
         upDateErrCount();
     }
     setFocus();
@@ -1548,7 +1546,7 @@ function checkDivBorrow(col, sbx) {
         ciBx.style.color = "red";
         ciBx.value = "";
         errBx.innerHTML = "";
-        errBx.innerHTML = "not " + ans;
+        //errBx.innerHTML = "not " + ans;
     }
 }
 function checkNewDivVal(col, sbx) {
@@ -1614,7 +1612,7 @@ function checkNewDivVal(col, sbx) {
             coBx.style.color = "red";
         }
         errBx.innerHTML = "";
-        errBx.innerHTML = "not " + ans;
+        //errBx.innerHTML = "not " + ans;
     }
 }
 // cross off the digit being borrowed from, make new box visible for the
