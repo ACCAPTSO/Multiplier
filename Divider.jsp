@@ -1292,7 +1292,7 @@
                 %>
                 <td class="t1">
                 <input type="<%=whattype%>" name="<%=name%>" class="a1" size="1" 
-                onkeyup="multiply( <%=col%> )" onclick="setFocus()">
+                onkeyup="multiply( <%=col%>, <%=sbx%> )" onclick="setFocus()">
                 </td>
  <%         } else { %>
                 <td class="t1"></td>

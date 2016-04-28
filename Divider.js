@@ -3,17 +3,15 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-// right side jumps right after last digit entered fixit
+// right side jumps right after last digit entered fixit not with showBorrows checked why is that?
 // how many of the hidden inputs might as well be global javascript variables? fixit
-// still counting error for quotient doesn't start there when clicking decimal point
 // blanks for zeros looks wierd whn you're subtracting especially if you're borrowing from it fixit
 var errBx = null;
 var whatBoxBx = null;
-var whatbox = 0;
+//var whatbox = 0;
 var posRecorded = false;
 var leftPos = 0;
 var rightPos = 0;
-var overbar = null;
 var barPosition = null;
 var boxHeight = 0;
 var boxWidth = 0;
@@ -30,7 +28,7 @@ window.onload = function() { // does this save any time fixit
     var doc = document;
     errBx = doc.getElementById("msg");
     whatBoxBx = doc.getElementById("whatbox");
-    whatbox = Number(whatBoxBx.value);
+    //whatbox = Number(whatBoxBx.value);
 }
 function mouseCoords(ev){
     var doc = document;
@@ -76,11 +74,12 @@ function recDownPos( ev ) {
     //for( var j = 0; j < 10; j++ ) {
         //document.getElementById("statusBox" + j).innerHTML = "";
     //}
-    overbar = document.getElementById("overbar");
+    var overbar = document.getElementById("overbar");
     var barPos = getPosition( overbar );
+    var getComputedStyl = getComputedStyle;
     //var lastPosition = getPosition( overbar[overbar.length-1] );
-    boxHeight = Number(getComputedStyle(overbar).height.match(/[0-9]+/));
-    boxWidth = Number(getComputedStyle(overbar).width.match(/[0-9]+/));
+    boxHeight = Number(getComputedStyl(overbar).height.match(/[0-9]+/));
+    boxWidth = Number(getComputedStyl(overbar).width.match(/[0-9]+/));
     rightside = barPos.x + boxWidth;
     bottomside = barPos.y + boxHeight;
     //document.getElementById("statusBox" + x).innerHTML = "in recDownPos x position = " + mousePos.x + " y position = " + mousePos.y;
@@ -135,7 +134,7 @@ function checkEnds( ev ) {
         //x = x + 1;
         if(( leftPos > 0 && rightside - tol < mousePos.x ) ||
                 ( rightPos > 0 && mousePos.x < barPos.x + tol )) {
-            overbar.style.backgroundColor = "black";
+            doc.getElementById("overbar").style.backgroundColor = "black";
             var displayRec = doc.getElementById("dispRec");
             displayRec.style.color = getComputedStyle(displayRec).backgroundColor;
             var quotDigs = Number(doc.getElementById("quotDigs").value);
@@ -173,6 +172,7 @@ function checkRemainder(col, expectedRemainder) {
     var bdBxs = doc.getElementsByName("bd" + whatRow);
     var bdlength = Number(doc.getElementById("bringdown" + whatRow).value);
     var subBxs = doc.getElementsByName("op" + whatRow + "_1");
+    var subBxsLength = subBxs.length;
     var whatIdx = 0;
     var hintBx = null;
     if (bdlength > 0) {
@@ -182,13 +182,13 @@ function checkRemainder(col, expectedRemainder) {
             //doc.getElementById("statusBox" + x).innerHTML = "bringdown box col = " + col + " bdlength = " + bdlength + " whatIdx = " + whatIdx;
             //x = x + 1;
         } else {
-            whatIdx = subBxs.length + bdlength - 1 - col;
+            whatIdx = subBxsLength + bdlength - 1 - col;
             hintBx = subBxs[whatIdx];
-            //doc.getElementById("statusBox" + x).innerHTML = "subtraction box col = " + col + " bdlength = " + bdlength + " subBxs.length = " + subBxs.length + " whatIdx = " + whatIdx;
+            //doc.getElementById("statusBox" + x).innerHTML = "subtraction box col = " + col + " bdlength = " + bdlength + " subBxsLength = " + subBxsLength + " whatIdx = " + whatIdx;
             //x = x + 1;
         }
     } else {
-        whatIdx = subBxs.length - 1 - col;
+        whatIdx = subBxsLength - 1 - col;
         hintBx = subBxs[whatIdx];
         //doc.getElementById("statusBox" + x).innerHTML = "subtraction boxes only col = " + col + " bdlength = " + bdlength + " whatIdx = " + whatIdx;
         //x = x + 1;
@@ -197,20 +197,21 @@ function checkRemainder(col, expectedRemainder) {
         hintBx.style.color = "black";
         ansBx.style.color = "black";
         errBx.innerHTML = "";
+        var nextbox = 0;
         if (col > 0) {
             var bdx = Number(doc.getElementById("bdx").value) + 1;
             doc.getElementById("bdx").value = bdx;
-            whatbox = whatbox + 1;
+            nextbox = Number(whatBoxBx.value) + 1;
         } else {
             //var whatRow = Number(doc.getElementById("rowNo").value) - 1;
             //doc.getElementById("statusBox0").innerHTML = "lastBoxOfCurrRow = " + doc.getElementById("lastBoxOfCurrRow").value + " whatRow = " + whatRow + " whatRow.length = " + doc.getElementsByName("bd" + whatRow).length;
             var bdlength = doc.getElementsByName("bd" + whatRow).length;
             var offTheTable = bdlength > 0 ? bdlength : 1;
-            whatbox =
+            nextbox =
                     Number(doc.getElementById("lastBoxOfCurrRow").value) +
                     offTheTable;            
         }
-        whatBoxBx.value = whatbox;
+        whatBoxBx.value = nextbox;
         var quotDigs = Number(doc.getElementById("quotDigs").value);
         for (var i = quotDigs - 1; i >= 0; --i) {
             doc.getElementById("qt" + i).style.color = "black";
@@ -309,8 +310,8 @@ function showQuotDigs( ev ) {
                 //x = x + 1;
                 setFocus();
             } else {
-                //errBx.innerHTML = clickmsg;
-                errBx.innerHTML = "col = " + col + " lastcol = " + lastcol;
+                errBx.innerHTML = clickmsg;
+                //errBx.innerHTML = "col = " + col + " lastcol = " + lastcol;
                 //doc.getElementById("statusBox" + x).innerHTML = "about to upDateErrCount";
                 //x = x + 1;
                 upDateErrCount();
@@ -328,7 +329,7 @@ function checkMcarry(col, sbx) {
     var doc = document;
     var ansBx = doc.getElementById("cm" + col + "_" + sbx);
     var prevBx;
-    var nextbox = whatbox;
+    var nextbox = Number(whatBoxBx.value);
     if (col > 0) {
         var prevCol = col - 1;
         prevBx = doc.getElementById("cm" + prevCol + "_" + sbx);
@@ -398,13 +399,12 @@ function checkMcarry(col, sbx) {
         //doc.getElementById("statusBox" + x).innerHTML = "skip row " + i + " prod nextbox = " + nextbox;
         //x = x + 1;
         nextbox -= col + 2;
-        //doc.getElementById("statusBox" + x).innerHTML = "back off prod digits already done nextbox = " + whatbox;
+        //doc.getElementById("statusBox" + x).innerHTML = "back off prod digits already done nextbox = " + whatBoxBx.value;
         //x = x + 1;
         var bdx = Number(doc.getElementById("bdx").value) + 1;
         doc.getElementById("bdx").value = bdx;
 
-        //alert("final whatbox = " + whatbox);
-        whatbox = nextbox;
+        //whatbox = nextbox;
         whatBoxBx.value = nextbox;
 
     } else {
@@ -461,11 +461,11 @@ function divide(immFeedBkCk, col, qtDig) {
     var mcarry = 0;
     var i = 0;
     var carryRow = quotDigs - 1 - col;
-    
+    var Mat = Math;
     for (; i < dvsrdigslength; i++) {
         var dbx = dvsrdigslength - 1 - i;
         var addProd = Number(dvsrdigs[dbx].childNodes[0].nodeValue) * ans + mcarry;
-        mcarry = Math.floor(addProd / 10);
+        mcarry = Mat.floor(addProd / 10);
         var mDig = addProd % 10;
         if( dbx > 0 && i < dvsrdigslength - 1 ) {
             var whatMcarry = "hcm" + i + "_" + carryRow;
@@ -473,11 +473,11 @@ function divide(immFeedBkCk, col, qtDig) {
             //x = x + 1;
             doc.getElementById(whatMcarry).value = mcarry;
         }
-        prod += Math.pow(10, i) * mDig;
+        prod += Mat.pow(10, i) * mDig;
         //alert("i = " + i + " prodBxs[" + pbx + "] = " + prodBxs[pbx].value + " prod = " + prod );
     }
-    prod += Math.pow(10, i) * mcarry;
-    var prodMxIdx = prod > 0 ? Math.floor(Math.log10(prod)) : 1;
+    prod += Mat.pow(10, i) * mcarry;
+    var prodMxIdx = prod > 0 ? Mat.floor(Mat.log10(prod)) : 1;
     doc.getElementById("calcDig" + whatRow + "_0").value = prodMxIdx;
     doc.getElementById("operand" + whatRow + "_0").value = prod;
 
@@ -493,9 +493,9 @@ function divide(immFeedBkCk, col, qtDig) {
     var quotient = Number(doc.getElementById("quotient").value);
     //alert("quotDigs = " + quotDigs + " col = " + col);
     for (var i = 0; i < col; i++) {
-        var ten2i = Math.pow(10, i);
+        var ten2i = Mat.pow(10, i);
         var discard = quotient % ten2i;
-        var qdigI = (quotient % Math.pow(10, i + 1) - discard) / ten2i;
+        var qdigI = (quotient % Mat.pow(10, i + 1) - discard) / ten2i;
         //doc.getElementById("statusBox" + x).innerHTML = "qDig[" + i + "] = " + qdigI;
         //x = x + 1;
         if (qdigI !== 0) {
@@ -515,8 +515,8 @@ function divide(immFeedBkCk, col, qtDig) {
     var whatBorBx = "";
     var borBx = null;
 
-    var carries = new Array();
-    var borrows = new Array();
+    //var carries = new Array();
+    //var borrows = new Array();
     if (whatRow === 0) {
         var i = dvdBxs.length - quotDigs;
         // add leading zeros
@@ -530,13 +530,13 @@ function divide(immFeedBkCk, col, qtDig) {
         //doc.getElementById("statusBox" + x).innerHTML = "dvdBxs.length = " + dvdBxs.length + " quotDigs = " + quotDigs + " i = " + i;
         //x = x + 1;
         //var quotient = Number(doc.getElementById("quotient").value);
-        var intQuotDigs = 1 + Math.floor(Math.log10(quotient));
+        var intQuotDigs = 1 + Mat.floor(Mat.log10(quotient));
         var leadzeros = quotDigs - intQuotDigs;
        //doc.getElementById("statusBox" + x).innerHTML = "quotient = " + quotient + " intQuotDigs = " + intQuotDigs + " leadzeros = " + leadzeros;
         //x = x + 1;
         while (i >= 0) {
             dvdDigVal = Number(dvdBxs[i].childNodes[0].nodeValue);
-            var ten2pow = Math.pow(10, pow);
+            var ten2pow = Mat.pow(10, pow);
             dvdnd += ten2pow * dvdDigVal;
             //doc.getElementById("statusBox" + x).innerHTML = "whatRow = " + whatRow + ", pow = " + pow + ", i = " + i + ", dvdnd = " + dvdnd;
             //x = x + 1;
@@ -563,7 +563,7 @@ function divide(immFeedBkCk, col, qtDig) {
                 }
             }
             discard = prod % ten2pow;
-            mainpart = prod % Math.pow(10, pow + 1);
+            mainpart = prod % Mat.pow(10, pow + 1);
             prodDigVal = (mainpart - discard) / ten2pow;
             //doc.getElementById("statusBox" + x).innerHTML = "whatRow = " + whatRow + " pow = " + pow + " dvdDigVal = " + dvdDigVal + " prodDigVal = " + prodDigVal;
             //x = x + 1;
@@ -616,7 +616,7 @@ function divide(immFeedBkCk, col, qtDig) {
                 }
             }
 
-            var ten2pow = Math.pow(10, pow);
+            var ten2pow = Mat.pow(10, pow);
             dvdnd += ten2pow * dvdDigVal;
             //doc.getElementById("statusBox" + x).innerHTML = "pow = " + pow + " dvdDigVal = " + dvdDigVal + " dividend = " + dvdnd;
             //x = x + 1;
@@ -643,7 +643,7 @@ function divide(immFeedBkCk, col, qtDig) {
                 }
             }
             discard = prod % ten2pow;
-            mainpart = prod % Math.pow(10, pow + 1);
+            mainpart = prod % Mat.pow(10, pow + 1);
             prodDigVal = (mainpart - discard) / ten2pow;
             //doc.getElementById("statusBox" + x).innerHTML = "mainpart = " + mainpart + " discard = " + discard + " prodDigVal = " + prodDigVal;
             //x = x + 1;
@@ -688,18 +688,20 @@ function divide(immFeedBkCk, col, qtDig) {
     }
 
     var diff = dvdnd - prod;
-    var diffMxIdx = diff > 0 ? Math.floor(Math.log10(diff)) : 0;
+    var diffMxIdx = diff > 0 ? Mat.floor(Mat.log10(diff)) : 0;
     doc.getElementById("calcDig" + whatRow + "_1").value = diffMxIdx;
     doc.getElementById("operand" + whatRow + "_1").value = diff;
 
     var origDvdDigs = doc.getElementsByName("dvddigs");
-    var bddigs = null;
+    var bddigs = null
+    var bddigsLength = 0;
     if (whatRow == 0) {
         dvddigs = origDvdDigs;
     } else {
         prevRow = whatRow - 1;
         dvddigs = doc.getElementsByName("op" + prevRow + '_1');
         bddigs = doc.getElementsByName("bd" + prevRow);
+        bddigsLength = bddigs.length;
     }
     var stop = dvddigs.length;
     if (whatRow == 0) {
@@ -720,7 +722,7 @@ function divide(immFeedBkCk, col, qtDig) {
                 dvddigs[i].style.color = "black";
             }
             if (bddigs) {
-                for (var i = 0; i < bddigs.length; i++) {
+                for (var i = 0; i < bddigsLength; i++) {
                     bddigs[i].style.color = "black";
                     //alert("bddigs[" + i + "].type = " + bddigs[i].type);
                     if (bddigs[i].type === "hidden") {
@@ -738,7 +740,7 @@ function divide(immFeedBkCk, col, qtDig) {
                 dvddigs[i].style.color = "red";
             }
             if (bddigs) {
-                for (var i = 0; i < bddigs.length; i++) {
+                for (var i = 0; i < bddigsLength; i++) {
                     bddigs[i].style.color = "red";
                 }
             }
@@ -751,7 +753,7 @@ function divide(immFeedBkCk, col, qtDig) {
 
     }
     if (time2increment) {
-        var nextbox = whatbox;
+        var nextbox = Number(whatBoxBx.value);
         if (ans === 0) {
             ansBx.style.color = "black"; // it's already been checked
             if (doc.getElementById("Round Off").checked) {
@@ -844,7 +846,8 @@ function divide(immFeedBkCk, col, qtDig) {
                 }
             }
             var allcarries = doc.getElementsByClassName("c2");
-            for (var i = 0; i < allcarries.length; ++i) {
+            var allcarriesLength = allcarries.length;
+            for (var i = 0; i < allcarriesLength; ++i) {
                 if (Number(allcarries[i].name.substring(4, 5)) === carryRow &&
                         allcarries[i].name.substring(0, 2) === "cm") {
                     allcarries[i].value = "";
@@ -889,7 +892,7 @@ function divide(immFeedBkCk, col, qtDig) {
         doc.getElementById("bdx").value = bdx;
 
         //doc.getElementById("statusBox" + x).innerHTML = "final nextbox = " + nextbox;
-        whatbox = nextbox;
+        //whatbox = nextbox;
         whatBoxBx.value = nextbox;
     }
     if( Number(doc.getElementById("quotDp").value) - 2 ===  col ) {
@@ -899,15 +902,16 @@ function divide(immFeedBkCk, col, qtDig) {
     setFocus();
 }
 
-function multiply(col) { // may want to pass sbx instead of reading whatRow after all fixit
+function multiply( col, whatRow ) {
     var doc = document;
-    for (var j = 0; j < 30; j++) {
-        doc.getElementById("statusBox" + j).innerHTML = "";
-    }
+    //for (var j = 0; j < 30; j++) {
+        //doc.getElementById("statusBox" + j).innerHTML = "";
+    //}
     var x = 0;
-    var whatRow = Number(doc.getElementById("rowNo").value);
+    //var whatRow = //Number(doc.getElementById("rowNo").value);
     var ansBxs = doc.getElementsByName("op" + whatRow + "_0");
-    var bxNo = ansBxs.length - 1 - col;
+    var ansLength = ansBxs.length;
+    var bxNo = ansLength - 1 - col;
     //doc.getElementById("statusBox" + x).innerHTML = "in multiply, bxNo = " + bxNo;
     //x = x + 1;
     var ans = Number(ansBxs[bxNo].value);
@@ -934,7 +938,8 @@ function multiply(col) { // may want to pass sbx instead of reading whatRow afte
     // if number has trailing 0s q index needs to be offset by more
     var quotdigs = doc.getElementsByName("quotdigs");
     var qx = 0;
-    while( Number(quotdigs[qx].value) === 0 && qx < quotdigs.length ) {
+    var qLength = quotdigs.length;
+    while( Number(quotdigs[qx].value) === 0 && qx < qLength ) {
         dec += 1;
         qx += 1;
     }
@@ -942,15 +947,17 @@ function multiply(col) { // may want to pass sbx instead of reading whatRow afte
     var qBx = doc.getElementById("qt" + qdx);
     //var qtDig = Number(qBx.value);
     var dvsrdigs = doc.getElementsByName("dvsrdigs");
-    var whatDig = dvsrdigs.length - 1 - col;
-    if (whatDig < 0) { // should this ever happen? fixit
+    var dvsrLength = dvsrdigs.length;
+    var whatDig = dvsrLength - 1 - col;
+    if (whatDig < 0) { // should this ever happen? fixit it does, most significant digit of product
         whatDig = 0;
     }
 
     var prod = Number(doc.getElementById("operand" + whatRow + "_0").value);
-    var ten2col = Math.pow(10, col);
+    var Mat = Math;
+    var ten2col = Mat.pow(10, col);
     var discard = prod % ten2col;
-    var mainpart = prod % Math.pow(10, col + 1);
+    var mainpart = prod % Mat.pow(10, col + 1);
 
     //doc.getElementById("statusBox2").innerHTML = "prod = " + prod + " mainpart = " + mainpart + " discard = " + discard;
     var expAns = (mainpart - discard) / ten2col;
@@ -967,7 +974,7 @@ function multiply(col) { // may want to pass sbx instead of reading whatRow afte
     var isLastMult = (col === Number(doc.getElementById("calcDig" + whatRow + "_0").value));
     //doc.getElementById('statusBox2').innerHTML = "col = " + col + " whatRow = " + whatRow + " isLastMult = " + isLastMult;
     if (isLastMult && col > 1) {
-        var prevCol = dvsrdigs.length - 2;
+        var prevCol = dvsrLength - 2;
         var whatBx = "hcm" + prevCol + "_" + cmx;
         if (showMcarriesChkd) {
             whatBx = "cm" + prevCol + "_" + cmx;
@@ -988,7 +995,7 @@ function multiply(col) { // may want to pass sbx instead of reading whatRow afte
         //x = x + 1;
     }
     if (ans === expAns) {
-        var nextbox = whatbox;
+        var nextbox = Number(whatBoxBx.value);
         if (prevcaBx) {
             if (showMcarriesChkd) {
                 prevcaBx.style.color = "black";
@@ -1016,12 +1023,12 @@ function multiply(col) { // may want to pass sbx instead of reading whatRow afte
                     }
                 }
                 dividend = Number(doc.getElementById("dividend").value);
-                var discard = dividend % Math.pow(10, dvdcol);
-                dividend = (dividend - discard) / Math.pow(10, dvdcol);
+                var discard = dividend % Mat.pow(10, dvdcol);
+                dividend = (dividend - discard) / Mat.pow(10, dvdcol);
                     //doc.getElementById("statusBox" + x).innerHTML = "lastMult, whatRow = " + whatRow + " dvdcol = " + dvdcol + " dividend = " + dividend + " prod = " + prod;
                     //x = x + 1;
             } else {
-                prevRow = whatRow - 1;
+                var prevRow = whatRow - 1;
                 var dvdBxs = doc.getElementById("operand" + prevRow + "_1");
                 dividend = Number(dvdBxs.value);
                 //doc.getElementById("statusBox" + x).innerHTML = "lastMult, whatRow = " + whatRow + " dividend = " + dividend + " prod = " + prod;
@@ -1032,23 +1039,23 @@ function multiply(col) { // may want to pass sbx instead of reading whatRow afte
                 var lastqtval = prod / Number(doc.getElementById("divisor").value);
                 errBx.innerHTML = prod + " is too big, try a quotient digit value smaller than " + lastqtval;
                 nextbox = Number(doc.getElementById("nextQuotBox").value) - 1;
-                whatbox = nextbox;
+                //whatbox = nextbox;
                 whatBoxBx.value = nextbox;
                 doc.getElementById("bdx").value = doc.getElementById("quotBoxIndex").value;
                 if (whatRow == 0) {
                     doc.getElementById("lastBoxOfCurrRow").value = 0;
                 } else { // back up to just after last subtraction box
                     var lastBox = doc.getElementById("lastBoxOfCurrRow").value;
-                    lastBox -= ansBxs.length;
+                    lastBox -= ansLength;
                     while (doc.getElementById("th-id2").elements[lastBox].name.substring(0, 2) === 'bd') {
                         lastBox -= 1;
                     }
                     doc.getElementById("lastBoxOfCurrRow").value = lastBox + 1;
                 }
-                for (var i = 0; i < ansBxs.length; ++i) {
+                for (var i = 0; i < ansLength; ++i) {
                     ansBxs[i].style.color = "red";
                 }
-                for (var i = 0; i < dvsrdigs.length; ++i) {
+                for (var i = 0; i < dvsrLength; ++i) {
                     dvsrdigs[i].style.color = "red";
                 }
                 setFocus();
@@ -1056,6 +1063,7 @@ function multiply(col) { // may want to pass sbx instead of reading whatRow afte
             }
 
             var visibleDrows = doc.getElementsByName("op" + whatRow + '_1');
+            var visibleDrowsLength = visibleDrows.length;
             var name = "cspan" + whatRow;
             var visibleBar = doc.getElementById(name);
             if (visibleBar) {
@@ -1065,13 +1073,13 @@ function multiply(col) { // may want to pass sbx instead of reading whatRow afte
             if (visibleMinus) {
                 visibleMinus.className = "t1";
             }
-            var showBrowsChkd =
-                    doc.getElementsByName("showborrows")[0].checked;
+            var showBrowsChkd = doc.getElementsByName("showborrows")[0].checked;
             if (showBrowsChkd) {
                 var whatBorCaBxs = 'boca' + whatRow;
                 var visibleBorCaBxs = doc.getElementsByName(whatBorCaBxs);
                 var isCarry = false;
-                for (var i = 0; i < visibleBorCaBxs.length; ++i) {
+                var visibleBorCaLength = visibleBorCaBxs.length;
+                for (var i = 0; i < visibleBorCaLength; ++i) {
                     var hiddenCaBx = null;
                     var whatCaBx = "hca" + i + "_" + whatRow;
                     if( whatRow === 0 ) {
@@ -1090,12 +1098,12 @@ function multiply(col) { // may want to pass sbx instead of reading whatRow afte
                         //x = x + 1;
                     //}
                 }
-                var origColor = "";
+                //var origColor = "";
                 if (isCarry) {
                     doc.getElementById("dispBo").style.color = "#600301";
-                    origColor = getComputedStyle(visibleBorCaBxs[0].parentNode).backgroundColor;
+                    //origColor = getComputedStyle(visibleBorCaBxs[0].parentNode).backgroundColor;
                 }
-                for (var j = 0; j < visibleBorCaBxs.length; j++) {
+                for (var j = 0; j < visibleBorCaLength; j++) {
                     visibleBorCaBxs[j].type = "text";
                     //isibleBorCaBxs[j].style.height = "1.7em";
                     visibleBorCaBxs[j].style.height = "1em";
@@ -1105,10 +1113,10 @@ function multiply(col) { // may want to pass sbx instead of reading whatRow afte
             nextbox = Number(doc.getElementById("lastBoxOfCurrRow").value);
             //doc.getElementById("statusBox" + x).innerHTML = "with product boxes, nextbox = " + nextbox;
             //x = x + 1;
-            if (visibleDrows.length > 1) {
+            if (visibleDrowsLength > 1) {
                 nextbox += doc.getElementsByName("boca" + nextRow).length; // borrow, carry
                 //doc.getElementById("statusBox1").innerHTML = "with borrow and carry boxes, nextbox = " + nextbox;
-                nextbox += visibleDrows.length; // dividend boxes
+                nextbox += visibleDrowsLength; // dividend boxes
             } else {
                 nextbox += 1;
             }
@@ -1118,9 +1126,9 @@ function multiply(col) { // may want to pass sbx instead of reading whatRow afte
         } else {
             //var whatBox = Number(whatBoxBx.value);
             // = nextbox;
-            //doc.getElementById("statusBox" + x).innerHTML = "in multiply col = " + col + " dvsrdigs.length = " + dvsrdigs.length;
+            //doc.getElementById("statusBox" + x).innerHTML = "in multiply col = " + col + " dvsrdigs.length = " + dvsrLength;
             //x = x + 1;
-            if (col < dvsrdigs.length - 1) {
+            if (col < dvsrLength - 1) {
                 var whatCm = "hcm" + col + "_" + dec;
                 //doc.getElementById("statusBox" + x).innerHTML = "in multiply whatCm = " + whatCm ;
                 //x = x + 1;
@@ -1128,7 +1136,7 @@ function multiply(col) { // may want to pass sbx instead of reading whatRow afte
                 if (showMcarriesChkd &&
                         Number(doc.getElementById(whatCm).value) > 0) {
                     var allCmBoxes = doc.getElementsByClassName("c2");
-                    nextbox = allCmBoxes.length - 1 - 2 * dec * (dvsrdigs.length - 1) - 2 * col - 1;
+                    nextbox = allCmBoxes.length - 1 - 2 * dec * (dvsrLength - 1) - 2 * col - 1;
                 } else {
                     nextbox -= 1;
                 }
@@ -1138,7 +1146,7 @@ function multiply(col) { // may want to pass sbx instead of reading whatRow afte
         }   
         var bdx = Number(doc.getElementById("bdx").value) + 1;
         doc.getElementById("bdx").value = bdx;
-        whatbox = nextbox;
+        //whatbox = nextbox;
         whatBoxBx.value = nextbox;
     } else {
         //errBx.innerHTML = expAns + " not " + ans;
@@ -1156,11 +1164,10 @@ function multiply(col) { // may want to pass sbx instead of reading whatRow afte
 
 function subtract(col, sbx) {
     var doc = document;
-    for (var j = 0; j < 30; j++) {
-        doc.getElementById("statusBox" + j).innerHTML = "";
-    }
-    var x = 0;
-    //var whatbox = null;
+    //for (var j = 0; j < 30; j++) {
+        //doc.getElementById("statusBox" + j).innerHTML = "";
+    //}
+    //var x = 0;
     var ansBxs = doc.getElementsByName("op" + sbx + "_1");
     var bxNo = ansBxs.length - 1 - col;
     //doc.getElementById("statusBox" + x ).innerHTML = "col = " + col + " ansBxs = " + ansBxs + " length = " + ansBxs.length + " bxNo = " + bxNo;
@@ -1171,7 +1178,7 @@ function subtract(col, sbx) {
     var prodBxs = doc.getElementsByName(whatprodboxes);
     //var prod = Number(doc.getElementById("operand" + sbx + "_0").value);
     var subBxs;
-    var pbx;
+    //var pbx;
     var dvdidx = 0;
     var prodidx = prodBxs.length - 1 - col;
     var prodBx = prodBxs[prodidx];
@@ -1181,23 +1188,26 @@ function subtract(col, sbx) {
     //doc.getElementById("statusBox" + x).innerHTML = "col = borCol = " + borCol;
     //x = x + 1;
     var prevRow = 0;
+    var subBxsLength = 0;
 
     if (sbx == 0) {
         
         subBxs = doc.getElementsByName("dvddigs");
+        subBxsLength = subBxs.length;
         var quotDigs = doc.getElementById("quotDigs").value;
-        dvdidx = subBxs.length - Number(quotDigs) - col;
+        dvdidx = subBxsLength - Number(quotDigs) - col;
         var quotdigs = doc.getElementsByName("quotdigs"); // actual digits
+        var quotdigsLength = quotdigs.length;
         var qdx = 0;
-        //doc.getElementById("statusBox" + x).innerHTML = "quotdigs[" + qdx + "] = " + quotdigs[qdx].value + " dvdidx = " + dvdidx + " length = " + quotdigs.length;
+        //doc.getElementById("statusBox" + x).innerHTML = "quotdigs[" + qdx + "] = " + quotdigs[qdx].value + " dvdidx = " + dvdidx + " length = " + quotdigsLength;
         //x = x + 1;
-        while( Number(quotdigs[qdx].value) === 0 && qdx < quotdigs.length ) {
+        while( Number(quotdigs[qdx].value) === 0 && qdx < quotdigsLength ) {
             dvdidx += 1;
             qdx += 1;
             //doc.getElementById("statusBox" + x).innerHTML = "quotdigs[" + qdx + "] = " + quotdigs[qdx].value + " dvdidx = " + dvdidx;
             //x = x + 1
         }
-        //doc.getElementById("statusBox" + x).innerHTML = "subBxs.length = " + subBxs.length + " quotDigs = " + quotDigs + " col = " + col + " dididx = " + dvdidx;
+        //doc.getElementById("statusBox" + x).innerHTML = "subBxsLength = " + subBxsLength + " quotDigs = " + quotDigs + " col = " + col + " dididx = " + dvdidx;
         //x = x + 1
         dvdBx = subBxs[dvdidx];
         //dvdVal = Number(dvdBx.childNodes[0].nodeValue);
@@ -1207,23 +1217,24 @@ function subtract(col, sbx) {
 
         borCol = borCol + Number(doc.getElementById("quotDigs").value) - 1;
         var qx = 0;
-        while( Number(quotdigs[qx].value) === 0 && qx < quotdigs.length ) {
+        while( Number(quotdigs[qx].value) === 0 && qx < quotdigsLength ) {
             borCol -= 1;
             qx += 1;
         }
     } else {
         prevRow = sbx - 1;
         var whatboca = 'boca' + sbx;
-        var bocalength = doc.getElementsByName(whatboca).length;
+        var bocaLength = doc.getElementsByName(whatboca).length;
         subBxs = doc.getElementsByName("op" + prevRow + "_1");
+        subBxsLength = subBxs.length;
         var bdBxs = doc.getElementsByName("bd" + prevRow);
         //doc.getElementById("statusBox" + x).innerHTML = "col = " + col +   " borCol = " + borCol;
         //x = x + 1;
-        borCol = borCol + bocalength / 2;
-        //doc.getElementById("statusBox" + x).innerHTML = "whatboca = " + whatboca + " bocalength/2 =  " + (bocalength/2)  + " borCol = " + borCol;
+        borCol = borCol + bocaLength / 2;
+        //doc.getElementById("statusBox" + x).innerHTML = "whatboca = " + whatboca + " bocaLength/2 =  " + (bocaLength/2)  + " borCol = " + borCol;
         //x = x + 1;
-        borCol = borCol - subBxs.length;
-        //doc.getElementById("statusBox" + x).innerHTML = "subBxs.length = " + subBxs.length + " borCol = " + borCol;
+        borCol = borCol - subBxsLength;
+        //doc.getElementById("statusBox" + x).innerHTML = "subBxsLength = " + subBxsLength + " borCol = " + borCol;
         //x = x + 1;
         borCol = borCol - Number(doc.getElementById("bringdown" + prevRow).value);
         //doc.getElementById("statusBox" + x).innerHTML = "bdBxs.length = " + Number(doc.getElementById("bringdown" + prevRow).value) + " borCol = " + borCol;
@@ -1238,8 +1249,8 @@ function subtract(col, sbx) {
         //doc.getElementById("statusBox" + x).innerHTML = " inc = " + inc + " col = " + col + " dididx = " + dvdidx;
         //x = x + 1;
         if (col > inc) {
-            var calcDig = Number(doc.getElementById("calcDig" + prevRow + "_1").value) + 1;
-            dvdidx = dvdidx + subBxs.length;
+            //var calcDig = Number(doc.getElementById("calcDig" + prevRow + "_1").value) + 1;
+            dvdidx = dvdidx + subBxsLength;
             //doc.getElementById("statusBox" + x).innerHTML = "inc = " + inc + " col = " + col + " calcDig = " + calcDig + " dvdidx = " + dvdidx;
             //x = x + 1;
             dvdBx = subBxs[dvdidx];
@@ -1265,26 +1276,27 @@ function subtract(col, sbx) {
     hiddenCaBx = doc.getElementById("hca" + borCol + "_" + sbx);
     //doc.getElementById("statusBox" + x).innerHTML = "sbx = " + sbx + " col = " + col + " whatBorBx = " + whatBorBx + " whatCarry = " + whatCarry;
     //x = x + 1;
-
-    var ten2col = Math.pow(10, col);
+    var Mat = Math;
+    var ten2col = Mat.pow(10, col);
     var discard = diff % ten2col;
-    var mainpart = diff % Math.pow(10, col + 1);
+    var mainpart = diff % Mat.pow(10, col + 1);
 
     var expAns = (mainpart - discard) / ten2col;
-    var lastDig = diff > 0 ? Math.floor(Math.log10(diff)) : 0;
+    var lastDig = diff > 0 ? Mat.floor(Mat.log10(diff)) : 0;
     var isLastSub = (col === lastDig);
     //doc.getElementById("statusBox" + x).innerHTML = "diff " + diff + " lastDig = " + lastDig + " col = " + col + " isLastSub = " + isLastSub;
     //x = x + 1;
     if (ans === expAns) {
+        var nextbox = 0;
         ansBxs[bxNo].style.color = "black";
         var whatHelp = doc.getElementsByName("showborrows");
         var showBrowsChkd = false;
-        for (var i = 0; i < whatHelp.length; i++) {
-            if (whatHelp[i].checked) {
-                showBrowsChkd = true;
-                break;
-            }
-        }
+        //for (var i = 0; i < whatHelp.length; i++) {
+        //if (whatHelp[0].checked) {
+        showBrowsChkd = whatHelp[0].checked;
+                //break;
+        //}
+        //}
         if (borBx) {
             borBx.style.color = "black";
             if (!showBrowsChkd) {
@@ -1320,18 +1332,19 @@ function subtract(col, sbx) {
                 var qtDigVal = prod / divisor;
                 var dividend = doc.getElementById("currDividend").value;
                 errBx.innerHTML = diff + " is too big, " + divisor + " goes into " + dividend + " more than " + qtDigVal + " times";
-                whatbox = Number(doc.getElementById("nextQuotBox").value) - 1;
-                whatBoxBx.value = whatbox;
+                nextbox = Number(doc.getElementById("nextQuotBox").value) - 1;
+                whatBoxBx.value = nextbox;
                 doc.getElementById("bdx").value = doc.getElementById("quotBoxIndex").value;
                 doc.getElementById("rowNo").value = Number(doc.getElementById("rowNo").value) - 1;
                 var diffdigs = doc.getElementsByName("op" + sbx + "_1");
+                var diffdigsLength = diffdigs.length;
                 if (sbx == 0) {
                     doc.getElementById("lastBoxOfCurrRow").value = 0;
                 } else { // back up to just after last subtraction box
                     var lastBox = doc.getElementById("lastBoxOfCurrRow").value;
                     //doc.getElementById("statusBox" + x).innerHTML = "in subtract, sbx > 0, lastBox = " + lastBox;
                     //x = x + 1;
-                    lastBox -= diffdigs.length;
+                    lastBox -= diffdigsLength;
                     //doc.getElementById("statusBox" + x).innerHTML = "back off subtract boxes, lastBox = " + lastBox;
                     //x = x + 1;
                     var nextRow = sbx + 1;
@@ -1349,10 +1362,11 @@ function subtract(col, sbx) {
                     doc.getElementById("lastBoxOfCurrRow").value = lastBox + 1;
                 }
                 var dvsrdigs = doc.getElementsByName("dvsrdigs");
-                for (var i = 0; i < dvsrdigs.length; ++i) {
+                var dvsrdigsLength = dvsrdigs.length;
+                for (var i = 0; i < dvsrdigsLength; ++i) {
                     dvsrdigs[i].style.color = "red";
                 }
-                for (var i = 0; i < diffdigs.length; ++i) {
+                for (var i = 0; i < diffdigsLength; ++i) {
                     diffdigs[i].style.color = "red";
                 }
                 var dvddigs = doc.getElementsByName("op" + prevRow + "_1");
@@ -1361,7 +1375,7 @@ function subtract(col, sbx) {
                     dvddigs = doc.getElementsByName("dvddigs");
                     dvdlen = dvddigs.length - quotDigs + 1;
                     //var quotdigs = doc.getElementsByName("quotdigs");
-                    var quotmx = quotdigs.length - 1;
+                    var quotmx = quotdigsLength - 1;
                     var qx = 0;
                     while( qx < quotmx && Number(quotdigs[qx].value) == 0 ) {
                         dvdlen++;
@@ -1373,7 +1387,8 @@ function subtract(col, sbx) {
                 }
 
                 var bddigs = doc.getElementsByName("bd" + prevRow);
-                for (var i = 0; i < bddigs.length; ++i) {
+                var bddigsLength = bddigs.length;
+                for (var i = 0; i < bddigsLength; ++i) {
                     bddigs[i].style.color = "red";
                 }
                 setFocus();
@@ -1382,7 +1397,7 @@ function subtract(col, sbx) {
             
             var restAreZero = true;
             // this may not work in some cases where user has entered wrong qdigit fixit
-            var quotient = Number(doc.getElementById("quotient").value);
+            //var quotient = Number(doc.getElementById("quotient").value);
             var origdividend = Number(doc.getElementById("dividend").value);
             // start with the most significant digit of quotient, find where
             // the user left off typing in numbers, calculate what the rest of 
@@ -1392,11 +1407,11 @@ function subtract(col, sbx) {
             for (var i = lastqcol; i >= 0; i--) {
                 var quotBx = doc.getElementById("qt" + i);
                 if (quotBx.value === "") {
-                    var ten2i = Math.pow(10, i);
+                    var ten2i = Mat.pow(10, i);
                     //var discard = quotient % ten2i;
                     var discard = origdividend % ten2i;
-                    //var qdigI = (quotient % Math.pow(10, i+1) - discard)/ten2i;
-                    var qdigI = (origdividend % Math.pow(10, i + 1) - discard) / ten2i;
+                    //var qdigI = (quotient % Mat.pow(10, i+1) - discard)/ten2i;
+                    var qdigI = (origdividend % Mat.pow(10, i + 1) - discard) / ten2i;
                     //alert("qDig[" + i + "] = " + qdigI);
                     if (qdigI !== 0) {
                         restAreZero = false;
@@ -1410,8 +1425,8 @@ function subtract(col, sbx) {
                 }
             }
             lastFilledBx.style.color = "black";
-            //doc.getElementById("statusBox" + x).innerHTML = "isLastSub restAreZero = " + restAreZero + " lastqcol = " + lastqcol + " whatbox = " + whatbox;
-            //doc.getElementById("statusBox" + x).innerHTML = "isLastSub lastqcol = " + lastqcol + " whatbox = " + whatbox;
+            //doc.getElementById("statusBox" + x).innerHTML = "isLastSub restAreZero = " + restAreZero + " lastqcol = " + lastqcol + " whatbox = " + whatBoxBx.value;
+            //doc.getElementById("statusBox" + x).innerHTML = "isLastSub lastqcol = " + lastqcol + " whatbox = " + whatBoxBx.value;
             //x = x + 1;
 
             if (lastqcol === 0) { // done calculating this quotient
@@ -1420,34 +1435,34 @@ function subtract(col, sbx) {
                 if (Number(doc.getElementById("operand" + sbx + "_1").value) !== 0 &&
                        dispR ) {
                     dispR.style.color = "black";
-                    whatbox = doc.getElementsByClassName("c2").length + quotDigs - lastqcol;
-                } else { // whatbox is ID=whatbox 
-                    whatbox = Number(doc.getElementById("lastBoxOfCurrRow").value) + 1;
-                    //doc.getElementById("statusBox" + x).innerHTML = "isLastSub restAreZero = " + restAreZero + " lastqcol = " + lastqcol + " whatbox = " + whatbox;
-                    //doc.getElementById("statusBox" + x).innerHTML = "isLastSub lastqcol = " + lastqcol + " whatbox = " + whatbox;
+                    nextbox = doc.getElementsByClassName("c2").length + quotDigs - lastqcol;
+                } else { // nextbox is ID=nextbox 
+                    nextbox = Number(doc.getElementById("lastBoxOfCurrRow").value) + 1;
+                    //doc.getElementById("statusBox" + x).innerHTML = "isLastSub restAreZero = " + restAreZero + " lastqcol = " + lastqcol + " nextbox = " + nextbox;
+                    //doc.getElementById("statusBox" + x).innerHTML = "isLastSub lastqcol = " + lastqcol + " nextbox = " + nextbox;
                     //x = x + 1;
                 }
-            } else if (ans === 0 && restAreZero) {// whatbox is quotient box
-                whatbox = doc.getElementsByClassName("c2").length + quotDigs - lastqcol;
-            } else { // whatbox is bringdown box
+            } else if (ans === 0 && restAreZero) {// nextbox is quotient box
+                nextbox = doc.getElementsByClassName("c2").length + quotDigs - lastqcol;
+            } else { // nextbox is bringdown box
 
                 // make bringdown box visible
                 var visibleBrows = doc.getElementsByName("bd" + sbx);
                 if (visibleBrows.length > 0) {
                     visibleBrows[0].type = "text";
                 }
-                whatbox = Number(doc.getElementById("lastBoxOfCurrRow").value) + 1;
+                nextbox = Number(doc.getElementById("lastBoxOfCurrRow").value) + 1;
             }
             if (doc.getElementById("Round Off").checked) {
                 var prevQtDg = doc.getElementById("qt" + lastqcol);
                 prevQtDg.onclick = roundOff;
                 prevQtDg.onkeyup = checkRoundOff;
             }
-        } else { // not last subtraction, whatbox is another subtraction box
-            whatbox = whatbox - 1;
+        } else { // not last subtraction, nextbox is another subtraction box
+            nextbox = Number(whatBoxBx.value) - 1;
         }
-        //doc.getElementById("statusBox" + x).innerHTML = "final whatbox = " + whatbox;
-        whatBoxBx.value = whatbox;
+        //doc.getElementById("statusBox" + x).innerHTML = "final nextbox = " + nextbox;
+        whatBoxBx.value = nextbox;
         var bdx = Number(doc.getElementById("bdx").value) + 1;
         doc.getElementById("bdx").value = bdx;
     } else {
@@ -1519,8 +1534,9 @@ function bringdown(sbx) {
     var whatDig = dvddigs.length - 1 - dvdcol;
     //doc.getElementById("statusBox2").innerHTML = " final dvdcol = " + dvdcol + " whatDig = " + whatDig;
     var dividend = Number(doc.getElementById("dividend").value);
-    var discard = dividend % Math.pow(10, dvdcol);
-    var expAns = (dividend % Math.pow(10, dvdcol + 1) - discard) / Math.pow(10, dvdcol);
+    var Mat = Math;
+    var discard = dividend % Mat.pow(10, dvdcol);
+    var expAns = (dividend % Mat.pow(10, dvdcol + 1) - discard) / Mat.pow(10, dvdcol);
     if (ans == expAns) {
         ansBxs[bxNo].style.color = "black";
         if (dvddigs[whatDig].style.color === "red") {
@@ -1536,8 +1552,8 @@ function bringdown(sbx) {
         var lastBoxOfRow = Number(doc.getElementById("lastBoxOfCurrRow").value) + 1;
         doc.getElementById("lastBoxOfCurrRow").value = lastBoxOfRow;
         var nextQuotBox = doc.getElementById("nextQuotBox");
-        whatbox = nextQuotBox.value;
-        whatBoxBx.value = whatbox;
+        var nextbox = nextQuotBox.value;
+        whatBoxBx.value = nextbox;
 
         var bdx = Number(doc.getElementById('bdx').value) + 1;
         doc.getElementById('bdx').value = bdx;
@@ -1658,7 +1674,6 @@ function promptDivBorrow( ev) {
         var borFrmBx;
         var hiddenCaBx;
         var prevCol = col - 1;
-        // doesn't safeguard borrowing from least significant digit of first dividend fixit
         if (col > 0) {
             if (sbx == 0) {
                 borFrmBxs = doc.getElementsByName("dvddigs");
@@ -1702,15 +1717,18 @@ function promptDivBorrow( ev) {
             //x = x + 1;
             // turn any red numbers for a subtraction error black
             var allT1s = doc.getElementsByClassName("t1");
-            for (var i = 0; i < allT1s.length; i++) {
+            var length = allT1s.length;
+            for (var i = 0; i < length; i++) {
                 allT1s[i].style.color = "black";
             }
             var allF1s = doc.getElementsByClassName("f1");
-            for (var i = 0; i < allF1s.length; i++) {
+            length = allF1s.length;
+            for (var i = 0; i < length; i++) {
                 allF1s[i].style.color = "black";
             }
             var allF2s = doc.getElementsByClassName("f2");
-            for (var i = 0; i < allF2s.length; i++) {
+            length = allF2s.length;
+            for (var i = 0; i < length; i++) {
                 allF2s[i].style.color = "black";
             }
 
@@ -1838,6 +1856,7 @@ function startDivAgain() {
     var lastRowLength = lastrow.length;
     var lastRowValue = lastrow[lastRowLength - 1].value
     var remainder = Number.MAX_SAFE_INTEGER;
+    var Mat = Math;
     if( lastRowValue ) {
         remainder = 0;
         var bdNum = lastRowNum - 1;
@@ -1849,14 +1868,14 @@ function startDivAgain() {
         for( var i = 0; i < bdLength; ++i ) {
             var bdValue = bringDownDigits[bdLength-1-i].value;
             if( bdValue ) { // don't count it unless it's filled in
-                remainder += Number(bdValue)*Math.pow(10,j);
+                remainder += Number(bdValue)*Mat.pow(10,j);
                 ++j;
             }
             //doc.getElementById("statusBox" + x).innerHTML =  "i = " + i + " remainder = " + remainder;
             //x = x + 1;
         }
         for( var i = 0; i < lastRowLength; ++i ) {
-            remainder += Number(lastrow[lastRowLength-1-i].value)*Math.pow(10,j);
+            remainder += Number(lastrow[lastRowLength-1-i].value)*Mat.pow(10,j);
             ++j;
             //doc.getElementById("statusBox" + x).innerHTML =  "i = " + i + " remainder = " + remainder + " dispRmdr = " + dispRmdr;
             //x = x + 1;
@@ -1872,8 +1891,8 @@ function startDivAgain() {
             var quotient = Number(doc.getElementById("quotient").value);
             var quotDp = Number(doc.getElementById("quotDp").value);
             var ndiscard = quotDp - 1 - barlength;
-            var decimalpart = quotient % (Math.pow(10, quotDp - 1));
-            var minpattern = Math.floor( decimalpart / Math.pow(10, ndiscard) );
+            var decimalpart = quotient % (Mat.pow(10, quotDp - 1));
+            var minpattern = Mat.floor( decimalpart / Mat.pow(10, ndiscard) );
             //doc.getElementById("statusBox" + x).innerHTML = "quotient = " + quotient + " quotDp = " + quotDp + " decimalpart = " + decimalpart + " ndiscard = " + ndiscard + " minpattern = " + minpattern;
             //x = x + 1;
             for( var i = 0; i < barlength; ++i ) {
@@ -1886,7 +1905,7 @@ function startDivAgain() {
                 if( !qDigit || Number(qDigit) !== expDigit ) {
                     allCorrect = false;
                 }
-                minpattern = Math.floor( minpattern / 10 );
+                minpattern = Mat.floor( minpattern / 10 );
             }
             var barColor = getComputedStyle(overbar).backgroundColor;
             //doc.getElementById("statusBox" + x).innerHTML = "barColor = " + barColor + " allCorrect = " + allCorrect;
@@ -1930,7 +1949,7 @@ function startDivAgain() {
         doc.getElementById("corrPerHr").value = 0;
     } else {
         doc.getElementById("corrPerHr").value =
-                Math.floor(3600000 * Number(doc.getElementById("numWoErr").value) / timediff);
+                Mat.floor(3600000 * Number(doc.getElementById("numWoErr").value) / timediff);
     }
     doc.getElementById('th-id2').submit();
     if (doc.getElementById("msg").value === "") {
@@ -2104,7 +2123,8 @@ function roundOff( ev ) {
                 dispRnd.innerHTML = "Enter rounded value";
                 evTarg.style.setProperty("text-decoration", "line-through");
                 var all = doc.getElementById("th-id2");
-                for( var j = 0; j < all.length; ++j ) {
+                var length = all.length;
+                for( var j = 0; j < length; ++j ) {
                     if( all.elements[j].isEqualNode(evTarg) ) {  
                         var nextbox = j - 1;
                         if( Number(evTarg.value) >= 5 ) {
@@ -2114,7 +2134,6 @@ function roundOff( ev ) {
                         }
                         //doc.getElementById("statusBox" + x).innerHTML = "evTarg = " + evTarg.getAttribute("id") + " j = " + j + " nextbox = " + nextbox;
                         //x = x + 1;
-                        whatbox = nextbox;
                         whatBoxBx.value = nextbox;
                     }
                 }
@@ -2138,7 +2157,7 @@ function roundOff( ev ) {
             }
         }
     }
-    //doc.getElementById("statusBox" + x).innerHTML = "in roundOff about to setfocus whatbox = " + doc.getElementById("whatbox").value;
+    //doc.getElementById("statusBox" + x).innerHTML = "in roundOff about to setfocus nextbox = " + doc.getElementById("whatbox").value;
     setFocus();
 }
 function checkRoundOff( ev ) {
@@ -2151,7 +2170,8 @@ function checkRoundOff( ev ) {
     var idlen = id.length;
     var col = Number((id.substring(2,idlen)));
     var quotient = Number(doc.getElementById("quotient").value);
-    var roundedQuot = Math.floor((quotient + 5*Math.pow(10,col-1))/Math.pow(10,col));
+    var Mat = Math;
+    var roundedQuot = Mat.floor((quotient + 5*Mat.pow(10,col-1))/Mat.pow(10,col));
     var quotDigs = doc.getElementsByName("quotdigs");
     var qLength = quotDigs.length;
     var enteredQuot = 0;
@@ -2170,7 +2190,7 @@ function checkRoundOff( ev ) {
         ansBx.style.color = "black";
         var dispRnd = doc.getElementById("dispRnd");
         
-        var nextbox = whatbox;
+        var nextbox = Number(whatBoxBx.value);
         var whatPlace = Number(doc.getElementById("whatPlace").value) + 1;
         if( col === whatPlace ) { // only one place to round
             if( dispRnd ) {
@@ -2178,7 +2198,8 @@ function checkRoundOff( ev ) {
             }
             // push whatbox outside the table
             var all = doc.getElementById("th-id2");
-            for( var i = 0; i < all.length; ++i ) {
+            var length = all.length;
+            for( var i = 0; i < length; ++i ) {
                 if( all.elements[i].isEqualNode(whatBoxBx) ) {
                     nextbox = i;
                 }
@@ -2186,10 +2207,10 @@ function checkRoundOff( ev ) {
         } else {
             nextbox = nextbox + 1;         
         }
-        whatbox = nextbox;
+        //whatbox = nextbox;
         whatBoxBx.value = nextbox;
     } else {
-        var entireNum = Math.floor((quotient + 5*Math.pow(10,col-2))/Math.pow(10,col-1));
+        var entireNum = Mat.floor((quotient + 5*Mat.pow(10,col-2))/Mat.pow(10,col-1));
         errBx.innerHTML = entireNum + " does not round to " + enteredQuot;
         upDateErrCount();
         //doc.getElementById("statusBox" + x).innerHTML = "in checkROundOff enteredQuot = " + enteredQuot + " != roundedQuot = " + roundedQuot;
