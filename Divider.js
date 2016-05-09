@@ -165,7 +165,7 @@ function enableBar() {
 function checkRemainder(col, expectedRemainder) {
     var doc = document;
     //for( var j = 0; j < 18; j++ ) {
-    //    doc.getElementById("statusBox" + j).innerHTML = "";
+        //doc.getElementById("statusBox" + j).innerHTML = "";
     //}
     //var x = 0;
     var Num = Number;
@@ -236,7 +236,7 @@ function showQuotDigs( ev ) {
     if( id ) {
         var doc = document;
         //for( var j = 0; j < 18; j++ ) {
-        //    doc.getElementById("statusBox" + j).innerHTML = "";
+            //doc.getElementById("statusBox" + j).innerHTML = "";
         //}
         //var x = 0;
         //var errBx = doc.getElementById("msg");
@@ -1658,10 +1658,10 @@ function checkNewDivVal(col, sbx) {
 function promptDivBorrow( ev) {
     ev = ev || window.event;
     var doc = document;
-    for (var j = 0; j < 18; j++) {
-        doc.getElementById("statusBox" + j).innerHTML = "";
-    }
-    var x = 0;
+    //for (var j = 0; j < 18; j++) {
+        //doc.getElementById("statusBox" + j).innerHTML = "";
+    //}
+    //var x = 0;
     var evTarg = ev.target;
     var id = evTarg.getAttribute("id");
     if( id ) {
@@ -2111,49 +2111,63 @@ function roundOff( ev ) {
     ev = ev || window.event;
     var evTarg = ev.target;
     var doc = document;
-
+    //for (var j = 0; j < 30; j++) {
+        //doc.getElementById("statusBox" + j).innerHTML = "";
+    //}
+    //var x = 0;
     var Num = Number;
     var quotdigs = doc.getElementsByName("quotdigs");
     var quotLength = quotdigs.length;
     var startnow = false;
     var whatPlace = Num(doc.getElementById("whatPlace").value);
+    var quotDp = Number(doc.getElementById("quotDp").value);
     //var errBx = doc.getElementById("msg");
     for( var i = 0; i < quotLength; ++i ) {
-        if( !startnow && quotdigs[i].isEqualNode(evTarg ) ) {
-            var dispRnd = doc.getElementById("dispRnd");
-            var clickedPlace = quotLength - 1 - i;
-            if( clickedPlace === whatPlace ) {
-                startnow = true;
-                errBx.innerHTML = "";
-                dispRnd.style.color = "red";
-                dispRnd.innerHTML = "Enter rounded value";
-                evTarg.style.setProperty("text-decoration", "line-through");
-                var all = doc.getElementById("th-id2");
-                var length = all.length;
-                for( var j = 0; j < length; ++j ) {
-                    if( all.elements[j].isEqualNode(evTarg) ) {  
-                        var nextbox = j - 1;
-                        if( Num(evTarg.value) >= 5 ) {
-                            while( all.elements[nextbox].value === "9") {
-                                --nextbox;
-                            }
-                        }
-                        //doc.getElementById("statusBox" + x).innerHTML = "evTarg = " + evTarg.getAttribute("id") + " j = " + j + " nextbox = " + nextbox;
+        if( !startnow ) {
+            if( quotdigs[i].isEqualNode(evTarg ) ) {
+                var dispRnd = doc.getElementById("dispRnd");
+                var clickedPlace = quotLength - 1 - i;
+                if( clickedPlace === whatPlace ) {
+                    errBx.innerHTML = "";
+                    dispRnd.style.color = "red";
+                    dispRnd.innerHTML = "Enter rounded value";
+                    if( whatPlace < quotDp - 1 ) {
+                        evTarg.style.setProperty("text-decoration", "line-through");
+                        startnow = true;
+                        //doc.getElementById("statusBox" + x).innerHTML = "whatPlace = " + whatPlace +" quotDp = " + quotDp;
                         //x = x + 1;
-                        whatBoxBx.value = nextbox;
                     }
+                    var all = doc.getElementById("th-id2");
+                    var length = all.length;
+                    for( var j = 0; j < length; ++j ) { 
+                        if( all.elements[j].isEqualNode(evTarg) ) {  
+                            var nextbox = j - 1;
+                            if( Num(evTarg.value) >= 5 ) {
+                                while( all.elements[nextbox].value === "9") {
+                                    --nextbox;
+                                }
+                            }
+                            //doc.getElementById("statusBox" + x).innerHTML = "evTarg = " + evTarg.getAttribute("id") + " j = " + j + " nextbox = " + nextbox;
+                            //x = x + 1;
+                            whatBoxBx.value = nextbox;
+                        }
+                    }
+                } else {
+                    var rndMsg = dispRnd.innerHTML;
+                    var length = rndMsg.length;
+                    rndMsg = rndMsg.substring(19, length); // strip out the first part
+                    rndMsg = rndMsg.match(/[^,]*/); // keep everything up to the first comma
+                    errBx.innerHTML = rndMsg + " is not there, finish the calculations if needed and click somewhere else";
+                    //errBx.innerHTML = "whatPlace = " + whatPlace + " clickedPlace = " + clickedPlace;
+                    upDateErrCount();
+                    break;
                 }
-            } else {
-                var rndMsg = dispRnd.innerHTML;
-                var length = rndMsg.length;
-                rndMsg = rndMsg.substring(19, length); // strip out the first part
-                rndMsg = rndMsg.match(/[^,]*/); // keep everything up to the first comma
-                errBx.innerHTML = rndMsg + " is not there, finish the calculations if needed and click somewhere else";
-                //errBx.innerHTML = "whatPlace = " + whatPlace + " clickedPlace = " + clickedPlace;
-                upDateErrCount();
-                break;
+            } else if( whatPlace >= quotDp - 1 && quotLength - 1 - i < quotDp  - 1 ) {
+                startnow = true;
+                //doc.getElementById("statusBox" + x).innerHTML = "start at decimal point whatPlace = " + whatPlace +" quotDp = " + quotDp + " quotLength = " + quotLength;
+                //x = x + 1;
             }
-        } 
+        }
         if( startnow ) {
             var hasContent = quotdigs[i].value;
             if( hasContent ) {
@@ -2170,6 +2184,10 @@ function checkRoundOff( ev ) {
     ev = ev || window.event;
     var ansBx = ev.target;
     var doc = document;
+    //for (var j = 0; j < 30; j++) {
+        //doc.getElementById("statusBox" + j).innerHTML = "";
+    //}
+    //var x = 0;
     var Num = Number;
     //var errBx = doc.getElementById("msg")
     var id = ansBx.getAttribute("id");
@@ -2178,8 +2196,26 @@ function checkRoundOff( ev ) {
     var quotient = Num(doc.getElementById("quotient").value);
     var Mat = Math;
     var roundedQuot = Mat.floor((quotient + 5*Mat.pow(10,col-1))/Mat.pow(10,col));
+
+    var header = doc.getElementById("F1")                    
+    var significant = header.innerHTML;
+    //var nDig = Num(significant.match(/[0-9]*/)); // parse out the number
+    significant = significant.match(/significant/);
+    var whatPlace = Num(doc.getElementById("whatPlace").value) + 1;
     var quotDigs = doc.getElementsByName("quotdigs");
     var qLength = quotDigs.length;
+    if( significant && whatPlace > col ) {
+        roundedQuot = Mat.floor((quotient + 5*Mat.pow(10,whatPlace-1))/Mat.pow(10,whatPlace));
+        //document.getElementById("statusBox" + x).innerHTML = "roundedQuot = " + roundedQuot;
+        //x = x + 1;
+        var j = whatPlace - 1;
+        while( j >= col ) {
+            roundedQuot = 10*roundedQuot;
+            //document.getElementById("statusBox" + x).innerHTML = "j = " + j + " roundedQuot = " + roundedQuot;
+            //x = x + 1;
+            j = j - 1;
+        }
+    }
     var enteredQuot = 0;
     //doc.getElementById("statusBox" + x).innerHTML = "quotDigs.length = " + qLength + " quotDigs[0] = " + quotDigs[0].value;
     //x = x + 1;
@@ -2197,8 +2233,13 @@ function checkRoundOff( ev ) {
         var dispRnd = doc.getElementById("dispRnd");
         
         var nextbox = Num(whatBoxBx.value);
-        var whatPlace = Num(doc.getElementById("whatPlace").value) + 1;
-        if( col === whatPlace ) { // only one place to round
+        
+        var quotDp = Num(doc.getElementById("quotDp").value);
+        //var actQuotDigs = 1 + Mat.log10(quotient);
+        //doc.getElementById("statusBox" + x).innerHTML = "col = " + col + " whatPlace = " + whatPlace + " quotDp = " + quotDp;
+        if( col > whatPlace ||  col >= quotDp ) {         
+            nextbox = nextbox + 1;
+        } else { // only one place to round
             if( dispRnd ) {
                 dispRnd.style.color = getComputedStyle(dispRnd).backgroundColor;
             }
@@ -2210,14 +2251,11 @@ function checkRoundOff( ev ) {
                     nextbox = i;
                 }
             }
-        } else {
-            nextbox = nextbox + 1;         
         }
-        //whatbox = nextbox;
         whatBoxBx.value = nextbox;
     } else {
-        var entireNum = Mat.floor((quotient + 5*Mat.pow(10,col-2))/Mat.pow(10,col-1));
-        errBx.innerHTML = entireNum + " does not round to " + enteredQuot;
+        var entireNum = Mat.floor(quotient/Mat.pow(10,col-1));
+        errBx.innerHTML = entireNum + " does not round to " + enteredQuot + "0, should be " + roundedQuot;
         upDateErrCount();
         //doc.getElementById("statusBox" + x).innerHTML = "in checkROundOff enteredQuot = " + enteredQuot + " != roundedQuot = " + roundedQuot;
         //x = x + 1;
