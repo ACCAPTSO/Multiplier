@@ -491,9 +491,18 @@
         int dvMax = (int)(Math.pow(10, dvMaxDg)) - 2;
         dividnd = 2 + (int)(dvMax*Math.random());    
         /* dbfxt
-        divisor = 25;
+        divisor = 49;
+        dvsrDigs = 2;
+        dvsrDp = 1;
+        dividnd = 975393431;
+        dividnd = 4899951;
+        divisor = 59;
         dvsrDp = 2;
-        dividnd = 224975;
+        dividnd = 828490197;
+        divisor = 447;
+        dvsrDigs = 3;
+        dvsrDp = 1;
+        dividnd = 235336;
         /* dbfxt */
         double dquot = (double)dividnd / (double)divisor;
         quotient = (long)dquot;
@@ -505,7 +514,9 @@
         }
 
         /* dbfxt
-        quotDp = 3;
+        quotDp = 6;
+        quotDp = 2;
+        quotDp = 2;
         /* dbfxt */
         System.out.println("before while loop divisor = " + divisor + " dvsrDp = " + dvsrDp + " dividnd = " + dividnd + " quotDp = " + quotDp );
         // find worst case Dp and Digs, find width of problem and adjust up or down
@@ -574,13 +585,27 @@
             // and only selected and visible when there's a round off fixit
         }
         boolean sigDig = Math.random() > 0.5;
+        /* dbfxt
+
+        sigDig = false;
+                sigDig = true;
+        /* dbfxt */
         int n = 0;
         if( sigDig ) {
             n = 1 + (int)((quotDigs-1)*Math.random());
+            /* dbfxt
+            n = 1 + (int)((4)*Math.random());
+            n = 6;
+            n = 2;
+            n = 5;
+            /* dbfxt */
             header = " significant digit";
             whatPlace = quotDigs - 1 - n;
         } else {        
             n = (int)((quotDp-1)*Math.random());
+            /* dbfxt 
+            n = 2;
+            /* dbfxt */
             header = " decimal place";
             whatPlace = quotDp - 2 - n;
         }
@@ -694,16 +719,25 @@
     int bqspan = 2*dvsrDigs + 1;
     int cqspan = 2*dvdDigs + 1;
     
-    
     int [] numBringDn = new int[quotDigs];
     int [] actBringDn = new int[quotDigs];
     tmplong = quotient;
+    boolean needsXtraDig = false;
     for( int idx = 0; idx < quotDigs; ++idx ) {
         qt[idx] = (int)(tmplong % 10);
         tmplong = tmplong / 10;
         
         numBringDn[idx] = 0;
         actBringDn[idx] = 0;
+        
+        if( rndOffCk && idx >= whatPlace ) {
+            if( qt[idx] >= 5 ) {
+                needsXtraDig = true;
+            } else {
+                needsXtraDig = false;
+            }
+        }
+        System.out.println("rndOffCk = " + rndOffCk + " idx = " + idx + " whatPlace = " + whatPlace + " qt = " + qt[idx] + " needsXtraDig = " + needsXtraDig );
     }
     int pattLength = 0;
     if( recDpCk ) {
@@ -1045,6 +1079,9 @@
     }
     
     whatBx[0] = nmcars;
+    if( needsXtraDig ) {
+        whatBx[0] += 1;
+    }
     
     String browType = "hidden";    
     if( showBrowsCk ) {
@@ -1131,7 +1168,15 @@
         int col = spacesb4quot + quotDigs - 1 - idx;
         tid = "td" + col;
         String tic = "tc" + col;
-        if( idx < spacesb4quot || spacesb4quot + quotDigs + rmdrDigs < idx ) { %>
+        String xid = "xt" + col;
+        if( needsXtraDig && idx == spacesb4quot - 1 ) { %>
+            <td class="t1" id="<%=tid%>" onclick="<%=whatFun%>" name="notthestartdig">
+                <input type="<%=cmtype%>" class="a1" size="1"
+                    id="<%=xid%>" name="quotdigs"
+                    onkeyup="checkRoundOff( event )" >
+            </td>
+
+<%      } else if( idx < spacesb4quot || spacesb4quot + quotDigs + rmdrDigs < idx ) { %>
                 <td class="t1" id="<%=tid%>" onclick="<%=whatFun%>" name="notthestartdig"></td>
 <%      } else if( spacesb4quot <= idx && idx < spacesb4quot + quotDigs ) {
             String qid = "qt" + col; %>
