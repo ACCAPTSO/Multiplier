@@ -490,7 +490,7 @@
         int dvMaxDg = 1 + (int)((SZ2_MX - dvsrDigs)*Math.random());
         int dvMax = (int)(Math.pow(10, dvMaxDg)) - 2;
         dividnd = 2 + (int)(dvMax*Math.random());    
-        /* dbfxt
+        /* dbfxt 
         divisor = 49;
         dvsrDigs = 2;
         dvsrDp = 1;
@@ -503,6 +503,10 @@
         dvsrDigs = 3;
         dvsrDp = 1;
         dividnd = 235336;
+        divisor = 956;
+        dvsrDigs = 3;
+        dividnd = 5727405;
+        dvsrDp = 2;
         /* dbfxt */
         double dquot = (double)dividnd / (double)divisor;
         quotient = (long)dquot;
@@ -513,10 +517,11 @@
             quotDp = 1 + (int)(1 + quotDigs*Math.random()); // don't allow it to be too big
         }
 
-        /* dbfxt
+        /* dbfxt 
         quotDp = 6;
         quotDp = 2;
         quotDp = 2;
+        quotDp = 5;
         /* dbfxt */
         System.out.println("before while loop divisor = " + divisor + " dvsrDp = " + dvsrDp + " dividnd = " + dividnd + " quotDp = " + quotDp );
         // find worst case Dp and Digs, find width of problem and adjust up or down
@@ -585,10 +590,10 @@
             // and only selected and visible when there's a round off fixit
         }
         boolean sigDig = Math.random() > 0.5;
-        /* dbfxt
-
-        sigDig = false;
+        /* dbfxt 
                 sigDig = true;
+        sigDig = false;
+
         /* dbfxt */
         int n = 0;
         if( sigDig ) {
@@ -603,7 +608,7 @@
             whatPlace = quotDigs - 1 - n;
         } else {        
             n = (int)((quotDp-1)*Math.random());
-            /* dbfxt 
+            /* dbfxt
             n = 2;
             /* dbfxt */
             header = " decimal place";
@@ -1288,28 +1293,49 @@
             <td class="t1" ></td>
 <%      }
         if( dvsrDigs - idx == dvsrDp  && (exDpCk || recDpCk || rndOffCk) ) { 
-            int jdx = idx; // - 1; 
+            int jdx = idx;
             // fp = black, dp = invisible, ep = red
-            String dclass = dsdpsettled ? dvsrDp > 1 ? "fp" : "dp" : "ep"; %>
+            String dclass = dvsrDp > 1 ? "fp" : "dp"; 
+            String whatFun = "chooseDivThis( event, " + jdx + ", 'dvsrDp' )";
+            if( dsdpsettled ) {
+                whatFun = "null";
+            } else {
+                dclass = "ep";
+            } %>
             <td class="t2">
-                <span name="dvsrDp" onclick="chooseDivThis( event, <%=jdx%>, 'dvsrDp' )" class="<%=dclass%>" >.</span>
+                <span name="dvsrDp" onclick="<%=whatFun%>" class="<%=dclass%>" >.</span>
             </td>
 <%      } else if( dvdDigs - (idx - dvsrDigs - 1) == dvdDp  && (exDpCk || recDpCk || rndOffCk) ) { 
             int jdx = idx - dvsrDigs - 1; 
-            String dclass = dsdpsettled ? dvdDp > 1? "fp" : "dp" : "ep"; %>
+            //String dclass = dsdpsettled ? dvdDp > 1? "fp" : "dp" : "ep"; 
+            String dclass = dvdDp > 1 ? "fp" : "dp"; 
+            String whatFun = "chooseDivThis( event, " + jdx + ", 'dvdDp' )";
+            if( dsdpsettled ) {
+                whatFun = "null";
+            } else {
+                dclass = "ep";
+            } %>
             <td class="t2">
-                <span name="dvdDp" onclick="chooseDivThis( event, <%=jdx%>, 'dvdDp' )" class="<%=dclass%>" >.</span>
+                <span name="dvdDp" onclick="<%=whatFun%>" class="<%=dclass%>" >.</span>
             </td>
 <%      } else if( 0 <= idx && idx < dvsrDigs ) { 
-            int jdx = idx; // - 1; %>
+            int jdx = idx;
+            String whatFun = "chooseDivThis( event, " + jdx + ", 'dvsrDp' )"; 
+            if( dsdpsettled ) {
+                whatFun = "null";
+            } %>
             <td class="t2">
-                <span name="dvsrDp" onclick="chooseDivThis( event, <%=jdx%>, 'dvsrDp' )" class="dp" >_</span>
+                <span name="dvsrDp" onclick="<%=whatFun%>" class="dp" >_</span>
             </td>
  
 <%      } else if( dvsrDigs < idx && idx < dvsrDigs + dvdDigs + 1 ) { 
-            int jdx = idx - dvsrDigs - 1; %>
+            int jdx = idx - dvsrDigs - 1; 
+            String whatFun = "chooseDivThis( event, " + jdx + ", 'dvdDp' )";
+            if( dsdpsettled ) {
+                whatFun = "null";
+            } %>
             <td class="t2">
-                <span name="dvdDp" onclick="chooseDivThis( event, <%=jdx%>, 'dvdDp' )" class="dp" >_</span>
+                <span name="dvdDp" onclick="<%=whatFun%>" class="dp" >_</span>
             </td>
 <%      } else { %>
             <td class="t2"></td>

@@ -231,8 +231,12 @@ function checkRemainder(col, expectedRemainder) {
 }
 function showQuotDigs( ev ) {
     ev = ev || window.event;
-    ev.stopPropagation();
-    var id = ev.target.getAttribute("id");
+    //ev.stopPropagation();
+    var evTarg = ev.target;
+    if( evTarg.toString().match( /HTMLSpanElement/ ) ) {
+        evTarg = evTarg.offsetParent;
+    }
+    var id = evTarg.getAttribute("id");
     if( id ) {
         var doc = document;
         //for( var j = 0; j < 18; j++ ) {
@@ -779,13 +783,56 @@ function divide(immFeedBkCk, col, qtDig) {
                 ansBx.onkeyup = checkRoundOff;
             }
             var isRemainder = doc.getElementById("r0");
-            
-            if (col == 0 && isRemainder) {
+            // find the last opX_1 in the page
+            var nextrow = doc.getElementsByName("op" + 0 + "_1");
+            var lastrow = null;
+            var lastRowNum = 0;
+            for (var j = 1; ; ++j) {
+                var lastrow = nextrow;
+                nextrow = doc.getElementsByName("op" + j + "_1");
+                lastRowNum = j;
+                if (nextrow.length === 0) {
+                    break;
+                }
+            }
+            var lastRowLength = lastrow.length;
+            var lastRowValue = lastrow[lastRowLength - 1].value
+            //doc.getElementById("statusBox" + x).innerHTML =  "lastRowNum = " + lastRowNum + " lastRowLength = " + lastRowLength + " last row least sig dig = " + lastRowValue;
+            //x = x + 1;
+            var remainder = Num.MAX_SAFE_INTEGER;
+            if( lastRowValue ) {
+                remainder = 0;
+                var bdNum = lastRowNum - 1;
+                var bringDownDigits = doc.getElementsByName("bd" + bdNum);
+                var bdLength = bringDownDigits.length;
+                //doc.getElementById("statusBox" + x).innerHTML =  "bringDownDigits = " + bringDownDigits + " bdLength = " + bdLength;
+                //x = x + 1;
+                var j = 0;
+                for( var i = 0; i < bdLength; ++i ) {
+                    var bdValue = bringDownDigits[bdLength-1-i].value;
+                    if( bdValue ) { // don't count it unless it's filled in 
+                        remainder += Num(bdValue)*Mat.pow(10,j);
+                        ++j;
+                    }
+                    //doc.getElementById("statusBox" + x).innerHTML =  " bringdown i = " + i + " remainder = " + remainder;
+                    //x = x + 1;
+                }
+                //doc.getElementById("statusBox" + x).innerHTML =  "between loops lastRowNum = " + lastRowNum + " lastRowLength = " + lastRowLength + " last row least sig dig = " + lastRowValue;
+                //x = x + 1;
+                for( var i = 0; i < lastRowLength; ++i ) {
+                    remainder += Num(lastrow[lastRowLength-1-i].value)*Mat.pow(10,j);
+                    ++j;
+                    //doc.getElementById("statusBox" + x).innerHTML =  "diff i = " + i + " remainder = " + remainder;
+                    //x = x + 1;
+                }
+            }
+            if (col == 0 && isRemainder) { 
+            //if (restQAreZero && remainder !== 0) {
                 doc.getElementById("dispR").style.color = "black";
                 nextbox = nextbox + 1;
-
             // whatRow === 0 => 0.x
-            } else if ((restQAreZero && !isRemainder) || whatRow === 0) {     
+            //} else if ((restQAreZero && !isRemainder) || whatRow === 0) { 
+            } else if ((restQAreZero && remainder === 0) || whatRow === 0) { 
                 ansBx.style.color = "black";
                 if (col > 0) {
                     // skip multiplicative carries
@@ -804,7 +851,6 @@ function divide(immFeedBkCk, col, qtDig) {
                         Num(doc.getElementById("lastBoxOfCurrRow").value) +
                             offTheTable;
                 }
-
             } else {
                 nextbox = Num(doc.getElementById("lastBoxOfCurrRow").value);
                 //doc.getElementById("statusBox" + x).innerHTML = "last Box Of Current row nextbox = " + nextbox;
@@ -879,12 +925,6 @@ function divide(immFeedBkCk, col, qtDig) {
                 nextbox = doc.getElementsByClassName("c2").length - 1;
                 //doc.getElementById("statusBox" + x).innerHTML = "multiplicative carries nextbox = " + nextbox;
                 //x = x + 1;
-                // skip extra box if there is one
-                //if( doc.getElementById("xt" + mostSigQdig) ) {
-                    //nextbox += 1;
-                    //doc.getElementById("statusBox" + x).innerHTML = "extra digit nextbox = " + nextbox;
-                    //x = x + 1;
-                //}
                 // skip quotient boxes
                 nextbox += qLength;
                 //doc.getElementById("statusBox" + x).innerHTML = "skip quotdigs and mcarries nextbox = " + nextbox;
@@ -927,6 +967,7 @@ function divide(immFeedBkCk, col, qtDig) {
 }
 
 function multiply( col, whatRow ) {
+    // if msd of divisor is 0, don't go to mcarry box fixit
     var doc = document;
     //for (var j = 0; j < 30; j++) {
         //doc.getElementById("statusBox" + j).innerHTML = "";
@@ -1468,11 +1509,6 @@ function subtract(col, sbx) {
                 }
             } else if (ans === 0 && restAreZero) {// nextbox is quotient box
                 nextbox = doc.getElementsByClassName("c2").length + quotDigs - lastqcol;
-                // skip extra box if there is one
-                //var mostSigQdig = quotDigs - 1;
-                //if( doc.getElementById("xt" + mostSigQdig) ) {
-                //    nextbox += 1;
-                //}
             } else { // nextbox is bringdown box
 
                 // make bringdown box visible
@@ -2025,15 +2061,21 @@ function chooseDivThis( event, which_one, which_type) {
         // expected value of decimal point
         var totDec = Num(doc.getElementById(which_type).value);
         for (var i = 0; i < nbtns; ++i) {
-            var att = "andsp" + i;
+            //var att = "andsp" + i;
             //doc.getElementById("statusBox" + x).innerHTML = "i = " + i + " which_one = " + which_one + " nbts = " + nbtns;
             //x = x + 1;
             if (i === which_one) {
                 btns[i].childNodes[0].nodeValue = ".";
-                btns[i].setAttribute(att, '.');
+                //btns[i].setAttribute(att, '.');
                 var markedDec = nbtns - i; // reverse the index
                 if (totDec === markedDec) {
                     btns[i].style.color = "black";
+                    // don't let user muck it up again
+                    for( var j = 0; j < nbtns; ++j ) {
+                        btns[j].onclick = null;
+                    }
+                        //doc.getElementById("statusBox" + x).innerHTML = "which_type = " + which_type + " btns[0].onclick = " + btns[0].onclick;
+                        //x = x + 1;
                     var markwhat = which_type.substring(0, 3);
                     var markBx = doc.getElementById(markwhat);
                     if (markBx) {
@@ -2055,7 +2097,7 @@ function chooseDivThis( event, which_one, which_type) {
                     // turn it back off if it's already on
                     if (btns[i].style.color == "red") {
                         btns[i].childNodes[0].nodeValue = "_";
-                        btns[i].setAttribute(att, '');
+                        //btns[i].setAttribute(att, '');
                         // hide "_" with background color
                         btns[i].style.color = btns[i].style.backgroundColor;
                     } else {
@@ -2068,7 +2110,7 @@ function chooseDivThis( event, which_one, which_type) {
                     btns[i].style.color = "#C6BABA"; // but don't make it disappear
                 } else {
                     btns[i].childNodes[0].nodeValue = "_";
-                    btns[i].setAttribute(att, '');
+                    //btns[i].setAttribute(att, '');
                     btns[i].style.color = "#FAF3E4"; // hide "_" with background color
                 }
             }
@@ -2093,6 +2135,8 @@ function chooseDivThis( event, which_one, which_type) {
             if (notQuotDigits[i].nodeType === 1) {
                 //notQuotDigits[i].addEventListener("click", sayNotThere, true);
                 notQuotDigits[i].onclick = showQuotDigs;
+                //doc.getElementById("statusBox" + x).innerHTML = "added onclick to " + notQuotDigits[i].getAttribute("id"); //  + " = " + notQuotDigits[i].onclick;
+                //x = x + 1;
             }
         }      
         var dvdDigs = doc.getElementsByName("dvddigs");
@@ -2130,6 +2174,13 @@ function chooseDivThis( event, which_one, which_type) {
         }
         msgBx.innerHTML = "Click where first quotient digit should be";
     }
+}
+function test( ev ) {
+    var evTarg = ev.target;
+    if( evTarg.toString().match( /HTMLSpanElement/ ) ) {
+        evTarg = evTarg.offsetParent;
+    }
+    alert("you clicked " + evTarg + " with id " + evTarg.getAttribute("id"));
 }
 function roundOff( ev ) {
     ev = ev || window.event;
@@ -2171,8 +2222,8 @@ function roundOff( ev ) {
                                     --nextbox;
                                 }
                                 // if rounding goes into new digit, either 0 or blank
-                                // sometimes crosses off a legitimate 0 fixit find out if it is MSD
                                 if( Number(all.elements[nextbox].value) === 0 ) {
+                                    // find out if it is most dignificant digit of quotient
                                     if( all.ellements[nextbox].isEqualNode(quotdigs[0]) ) {
                                         var newPlace = whatPlace + 1;
                                         if( newPlace < quotDp - 1 ) {
