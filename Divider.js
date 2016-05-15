@@ -1146,13 +1146,15 @@ function multiply( col, whatRow ) {
                 var whatBorCaBxs = 'boca' + whatRow;
                 var visibleBorCaBxs = doc.getElementsByName(whatBorCaBxs);
                 var isCarry = false;
+                var dvdBx = null;
                 var visibleBorCaLength = visibleBorCaBxs.length;
                 for (var i = 0; i < visibleBorCaLength; ++i) {
                     var hiddenCaBx = null;
                     var whatCaBx = "hca" + i + "_" + whatRow;
                     if( whatRow === 0 ) {
                         var j = i + qdx;
-                        whatCaBx = "hca" + j + "_" + whatRow;
+                        whatCaBx = "hca" + j + "_0";
+                        dvdBx = doc.getElementById("dd" + j + "_0");
                     }
                     hiddenCaBx = doc.getElementById( whatCaBx );
                     //doc.getElementById("statusBox" + x).innerHTML = "whatCaBx = " + whatCaBx + " hiddenCaBx= " + hiddenCaBx;
@@ -1160,6 +1162,9 @@ function multiply( col, whatRow ) {
 
                     if (hiddenCaBx && Num(hiddenCaBx.value) !== 0) {
                         isCarry = true;
+                        if( dvdBx ) {
+                            dvdBx.style.color = "black";
+                        }
                     }
                     //if( hiddenCaBx ) {
                         //doc.getElementById("statusBox" + x).innerHTML = "hiddenCaBx.value = " + hiddenCaBx.value + " isCarry = " + isCarry;
@@ -2030,8 +2035,6 @@ function chooseDivThis( event, which_one, which_type) {
    
     var Num = Number;
    
-    // if you muck up the decimal points when they were good to begin with, you may not be able to correct it after 
-    // Click where the first quotient digit should be is displayed fixit
     //doc.getElementById("statusBox" + x).innerHTML = "in chooseDivThis which_one = " + which_one + " which_type = " + which_type;
     //x = x + 1;
     var decsNotSettled = 0;
@@ -2219,12 +2222,12 @@ function roundOff( ev ) {
                             var nextbox = j - 1;
                             if( Num(evTarg.value) >= 5 ) {
                                 while( all.elements[nextbox].value === "9") {
-                                    --nextbox;
+                                    --nextbox;                                       
                                 }
                                 // if rounding goes into new digit, either 0 or blank
                                 if( Number(all.elements[nextbox].value) === 0 ) {
                                     // find out if it is most dignificant digit of quotient
-                                    if( all.ellements[nextbox].isEqualNode(quotdigs[0]) ) {
+                                    if( all.elements[nextbox].isEqualNode(quotdigs[0]) ) {
                                         var newPlace = whatPlace + 1;
                                         if( newPlace < quotDp - 1 ) {
                                             quotdigs[quotLength - 1 - newPlace].style.setProperty("text-decoration", "line-through");
