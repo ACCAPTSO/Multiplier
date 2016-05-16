@@ -435,7 +435,7 @@ function checkMcarry(col, sbx) {
 
 function divide(immFeedBkCk, col, qtDig) {
     var doc = document;
-    //for (var j = 0; j < 30; j++) {
+    // for (var j = 0; j < 30; j++) {
         //doc.getElementById("statusBox" + j).innerHTML = "";
     //}
     //var x = 0;
@@ -912,8 +912,11 @@ function divide(immFeedBkCk, col, qtDig) {
             var allcarries = doc.getElementsByClassName("c2");
             var allcarriesLength = allcarries.length;
             for (var i = 0; i < allcarriesLength; ++i) {
-                if (Num(allcarries[i].name.substring(4, 5)) === carryRow &&
-                        allcarries[i].name.substring(0, 2) === "cm") {
+                var id = allcarries[i].getAttribute("id");
+                //doc.getElementById("statusBox" + x).innerHTML = "carryRow = " + carryRow + " allcarries[" + i + "].id = " + id;
+                //x = x + 1;
+                if (Num(id.substring(4, 5)) === carryRow &&
+                        id.substring(0, 2) === "cm") {
                     allcarries[i].value = "";
                 }
             }
@@ -1103,7 +1106,7 @@ function multiply( col, whatRow ) {
                 //x = x + 1;
             }
             doc.getElementById("currDividend").value = dividend;
-            if (prod > dividend) {
+            if( prod > dividend ) {
                 var lastqtval = prod / Num(doc.getElementById("divisor").value);
                 errBx.innerHTML = prod + " is too big, try a quotient digit value smaller than " + lastqtval;
                 nextbox = Num(doc.getElementById("nextQuotBox").value) - 1;
@@ -1201,9 +1204,10 @@ function multiply( col, whatRow ) {
             // = nextbox;
             //doc.getElementById("statusBox" + x).innerHTML = "in multiply col = " + col + " dvsrdigs.length = " + dvsrLength;
             //x = x + 1;
-            if (col < dvsrLength - 1) {
+            if( col < dvsrLength - 2 ||
+                    ( col === dvsrLength - 2 && Num(dvsrdigs[0].childNodes[0].nodeValue) !== 0 ) ) {
                 var whatCm = "hcm" + col + "_" + dec;
-                //doc.getElementById("statusBox" + x).innerHTML = "in multiply whatCm = " + whatCm ;
+                //doc.getElementById("statusBox" + x).innerHTML = "in multiply whatCm = " + whatCm + " dvsdigs[0] = " + dvsrdigs[0].childNodes[0].nodeValue;
                 //x = x + 1;
                 //var hasCarry = Num(doc.getElementById(whatCm).value) > 0;
                 if (showMcarriesChkd &&
@@ -2020,6 +2024,7 @@ function startDivAgain() {
         doc.getElementById("corrPerHr").value =
                 Mat.floor(3600000 * Num(doc.getElementById("numWoErr").value) / timediff);
     }
+    doc.getElementById("startAgain").value = "yes";
     doc.getElementById('th-id2').submit();
     if (doc.getElementById("msg").value === "") {
         setFocus();

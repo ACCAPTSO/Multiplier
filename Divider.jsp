@@ -507,6 +507,20 @@
         dvsrDigs = 3;
         dividnd = 5727405;
         dvsrDp = 2;
+        divisor = 66;
+        dvsrDigs = 2;
+        dividnd = 2;
+        dvsrDp = 2;
+        divisor = 788;
+        dvsrDigs = 3;
+        dividnd = 4733761;
+        dvsrDp = 2;
+        dvsrDp = 4;
+        dvsrDigs = 4;
+        divisor = 932;
+        dvsrDigs = 3;
+        dividnd = 3;
+        dvsrDp = 3;
         /* dbfxt */
         double dquot = (double)dividnd / (double)divisor;
         quotient = (long)dquot;
@@ -522,6 +536,9 @@
         quotDp = 2;
         quotDp = 2;
         quotDp = 5;
+        quotDp = 1;
+        quotDp = 2;
+        quotDp = 1;
         /* dbfxt */
         System.out.println("before while loop divisor = " + divisor + " dvsrDp = " + dvsrDp + " dividnd = " + dividnd + " quotDp = " + quotDp );
         // find worst case Dp and Digs, find width of problem and adjust up or down
@@ -590,10 +607,9 @@
             // and only selected and visible when there's a round off fixit
         }
         boolean sigDig = Math.random() > 0.5;
-        /* dbfxt 
-                sigDig = true;
+        /* dbfxt
         sigDig = false;
-
+        sigDig = true;
         /* dbfxt */
         int n = 0;
         if( sigDig ) {
@@ -603,13 +619,15 @@
             n = 6;
             n = 2;
             n = 5;
+            n = 6;
+            n = 2;
             /* dbfxt */
             header = " significant digit";
             whatPlace = quotDigs - 1 - n;
         } else {        
             n = (int)((quotDp-1)*Math.random());
             /* dbfxt
-            n = 2;
+            n = 0;
             /* dbfxt */
             header = " decimal place";
             whatPlace = quotDp - 2 - n;
@@ -742,7 +760,7 @@
                 needsXtraDig = false;
             }
         }
-        System.out.println("rndOffCk = " + rndOffCk + " idx = " + idx + " whatPlace = " + whatPlace + " qt = " + qt[idx] + " needsXtraDig = " + needsXtraDig );
+        //System.out.println("rndOffCk = " + rndOffCk + " idx = " + idx + " whatPlace = " + whatPlace + " qt = " + qt[idx] + " needsXtraDig = " + needsXtraDig );
     }
     int pattLength = 0;
     if( recDpCk ) {
@@ -836,26 +854,37 @@
     
     boolean showBrowsCk = false;
     String isShowBrows = "";
-    String helplist[] = request.getParameterValues("showborrows");
-    if( helplist  != null ) {
-        for( int idx = 0; idx < helplist.length; idx++ ) {
-            if( helplist[idx].equals("Show Borrows") ) {
-                showBrowsCk = true;
-                isShowBrows = "checked";
-            }
+
+    boolean showMcarriesCk = true;
+    String isShowMcarries = "checked";
+
+    if( request.getParameter("startAgain") == null ) {
+        //System.out.println("just started");
+        showMcarriesCk = true;
+        isShowMcarries = "checked";
+        showBrowsCk = false;
+        isShowBrows = "";
+    } else {
+        //System.out.println("starting again");
+        String mcarrylist[] = request.getParameterValues("showmcarries");
+        if( mcarrylist  == null ) {
+            showMcarriesCk = false;
+            isShowMcarries = "";
+        } else {
+            showMcarriesCk = true;
+            isShowMcarries = "checked";
+        }
+        String helplist[] = request.getParameterValues("showborrows");
+        if( helplist  == null ) {
+            showBrowsCk = false;
+            isShowBrows = "";
+        } else {
+            showBrowsCk = true;
+            isShowBrows = "checked";
         }
     }
-    boolean showMcarriesCk = false;
-    String isShowMcarries = "";
-    String mcarrylist[] = request.getParameterValues("showmcarries");
-    if( mcarrylist  != null ) {
-        for( int idx = 0; idx < mcarrylist.length; idx++ ) {
-            if( mcarrylist[idx].equals("Show Multiplication Carries") ) {
-                showMcarriesCk = true;
-                isShowMcarries = "checked";
-            }
-        }
-    }
+
+
     int numOps = 2;
     int colspan = 2*(SZ2_MX + 1) + 1;
     //int[][][] op;       // operand's first index is what subtraction   
@@ -1635,7 +1664,7 @@ if( thereAreCarries && showBrowsCk ) { %>
 <table>
 <tr>    
     <td>
-    <button type="reset" value="Reset" onclick="startDivAgain()" >Start again</button>
+    <button type="reset" onclick="startDivAgain()" >Start again</button>
     </td>
     <td></td>
 </tr>
@@ -1732,7 +1761,7 @@ if( thereAreCarries && showBrowsCk ) { %>
 </div>
 
               
-
+<input type="hidden" name="startAgain" id="startAgain" >
 <input type="hidden" id="strtTime" name="strtTimeP" value="<%=strtTime%>" class="shortbox">
 <input type="hidden" id="quotDp" value="<%=expQuotDp%>" class="shortbox">
 <input type="hidden" id="dvsrDp" value="1" class="shortbox">
