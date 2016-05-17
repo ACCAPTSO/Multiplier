@@ -375,7 +375,7 @@ function checkMcarry(col, sbx) {
         if (prevBx) {
             prevBx.style.color = "black";
         }
-        possBx[sbx].style.color = "black";
+        possBx[sbx].style.color = "#b53f25";
         errBx.innerHTML = "";
         nextbox = doc.getElementsByClassName("c2").length;
         //doc.getElementById("statusBox" + x).innerHTML = "skip mcarry boxes nextbox = " + nextbox;
@@ -876,6 +876,7 @@ function divide(immFeedBkCk, col, qtDig) {
                 //x = x + 1;
             }
         } else { // start multiplying
+            ansBx.style.color = "#b53f25";
             // clear out any previous guesses
             var name = 'op' + whatRow + '_0';
             var visibleMrow = doc.getElementsByName(name);
@@ -1066,6 +1067,7 @@ function multiply( col, whatRow ) {
         //x = x + 1;
     }
     if (ans === expAns) {
+        qBx.style.color = "#b53f25";
         var nextbox = Num(whatBoxBx.value);
         if (prevcaBx) {
             if (showMcarriesChkd) {
@@ -1123,6 +1125,7 @@ function multiply( col, whatRow ) {
                     }
                     doc.getElementById("lastBoxOfCurrRow").value = lastBox + 1;
                 }
+                qBx.style.color = "red";
                 for (var i = 0; i < ansLength; ++i) {
                     ansBxs[i].style.color = "red";
                 }
