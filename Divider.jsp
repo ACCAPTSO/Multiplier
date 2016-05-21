@@ -479,7 +479,7 @@
     int leadzeros = 0;
     int spacesb4quot = 0;
     String roundString = "";
-    int whatPlace = 0;
+    int nSigDig = 0;
     String header = "Division Problem";
     
     if( rndOffCk ) {
@@ -496,6 +496,7 @@
         dvsrDp = 1;
         dividnd = 975393431;
         dividnd = 4899951;
+        /* dbfxt 
         divisor = 59;
         dvsrDp = 2;
         dividnd = 828490197;
@@ -521,6 +522,25 @@
         dvsrDigs = 3;
         dividnd = 3;
         dvsrDp = 3;
+        divisor = 977;
+        dvsrDigs = 3;
+        dividnd = 838333;
+        divisor = 621;
+        dvsrDigs = 3;
+        dividnd = 60;
+        dvsrDp = 3;
+        divisor = 6;
+        dvsrDigs = 1;
+        dividnd = 5544064;
+        dvsrDp = 1;
+        divisor = 48;
+        dvsrDigs = 2;
+        dividnd = 468435127;
+        dvsrDp = 1;
+        divisor = 3;
+        dvsrDigs = 1;
+        dvsrDp = 1;
+        dividnd = 659591886;
         /* dbfxt */
         double dquot = (double)dividnd / (double)divisor;
         quotient = (long)dquot;
@@ -539,6 +559,9 @@
         quotDp = 1;
         quotDp = 2;
         quotDp = 1;
+        quotDp = 3;
+        quotDp = 6;
+        quotDp = 5;
         /* dbfxt */
         System.out.println("before while loop divisor = " + divisor + " dvsrDp = " + dvsrDp + " dividnd = " + dividnd + " quotDp = " + quotDp );
         // find worst case Dp and Digs, find width of problem and adjust up or down
@@ -607,9 +630,9 @@
             // and only selected and visible when there's a round off fixit
         }
         boolean sigDig = Math.random() > 0.5;
-        /* dbfxt
-        sigDig = false;
+        /* dbfxt 
         sigDig = true;
+        sigDig = false;
         /* dbfxt */
         int n = 0;
         if( sigDig ) {
@@ -621,16 +644,18 @@
             n = 5;
             n = 6;
             n = 2;
+            n = 3;
+            n = 1;
             /* dbfxt */
             header = " significant digit";
-            whatPlace = quotDigs - 1 - n;
+            nSigDig = quotDigs - 1 - n;
         } else {        
             n = (int)((quotDp-1)*Math.random());
-            /* dbfxt
+            /* dbfxt 
             n = 0;
             /* dbfxt */
             header = " decimal place";
-            whatPlace = quotDp - 2 - n;
+            nSigDig = quotDp - 2 - n;
         }
         quotDigs = whatsBigger;
         int nPlus1 = n + 1;
@@ -745,7 +770,7 @@
     int [] numBringDn = new int[quotDigs];
     int [] actBringDn = new int[quotDigs];
     tmplong = quotient;
-    boolean needsXtraDig = false;
+    boolean needsXtraDig = rndOffCk;
     for( int idx = 0; idx < quotDigs; ++idx ) {
         qt[idx] = (int)(tmplong % 10);
         tmplong = tmplong / 10;
@@ -753,14 +778,12 @@
         numBringDn[idx] = 0;
         actBringDn[idx] = 0;
         
-        if( rndOffCk && idx >= whatPlace ) {
-            if( qt[idx] >= 5 ) {
-                needsXtraDig = true;
-            } else {
+        if( rndOffCk && idx > nSigDig ) {
+            if( qt[idx] < 9 || qt[nSigDig] < 5 ) {
                 needsXtraDig = false;
             }
         }
-        //System.out.println("rndOffCk = " + rndOffCk + " idx = " + idx + " whatPlace = " + whatPlace + " qt = " + qt[idx] + " needsXtraDig = " + needsXtraDig );
+        //System.out.println("rndOffCk = " + rndOffCk + " idx = " + idx + " nSigDig = " + nSigDig + " qt = " + qt[idx] + " needsXtraDig = " + needsXtraDig );
     }
     int pattLength = 0;
     if( recDpCk ) {
@@ -1804,7 +1827,7 @@ if( lastboxdebug ) { %>
 <input type="hidden" id="quotient" value="<%=quotient%>" >
 <input type="hidden" id="nextQuotBox" >
 <input type="hidden" id="noMorQuotDigs" value="false" >
-<input type="hidden" id="whatPlace" value="<%=whatPlace%>" >
+<input type="hidden" id="nSigDig" value="<%=nSigDig%>" >
 <% if( cmdebug ) { %>
     <label>quotBoxIndex</label>
 <% } %>

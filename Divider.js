@@ -6,6 +6,7 @@
 // right side jumps right after last digit entered fixit not with showBorrows checked why is that?
 // how many of the hidden inputs might as well be global javascript variables? fixit
 // blanks for zeros looks wierd whn you're subtracting especially if you're borrowing from it fixit
+//var x = 0;
 var errBx = null;
 var whatBoxBx = null;
 //var whatbox = 0;
@@ -439,6 +440,8 @@ function divide(immFeedBkCk, col, qtDig) {
         //doc.getElementById("statusBox" + j).innerHTML = "";
     //}
     //var x = 0;
+    //doc.getElementById("statusBox" + x).innerHTML = "in divide";
+    //x = x + 1;
     var Num = Number;
     if (col === 0) {
         doc.getElementById("noMorQuotDigs").value = "true";
@@ -1873,12 +1876,21 @@ function zeroDivCounts() {
     var doc = document;
 
     // update problem counts
-    doc.getElementById("numAttmptd").value = -1;
-    doc.getElementById("errs").value = 1;
+    //doc.getElementById("numAttmptd").value = -1;
+    //doc.getElementById("errs").value = 1;
+    doc.getElementById("numAttmptd").value = 0;
+    doc.getElementById("errs").value = 0;
     doc.getElementById("numWoErr").value = 0;
     doc.getElementById("consWoErr").value = 0;
     doc.getElementById("strtTime").value = Number(Date.now());
-    startDivAgain();
+    doc.getElementById("corrPerHr").value = 0;
+    //startDivAgain();
+    doc.getElementById("startAgain").value = "yes";
+    doc.getElementById('th-id2').submit();
+    // what if it's not blank? fixit why would it not be blank?
+    if (doc.getElementById("msg").value === "") {
+        setFocus();
+    }
 }
 // start again button code
 function startDivAgain() {
@@ -1906,19 +1918,10 @@ function startDivAgain() {
     }
     var quotdigs = doc.getElementsByName("quotdigs");
     var qlength = quotdigs.length;
+    var quotDp = Num(doc.getElementById("quotDp").value);
     var difflvl = "not set";
     var allCorrect = true;
-    if (doc.getElementById("Round Off").checked) {
-        difflvl = doc.getElementById("Round Off").value;
-        allCorrect = false;
-        for( var i = 0; i < qlength; ++i ) {
-            if( quotdigs[i].style.getPropertyValue("text-decoration") === "line-through") {
-                allCorrect = true;
-                //alert("line through detected");
-                break;
-            }
-        }
-    }
+    var Mat = Math;
     var barDrawn = false;
     var dispRmdr = 0;
     if (doc.getElementById("Remainders").checked) {
@@ -1926,13 +1929,13 @@ function startDivAgain() {
         var rmdrBoxes = doc.getElementsByName("rmdr");
         var rmdrLength = rmdrBoxes.length;
         for( var i = 0; i < rmdrLength; ++i ) {
-            dispRmdr += Num(rmdrBoxes[rmdrLength-1-i].value)*Math.pow(10,i);
+            dispRmdr += Num(rmdrBoxes[rmdrLength-1-i].value)*Mat.pow(10,i);
         }
     }
     var lastRowLength = lastrow.length;
     var lastRowValue = lastrow[lastRowLength - 1].value
     var remainder = Num.MAX_SAFE_INTEGER;
-    var Mat = Math;
+    
     if( lastRowValue ) {
         remainder = 0;
         var bdNum = lastRowNum - 1;
@@ -1958,14 +1961,13 @@ function startDivAgain() {
         }
     }
 
-
     if (doc.getElementById("Recurring Decimals").checked) {
         difflvl = doc.getElementById("Recurring Decimals").value;
         var overbar = doc.getElementById("overbar");
         if( overbar ) {
             var barlength = (Num(overbar.getAttribute("colspan")) + 1)/2;
             var quotient = Num(doc.getElementById("quotient").value);
-            var quotDp = Num(doc.getElementById("quotDp").value);
+            
             var ndiscard = quotDp - 1 - barlength;
             var decimalpart = quotient % (Mat.pow(10, quotDp - 1));
             var minpattern = Mat.floor( decimalpart / Mat.pow(10, ndiscard) );
@@ -1989,9 +1991,53 @@ function startDivAgain() {
             //alert("barColor = " + barColor + " allCorrect = " + allCorrect);
             barDrawn = barColor === "rgb(0, 0, 0)";
        }
-    } else if( difflvl !== "Round Off" ) { // check all quotient digits are filled 
-                                           // if not recurring decimal or
-                                           // round off
+    } else if (doc.getElementById("Round Off").checked) {
+        difflvl = doc.getElementById("Round Off").value;
+        var nSigDig = Num(doc.getElementById("nSigDig").value);
+        //var willBzeros = nSigDig >= quotDp - 1;
+        var dispRnd = doc.getElementById("dispRnd");
+        // make sure all the round off instruction messages are gone 
+        // and all the significant digits are filled in. If so, everything
+        // has already been checked and found correct
+        if( dispRnd.innerHTML === "" ) {
+            var maxi = qlength - 1 - nSigDig;
+            for( var i = 0; i < maxi; ++i ) {
+                if( !quotdigs[i].value ) {
+                    allCorrect = false;
+                    //doc.getElementById("statusBox" + x).innerHTML = "quotDigs[" + i + "] = " + quotdigs[i] + " value =>" + quotdigs[i].value + "<";
+                    //x = x + 1;
+                }
+            }
+        } else {
+            allCorrect = false;
+            //doc.getElementById("statusBox" + x).innerHTML = "dispRnd not blank";
+            //x = x + 1; // dbfxt
+        }
+/*
+        for( var i = 0; i < qlength; ++i ) {
+            var whatCol = qlength - 1 - i;
+            if( willBzeros && nSigDig >= whatCol && whatCol > quotDp - 2 ) {
+                if( Num(quotdigs[i].value) !== 0 ) {
+                    allCorrect = false;
+                }
+            // as long as something has been entered for most significant
+            // digits, they will have been checked already
+            // how do you know if it's the original value or the rounded value that's been checked? fixit
+            } else if( whatCol > nSigDig ) {
+                if( quotdigs[i].value ) {
+                        allCorrect = false;
+                }
+            } else {
+                var qBx = quotdigs[i];
+                if( qBx.value &&
+                    qBx.style.getPropertyValue("text-decoration") !== "line-through") {
+                    allCorrect = false;
+                }
+            }
+        } */
+    } else {    // check all quotient digits are filled 
+                // if not recurring decimal or
+                // round off
         for( var i = 0; i < qlength; ++i ) {
             var qDigit = quotdigs[i].value;
             if( !qDigit ) {
@@ -2028,6 +2074,7 @@ function startDivAgain() {
                 Mat.floor(3600000 * Num(doc.getElementById("numWoErr").value) / timediff);
     }
     doc.getElementById("startAgain").value = "yes";
+    //alert("ok?");
     doc.getElementById('th-id2').submit();
     if (doc.getElementById("msg").value === "") {
         setFocus();
@@ -2205,22 +2252,31 @@ function roundOff( ev ) {
     var quotdigs = doc.getElementsByName("quotdigs");
     var quotLength = quotdigs.length;
     var startnow = false;
-    var whatPlace = Num(doc.getElementById("whatPlace").value);
+    var crossrest = false
+    var nSigDig = Num(doc.getElementById("nSigDig").value);
     var quotDp = Number(doc.getElementById("quotDp").value);
+    var willBzeros = nSigDig >= quotDp - 1;
     //var errBx = doc.getElementById("msg");
     for( var i = 0; i < quotLength; ++i ) {
-        if( !startnow ) {
+        var whatCol = quotLength - 1 - i;
+        //if( !startnow ) {
+        if( !crossrest ) {
             if( quotdigs[i].isEqualNode(evTarg ) ) {
                 var dispRnd = doc.getElementById("dispRnd");
-                var clickedPlace = quotLength - 1 - i;
-                if( clickedPlace === whatPlace ) {
+                var clickedPlace = whatCol;
+                if( clickedPlace === nSigDig ) {
+                    startnow = true;
                     errBx.innerHTML = "";
                     dispRnd.style.color = "red";
                     dispRnd.innerHTML = "Enter rounded value";
-                    if( whatPlace < quotDp - 1 ) {
+                    // insignificant digits start after the decimal point, 
+                    // even if this is a significant digits problem, not a 
+                    // decimal places problem, this digit will never be changed 
+                    // to zero
+                    if( nSigDig < quotDp - 1 ) {
                         evTarg.style.setProperty("text-decoration", "line-through");
-                        startnow = true;
-                        //doc.getElementById("statusBox" + x).innerHTML = "whatPlace = " + whatPlace +" quotDp = " + quotDp;
+                        crossrest = true;
+                        //doc.getElementById("statusBox" + x).innerHTML = "nSigDig = " + nSigDig +" quotDp = " + quotDp;
                         //x = x + 1;
                     }
                     var all = doc.getElementById("th-id2");
@@ -2236,13 +2292,13 @@ function roundOff( ev ) {
                                 if( Number(all.elements[nextbox].value) === 0 ) {
                                     // find out if it is most dignificant digit of quotient
                                     if( all.elements[nextbox].isEqualNode(quotdigs[0]) ) {
-                                        var newPlace = whatPlace + 1;
+                                        var newPlace = nSigDig + 1;
                                         if( newPlace < quotDp - 1 ) {
                                             quotdigs[quotLength - 1 - newPlace].style.setProperty("text-decoration", "line-through");
                                         }
                                         //doc.getElementById("statusBox" + x).innerHTML = "newPlace = " + newPlace +" quotDp = " + quotDp;
                                         //x = x + 1;
-                                        doc.getElementById("whatPlace").value = newPlace;
+                                        doc.getElementById("nSigDig").value = newPlace;
                                     }
                                 }
                             }
@@ -2257,22 +2313,22 @@ function roundOff( ev ) {
                     rndMsg = rndMsg.substring(19, length); // strip out the first part
                     rndMsg = rndMsg.match(/[^,]*/); // keep everything up to the first comma
                     errBx.innerHTML = rndMsg + " is not there, finish the calculations if needed and click somewhere else";
-                    //errBx.innerHTML = "whatPlace = " + whatPlace + " clickedPlace = " + clickedPlace;
+                    //errBx.innerHTML = "exoPlace = " + nSigDig + " clickedPlace = " + clickedPlace;
                     upDateErrCount();
                     break;
                 }
-            } else if( whatPlace >= quotDp - 1 && quotLength - 1 - i < quotDp  - 1 ) {
-                startnow = true;
-                //doc.getElementById("statusBox" + x).innerHTML = "start at decimal point whatPlace = " + whatPlace +" quotDp = " + quotDp + " quotLength = " + quotLength;
+            // reached the decimal point    
+            } else if( willBzeros && whatCol < quotDp  - 1 ) {
+                crossrest = true;
+                //doc.getElementById("statusBox" + x).innerHTML = "start at decimal point nSigDig = " + nSigDig +" quotDp = " + quotDp + " quotLength = " + quotLength;
                 //x = x + 1;
             }
         }
         if( startnow ) {
+            quotdigs[i].onkeyup = checkRoundOff;
             var hasContent = quotdigs[i].value;
-            if( hasContent ) {
+            if( hasContent && crossrest ) {
                 quotdigs[i].style.setProperty("text-decoration", "line-through");
-            } else {
-                break;
             }
         }
     }
@@ -2287,6 +2343,8 @@ function checkRoundOff( ev ) {
         //doc.getElementById("statusBox" + j).innerHTML = "";
     //}
     //var x = 0;
+    //doc.getElementById("statusBox" + x).innerHTML = "in checkRoundOff";
+    //x = x + 1;
     var Num = Number;
     //var errBx = doc.getElementById("msg")
     var id = ansBx.getAttribute("id");
@@ -2300,14 +2358,14 @@ function checkRoundOff( ev ) {
     var significant = header.innerHTML;
     //var nDig = Num(significant.match(/[0-9]*/)); // parse out the number
     significant = significant.match(/significant/);
-    var whatPlace = Num(doc.getElementById("whatPlace").value) + 1;
+    var nSigDig = Num(doc.getElementById("nSigDig").value) + 1;
     var quotDigs = doc.getElementsByName("quotdigs");
     var qLength = quotDigs.length;
-    if( significant && whatPlace > col ) {
-        roundedQuot = Mat.floor((quotient + 5*Mat.pow(10,whatPlace-1))/Mat.pow(10,whatPlace));
+    if( significant && nSigDig > col ) {
+        roundedQuot = Mat.floor((quotient + 5*Mat.pow(10,nSigDig-1))/Mat.pow(10,nSigDig));
         //document.getElementById("statusBox" + x).innerHTML = "roundedQuot = " + roundedQuot;
         //x = x + 1;
-        var j = whatPlace - 1;
+        var j = nSigDig - 1;
         while( j >= col ) {
             roundedQuot = 10*roundedQuot;
             //document.getElementById("statusBox" + x).innerHTML = "j = " + j + " roundedQuot = " + roundedQuot;
@@ -2335,12 +2393,13 @@ function checkRoundOff( ev ) {
         
         var quotDp = Num(doc.getElementById("quotDp").value);
         //var actQuotDigs = 1 + Mat.log10(quotient);
-        //doc.getElementById("statusBox" + x).innerHTML = "col = " + col + " whatPlace = " + whatPlace + " quotDp = " + quotDp;
-        if( col > whatPlace ||  col >= quotDp ) {         
+        //doc.getElementById("statusBox" + x).innerHTML = "col = " + col + " nSigDig = " + nSigDig + " quotDp = " + quotDp;
+        if( col > nSigDig ||  col >= quotDp ) {         
             nextbox = nextbox + 1;
         } else { // only one place to round
             if( dispRnd ) {
-                dispRnd.style.color = getComputedStyle(dispRnd).backgroundColor;
+                //dispRnd.style.color = getComputedStyle(dispRnd).backgroundColor;
+                dispRnd.innerHTML = "";
             }
             // push whatbox outside the table
             var all = doc.getElementById("th-id2");
