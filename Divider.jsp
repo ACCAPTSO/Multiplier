@@ -499,7 +499,9 @@
         /* dbfxt 
         divisor = 59;
         dvsrDp = 2;
-        dividnd = 828490197;
+        dvsrDigs = 2;
+        dividnd = 828490197; // quotient = 14042216
+        /* dbfxt 
         divisor = 447;
         dvsrDigs = 3;
         dvsrDp = 1;
@@ -541,6 +543,10 @@
         dvsrDigs = 1;
         dvsrDp = 1;
         dividnd = 659591886;
+        divisor = 971;
+        dvsrDigs = 3;
+        dvsrDp = 2;
+        dividnd = 9248;
         /* dbfxt */
         double dquot = (double)dividnd / (double)divisor;
         quotient = (long)dquot;
@@ -562,6 +568,7 @@
         quotDp = 3;
         quotDp = 6;
         quotDp = 5;
+        quotDp = 2;
         /* dbfxt */
         System.out.println("before while loop divisor = " + divisor + " dvsrDp = " + dvsrDp + " dividnd = " + dividnd + " quotDp = " + quotDp );
         // find worst case Dp and Digs, find width of problem and adjust up or down
@@ -626,32 +633,33 @@
             quotWidth = spacesb4quot + whatsBigger;
             //System.out.println("quotWidth = " + quotWidth + " = spacesb4quot + whatsBigger = " + spacesb4quot + " + "  + quotDigs );
             firstPass = false;
-            //if most significant digit is a 9, need another quotient box that is skipped over first time around
-            // and only selected and visible when there's a round off fixit
         }
         boolean sigDig = Math.random() > 0.5;
         /* dbfxt 
         sigDig = true;
         sigDig = false;
+    
         /* dbfxt */
         int n = 0;
         if( sigDig ) {
             n = 1 + (int)((quotDigs-1)*Math.random());
-            /* dbfxt
+            /* dbfxt 
             n = 1 + (int)((4)*Math.random());
             n = 6;
             n = 2;
             n = 5;
             n = 6;
-            n = 2;
+            
             n = 3;
             n = 1;
+            n = 2;
             /* dbfxt */
             header = " significant digit";
             nSigDig = quotDigs - 1 - n;
         } else {        
             n = (int)((quotDp-1)*Math.random());
-            /* dbfxt 
+            /* dbfxt            
+            n = 1;
             n = 0;
             /* dbfxt */
             header = " decimal place";
@@ -1050,12 +1058,8 @@
     ans = new String[SZ2_MX+1];
 
     int kdx;
-    int bdx = 0;            // box index used to track what box is selected
+    //int bdx = 0;            // box index used to track what box is selected
     
-    int[] whatBx;
-    whatBx = new int[SZ2_MX*maxOps*SZ2_MX]; // enough for quotient and
-                                            // all the multiplications and
-                                            // subtractions
     int maxBx = 20;                      
     int sbx;
     for( sbx = 0; sbx < quotDigs; ++sbx ) {
@@ -1135,9 +1139,9 @@
         //System.out.println("qt[" + idx + "] = " + qt[idx] + " nmcars = " + nmcars + " crows = " + crows );
     }
     
-    whatBx[0] = nmcars;
+    int whatBx = nmcars;
     if( needsXtraDig ) {
-        whatBx[0] += 1;
+        whatBx += 1;
     }
     
     String browType = "hidden";    
@@ -1552,11 +1556,7 @@
 <% if( cmdebug ) { %>
 <label>whatbox</label>
 <% } %>
-<input type="<%=cmtype%>" id="whatbox" value="<%=whatBx[bdx]%>" class="shortbox">
-<% if( cmdebug ) { %>
-<label>lastBoxOfCurrRow</label>
-<% } %>
-<input type="<%=cmtype%>" id="lastBoxOfCurrRow">
+<input type="<%=cmtype%>" id="whatbox" value="<%=whatBx%>" class="shortbox">
 <table>
     <tr>
 <%    if( nacarries[0] > 0 ) {
@@ -1812,30 +1812,14 @@ for( int idx = 0; idx < quotDigs; idx++ ) {
     <% } %>
 
      <input type="<%=cmtype%>" id="<%=bid%>" value="<%=calcBdDig[idx]%>" class="shortbox">
-<% }
-if( lastboxdebug ) { %>
-    <label>bdx</label>
- <% } %>
-<input type="<%=lbtype%>" id="bdx" value="<%=bdx%>">
-<%    if( lastboxdebug ) { %>
-    <label>lastbox</label>
  <% } %>
 <input type="<%=lbtype%>" id="lastbox" value="<%=maxBx%>" class="shortbox">
 <input type="hidden" id="linedUp" value="<%=isLinedUp%>" class="shortbox">
 <input type="hidden" id="divisor" value="<%=divisor%>" >
 <input type="hidden" id="quotDigs" value="<%=quotDigs%>" >
 <input type="hidden" id="quotient" value="<%=quotient%>" >
-<input type="hidden" id="nextQuotBox" >
-<input type="hidden" id="noMorQuotDigs" value="false" >
 <input type="hidden" id="nSigDig" value="<%=nSigDig%>" >
-<% if( cmdebug ) { %>
-    <label>quotBoxIndex</label>
-<% } %>
-<input type="<%=cmtype%>" id="quotBoxIndex" value="<%=bdx%>">
-<% if( cmdebug ) { %>
-    <label>rowNo</label>
-<% } %>
-<input type="<%=cmtype%>" id="rowNo" value="0" >
+
 <input type="hidden" id="dividend" value="<%=dividnd%>" >
 <input type="hidden" id="currDividend" >
 </td>
