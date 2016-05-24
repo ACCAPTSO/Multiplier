@@ -547,6 +547,10 @@
         dvsrDigs = 3;
         dvsrDp = 2;
         dividnd = 9248;
+        divisor = 24;
+        dvsrDigs = 2;
+        dvsrDp = 2;
+        dividnd = 97;
         /* dbfxt */
         double dquot = (double)dividnd / (double)divisor;
         quotient = (long)dquot;
@@ -568,6 +572,7 @@
         quotDp = 3;
         quotDp = 6;
         quotDp = 5;
+        quotDp = 2;
         quotDp = 2;
         /* dbfxt */
         System.out.println("before while loop divisor = " + divisor + " dvsrDp = " + dvsrDp + " dividnd = " + dividnd + " quotDp = " + quotDp );
@@ -661,6 +666,7 @@
             /* dbfxt            
             n = 1;
             n = 0;
+            n = 3;
             /* dbfxt */
             header = " decimal place";
             nSigDig = quotDp - 2 - n;
@@ -915,24 +921,17 @@
         }
     }
 
-
-    int numOps = 2;
     int colspan = 2*(SZ2_MX + 1) + 1;
-    //int[][][] op;       // operand's first index is what subtraction   
-                        // second index is what operand (top/bottom)
-                        // third index is what digit of that operand
     int [][] borrows;
     int [][] ncarries; // tracks if carry is needed
     
     int [][] mcarries; // multiplicative carries
     
     int [][] operand = new int[quotDigs][maxOps];
-    int [][] calcOp = new int[quotDigs][maxOps];
-    //op = new int[quotDigs][maxOps][SZ2_MX+1];
+    //int [][] calcOp = new int[quotDigs][maxOps];
     int [][] actDig = new int[quotDigs][maxOps];
     int [][] wcDig = new int[quotDigs][maxOps];
-    int [][] calcDig = new int[quotDigs][maxOps];
-    int [] calcBdDig = new int[quotDigs];
+    //int [] calcBdDig = new int[quotDigs];
     int [][] spacesb4Op = new int[quotDigs][maxOps];
 
 
@@ -1792,27 +1791,7 @@ if( thereAreCarries && showBrowsCk ) { %>
 <input type="hidden" id="dvs" name="decsettled" value="<%=dsdpsettled%>" class="shortbox">
 <input type="hidden" id="dvd" name="decsettled" value="<%=dddpsettled%>" class="shortbox">
 <input type="hidden" id="quo" name="decsettled" value="<%=qtdpsettled%>" class="shortbox">
-<% 
-for( int idx = 0; idx < quotDigs; idx++ ) {
-    for( int jdx = 0; jdx < maxOps; jdx++ ) { 
-        cid = "calcDig" + idx + "_" + jdx;
-        String oid = "operand" + idx + "_" + jdx;
-        if( cmdebug ) { %>
-            <label><%=cid%></label>
-        <% } %>
-        <input type="<%=cmtype%>" id="<%=cid%>" value="<%=calcDig[idx][jdx]%>" class="shortbox">
-        <% if( cmdebug ) { %>
-            <label><%=oid%></label>
-        <% } %>
-        <input type="<%=cmtype%>" id="<%=oid%>" value="<%=calcOp[idx][jdx]%>" class="shortbox">
-<%  }
-    String bid = "bringdown" + idx; %>
-    <% if( cmdebug ) { %>
-        <label><%=bid%></label>
-    <% } %>
 
-     <input type="<%=cmtype%>" id="<%=bid%>" value="<%=calcBdDig[idx]%>" class="shortbox">
- <% } %>
 <input type="<%=lbtype%>" id="lastbox" value="<%=maxBx%>" class="shortbox">
 <input type="hidden" id="linedUp" value="<%=isLinedUp%>" class="shortbox">
 <input type="hidden" id="divisor" value="<%=divisor%>" >
@@ -1821,7 +1800,6 @@ for( int idx = 0; idx < quotDigs; idx++ ) {
 <input type="hidden" id="nSigDig" value="<%=nSigDig%>" >
 
 <input type="hidden" id="dividend" value="<%=dividnd%>" >
-<input type="hidden" id="currDividend" >
 </td>
 </tr>
 </tbody>
