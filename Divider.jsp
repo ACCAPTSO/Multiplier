@@ -551,6 +551,10 @@
         dvsrDigs = 2;
         dvsrDp = 2;
         dividnd = 97;
+        divisor = 395;
+        dvsrDigs = 3;
+        dvsrDp = 2;
+        dividnd = 89232177;
         /* dbfxt */
         double dquot = (double)dividnd / (double)divisor;
         quotient = (long)dquot;
@@ -663,10 +667,11 @@
             nSigDig = quotDigs - 1 - n;
         } else {        
             n = (int)((quotDp-1)*Math.random());
-            /* dbfxt            
+            /* dbfxt           
             n = 1;
             n = 0;
             n = 3;
+            n = 1;
             /* dbfxt */
             header = " decimal place";
             nSigDig = quotDp - 2 - n;
@@ -1556,82 +1561,7 @@
 <label>whatbox</label>
 <% } %>
 <input type="<%=cmtype%>" id="whatbox" value="<%=whatBx%>" class="shortbox">
-<table>
-    <tr>
-<%    if( nacarries[0] > 0 ) {
-    for( int idx = 0; idx <= SZ2_MX; idx++ ) {
-                int ocol = dvsrDigs + dvdDigs - idx;
-                int col = dvsrDigs + dvdDigs - quotDigs + 1 - idx + leadzeros;
-                if( col >= 0 && ncarries[0][col] != 0 ) { 
-                    String hid = "hca" + ocol + "_0"; 
-                    if( ocol < 0 || ocol >= SZ2_MX ) {
-                         System.out.println("ca col = " + ocol + "being reduced to 0");
-                         ocol = 0;
-                    } 
-                    String ctype = "hidden";
-                    if( debugcarries ) { 
-                        ctype = "text"; %>
-                        <td><label><%=hid%></label></td>
-                    <% } %>
-                    <td><input type="<%=ctype%>" id="<%=hid%>" value="0" class="shortbox"></td>
-    <%          } 
-                if( col > 0 && ncarries[0][col-1] != 0 ) { 
-                    String hid = "hbo" + ocol + "_0" ; 
-                    if( ocol < 0 || ocol > SZ2_MX ) {
-                         System.out.println("bo col = " + ocol + "being reduced to 0");
-                         ocol = 0;
-                    }                     
-                    String ctype = "hidden";
-                    if( debugcarries ) { 
-                        ctype = "text"; %>
-                        <td><label><%=hid%></label></td>
-                    <% } %>
-                    <td><input type="<%=ctype%>" id="<%=hid%>" value="-2" class="shortbox"></td>
-    <%          } 
-            } 
-} %>
-</tr>
-<%  for( sbx = 0; sbx <= nsubs; ++sbx ) {
-    int rdx = sbx + 1; 
-    if( rdx <= nsubs && nacarries[rdx] > 0 ) {  %>
-    <tr>
-<%      for( int idx = 0; idx <= SZ2_MX; idx++ ) {
-            int col = spacesb4Op[sbx][0] + wcDig[sbx][0] + numBringDn[sbx] - 1 - idx; 
-            //System.out.println("rdx = " + rdx + " col = " + col + " spacesb4Op[" + sbx + "][0] = " + spacesb4Op[sbx][0] + " wcDig[" + sbx + "][0] = " + wcDig[sbx][0] + " numBringDn[" + sbx + "] = " + numBringDn[sbx]);
-            if( 0 <= col && 
-                    col <  wcDig[sbx][0] + numBringDn[sbx] && 
-                    ncarries[rdx][col] != 0 ) {
-                String hid = "hca" + col + "_" + rdx; 
-                if( col < 0 || col >= SZ2_MX ) {
-                    System.out.println("ca col = " + col + "being reduced to 0");
-                    col = 0;
-                } 
-                String ctype = "hidden";
-                if( debugcarries ) { 
-                    ctype = "text"; %>
-                    <td><label><%=hid%></label></td>
-             <% } %>
-                <td><input type="<%=ctype%>" id="<%=hid%>" value="0" class="shortbox"></td>
-<%          } 
-            //System.out.println("second rdx = " + rdx + " col = " + col );
-            if( 0 < col  && col < SZ2_MX + 1 && ncarries[rdx][col-1] != 0 ) { 
-                String hid = "hbo" + col + "_" + rdx; 
-                if( col < 0 || col > SZ2_MX ) {
-                         System.out.println("bo col = " + col + "being reduced to 0");
-                         col = 0;
-                }                     
-                String ctype = "hidden";
-                if( debugcarries ) { 
-                    ctype = "text"; %>
-                    <td><label><%=hid%></label></td>
-             <% } %>
-                <td><input type="<%=ctype%>" id="<%=hid%>" value="-2" class="shortbox"></td>
-<%          } 
-         } %>
-         </tr>
-<%   }
-} %>
-</table>
+
 <% for( int i = 0; i < 30; ++i ) {
     String sid = "statusBox" + i; %>
     <div id="<%=sid%>"></div>
