@@ -1125,11 +1125,13 @@ function multiply( col, whatRow ) {
                 var visibleBorCaLength = visibleBorCaBxs.length;
                 for (var i = 0; i < visibleBorCaLength; ++i) {
                     var caBx = null;
-                    var whatCaBx = "hca" + i + "_" + whatRow;
+                    //var whatCaBx = "hca" + i + "_" + whatRow;
+                    var whatCaBx = "ca" + i + "_" + whatRow;
                     var caCol = i;
                     if( whatRow === 0 ) {
                         var j = i + qdx;
                         whatCaBx = "hca" + j + "_0";
+                        whatCaBx = "ca" + j + "_0";
                         caCol = j;
                         dvdBx = doc.getElementById("dd" + j + "_0");
                     }
