@@ -1136,9 +1136,9 @@
     int crows = 0;
     for( int idx = quotDigs - 1; idx >= 0; --idx ) {
         nmcars += (dvsrDigs - 1);
-        if( showMcarriesCk ) {
-            nmcars += (dvsrDigs - 1);
-        }
+        //if( showMcarriesCk ) {
+            //nmcars += (dvsrDigs - 1);
+        //}
         crows += 1;
         //System.out.println("qt[" + idx + "] = " + qt[idx] + " nmcars = " + nmcars + " crows = " + crows );
     }
@@ -1152,7 +1152,8 @@
     if( showBrowsCk ) {
         browType = "text";
     }
-    String cmtype = cmdebug? "text" : "hidden";
+    //String cmtype = cmdebug? "text" : "hidden";
+    String cmtype = "hidden";
     String lbtype = lastboxdebug? "text" : "hidden";%>
 <div >
 <form id="th-id2" method="get" action="Divider.jsp">
@@ -1160,7 +1161,7 @@
 <tbody>
 <tr>
 <td class="d2">
-<table class="tbl">
+<table id="tbl">
 <tr><th id="F1" colspan="<%=colspan%>"><%=header%></th></tr>
 <%  // these are filler    
     for( sbx = SZ2_MX - 3; sbx >= crows; --sbx ) { 
@@ -1180,13 +1181,12 @@
         String vid = "cm" + mcol + "_" + sbx;
         String cid = "hcm" + mcol + "_" + sbx; %>
         <td class="t2">
-<%      if( nmcars > 0 ) {
-            if( showMcarriesCk ) { %>
+<%      if( nmcars > 0 ) { %>
                 <input type="<%=cmtype%>" id="<%=vid%>" class="c2" 
                     onkeyup="checkMcarry(<%=mcol%>,<%=sbx%>)" >
-<%          } %>
-            <input type="hidden" id="<%=cid%>" class="c2"></td>
- <%     } %>       
+            
+ <%     } %>
+        </td>
 <%      for( int idx = 0; idx <= SZ2_MX; idx++ ) { %>
             <td class="t1"></td>
 <%          if( idx < dvsrDigs - 2 && nmcars > 0 ) { 
@@ -1194,11 +1194,9 @@
                 vid = "cm" + mcol + "_" + sbx;
                 cid = "hcm" + mcol + "_" + sbx; %>
                 <td class="t2">
-<%              if( showMcarriesCk ) { %>
                     <input type="<%=cmtype%>" id="<%=vid%>" class="c2" 
                             onkeyup="checkMcarry(<%=mcol%>,<%=sbx%>)" >
-<%              }  %>
-                <input type="hidden" id="<%=cid%>" class="c2"></td>
+                </td>
 <%          } else {  %>
                 <td class="t2"></td>
 <%          } %>
@@ -1219,12 +1217,9 @@
     String cid = "hcm" + mcol + "_0"; 
     String tid = "tc" + SZ2_MX; %>
     <td class="t2" id="td15" name="notthestartdig">
-<%  if( nmcars > 0 ) {
-        if( showMcarriesCk ) { %>
+<%  if( nmcars > 0 ) { %>
             <input type="<%=cmtype%>" id="<%=vid%>" class="c2" 
                 onkeyup="checkMcarry(<%=mcol%>,0)">
-<%      } %>
-            <input type="hidden" id="<%=cid%>" class="c2">
 <%  } %>
     </td>
 <%  for( int idx = 0; idx <= SZ2_MX; idx++ ) {  
@@ -1236,7 +1231,7 @@
         String xid = "xt" + col;
         if( needsXtraDig && idx == spacesb4quot - 1 ) { %>
             <td class="t1" id="<%=tid%>" onclick="<%=whatFun%>" name="notthestartdig">
-                <input type="<%=cmtype%>" class="a1" size="1"
+                <input type="hidden" class="a1" size="1"
                     id="<%=xid%>" name="quotdigs"
                     onkeyup="checkRoundOff( event )" >
             </td>
@@ -1246,7 +1241,7 @@
 <%      } else if( spacesb4quot <= idx && idx < spacesb4quot + quotDigs ) {
             String qid = "qt" + col; %>
             <td class="t1"  id="<%=tid%>" name="quotTd" onclick="<%=whatFun%>">
-                <input type="<%=cmtype%>" id="<%=qid%>" class="a1" size="1"
+                <input type="hidden" id="<%=qid%>" class="a1" size="1"
                     name="quotdigs"
                     onkeyup="divide(<%=immFeedBkCk%>, <%=col%>, <%=qt[col]%> )" >
             </td>
@@ -1260,7 +1255,7 @@
             String rid = "r" + col; 
             String rname = "rmdr"; %>
             <td class="t1" id="<%=tid%>" onclick="<%=whatFun%>" name="notthestartdig">
-                <input type="<%=cmtype%>" id="<%=rid%>" name="<%=rname%>" 
+                <input type="hidden" id="<%=rid%>" name="<%=rname%>" 
                     class="a1" size="1" 
                     onkeyup="checkRemainder( <%=col%>, <%=rm[col]%> )"
             ></td>
@@ -1273,11 +1268,9 @@
             vid = "cm" + col + "_0"; 
             cid = "hcm" + col + "_0"; %>
             <td class="t2" id="<%=tic%>" onclick="<%=whatFun%>" name="notthestartdig">
-<%          if( showMcarriesCk ) { %>
                 <input type="<%=cmtype%>" id="<%=vid%>" class="c2" 
                                   onkeyup="checkMcarry(<%=col%>,0)">
-<%          } %>
-            <input type="hidden" id="<%=cid%>" class="c2"></td>
+            </td>
 <%      } else if( spacesb4quot <= idx && idx < spacesb4quot + quotDigs ) {  
             int jdx = idx - spacesb4quot; %>
             <td class="t2" id="<%=tic%>" onclick="<%=whatFun%>" name="notthestartdig">
@@ -1418,12 +1411,12 @@
     <%      } else if( idx <= spacesb4Op[sbx][0] + wcDig[sbx][0]) {          
                 int col = spacesb4Op[sbx][0] + wcDig[sbx][0] - idx;
                 String name = "op" + sbx + "_0";
-                String whattype = cmtype;
+                String whattype = "hidden";
                 //System.out.println(" product sbx =  " + sbx + " idx = " + idx + " col = " + col);
                 %>
                 <td class="t1">
                 <input type="<%=whattype%>" name="<%=name%>" class="a1" size="1" 
-                onkeyup="multiply( <%=col%>, <%=sbx%> )" onclick="setFocus()">
+                onkeyup="multiply( <%=col%>, <%=sbx%> )" onclick="setDivFocus()">
                 </td>
  <%         } else { %>
                 <td class="t1"></td>
@@ -1490,7 +1483,7 @@
         <tr class="oprand">
         <td class="t2"></td>
 <%      for( int idx = 0; idx <= SZ2_MX; idx++ ) { 
-            String whattype = cmtype; 
+            String whattype = "hidden"; 
             int col = spacesb4Op[sbx][1] + wcDig[sbx][1] - idx;
             int ocol = spacesb4Op[sbx][1] + wcDig[sbx][1] + numBringDn[sbx] - idx - 1;
             int maxBDcol = wcDig[sbx][1] + numBringDn[sbx];
@@ -1560,7 +1553,7 @@
 <% if( cmdebug ) { %>
 <label>whatbox</label>
 <% } %>
-<input type="<%=cmtype%>" id="whatbox" value="<%=whatBx%>" class="shortbox">
+<input type="hidden" id="whatbox" value="<%=whatBx%>" class="shortbox">
 
 <% for( int i = 0; i < 30; ++i ) {
     String sid = "statusBox" + i; %>

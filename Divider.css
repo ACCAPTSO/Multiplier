@@ -133,15 +133,7 @@ button {
     //padding-top: 3em;
     //background-color: purple;
 }
-.tbl {
-  border: 2px solid black;
-  margin-top: 0.2em;
-  //margin-left: 10%;
-  background-color: #eddfd0;
-  //min-width: 19em;
-  //max-width: 19em;
-/*  width: 192px; */
-}
+
 /* table cell with space, carry, or decimal point */
 .t2 {
   text-align: center;
@@ -405,7 +397,12 @@ button {
     //width: 40em;
     color: #fdefe0; // default text color is background color (hidden)
 }
-#overbar{
-    //background-color: crimson;
-    //height: 1em;
+#tbl {
+  border: 2px solid black;
+  margin-top: 0.2em;
+  //margin-left: 10%;
+  background-color: #eddfd0;
+  //min-width: 19em;
+  //max-width: 19em;
+/*  width: 192px; */
 }
