@@ -26,7 +26,6 @@
     final double NEXP = 2.6; // used to generate # of digits    
     final double DEXP = 1.4; // used to generate digits themselves or # operands
     final boolean cmdebug = false;
-    final boolean debugcarries = false;
     final boolean lastboxdebug = false;
     
     boolean immFeedBkCk = false;
@@ -907,7 +906,7 @@
         showBrowsCk = false;
         isShowBrows = "";
     } else {
-        //System.out.println("starting again");
+        //System.out.println("starting again parameter = >" + request.getParameter("startAgain") + "<" );
         String mcarrylist[] = request.getParameterValues("showmcarries");
         if( mcarrylist  == null ) {
             showMcarriesCk = false;
@@ -1136,11 +1135,7 @@
     int crows = 0;
     for( int idx = quotDigs - 1; idx >= 0; --idx ) {
         nmcars += (dvsrDigs - 1);
-        //if( showMcarriesCk ) {
-            //nmcars += (dvsrDigs - 1);
-        //}
         crows += 1;
-        //System.out.println("qt[" + idx + "] = " + qt[idx] + " nmcars = " + nmcars + " crows = " + crows );
     }
     
     int whatBx = nmcars;
@@ -1152,8 +1147,7 @@
     if( showBrowsCk ) {
         browType = "text";
     }
-    //String cmtype = cmdebug? "text" : "hidden";
-    String cmtype = "hidden";
+    String cmtype = cmdebug? "text" : "hidden";
     String lbtype = lastboxdebug? "text" : "hidden";%>
 <div >
 <form id="th-id2" method="get" action="Divider.jsp">
@@ -1715,8 +1709,6 @@ if( thereAreCarries && showBrowsCk ) { %>
 <input type="hidden" id="dvd" name="decsettled" value="<%=dddpsettled%>" class="shortbox">
 <input type="hidden" id="quo" name="decsettled" value="<%=qtdpsettled%>" class="shortbox">
 
-<input type="<%=lbtype%>" id="lastbox" value="<%=maxBx%>" class="shortbox">
-<input type="hidden" id="linedUp" value="<%=isLinedUp%>" class="shortbox">
 <input type="hidden" id="divisor" value="<%=divisor%>" >
 <input type="hidden" id="quotDigs" value="<%=quotDigs%>" >
 <input type="hidden" id="quotient" value="<%=quotient%>" >

@@ -5,10 +5,10 @@
  */
 // right side jumps right after last digit entered fixit not with showBorrows checked why is that?
 // boca boxes change size and make picture jump fixit
-// how many of the hidden inputs might as well be global javascript variables? fixit
 
 //var x = 0;
 //var whatBoxBx = null;
+"use strict";
 var whatbox = -1;
 var posRecorded = false;
 var leftPos = 0;
@@ -362,7 +362,7 @@ function checkMcarry(col, sbx) {
         var prevCol = col - 1;
         prevBx = doc.getElementById("cm" + prevCol + "_" + sbx);
     }
-    var ans = ansBx.value;
+    var ans = Num(ansBx.value);
     //var doc.getElementById("msg") = doc.getElementById("msg");
     var mcarry = 0;
     var quotDigs = Num(doc.getElementById("quotDigs").value);
@@ -386,7 +386,7 @@ function checkMcarry(col, sbx) {
         //mcarry = Math.floor(mcarry / 10);
     //}
     mcarry = gMcarries[col][sbx];
-    if (ans == mcarry) {
+    if (ans === mcarry) {
         ansBx.style.color = "black";
         dvsrdigs[dvsrdigs.length - 1 - col].style.color = "black";
         if (prevBx) {
@@ -440,7 +440,7 @@ function checkMcarry(col, sbx) {
             prevBx.style.color = "red";
         }
         possBx[sbx].style.color = "red";
-        doc.getElementById("msg").innerHTML = mcarry + " not " + ans;
+        //doc.getElementById("msg").innerHTML = mcarry + " not " + ans;
         upDateErrCount();
     }
     setDivFocus();
@@ -648,7 +648,7 @@ function divide(immFeedBkCk, col, qtDig) {
                 var whatDvdBx = dvdBxs[dvdidx];
                 //doc.getElementById("statusBox" + x).innerHTML = "pow = " + pow + " dvdidx = " + dvdidx + " whatDvdBx = " + whatDvdBx;
                 //x = x + 1;
-                if (whatDvdBx != null) {
+                if (whatDvdBx !== null) {
                     dvdDigVal = Num(whatDvdBx.value);
                 }
             }
@@ -733,9 +733,9 @@ function divide(immFeedBkCk, col, qtDig) {
     gDiff = dvdnd - prod;
 
     var origDvdDigs = doc.getElementsByName("dvddigs");
-    var bddigs = null
+    var bddigs = null;
     var bddigsLength = 0;
-    if (whatRow == 0) {
+    if (whatRow === 0) {
         dvddigs = origDvdDigs;
     } else {
         prevRow = whatRow - 1;
@@ -744,7 +744,7 @@ function divide(immFeedBkCk, col, qtDig) {
         bddigsLength = bddigs.length;
     }
     var stop = dvddigs.length;
-    if (whatRow == 0) {
+    if (whatRow === 0) {
         stop = stop + 1 - quotDigs;
     }
     var time2increment = true;
@@ -811,7 +811,7 @@ function divide(immFeedBkCk, col, qtDig) {
                 }
             }
             var lastRowLength = lastrow.length;
-            var lastRowValue = lastrow[lastRowLength - 1].value
+            var lastRowValue = lastrow[lastRowLength - 1].value;
             //doc.getElementById("statusBox" + x).innerHTML =  "lastRowNum = " + lastRowNum + " lastRowLength = " + lastRowLength + " last row least sig dig = " + lastRowValue;
             //x = x + 1;
             var remainder = Num.MAX_SAFE_INTEGER;
@@ -841,7 +841,7 @@ function divide(immFeedBkCk, col, qtDig) {
                     //x = x + 1;
                 }
             }
-            if (col == 0 && isRemainder) { 
+            if (col === 0 && isRemainder) { 
                 doc.getElementById("dispR").style.color = "black";
                 nextbox = nextbox + 1;
             // whatRow === 0 => 0.x
@@ -1101,7 +1101,7 @@ function multiply( col, whatRow ) {
                 doc.getElementById("msg").innerHTML = prod + " is too big, try a quotient digit value smaller than " + lastqtval;
                 nextbox = nextQuotBox - 1;
                 whatbox = nextbox;
-                if (whatRow == 0) {
+                if (whatRow === 0) {
                     lastBoxOfCurrRow = 0;
                 } else { // back up to just after last subtraction box
                     var lastBox = lastBoxOfCurrRow;
@@ -1207,7 +1207,7 @@ function multiply( col, whatRow ) {
         }   
         whatbox = nextbox;
     } else {
-        doc.getElementById("msg").innerHTML = expAns + " not " + ans;
+        //doc.getElementById("msg").innerHTML = expAns + " not " + ans;
         //doc.getElementById("msg").innerHTML = "not " + ans;
         qBx.style.color = "red";
         dvsrdigs[whatDvsrDg].style.color = "red";
@@ -1247,7 +1247,7 @@ function subtract(col, sbx) {
     var prevRow = 0;
     var subBxsLength = 0;
 
-    if (sbx == 0) {
+    if (sbx === 0) {
         
         subBxs = doc.getElementsByName("dvddigs");
         subBxsLength = subBxs.length;
@@ -1389,7 +1389,7 @@ function subtract(col, sbx) {
 
                 var diffdigs = doc.getElementsByName("op" + sbx + "_1");
                 var diffdigsLength = diffdigs.length;
-                if (sbx == 0) {
+                if (sbx === 0) {
                     lastBoxOfCurrRow = 0;
                 } else { // back up to just after last subtraction box
                     var lastBox = lastBoxOfCurrRow;
@@ -1427,7 +1427,7 @@ function subtract(col, sbx) {
                     dvdlen = dvddigs.length - quotDigs + 1;
                     var quotmx = quotdigsLength - 1;
                     var qx = 0;
-                    while( qx < quotmx && Num(quotdigs[qx].value) == 0 ) {
+                    while( qx < quotmx && Num(quotdigs[qx].value) === 0 ) {
                         dvdlen++;
                         qx++;
                     }
@@ -1581,7 +1581,7 @@ function bringdown(sbx) {
     var Mat = Math;
     var discard = dividend % Mat.pow(10, dvdcol);
     var expAns = (dividend % Mat.pow(10, dvdcol + 1) - discard) / Mat.pow(10, dvdcol);
-    if (ans == expAns) {
+    if (ans === expAns) {
         ansBxs[bxNo].style.color = "black";
         if (dvddigs[whatDig].style.color === "red") {
             dvddigs[whatDig].style.color = "black";
@@ -1605,18 +1605,18 @@ function bringdown(sbx) {
 }
 function checkDivBorrow(col, sbx) {
     var ciBx = document.getElementById("ca" + col + "_" + sbx);
-    var ans = ciBx.value;
+    var ans = Num(ciBx.value);
 
-    if (ans == 1) {
-        doc.getElementById("msg").innerHTML = "";
+    if (ans === 1) {
+        //document.getElementById("msg").innerHTML = "";
         ciBx.style.color = "black";
         setDivFocus();
     } else {
         upDateErrCount();
         ciBx.style.color = "red";
         ciBx.value = "";
-        doc.getElementById("msg").innerHTML = "";
-        doc.getElementById("msg").innerHTML = "not " + ans;
+        //doc.getElementById("msg").innerHTML = "";
+        //doc.getElementById("msg").innerHTML = "not " + ans;
     }
 }
 function checkNewDivVal(col, sbx) {
@@ -1627,7 +1627,7 @@ function checkNewDivVal(col, sbx) {
     var whatBorFrm;
     var borFrmValue;
     var borFrmBx;
-    if (sbx == 0) {
+    if (sbx === 0) {
         borFrmBxs = doc.getElementsByName("dvddigs");
         whatBorFrm = borFrmBxs.length - 1 - col;
         borFrmBx = borFrmBxs[whatBorFrm];
@@ -1654,13 +1654,13 @@ function checkNewDivVal(col, sbx) {
 
     var prevCol = col - 1;
     var ciBx = doc.getElementById("ca" + prevCol + "_" + sbx);
-    var ans = newBx.value;
+    var ans = Num(newBx.value);
     var corrAns = co + borFrmValue - 1;
 
     if (corrAns > 9) {
         corrAns = corrAns - co;
     }
-    if (ans == corrAns) {
+    if (ans === corrAns) {
         doc.getElementById("msg").innerHTML = "";
         newBx.style.color = "black";
         borFrmBx.style.color = "black";
@@ -1712,7 +1712,7 @@ function promptDivBorrow( ev) {
         var caBx;
         var prevCol = col - 1;
         if (col > 0) {
-            if (sbx == 0) {
+            if (sbx === 0) {
                 borFrmBxs = doc.getElementsByName("dvddigs");
                 whatBorFrm = borFrmBxs.length - 1 - col;
                 //doc.getElementById("statusBox" + x).innerHTML = "sbx = " + sbx + " col = " + col + " whatBorFrm = " + whatBorFrm;
@@ -1841,7 +1841,7 @@ function zeroDivCounts() {
     doc.getElementById("strtTime").value = Number(Date.now());
     doc.getElementById("corrPerHr").value = 0;
     //startDivAgain();
-    doc.getElementById("startAgain").value = "yes";
+    //doc.getElementById("startAgain").value = "yes";
     doc.getElementById('th-id2').submit();
     // what if it's not blank? fixit why would it not be blank?
     if (doc.getElementById("msg").value === "") {
@@ -1889,7 +1889,7 @@ function startDivAgain() {
         }
     }
     var lastRowLength = lastrow.length;
-    var lastRowValue = lastrow[lastRowLength - 1].value
+    var lastRowValue = lastrow[lastRowLength - 1].value;
     var remainder = Num.MAX_SAFE_INTEGER;
     
     if( lastRowValue ) {
@@ -2004,7 +2004,7 @@ function startDivAgain() {
         doc.getElementById("corrPerHr").value =
                 Mat.floor(3600000 * Num(doc.getElementById("numWoErr").value) / timediff);
     }
-    doc.getElementById("startAgain").value = "yes";
+    //doc.getElementById("startAgain").value = "yes";
     //alert("ok?");
     doc.getElementById('th-id2').submit();
     if (doc.getElementById("msg").value === "") {
@@ -2080,7 +2080,7 @@ function chooseDivThis( event, which_one, which_type) {
                     }
                 } else {
                     // turn it back off if it's already on
-                    if (btns[i].style.color == "red") {
+                    if (btns[i].style.color === "red") {
                         btns[i].childNodes[0].nodeValue = "_";
                         // hide "_" with background color
                         btns[i].style.color = btns[i].style.backgroundColor;
@@ -2172,7 +2172,7 @@ function roundOff( ev ) {
     var quotdigs = doc.getElementsByName("quotdigs");
     var quotLength = quotdigs.length;
     var startnow = false;
-    var crossrest = false
+    var crossrest = false;
     var nSigDig = Num(doc.getElementById("nSigDig").value);
     var quotDp = Number(doc.getElementById("quotDp").value);
     var willBzeros = nSigDig >= quotDp - 1;
@@ -2272,7 +2272,7 @@ function checkRoundOff( ev ) {
     var Mat = Math;
     var roundedQuot = Mat.floor((quotient + 5*Mat.pow(10,col-1))/Mat.pow(10,col));
 
-    var header = doc.getElementById("F1")                    
+    var header = doc.getElementById("F1");                   
     var significant = header.innerHTML;
     //var nDig = Num(significant.match(/[0-9]*/)); // parse out the number
     significant = significant.match(/significant/);
@@ -2322,7 +2322,7 @@ function checkRoundOff( ev ) {
             var all = doc.getElementById("th-id2");
             var length = all.length;
             for( var i = 0; i < length; ++i ) {
-                if( all.elements[i].isEqualNode(whatBoxBx) ) {
+                if( all.elements[i].isEqualNode(doc.getElementById("whatbox")) ) {
                     nextbox = i;
                 }
             }
