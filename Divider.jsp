@@ -107,6 +107,7 @@
     //dsMaxDg = 3;
     int dsMax = (int)(Math.pow(10, dsMaxDg)) - 2;
     int divisor = 2 + (int)(dsMax*Math.random());
+    //divisor = 418; // dbfxt
     //int increase = (int)(Math.pow(5.0,nTwos)*Math.pow(2.0,nFives));
     
     //divisor = 8720; // leading 0 in quotient having issues
@@ -158,6 +159,7 @@
         //quotDp = 3; // leading 0 in quotient having issues
    //}
     long quotient = 1 + (int)(qtMax*Math.random());
+    //quotient = 40L; // dbfxt
     //dvdDp = 1 + (dvsrDp - 1) + (quotDp - 1);
     int dvdDigs = 0;
     //System.out.println("quotient = " + quotient + " nTwos = " + nTwos + " nFives = " + nFives + " divisor = " + divisor);
@@ -1127,7 +1129,7 @@
                 ncarries[sbx][kdx] = 1;
                 nacarries[sbx] += 1;          
             }
-            //System.out.println("ncarries[" + sbx + "][" + kdx + "] = " + ncarries[sbx][kdx] + " nacarries[" + sbx + "] = " + nacarries[sbx]);
+            System.out.println("ncarries[" + sbx + "][" + kdx + "] = " + ncarries[sbx][kdx] + " nacarries[" + sbx + "] = " + nacarries[sbx]);
         }
     }
     
@@ -1225,7 +1227,7 @@
         String xid = "xt" + col;
         if( needsXtraDig && idx == spacesb4quot - 1 ) { %>
             <td class="t1" id="<%=tid%>" onclick="<%=whatFun%>" name="notthestartdig">
-                <input type="hidden" class="a1" size="1"
+                <input type="<%=lbtype%>" class="a1" size="1"
                     id="<%=xid%>" name="quotdigs"
                     onkeyup="checkRoundOff( event )" >
             </td>
@@ -1235,7 +1237,7 @@
 <%      } else if( spacesb4quot <= idx && idx < spacesb4quot + quotDigs ) {
             String qid = "qt" + col; %>
             <td class="t1"  id="<%=tid%>" name="quotTd" onclick="<%=whatFun%>">
-                <input type="hidden" id="<%=qid%>" class="a1" size="1"
+                <input type="<%=lbtype%>" id="<%=qid%>" class="a1" size="1"
                     name="quotdigs"
                     onkeyup="divide(<%=immFeedBkCk%>, <%=col%>, <%=qt[col]%> )" >
             </td>
@@ -1249,7 +1251,7 @@
             String rid = "r" + col; 
             String rname = "rmdr"; %>
             <td class="t1" id="<%=tid%>" onclick="<%=whatFun%>" name="notthestartdig">
-                <input type="hidden" id="<%=rid%>" name="<%=rname%>" 
+                <input type="<%=lbtype%>" id="<%=rid%>" name="<%=rname%>" 
                     class="a1" size="1" 
                     onkeyup="checkRemainder( <%=col%>, <%=rm[col]%> )"
             ></td>
@@ -1405,7 +1407,7 @@
     <%      } else if( idx <= spacesb4Op[sbx][0] + wcDig[sbx][0]) {          
                 int col = spacesb4Op[sbx][0] + wcDig[sbx][0] - idx;
                 String name = "op" + sbx + "_0";
-                String whattype = "hidden";
+                String whattype = lbtype;
                 //System.out.println(" product sbx =  " + sbx + " idx = " + idx + " col = " + col);
                 %>
                 <td class="t1">
@@ -1477,7 +1479,7 @@
         <tr class="oprand">
         <td class="t2"></td>
 <%      for( int idx = 0; idx <= SZ2_MX; idx++ ) { 
-            String whattype = "hidden"; 
+            String whattype = lbtype; 
             int col = spacesb4Op[sbx][1] + wcDig[sbx][1] - idx;
             int ocol = spacesb4Op[sbx][1] + wcDig[sbx][1] + numBringDn[sbx] - idx - 1;
             int maxBDcol = wcDig[sbx][1] + numBringDn[sbx];
@@ -1544,19 +1546,21 @@
 </table>
 </td>
 <td class="d7">
+<div class="d3">
 <% if( cmdebug ) { %>
 <label>whatbox</label>
 <% } %>
-<input type="hidden" id="whatbox" value="<%=whatBx%>" class="shortbox">
+
+<input type="<%=lbtype%>" id="whatbox" value="<%=whatBx%>" class="shortbox">
 
 <% for( int i = 0; i < 30; ++i ) {
     String sid = "statusBox" + i; %>
     <div id="<%=sid%>"></div>
 <% } %>
-
-
+</div>
+<div class="d3">
 <% boolean thereAreCarries = false;
-for( int idx = 0; idx < nsubs; ++ idx ) { 
+for( int idx = 0; idx <= nsubs; ++ idx ) { 
     if( nacarries[idx] > 0 ) {
         thereAreCarries = true;
         break;
@@ -1564,26 +1568,20 @@ for( int idx = 0; idx < nsubs; ++ idx ) {
 }
 
 if( thereAreCarries && showBrowsCk ) { %>
-    <div class="d3">
-    <label id="dispBo">Click on a digit to borrow from it</label>
-    </div>
+    <label id="dispBo">Click on a digit to borrow from it</label>    
 <%  } %>
-
+</div>
+<div class="d3">
 <% if( recDpCk ) { %>
-    <div class="d3">
     <label id="dispRec">
     When decimal part of quotient starts to repeat, drag mouse to draw a line over the repeat pattern
     </label>
-    </div>
-<%  } %>
-<% if( rndOffCk ) { %>
-    <div class="d3">
+<%  } else if( rndOffCk ) { %>
     <label id="dispRnd">
     <%=roundString%>
     </label>
-    </div>
 <%  } %>
-
+</div>
 <div class="d6">
 <!--this is where error messages get displayed//-->
 <%  if( exDpCk || recDpCk || rndOffCk) {
@@ -1700,21 +1698,21 @@ if( thereAreCarries && showBrowsCk ) { %>
 </div>
 
               
-<input type="hidden" name="startAgain" id="startAgain" >
-<input type="hidden" id="strtTime" name="strtTimeP" value="<%=strtTime%>" class="shortbox">
-<input type="hidden" id="quotDp" value="<%=expQuotDp%>" class="shortbox">
-<input type="hidden" id="dvsrDp" value="1" class="shortbox">
-<input type="hidden" id="dvdDp" value="<%=expDvdDp%>" class="shortbox"> 
-<input type="hidden" id="dvs" name="decsettled" value="<%=dsdpsettled%>" class="shortbox">
-<input type="hidden" id="dvd" name="decsettled" value="<%=dddpsettled%>" class="shortbox">
-<input type="hidden" id="quo" name="decsettled" value="<%=qtdpsettled%>" class="shortbox">
+<input type="<%=lbtype%>" name="startAgain" id="startAgain" >
+<input type="<%=lbtype%>" id="strtTime" name="strtTimeP" value="<%=strtTime%>" class="shortbox">
+<input type="<%=lbtype%>" id="quotDp" value="<%=expQuotDp%>" class="shortbox">
+<input type="<%=lbtype%>" id="dvsrDp" value="1" class="shortbox">
+<input type="<%=lbtype%>" id="dvdDp" value="<%=expDvdDp%>" class="shortbox"> 
+<input type="<%=lbtype%>" id="dvs" name="decsettled" value="<%=dsdpsettled%>" class="shortbox">
+<input type="<%=lbtype%>" id="dvd" name="decsettled" value="<%=dddpsettled%>" class="shortbox">
+<input type="<%=lbtype%>" id="quo" name="decsettled" value="<%=qtdpsettled%>" class="shortbox">
 
-<input type="hidden" id="divisor" value="<%=divisor%>" >
-<input type="hidden" id="quotDigs" value="<%=quotDigs%>" >
-<input type="hidden" id="quotient" value="<%=quotient%>" >
-<input type="hidden" id="nSigDig" value="<%=nSigDig%>" >
+<input type="<%=lbtype%>" id="divisor" value="<%=divisor%>" >
+<input type="<%=lbtype%>" id="quotDigs" value="<%=quotDigs%>" >
+<input type="<%=lbtype%>" id="quotient" value="<%=quotient%>" >
+<input type="<%=lbtype%>" id="nSigDig" value="<%=nSigDig%>" >
 
-<input type="hidden" id="dividend" value="<%=dividnd%>" >
+<input type="<%=lbtype%>" id="dividend" value="<%=dividnd%>" >
 </td>
 </tr>
 </tbody>

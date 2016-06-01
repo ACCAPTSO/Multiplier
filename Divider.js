@@ -236,6 +236,7 @@ function checkRemainder(col, expectedRemainder) {
         } else {
             var bdlength = doc.getElementsByName("bd" + whatRow).length;
             var offTheTable = bdlength > 0 ? bdlength : 1;
+            //offTheTable = 0;
             nextbox = lastBoxOfCurrRow + offTheTable;            
         }
         whatbox = nextbox;
@@ -860,6 +861,7 @@ function divide(immFeedBkCk, col, qtDig) {
                 } else {
                     var bdlength = doc.getElementsByName("bd" + whatRow).length;
                     var offTheTable = bdlength > 0 ? bdlength : 1;
+                    //offTheTable = 0;
                     nextbox = lastBoxOfCurrRow + offTheTable;
                 }
             } else {
@@ -1526,7 +1528,7 @@ function subtract(col, sbx) {
         }
         //if (hiddenBorBx !== null && Num(hiddenBorBx.value) >= -1) {
         if( borBx !== null && gBorrows[borCol][sbx] >= -1 ) {
-            borBx.style.height = "1.7em";
+            borBx.style.height = "1em";
             borBx.type = "text";
             borBx.style.color = "red";
             //var borVal = Num(hiddenBorBx.value);
@@ -1605,7 +1607,7 @@ function bringdown(sbx) {
 }
 function checkDivBorrow(col, sbx) {
     var ciBx = document.getElementById("ca" + col + "_" + sbx);
-    var ans = Num(ciBx.value);
+    var ans = Number(ciBx.value);
 
     if (ans === 1) {
         //document.getElementById("msg").innerHTML = "";
@@ -1627,11 +1629,12 @@ function checkNewDivVal(col, sbx) {
     var whatBorFrm;
     var borFrmValue;
     var borFrmBx;
+    var Num = Number;
     if (sbx === 0) {
         borFrmBxs = doc.getElementsByName("dvddigs");
         whatBorFrm = borFrmBxs.length - 1 - col;
         borFrmBx = borFrmBxs[whatBorFrm];
-        borFrmValue = Number(borFrmBx.childNodes[0].nodeValue); // read fixed node value
+        borFrmValue = Num(borFrmBx.childNodes[0].nodeValue); // read fixed node value
     } else {
         var ddx = sbx - 1;
         borFrmBxs = doc.getElementsByName("op" + ddx + "_1");
@@ -1643,12 +1646,12 @@ function checkNewDivVal(col, sbx) {
             whatBorFrm = borFrmBxs.length + bdBxs.length - 1 - col;
             borFrmBx = borFrmBxs[whatBorFrm];
         }
-        borFrmValue = Number(borFrmBx.value); // read from input
+        borFrmValue = Num(borFrmBx.value); // read from input
     }
     var coBx = doc.getElementById("ca" + col + "_" + sbx);
     var co = 0;
     if (coBx) {
-        co = 10 * Number(coBx.value);
+        co = 10 * Num(coBx.value);
     }
     var newBx = doc.getElementById("bo" + col + "_" + sbx);
 
@@ -1688,7 +1691,7 @@ function checkNewDivVal(col, sbx) {
 // cross off the digit being borrowed from, make new box visible for the
 // new operand digit and set the focus to the new box
 //function promptDivBorrow(col, sbx) {
-function promptDivBorrow( ev) {
+function promptDivBorrow( ev ) {
     ev = ev || window.event;
     var doc = document;
     //for (var j = 0; j < 18; j++) {
@@ -1698,11 +1701,12 @@ function promptDivBorrow( ev) {
     var evTarg = ev.target;
     var id = evTarg.getAttribute("id");
     if( id ) {
+        var Num = Number;
         var idlen = id.length;
         var col = id.substring(2,idlen);
         var startpt = col.indexOf("_") + 1;
-        var sbx = col.substring( startpt, idlen );
-        col = col.match(/[^_]*/);
+        var sbx = Num(col.substring( startpt, idlen ));
+        col = Num(col.match(/[^_]*/));
         //doc.getElementById("statusBox" + x).innerHTML = "in promptDivBorrow col = " + col + ", sbx = " + sbx;
         //x = x + 1;
         var borFrmBxs;
@@ -1718,7 +1722,7 @@ function promptDivBorrow( ev) {
                 //doc.getElementById("statusBox" + x).innerHTML = "sbx = " + sbx + " col = " + col + " whatBorFrm = " + whatBorFrm;
                 //x = x + 1;
                 borFrmBx = borFrmBxs[whatBorFrm];
-                borFrmValue = Number(borFrmBx.childNodes[0].nodeValue); // read fixed node value
+                borFrmValue = Num(borFrmBx.childNodes[0].nodeValue); // read fixed node value
                 //var whatHca = "hca" + prevCol + "_" + 0;
                 var whatHca = "ca" + prevCol + "_" + 0;
                 caBx = doc.getElementById(whatHca);
@@ -1741,7 +1745,7 @@ function promptDivBorrow( ev) {
                     //x = x + 1;
                     borFrmBx = borFrmBxs[whatBorFrm];
                 }
-                borFrmValue = Number(borFrmBx.value); // read from input
+                borFrmValue = Num(borFrmBx.value); // read from input
                 //var whatHca = "hca" + prevCol + "_" + sbx;
                 var whatHca = "ca" + prevCol + "_" + sbx;
                 caBx = doc.getElementById(whatHca);
@@ -1774,9 +1778,6 @@ function promptDivBorrow( ev) {
 
             //make sure it's really a column that should be borrowed from 
             // or do nothing
-            //if ( hiddenCaBx &&
-                    //Number(hiddenCaBx.value) !== 0 &&
-                    //doc.getElementsByName("showborrows")[0].checked ) {
             if ( caBx &&
                     caValue !== 0 &&
                     doc.getElementsByName("showborrows")[0].checked ) {
@@ -1787,7 +1788,7 @@ function promptDivBorrow( ev) {
                 if (borFrmValue === 0) {
                     // if 0 then cross off the carry in as well
                     // if it's 0 & no carry in, there is nothing to borrow so do nothing
-                    if (coBx && Number(coBx.value) === 1) {
+                    if (coBx && Num(coBx.value) === 1) {
                         borFrmBx.style.setProperty("text-decoration", "line-through");
                         coBx.style.textDecoration = "line-through";
                         newBx.focus();
@@ -2355,6 +2356,9 @@ function setDivFocus() { // this part is javascript
         //x.elements[i].value="";
         x.elements[i].onkeydown = clearthis;
         x.elements[i].focus(); // set focus to whatbox
+    } else {
+        x.elements[i].focus();
+        x.elements[i].blur();
     }
 }
 function clearthis( ev ) {
