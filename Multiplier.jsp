@@ -77,7 +77,7 @@ incorrect //-->
     int[][] cmult;  // multiplicative carry
     int[][] ansint; // intermediate answer string
     String[] ans;   // final answer string   
-    int[] cadd;      // additive carry
+    // int[] cadd;      // additive carry
     
     int nonZeros = 0;
     int msDigit = 0;
@@ -183,7 +183,7 @@ incorrect //-->
 
     op = new int[2][SZ2_MX];
     cmult = new int[btmOpDgts][SZ2_MX];
-    cadd = new int[SZ2_MX];
+    //cadd = new int[SZ2_MX];
     ansint = new int[3][SZ2_MX+2];
     ans = new String[SZ2_MX+2];
 
@@ -195,7 +195,7 @@ incorrect //-->
         for( int jdx = 0; jdx < btmOpDgts; jdx++ ) { 
             cmult[jdx][idx] = 0;
         }
-        cadd[idx] = 0;
+       //cadd[idx] = 0;
     }
     max = SZ2_MX + 2;
     for ( int idx = 0; idx < max; idx++ ) {
