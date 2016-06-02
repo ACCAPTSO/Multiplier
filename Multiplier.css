@@ -25,7 +25,8 @@ header {
 }
 th {
   border:2px solid black;
-  background-color: #FAF3E4;
+  //background-color: #FAF3E4;
+  background-color: #f0f4f9;
   //text-align: center;
 }
 td {
@@ -114,10 +115,10 @@ button {
   min-width: 0.7em;
   max-width: 0.7em;
   //background-color: black;
-  background-color: #969C82;
+  background-color: #FAF3E4;
   //background-color: #ccccE8;
   text-align: center;
-  border:1px solid black;
+  border:1px solid #FAF3E4;
   margin-left: 0px;
   margin-right: 0px;
   font: inherit;
@@ -177,7 +178,8 @@ button {
     width: 5em;
     text-align: center;
     color: black;
-    background-color: #E6EAE8;
+    //background-color: #E6EAE8;
+    background-color: #f0f4f9;
     border-top-color: #2E7FA7;
     border-left-color: #2E7FA7;
     border-bottom-color: #D6DAD8;

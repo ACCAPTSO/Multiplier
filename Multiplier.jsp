@@ -37,7 +37,7 @@ this is a comment -the // is for javascript
 <!-- Multiplier.jsp is what will take the user's input and display it red if 
 incorrect //-->
 <%
-    
+    //System.out.println("starting multiplication page");
     String tmp = "";      // temporary storage for newly gotten 
                           // request parameter
     
@@ -74,10 +74,10 @@ incorrect //-->
     String lastans = "";
         
     int max = 0;    // loop counter maximum
-    String[][] cms; //string version of multiplicative carry
-    String[][] ais; // intermediate answer string
+    int[][] cmult;  // multiplicative carry
+    int[][] ansint; // intermediate answer string
     String[] ans;   // final answer string   
-    String[] cas;   // additive carry string
+    int[] cadd;      // additive carry
     
     int nonZeros = 0;
     int msDigit = 0;
@@ -182,9 +182,9 @@ incorrect //-->
     }
 
     op = new int[2][SZ2_MX];
-    cms = new String[btmOpDgts][SZ2_MX];
-    cas = new String[SZ2_MX];
-    ais = new String[3][SZ2_MX+2];
+    cmult = new int[btmOpDgts][SZ2_MX];
+    cadd = new int[SZ2_MX];
+    ansint = new int[3][SZ2_MX+2];
     ans = new String[SZ2_MX+2];
 
     bdx = 0;
@@ -193,15 +193,15 @@ incorrect //-->
         op[0][idx] = 0;
         op[1][idx] = 0;   
         for( int jdx = 0; jdx < btmOpDgts; jdx++ ) { 
-            cms[jdx][idx] = "";
+            cmult[jdx][idx] = 0;
         }
-        cas[idx] = "";
+        cadd[idx] = 0;
     }
     max = SZ2_MX + 2;
     for ( int idx = 0; idx < max; idx++ ) {
         ans[idx] = "";
         for ( int jdx = 0; jdx < 3; jdx++ ) {
-            ais[jdx][idx] = "";
+            ansint[jdx][idx] = 0;
         }
     }
 
@@ -244,6 +244,18 @@ incorrect //-->
         if( op[0][kdx] > 0 ) {
             nonZeros += 1;
             msDigit = kdx + 1;
+            for( int jdx = 0; jdx < topOpDgts; ++jdx ) {
+                int prod = op[0][kdx]*op[1][jdx];
+                if( jdx > 0 ) {
+                    prod += cmult[kdx][jdx-1];
+                }
+                cmult[kdx][jdx] = prod/10;
+                ansint[kdx][jdx] = prod - 10*cmult[kdx][jdx];
+                //System.out.println("op[0][" + kdx + "] * op[1][" + jdx + "] = " + op[0][kdx] + " * " + op[1][jdx] + " = " + prod + " cmult[" + kdx + "][" + jdx + "] = " + cmult[kdx][jdx] + " ansint[" + kdx + "][" + jdx + "] = " + ansint[kdx][jdx]);
+            }
+            ansint[kdx][topOpDgts] = cmult[kdx][topOpDgts-1];
+            //int junk2 = topOpDgts - 1;
+            //System.out.println("ansint[" + kdx + "][" + topOpDgts + "] = " + ansint[kdx][topOpDgts]);
         }
     }
     
@@ -295,40 +307,67 @@ incorrect //-->
     int idxmin = nonZeros > 1? 0 : strtRow;
     int inc = nonZeros > 1? 0 : strtRow;
     for( int idx = 0; idx < maxAdig[0]; idx++ ) {
-        if( idx > idxmin && idx < idxmax && op[0][0] > 1 ) {
+        //System.out.println("idx = " + idx + " idxmin = " + idxmin + " idxmax = " + idxmax + " op[0][0] = " + op[0][0] + " cmult[0][" + idx + "] = " + cmult[0][idx]);
+        if( idx > idxmin && idx < idxmax && op[0][0] > 1 &&
+                cmult[0][idx-idxmin-1] > 0 ) {
             whatBx[ldx] = em - idx + inc; // first multiplicative carry boxes
+            //System.out.println("mcBx[" + ldx + "] = " + whatBx[ldx] + " = em - idx + inc = " + em + " - " + idx + " + " + inc);
             ldx++;
         }
         whatBx[ldx] = el - idx; // first intermediate answer boxes
+        //System.out.println("multBx[" + ldx + "] = " + whatBx[ldx] + " = el - idx = " + el + " - " + idx);
         ldx++;
     }
     if( btmOpDgts > 1 ) {
         for( int idx = 0; idx < maxAdig[1]; idx++ ) {
-            if( idx > idxmin && idx < idxmax && op[0][1] > 1 ) {
+            if( idx > idxmin && idx < idxmax && op[0][1] > 1 &&
+                    cmult[1][idx-idxmin-1] > 0 ) {
                 whatBx[ldx] = pe - idx + inc;
+                //System.out.println("mcBx[" + ldx + "] = " + whatBx[ldx] + " = pe - idx + inc = " + pe + " - " + idx + " + " + inc);
                 ldx++;
             }
             whatBx[ldx] = en - idx;
+            //System.out.println("multBx[" + ldx + "] = " + whatBx[ldx] + " = en - idx = " + en + " - " + idx);
             ldx++;
         }
         if( btmOpDgts > 2 ) {
             for( int idx = 0; idx < maxAdig[2]; idx++ ) {
-                if( idx > idxmin && idx < idxmax && op[0][2] > 1 ) {
+                if( idx > idxmin && idx < idxmax && op[0][2] > 1 &&
+                    cmult[2][idx-idxmin-1] > 0 ) {
                     whatBx[ldx] = te - idx + inc;
+                            //System.out.println("mcBx[" + ldx + "] = " + whatBx[ldx] + " = te - idx + inc = " + te + " - " + idx + " + " + inc);
                     ldx++;
                 }
                 whatBx[ldx] = es - idx;
+                //System.out.println("multBx[" + ldx + "] = " + whatBx[ldx] + " = es - idx = " + es + " - " + idx);
                 ldx++;
             }
         }
     }
  
+    int prevcarry = 0;
     if( nonZeros > 1 ) {
         for( int idx = 0; idx < maxAndig; idx++ ) {
             if( idx > 1 && (msDigit == 2 && idx <= maxAdig[1] && maxAdig[0] != 0
                 || msDigit == 3 && idx <= maxAdig[2]+1 && (maxAdig[1] != 0 || maxAdig[0] != 0) )) {
-                whatBx[ldx] = ar - idx + inc; // additive carry boxes
-                ldx++;
+                int acarry = 0;
+                for( int jdx = 0; jdx < 3; ++jdx ) {
+                    //System.out.println("idx = " + idx + " jdx = " + jdx);
+                    int i = idx - jdx - 1;
+                    if( 0 <= i && i <  SZ2_MX + 2 ) {
+                        acarry += ansint[jdx][i];
+                        //System.out.println("ansint[" + jdx + "][" + i + "] = " + ansint[jdx][i] + " acarry = " + acarry);
+                    }
+                }
+                acarry += prevcarry;
+                //System.out.println("before truncating acarry = " + acarry);
+                acarry = acarry/10;
+                //System.out.println("after truncating acarry = " + acarry);
+                prevcarry = acarry;
+                if( acarry > 0 ) {
+                    whatBx[ldx] = ar - idx + inc; // additive carry boxes
+                    ldx++;
+                }
             }
             whatBx[ldx] = qu - idx; // final answer boxes
             ldx++;
@@ -364,7 +403,7 @@ incorrect //-->
                         col = 0;
                     }  %>
                     <td class="t2"><input type="text" name="<%=name%>" class="c2" 
-                            value="<%=cms[row][col]%>"
+                            
                             onkeyup="checkCarry( <%=row%>, <%=col%> )"></td>
 <%              } %>
                 <td class="t1"></td>
@@ -444,7 +483,7 @@ incorrect //-->
                  col = 0;
             } %>
             <td class="t2"><input type="text" name="<%=name%>" class="c2" 
-                 value="<%=cas[col]%>"
+                 
                  onkeyup="checkAddCarry(<%=col%>)"></td>
 <%      } else { %>
             <td class="t2"></td>
@@ -480,11 +519,11 @@ incorrect //-->
             String name = "ai" + row + "" + col; 
             if( idx >= spacesb4ai && idx < aispaces ) {  %>
                 <td class="t1"><input type="text" name="<%=name%>" class="a1" size="1"
-                    value="<%=ais[row][col]%>" 
+                     
                     onkeyup="checkMult( <%=row%>, <%=col%> )"></td>
 <%          } else if( idx >= spacesb4ai && nonZeros == 1 ) { %>
                 <td class="t1"><input type="text" name="<%=name%>" class="a1" size="1"
-                    value="<%=ais[row][col]%>" 
+                     
                     onkeyup="checkZero( <%=row%>, <%=col%> )"></td>
 <%          } else { 
                 String possZero; 

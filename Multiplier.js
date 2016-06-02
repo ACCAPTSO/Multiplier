@@ -3,7 +3,8 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-// set the default input focus
+// set the default input 
+
 function setFocus() { // this part is javascript
     var x = document.getElementById("th-id2");
     var j = document.getElementById("whatbox");
@@ -15,6 +16,8 @@ function setFocus() { // this part is javascript
     //if( name !== null && !x.elements[i].isEqualNode(j) ) {
     if( !x.elements[i].isEqualNode(j) ) {
         x.elements[i].style.backgroundColor = "white";
+        x.elements[i].style.borderColor = "black";
+        x.elements[i].style.borderWidth = "1px";
         x.elements[i].style.color = "red";
         x.elements[i].type = "text";
         //x.elements[i].value="";
@@ -31,7 +34,6 @@ function clearthis( ev ) {
 
 
 function zeroCounts() {
-    var max = Number(document.getElementById('lastbox').value);
         
     // update problem counts
     document.getElementById("numAttmptd").value = -1;
@@ -86,7 +88,7 @@ function checkZero( row, col ) {
         //errBx.style.color = "#FAF3E4";
         errBx.innerHTML = "";
         op0Bx.style.color = "black";
-        ansBx.style.backgroundColor =  "#E6EAE8";
+        ansBx.style.backgroundColor = "#f0f4f9";
         ansBx.style.color = "black";
         // advance the box
         var bdx = Number(document.getElementById('bdx').value) + 1;
@@ -149,7 +151,7 @@ function checkMult( row, col ) {
         if( cinBx.length > 0 ) {
             cinBx[0].style.color = "black";
         }
-        ansBx.style.backgroundColor =  "#E6EAE8";
+        ansBx.style.backgroundColor = "#f0f4f9";
         ansBx.style.color = "black";
         // advance the box
         var bdx = Number(document.getElementById('bdx').value) + 1;
@@ -198,7 +200,7 @@ function checkCarry( row, col ) {
         if( cinBx.length > 0 ) {
             cinBx[0].style.color = "black";
         }
-        ansBx.style.backgroundColor =  "#E6EAE8";
+        ansBx.style.backgroundColor = "#f0f4f9";
         ansBx.style.color = "black";
         // advance the box
         var bdx = Number(document.getElementById("bdx").value) + 1;
@@ -268,7 +270,7 @@ function checkAddCarry( col ) {
                 pcBx[0].style.color = "black"
             }
         }
-        ansBx.style.backgroundColor =  "#E6EAE8";
+        ansBx.style.backgroundColor = "#f0f4f9";
         ansBx.style.color = "black";
         // advance the box
         var bdx = Number(document.getElementById("bdx").value) + 1;
@@ -372,7 +374,7 @@ function checkAdd( col ) {
         if( pcBx != null && pcBx.length > 0 ) {
             pcBx[0].style.color = "black";
         }
-        ansBx.style.backgroundColor =  "#E6EAE8";
+        ansBx.style.backgroundColor = "#f0f4f9";
         ansBx.style.color = "black";
         // advance the box
         var bdx = Number(document.getElementById("bdx").value) + 1;
