@@ -16,7 +16,8 @@ body {
   //width: 50%;
   margin: 0 auto;
   //text-align: left;
-  background-color:  #e9effb;
+  //background-color:  #E9EFFB;
+  background-color:  #ebf1fd;
   //columns: 2 auto;
 }
 header {
@@ -25,7 +26,7 @@ header {
 
 th {
     border:2px solid black;
-    //background-color:  #e9effb;
+    //background-color:  #ebf1fd;
     background-color:  #638456;
     color: white;
   //text-align: center;
@@ -90,7 +91,7 @@ td {
   max-width: 1em;
   margin-left: 0px;
   margin-right: 0px;
-  background-color:  #e9effb;;
+  background-color:  #ebf1fd;;
   padding: 0px;
 }
 /* table cell with operand or answer digit */
@@ -101,7 +102,7 @@ td {
   max-width: 1.5em;
   margin-left: 0px;
   margin-right: 0px;
-  background-color:  #e9effb;;
+  background-color:  #ebf1fd;;
   padding: 0px;
 }
 /* carry boxes */
@@ -127,8 +128,8 @@ td {
   margin-left: 0px;
   margin-right: 0px;
   border:1px;
-  background-color:  #e9effb;;
-  color:  #e9effb;;
+  background-color:  #ebf1fd;;
+  color:  #ebf1fd;;
   text-align: center;
   font: inherit;
   height: 1.7em;
@@ -187,7 +188,7 @@ td {
     background-color: #638456;
 }
 .DragBox {
-    color : #e9effb;
+    color : #ebf1fd;
     //border : none;
     position : fixed;
     //display : block; 
@@ -195,7 +196,7 @@ td {
     margin: 0px;
 }
 #th-id2 {
-    background-color: #e9effb;
+    background-color: #ebf1fd;
   //text-align: center;
   columns: 3 auto;
 }
@@ -203,7 +204,7 @@ td {
     //text-align: left;
     margin-left: 1em;
     color: red;
-    //color: #e9effb;
+    //color: #ebf1fd;
 }
 #statusBox{
     background-color: tan;
