@@ -651,10 +651,10 @@
     </tr>
 </table>
 </div>
-<div id="statusBox0" class="d2"></div>
-<div id="statusBox1"></div>
-<div id="statusBox2"></div>
-<div id="statusBox3"></div>
+<% for( int i = 0; i < 30; ++i ) {
+    String sid = "statusBox" + i; %>
+    <div id="<%=sid%>"></div>
+<% } %>
 
 <% if( isLinedUp == "false" ) { %>
 <table>
@@ -764,5 +764,6 @@
 </form>
 
 </div>
+<a href="index.html">Main Index</a>
 </body>
 </html>
