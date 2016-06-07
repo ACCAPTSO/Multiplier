@@ -3,8 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-// right side jumps right after last digit entered fixit not with showBorrows checked why is that?
-// boca boxes change size and make picture jump fixit
 
 //var x = 0;
 //var whatBoxBx = null;
@@ -150,13 +148,14 @@ function recDownPos( ev ) {
             posRecorded = true;
             leftPos = mousePos.x;
             document.getElementById("tbl").onmouseup = checkEnds;
+            barPosition = barPos;
         } else if( rightside - tol < mousePos.x ) {
             posRecorded = true;
             rightPos = mousePos.x;
             document.getElementById("tbl").onmouseup = checkEnds;
+            barPosition = barPos;
         }
-    }
-    barPosition = barPos;
+    } 
 }
 function checkEnds( ev ) {
     //var x = 10;
@@ -380,12 +379,6 @@ function checkMcarry(col, sbx) {
     }
 
     var dvsrdigs = doc.getElementsByName("dvsrdigs");
-    //for (var i = 0; i <= col; i++) {
-        //var whatdvsrDig = dvsrdigs.length - 1 - i;
-        //var dvsrDig = dvsrdigs[whatdvsrDig].childNodes[0].nodeValue;
-        //mcarry += Num(dvsrDig) * qdigit[sbx];
-        //mcarry = Math.floor(mcarry / 10);
-    //}
     mcarry = gMcarries[col][sbx];
     if (ans === mcarry) {
         ansBx.style.color = "black";
@@ -562,11 +555,6 @@ function divide(immFeedBkCk, col, qtDig) {
             }
         }
         //doc.getElementById("statusBox" + x).innerHTML = "dvdBxs.length = " + dvdBxs.length + " quotDigs = " + quotDigs + " i = " + i;
-        //x = x + 1;
-        //var quotient = Num(doc.getElementById("quotient").value);
-        //var intQuotDigs = 1 + Mat.floor(Mat.log10(quotient));
-        //var leadzeros = quotDigs - intQuotDigs;
-       //doc.getElementById("statusBox" + x).innerHTML = "quotient = " + quotient + " intQuotDigs = " + intQuotDigs + " leadzeros = " + leadzeros;
         //x = x + 1;
         while (i >= 0) {
             dvdDigVal = Num(dvdBxs[i].childNodes[0].nodeValue);
@@ -1589,11 +1577,7 @@ function bringdown(sbx) {
             dvddigs[whatDig].style.color = "black";
         }
         doc.getElementById("msg").innerHTML = "";
-        //var prevDividend = Num(doc.getElementById("operand" + sbx + "_1").value);
-        //var newDividend = 10 * prevDividend + ans;
-        //doc.getElementById("operand" + sbx + "_1").value = newDividend;
-        var newval = thisRowsBdDigsVal + 1;
-        //doc.getElementById("bringdown" + sbx).value = newval;
+        var newval = thisRowsBdDigsVal + 1;;
         gBringDownDigs[sbx] = newval;
         ++lastBoxOfCurrRow;
         var nextbox = nextQuotBox;
@@ -1790,21 +1774,21 @@ function promptDivBorrow( ev ) {
                     // if it's 0 & no carry in, there is nothing to borrow so do nothing
                     if (coBx && Num(coBx.value) === 1) {
                         borFrmBx.style.setProperty("text-decoration", "line-through");
+                        borFrmBx.onclick = null;
                         coBx.style.textDecoration = "line-through";
                         newBx.focus();
                         newBx.style.backgroundColor = "white";
                         newBx.style.color = "red";
                         newBx.style.border = "1px solid black";
-                        //newBx.style.height = "1.7em";
                         newBx.value = "";
                     }
                 } else {
                     borFrmBx.style.setProperty("text-decoration", "line-through");
+                    borFrmBx.onclick = null;
                     newBx.focus();
                     newBx.style.backgroundColor = "white";
                     newBx.style.color = "red";
                     newBx.style.border = "1px solid black";
-                    //newBx.style.height = "1.7em";
                     newBx.value = "";
                 }
 
@@ -2275,7 +2259,6 @@ function checkRoundOff( ev ) {
 
     var header = doc.getElementById("F1");                   
     var significant = header.innerHTML;
-    //var nDig = Num(significant.match(/[0-9]*/)); // parse out the number
     significant = significant.match(/significant/);
     var nSigDig = Num(doc.getElementById("nSigDig").value) + 1;
     var quotDigs = doc.getElementsByName("quotdigs");
@@ -2311,8 +2294,6 @@ function checkRoundOff( ev ) {
         var nextbox = whatbox;
         
         var quotDp = Num(doc.getElementById("quotDp").value);
-        //var actQuotDigs = 1 + Mat.log10(quotient);
-        //doc.getElementById("statusBox" + x).innerHTML = "col = " + col + " nSigDig = " + nSigDig + " quotDp = " + quotDp;
         if( col > nSigDig ||  col >= quotDp ) {         
             nextbox = nextbox + 1;
         } else { // only one place to round
@@ -2339,16 +2320,11 @@ function checkRoundOff( ev ) {
     setDivFocus();
 }
 // set the default input focus
-function setDivFocus() { // this part is javascript
+function setDivFocus() {
     var x = document.getElementById("th-id2");
     var i = whatbox;
     var j = document.getElementById("whatbox");
     var i =  whatbox < 0 ? Number(j.value) : whatbox;
-    //var name = x.elements[i].getAttribute("name");
-    //document.getElementById("statusBox0").innerHTML = "name = " + name;
-    //var id = x.elements[i].getAttribute("id");
-    //document.getElementById("statusBox1").innerHTML = "id = " + id;
-    //if( name !== null && !x.elements[i].isEqualNode(j) ) {
     if( !x.elements[i].isEqualNode(j) ) {
         x.elements[i].style.backgroundColor = "white";
         x.elements[i].style.color = "red";

@@ -25,16 +25,16 @@
     final int maxOps = 7;
     final double NEXP = 2.6; // used to generate # of digits 
     final double DEXP = 1.4; // used to generate digits themselves or # operands
-    boolean noCarriesCk = true;
+    boolean noCarriesCk = false;
     boolean carriesCk = false;
     boolean moreThn2Ck = false;
     boolean fxDecPtCk = false;
-    boolean varDecPtCk = false;
-    String isNoCarries = "checked";
+    boolean varDecPtCk = true;
+    String isNoCarries = "";
     String isMoreThn2 = "";
     String isCarries = "";
     String isFixedDp = "";
-    String isVarDp = "";
+    String isVarDp = "checked";
     String tmp = "";      // temporary storage for newly gotten 
                           // request parameter
     String whatlvl = "";
@@ -43,6 +43,14 @@
     if(( tmp = request.getParameter("difflvl")) != null ) {
         noCarriesCk = false;
         isNoCarries = "";
+        carriesCk = false;
+        isCarries = "";
+        moreThn2Ck = false;
+        isMoreThn2 = "";
+        fxDecPtCk = false;
+        isFixedDp = "";
+        varDecPtCk = false;
+        isVarDp = "";
         whatlvl = tmp;
         if( whatlvl.equals("No Carries") ) {
             noCarriesCk = true;

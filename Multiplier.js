@@ -495,7 +495,12 @@ function chooseThis( which_one ) {
     if( totDec === 0 || ( which_one !== 7 && btns[which_one].style.color === "black") ||
         Num(doc.getElementById("bdx").value) < Num(doc.getElementById("lastbox").value - 1 ))  { 
         //doc.getElementById("decRmdr").style.color=doc.getElementById("decRmdr").style.backgroundColor;
-        doc.getElementById("msg").innerHTML = "";
+        var linedUpBx = doc.getElementById("linedUp");
+        if( !linedUpBx || linedUpBx.value === "true" ) {
+            doc.getElementById("msg").innerHTML = "";
+        } else {
+            doc.getElementById("msg").innerHTML = "Drag red box(es) to line up decimal points";
+        }
     } else {
         //doc.getElementById("decRmdr").style.color = "red";
         doc.getElementById("msg").innerHTML = "Click where decimal point should be";

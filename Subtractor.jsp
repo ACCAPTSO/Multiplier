@@ -16,18 +16,19 @@
 </head>
 <body>
    
-<%  final int SZ2_MX = 5; // maximum answer size
+<%  // 9.3 - 0.014 give wrong error message when you put xx96 for an answer fixit
+    final int SZ2_MX = 5; // maximum answer size
     final int maxOps = 2;
     final double NEXP = 2.6; // used to generate # of digits 
     final double DEXP = 1.4; // used to generate digits themselves or # operands
-    boolean noBorrowsCk = true;
+    boolean noBorrowsCk = false;
     boolean borrowsCk = false;
     boolean fxDecPtCk = false;
-    boolean varDecPtCk = false;
-    String isNoBorrows = "checked";
+    boolean varDecPtCk = true;
+    String isNoBorrows = "";
     String isBorrows = "";
     String isFixedDp = "";
-    String isVarDp = "";
+    String isVarDp = "checked";
     String tmp = "";      // temporary storage for newly gotten 
                           // request parameter
     String whatlvl = "";
@@ -36,6 +37,12 @@
     if(( tmp = request.getParameter("difflvl")) != null ) {
         noBorrowsCk = false;
         isNoBorrows = "";
+        borrowsCk = false;
+        isBorrows = "";
+        fxDecPtCk = false;
+        isFixedDp = "";
+        varDecPtCk = false;
+        isVarDp = "";  
         whatlvl = tmp;
         if( whatlvl.equals("No Borrows") ) {
             noBorrowsCk = true;
@@ -48,7 +55,7 @@
             isFixedDp = "checked";
         } else if( whatlvl.equals("Variable Decimal Point")) {
             varDecPtCk = true;
-            isVarDp = "checked";
+            isVarDp = "checked";   
         }
     }
     
@@ -387,9 +394,10 @@
     <tr>
 <%  int spacesb4an = SZ2_MX + 1 - maxAnDig; // entire width of table minus 
                                             // answer spaces
-    for( int idx = 0; idx <= SZ2_MX; idx++ ) { %>
+    for( int idx = 0; idx <= SZ2_MX; idx++ ) {        
+        String whatFun = fxDecPtCk || varDecPtCk ? "chooseThis( " + idx + " )": null; %>
         <td class="t2">
-        <span name="dec-pt" onclick="chooseThis( <%=idx%> )" class="dp" >_</span>
+        <span name="dec-pt" onclick="<%=whatFun%>" class="dp" >_</span>
         </td>
 <%      if( idx >= spacesb4an ) { 
             int col = SZ2_MX - idx;
@@ -529,6 +537,7 @@
 </form>
 
 </div>
+<a href="index.html">Main Index</a>
 </body>
 </html>
 

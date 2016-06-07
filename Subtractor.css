@@ -17,7 +17,8 @@ body {
   //width: 50%;
   margin: 0 auto;
   //text-align: left;
-  background-color:  #fdfdef;
+  //background-color:  #FFFDEF;;
+  background-color:  #f7f5e7;
   //columns: 2 auto;
 }
 header {
@@ -77,7 +78,9 @@ td {
   border: 2px solid black;
   margin-top: 0.2em;
   margin-left: 10%;
-  background-color: #f0f0f0;
+  //background-color: #f0f0f0;
+  //background-color: #f9f9ff;
+  background-color: white;
   //min-width: 19em;
   //max-width: 19em;
 /*  width: 192px; */
@@ -91,7 +94,7 @@ td {
   margin-left: 0px;
   margin-right: 0px;
   margin-top: 0px;
-  background-color:  #fdfdef;
+  background-color:  #f7f5e7;
   padding: 0px;
   height: 1.5em;
   //padding-top: 0px;
@@ -105,7 +108,7 @@ td {
   max-width: 1.5em;
   margin-left: 0px;
   margin-right: 0px;
-  background-color: #fdfdef;
+  background-color: #f7f5e7;
   padding: 0px;
   height: 1.5em;
 }
@@ -118,6 +121,7 @@ td {
     //background-color: #bcbebe;
     //background-color: #a4a6a7;
     //background-color: #ccccE8;
+    background-color:  #f7f5e7;
     text-align: center;
     //border:1px solid black;
     border: none;
@@ -134,6 +138,7 @@ td {
   max-width: 1.1em;
   //background-color: black; #cfd2d1;
   //background-color: #cac8cd;
+  background-color:  #f7f5e7;
   color: black; 
   text-align: center;
   //border: 1px solid black;
@@ -178,7 +183,8 @@ td {
   min-width: 1.1em;
   max-width: 1.1em;
   //background-color: black; #cfd2d1;
-  background-color: #cac8cd;
+  //background-color: #cac8cd;
+  background-color: #8488a4;
   //background-color: #a4a6a7;
   color: black; 
   text-align: center;
