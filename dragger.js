@@ -15,7 +15,6 @@ var dragHelper  = new Array();
 var operands = new Array();
 var dragging = false;
 var dragBox = null; // this is the dragHelper clicked on
-var dBoxWidth = 0;
 var boxHeight = 0;
 var yClick = null;
 var xOffs = 0;
@@ -28,7 +27,6 @@ var mouseOffset = null;
 var iMouseDown  = false; 
 var lMouseState = false; 
 var curTarget   = null; 
-var lastTarget  = null; 
 var activeCont = null; 
 var x = 0;
 function getMouseOffset(target, ev){ 
@@ -48,7 +46,7 @@ function getPosition(e){
     } 
     left += e.offsetLeft; 
     top  += e.offsetTop; 
-    return {x:Number(left), y:Number(top)}; 
+    return {x:left, y:top}; 
 }
 function mouseCoords(ev){ 
     var doc = document;
@@ -56,27 +54,10 @@ function mouseCoords(ev){
 	return {x:ev.pageX, y:ev.pageY}; 
     } 
     return { 
-	x:Number(ev.clientX) + Number(doc.body.scrollLeft) - Number(doc.body.clientLeft), 
-	y:Number(ev.clientY) + Number(doc.body.scrollTop)  - Number(doc.body.clientTop)
+	x:ev.clientX + doc.body.scrollLeft - doc.body.clientLeft, 
+	y:ev.clientY + doc.body.scrollTop  - doc.body.clientTop
     }; 
-} 
-        /*
-	function getPosition(e){ 
-            var rect = e.getBoundingClientRect();
-	    var left = rect.left; 
-	    var top  = rect.top; 
-	    return {x:Number(left), y:Number(top)}; 
-	} */
-function mouseCoords(ev){ 
-    var doc = document;
-    if(ev.pageX || ev.pageY){ 
-	return {x:ev.pageX, y:ev.pageY}; 
-    } 
-    return { 
-	x:Number(ev.clientX) + Number(doc.body.scrollLeft) - Number(doc.body.clientLeft), 
-	y:Number(ev.clientY) + Number(doc.body.scrollTop)  - Number(doc.body.clientTop)
-    }; 
-}  	
+} 	
 function mouseMove(ev){ 
     ev         = ev || window.event; 
     var mousePos = mouseCoords(ev);
@@ -95,7 +76,8 @@ function mouseMove(ev){
 	if(iMouseDown && !lMouseState){ 
             mouseOffset   = getMouseOffset(dBox, ev); 
             var squares = dBox.childNodes;
-            for( var i = 0; i < squares.length; i++ ) {
+            var slength = squares.length;
+            for( var i = 0; i < slength; i++ ) {
                 if( squares[i].nodeType === 1 ) {
                     squares[i].style.color = "red";
                 }
@@ -110,7 +92,8 @@ function mouseMove(ev){
 	if(((tPos - 10) < xPos) && (strtY < yCk) && ((tPos + 10)  > xPos) && ((strtY + cHgtY) > yCk)){ 
             var squares = dBox.childNodes;
             dBox.style.backgroundColor = "black";
-            for( var i = 0; i < squares.length; i++ ) {
+            slength = squares.length;
+            for( var i = 0; i < slength; i++ ) {
                 if( squares[i].nodeType === 1 ) {
                     squares[i].style.color = "black";
                 }
@@ -119,7 +102,8 @@ function mouseMove(ev){
         } else {
             var squares = dBox.childNodes;
             dBox.style.backgroundColor = "red";
-            for( var i = 0; i < squares.length; i++ ) {
+            slength = squares.length;
+            for( var i = 0; i < slength; i++ ) {
                 if( squares[i].nodeType === 1 ) {
                     squares[i].style.color = "red";
                 }
@@ -140,7 +124,7 @@ function mouseUp(ev){
 	if(activeCont){ 
             //document.getElementById("statusBox" + x).innerHTML = "mouse is up targPos = " + targPos + " xOffs = " + xOffs;
             //x = x + 1;
-            var leftPos = targPos - Number(dBox.getAttribute('dpOffs')); ;
+            var leftPos = targPos - Number(dBox.getAttribute("dpOffs")); ;
 	    dBox.style.left = leftPos + "px";
             checklineup();
         } 
@@ -152,34 +136,36 @@ function mouseUp(ev){
 } 
 function mouseDown(ev){ 
     ev = ev || window.event; 
-    iMouseDown = true; 
-    if( ( document.getElementById('linedUp').value === "true") || lastTarget){ 
+    iMouseDown = true;
+    var Num = Number;
+    if( document.getElementById("linedUp").value === "true" ){ 
 	return false; 
     } 
 
     var mousePos = mouseCoords(ev);
     var dHelper = dragHelper;
-    for( var i = 0; i < dHelper.length; ++i ) {
-        var top = Number(dHelper[i].style.top.match(/[0-9]+/)); 
+    var dhlength = dHelper.length;
+    for( var i = 0; i < dhlength; ++i ) {
+        var top = Num(dHelper[i].style.top.match(/[0-9]+/)); 
         var bottom = top + boxHeight;
-        var left = Number(dHelper[i].style.left.match(/[0-9]+/));
+        var left = Num(dHelper[i].style.left.match(/[0-9]+/));
         var right = left + 
-                    Number(getComputedStyle(dHelper[i]).width.match(/[0-9]+/));
+                    Num(getComputedStyle(dHelper[i]).width.match(/[0-9]+/));
         if( top < mousePos.y && mousePos.y < bottom &&
                    left < mousePos.x && mousePos.x < right ) {
             dragBox = dHelper[i];
             dragging = true;
             var yCk = top + 1;
             yClick = yCk;
-            xOffs = Number(dHelper[i].getAttribute('dpOffs')); 
+            xOffs = Num(dHelper[i].getAttribute("dpOffs")); 
             var ops = operands;
             var opslength = ops.length;
             for(var i=0; i < opslength; ++i){ 
                 var o = ops[i];
-                var strtY = Number(o.getAttribute('startTop'));
-                var hgtY =  Number(o.getAttribute('startHeight'));
+                var strtY = Num(o.getAttribute("startTop"));
+                var hgtY =  Num(o.getAttribute("startHeight"));
                 if( (strtY < yCk) && ((strtY + hgtY) > yCk)){ 
-                    targPos = Number(o.getAttribute('targPos'));
+                    targPos = Num(o.getAttribute("targPos"));
                     whatTarg = i;
                     cStrtY = strtY;
                     cHgtY = hgtY;
@@ -194,19 +180,21 @@ function mouseDown(ev){
 } 
 function checklineup() {
     var doc = document;
-    if( doc.getElementById('linedUp').value === "false") {
+    var Num = Number;
+    if( doc.getElementById("linedUp").value === "false") {
         var ops = operands;
         var opslength = ops.length;
-        var opDpPos = Number(ops[0].getAttribute('targPos')); // same for all operands
+        var opDpPos = Num(ops[0].getAttribute("targPos")); // same for all operands
         var allLinedUp = true;
         var dHelper = dragHelper;
         // there may be more helpers than operands, only check the ones that
         // have corresponding operands
         for( var idx = 0; idx < opslength; idx++ ) { 
             var dHelperIdx = dHelper[idx];
-            var dhOffs = Number(dHelperIdx.getAttribute('dpOffs'));
+            var dhOffs = Num(dHelperIdx.getAttribute("dpOffs"));
             var hpDpPos = getPosition(dHelperIdx).x + dhOffs; 
             var squares = dHelperIdx.childNodes;
+            var slength = squares.length;
             var tol = 3;
             if( opDpPos - tol < hpDpPos && hpDpPos < opDpPos + tol ) {
                 if( opDpPos !== hpDpPos ) { // line them up if not exact
@@ -214,7 +202,7 @@ function checklineup() {
                     dHelperIdx.style.left = leftPos + "px";
                 }
                 dHelperIdx.style.backgroundColor = "#bcbebe";
-                for( var i = 0; i < squares.length; i++ ) {
+                for( var i = 0; i < slength; i++ ) {
                     if( squares[i].nodeType === 1 ) {
                         squares[i].style.color = "black";
                     }
@@ -222,7 +210,7 @@ function checklineup() {
             } else {
                 dHelperIdx.style.backgroundColor = "red";
                 allLinedUp = false;
-                for( var i = 0; i < squares.length; i++ ) {
+                for( var i = 0; i < slength; i++ ) {
                     if( squares[i].nodeType === 1 ) {
                         squares[i].style.color = "red";
                     }
@@ -230,8 +218,8 @@ function checklineup() {
             }
         }
         if( allLinedUp ) {
-            doc.getElementById('linedUp').value = "true";
-            doc.getElementById('msg').innerHTML = "";
+            doc.getElementById("linedUp").value = "true";
+            doc.getElementById("msg").innerHTML = "";
             setFocus();
         } else {
             doc.getElementById("msg").innerHTML = 
@@ -245,28 +233,31 @@ document.onmousedown = mouseDown;
 document.onmouseup   = mouseUp; 
 window.onload = function(){ 
     var doc = document;
+    var Num = Number;
     //for( var j = 0; j < 18; j++ ) {
         //doc.getElementById("statusBox" + j).innerHTML = "";
     //}
     //var x = 0;
-    if( doc.getElementById('linedUp').value === "true") {
+    if( doc.getElementById("linedUp").value === "true") {
         setFocus();
     } else {
         // hide the original operands
-        var opBoxes = doc.getElementsByClassName('t1');
+        var opBoxes = doc.getElementsByClassName("t1");
         var getStyle = getComputedStyle;
-        for( var idx = 0; idx < opBoxes.length; idx++ ) {
+        var maxIdx = opBoxes.length;
+        for( var idx = 0; idx < maxIdx; idx++ ) {
             opBoxes[idx].style.color = getStyle(opBoxes[idx]).backgroundColor;
         }
-        var dpBoxes = doc.getElementsByClassName('t2');
-        for( var idx = 0; idx < dpBoxes.length; idx++ ) {
+        var dpBoxes = doc.getElementsByClassName("t2");
+        maxIdx = dpBoxes.length;
+        for( var idx = 0; idx < maxIdx; idx++ ) {
             dpBoxes[idx].style.color = getStyle(dpBoxes[idx]).backgroundColor;
         }
-        var ops = doc.getElementsByClassName('oprand');
+        var ops = doc.getElementsByClassName("oprand");
         var opslength = ops.length;
-        var dHelper  = doc.getElementsByClassName('DragBox');
-        dBoxWidth = getPosition(dpBoxes[1]).x - getPosition(opBoxes[0]).x;
-        boxHeight = Number(getStyle(opBoxes[0]).height.match(/[0-9]+/));
+        var dHelper  = doc.getElementsByClassName("DragBox");
+        var dBxWd = getPosition(dpBoxes[1]).x - getPosition(opBoxes[0]).x;
+        var bxHgt = Num(getStyle(opBoxes[0]).height.match(/[0-9]+/));
         for( var idx = 0; idx < opslength; idx++ ) {
             var dHelperIdx = dHelper[idx];
             var opsIdx = ops[idx];
@@ -279,7 +270,8 @@ window.onload = function(){
             var whatValue = new Array();
             var whatName = new Array();
             var whatFun = new Array();
-            for( nodeNum = 0; nodeNum < opsIdx.childNodes.length; nodeNum++ ) { 
+            var maxNodeNum = opsIdx.childNodes.length;
+            for( nodeNum = 0; nodeNum < maxNodeNum; nodeNum++ ) { 
                 var opNode = opsIdx.childNodes[nodeNum];
                 if( opNode.nodeType === 1 ) {
                     // count table squares
@@ -287,7 +279,7 @@ window.onload = function(){
                     // copy the operand values into array 'whatValue'
                     if( opNode.childNodes[0] ) {
                         whatValue[length] = opNode.childNodes[0].nodeValue;
-                        name = opNode.getAttribute('name');
+                        name = opNode.getAttribute("name");
                         // node with copy of op13 will be named dH13
                         if( name ) {
                             var nameMatch = name.match(/op/);
@@ -297,7 +289,7 @@ window.onload = function(){
                                 number = name.match(/[0-9]+/);
                                 whatName[length] = "dH" + number;
                                 whatFun[length] =
-                                    opNode.getAttribute('onclick');
+                                    opNode.getAttribute("onclick");
                                     length += 1;
                             }
                         }
@@ -306,7 +298,7 @@ window.onload = function(){
                         // with the helper
                         if( whatValue[length] === "." ) {
                             var targPos = getPosition(opNode).x;
-                            opsIdx.setAttribute('targPos', targPos);
+                            opsIdx.setAttribute("targPos", targPos);
                             length += 1;
                         }
                     }    
@@ -316,12 +308,13 @@ window.onload = function(){
             var blankNum = 0;
             var noDpYet = true;
             var lsbNode = null;
+            maxNodeNum = dHelperIdx.childNodes.length;
             for( nodeNum = 0; nodeNum < dHelperIdx.childNodes.length;  nodeNum++ ) {
                 var hNode = dHelperIdx.childNodes[nodeNum];
                 if( hNode.nodeType === 1 ) {
                     // mark leading blanks for deletion
                     if( blankNum < numSquares - 2*(length-1) + 1 ) {
-                        hNode.setAttribute('marked', 1 );
+                        hNode.setAttribute("marked", 1 );
                             
                     // copy over digits and decimal point
                     } else {
@@ -330,7 +323,6 @@ window.onload = function(){
                         if( className === "t2" ) {
                             if( digVal === "." ) {
                                 hNode.childNodes[0].nodeValue = digVal;
-                                //dpNode = hNode;
                                 dragNum += 1;
                                 noDpYet = false;
                             } else {
@@ -338,8 +330,8 @@ window.onload = function(){
                             }
                         } else if( className === "t1" ) {
                             hNode.childNodes[0].nodeValue = digVal;
-                            hNode.setAttribute('name',whatName[dragNum]);
-                            hNode.setAttribute('onclick',whatFun[dragNum]);
+                            hNode.setAttribute("name",whatName[dragNum]);
+                            hNode.setAttribute("onclick",whatFun[dragNum]);
                             dragNum += 1;
                             if( noDpYet ) {
                                 lsbNode = hNode;
@@ -349,10 +341,12 @@ window.onload = function(){
                     blankNum += 1;
                 }
             }
+            // length changes in this loop so you can't compare to a copy of the 
+            // original length to terminate the loop
             for( nodeNum = 0; nodeNum < dHelperIdx.childNodes.length; ) {
                 var hNode = dHelperIdx.childNodes[nodeNum];
                 if( hNode.nodeType === 1 ) {
-                    var deleteThis = hNode.getAttribute('marked');
+                    var deleteThis = hNode.getAttribute("marked");
                     if( deleteThis ) {
                         dHelperIdx.removeChild(hNode);
                     } else {
@@ -362,7 +356,7 @@ window.onload = function(){
                     nodeNum++;
                 }
             }
-            dpOffs = getPosition(lsbNode).x + dBoxWidth - getPosition(dHelperIdx).x;
+            var dpOffs = getPosition(lsbNode).x + dBxWd - getPosition(dHelperIdx).x;
             //doc.getElementById("statusBox" + x).innerHTML = "got positions of lsbNode and dragHelper[" + idx + "]";
             //x = x + 1;
             var pos = getPosition( opsIdx );
@@ -370,19 +364,20 @@ window.onload = function(){
             //x = x + 1;
             dHelperIdx.style.top  = pos.y + "px"; 
             var leftPos = pos.x;
-            leftPos = leftPos + Number(getStyle(ops[0]).width.match(/[0-9]+/));
-            leftPos = leftPos - Number(getStyle(dHelperIdx).width.match(/[0-9]+/));
+            leftPos = leftPos + Num(getStyle(ops[0]).width.match(/[0-9]+/));
+            leftPos = leftPos - Num(getStyle(dHelperIdx).width.match(/[0-9]+/));
             dHelperIdx.style.left = leftPos + "px";
-            dHelperIdx.style.height = boxHeight + "px";
-            dHelperIdx.setAttribute('dpOffs', dpOffs); 
+            dHelperIdx.style.height = bxHgt + "px";
+            dHelperIdx.setAttribute("dpOffs", dpOffs); 
 
             // since drop targets don't move or expand, this only needs to be done once
             var strtHght = parseInt(opsIdx.offsetHeight);
-	    opsIdx.setAttribute('startHeight', strtHght);  
-	    opsIdx.setAttribute('startTop',    pos.y);
+	    opsIdx.setAttribute("startHeight", strtHght);  
+	    opsIdx.setAttribute("startTop",    pos.y);
         }
         operands = ops;
         dragHelper = dHelper;
+        boxHeight = bxHgt;
     }
     checklineup();
 };
