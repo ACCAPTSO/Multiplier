@@ -219,6 +219,10 @@ function checklineup() {
         }
         if( allLinedUp ) {
             doc.getElementById("linedUp").value = "true";
+            var dispBo = doc.getElementById("dispBo");
+            if( dispBo ) {
+                dispBo.style.color = getComputedStyle(doc.getElementsByTagName("th")[0]).backgroundColor;
+            }  
             doc.getElementById("msg").innerHTML = "";
             setFocus();
         } else {
@@ -233,17 +237,24 @@ document.onmousedown = mouseDown;
 document.onmouseup   = mouseUp; 
 window.onload = function(){ 
     var doc = document;
+      
     var Num = Number;
+    var getStyle = getComputedStyle;
     //for( var j = 0; j < 18; j++ ) {
         //doc.getElementById("statusBox" + j).innerHTML = "";
     //}
     //var x = 0;
     if( doc.getElementById("linedUp").value === "true") {
+        var dispBo = doc.getElementById("dispBo");
+        if( dispBo ) {
+            var header = doc.getElementsByTagName("th")[0];
+            dispBo.style.color = getStyle(header).backgroundColor;
+        }        
         setFocus();
     } else {
         // hide the original operands
         var opBoxes = doc.getElementsByClassName("t1");
-        var getStyle = getComputedStyle;
+        
         var maxIdx = opBoxes.length;
         for( var idx = 0; idx < maxIdx; idx++ ) {
             opBoxes[idx].style.color = getStyle(opBoxes[idx]).backgroundColor;

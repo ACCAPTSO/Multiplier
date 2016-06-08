@@ -308,67 +308,71 @@ function checkNewVal( col ) {
 // new operand digit and set the focus to the new box
 function promptBorrow( col ) {
     var doc = document;
+    var linedUpBx = doc.getElementById("linedUp");
+    if( !linedUpBx || linedUpBx.value === "true" ) { // don't try to borrow
+                                                     // unless decimal points 
+                                                     // are lined up
+        var borBx = doc.getElementsByName("dH1" + col)[0];
+        if( !borBx ) {
+            borBx = doc.getElementsByName("op1" + col)[0];
+        }
+        if( !borBx ) {
+            borBx = doc.getElementsByName("ze1" + col)[0];
+        }
+        var coBx = doc.getElementsByName("ca" + col);
+        var newBx = doc.getElementsByName("bo" + col)[0];
 
-    var borBx = doc.getElementsByName("dH1" + col)[0];
-    if( !borBx ) {
-        borBx = doc.getElementsByName("op1" + col)[0];
-    }
-    if( !borBx ) {
-        borBx = doc.getElementsByName("ze1" + col)[0];
-    }
-    var coBx = doc.getElementsByName("ca" + col);
-    var newBx = doc.getElementsByName("bo" + col)[0];
-    
-    // turn any red numbers for a subtraction error black
-    var allT1s = doc.getElementsByClassName("t1");
-    var objLen = allT1s.length;
-    for( var i = 0; i < objLen; i++ ) {
-        allT1s[i].style.color = "black";
-    }  
-    var allF1s = doc.getElementsByClassName("f1");
-    objLen = allF1s.length;
-    for( var i = 0; i < objLen; i++ ) {
-        allF1s[i].style.color = "black";
-    } 
-    var allF2s = doc.getElementsByClassName("f2");
-    objLen = allF2s.length;
-    for( var i = 0; i < objLen; i++ ) {
-        allF2s[i].style.color = "black";
-    } 
-    var errBx = doc.getElementById("msg");
-    if( doc.getElementById("linedUp").value === "true") {
-        errBx.innerHTML = "";
-    }
-    
-    if( newBx ) { // make sure it's really a column that should be borrowed from 
-                  // or do nothing
-        var Num = Number;
-        if( Num(borBx.childNodes[0].nodeValue) === 0 ) {
-            // if 0 then cross off the carry in as well
-            // if it's 0 & no carry in, there is nothing to borrow so do nothing
-            if( coBx.length > 0 && Num(coBx[0].value) === 1 ) {
+        // turn any red numbers for a subtraction error black
+        var allT1s = doc.getElementsByClassName("t1");
+        var objLen = allT1s.length;
+        for( var i = 0; i < objLen; i++ ) {
+            allT1s[i].style.color = "black";
+        }  
+        var allF1s = doc.getElementsByClassName("f1");
+        objLen = allF1s.length;
+        for( var i = 0; i < objLen; i++ ) {
+            allF1s[i].style.color = "black";
+        } 
+        var allF2s = doc.getElementsByClassName("f2");
+        objLen = allF2s.length;
+        for( var i = 0; i < objLen; i++ ) {
+            allF2s[i].style.color = "black";
+        } 
+        var errBx = doc.getElementById("msg");
+        if( doc.getElementById("linedUp").value === "true") {
+            errBx.innerHTML = "";
+        }
+
+        if( newBx ) { // make sure it's really a column that should be borrowed from 
+                      // or do nothing
+            var Num = Number;
+            if( Num(borBx.childNodes[0].nodeValue) === 0 ) {
+                // if 0 then cross off the carry in as well
+                // if it's 0 & no carry in, there is nothing to borrow so do nothing
+                if( coBx.length > 0 && Num(coBx[0].value) === 1 ) {
+                    borBx.style.setProperty("text-decoration", "line-through");
+                    borBx.onclick = null;
+                    coBx[0].style.textDecoration = "line-through";
+                    newBx.focus();
+                    newBx.style.backgroundColor = "white";
+                    newBx.style.color = "red";
+                    newBx.style.border = "1px solid black";
+                    newBx.value="";
+                }
+            } else {
                 borBx.style.setProperty("text-decoration", "line-through");
                 borBx.onclick = null;
-                coBx[0].style.textDecoration = "line-through";
                 newBx.focus();
                 newBx.style.backgroundColor = "white";
                 newBx.style.color = "red";
                 newBx.style.border = "1px solid black";
                 newBx.value="";
             }
-        } else {
-            borBx.style.setProperty("text-decoration", "line-through");
-            borBx.onclick = null;
-            newBx.focus();
-            newBx.style.backgroundColor = "white";
-            newBx.style.color = "red";
-            newBx.style.border = "1px solid black";
-            newBx.value="";
-        }
-    
-        var displayBorrow = doc.getElementById("dispBo");
-        displayBorrow.innerHTML = "Enter new value after borrowing";
 
+            var displayBorrow = doc.getElementById("dispBo");
+            displayBorrow.innerHTML = "Enter new value after borrowing";
+
+        }
     }
 }
    
