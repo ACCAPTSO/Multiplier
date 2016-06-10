@@ -1715,11 +1715,13 @@ if( thereAreCarries && showBrowsCk ) { %>
 <input type="<%=lbtype%>" id="dividend" value="<%=dividnd%>" >
 </td>
 </tr>
+<tr><td><a href="index.html" id="ndx">Main Index</a></td><td></td></tr>
 </tbody>
 </table>
 </form>
 
 </div>
+
 </body>
 </html>
 
