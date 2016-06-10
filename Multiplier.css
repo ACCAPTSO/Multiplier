@@ -43,14 +43,7 @@ button {
 }
 /* classes -can be used more than once */
 .d1 {
-    -webkit-column-count: 2;
-    -webkit-column-gap: 3em;
-    
-    -moz-column-count:2;
-    -moz-column-gap: 3em;
-    
-    column-count: 2;
-    column-gap: 3em;
+    margin: 2em;
 }
 .d2{
     //padding-top: 1em;
@@ -201,7 +194,9 @@ button {
 #th-id2 {
   background-color: #FAF3E4;
   //text-align: center;
-  columns: 3 auto;
+}
+#ndx{
+    margin-left: 10%;
 }
 
 

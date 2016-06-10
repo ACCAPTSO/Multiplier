@@ -33,7 +33,9 @@ this is a comment -the // is for javascript
 <!-- set focus to correct box and dis-allow user selection of boxes //-->
 <body onload="setFocus();" onmousedown="javascript:return false;"
       onselctstart="javascript:return false;">
-
+<table>
+<tr>
+<td>
 <!-- Multiplier.jsp is what will take the user's input and display it red if 
 incorrect //-->
 <%
@@ -568,6 +570,8 @@ if( nonZeros > 1 ) { // more than one intermediate answer => need to add%>
 
 </table>
 </div>
+</td>
+<td>
     
 <div class="d3">
 <!--this is where error messages get displayed//-->
@@ -655,6 +659,10 @@ if( nonZeros > 1 ) { // more than one intermediate answer => need to add%>
 
 </form>
 </div>
+</td>
+</tr>
+<tr><td><a href="index.html" id="ndx">Main Index</a></td><td></td></tr>
+</table>
 </body>
 </html>
 
