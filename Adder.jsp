@@ -18,9 +18,9 @@
    
 <%  // clicking on decimal points in problems that don't have decimal points
     // gives error fixit
-    //System.out.println("*****************************************************");
-    //System.out.println("starting addition page");
-    //System.out.println("*****************************************************");
+    System.out.println("*****************************************************");
+    System.out.println("starting addition page");
+    System.out.println("*****************************************************");
     final int SZ2_MX = 5; // maximum answer size
     final int maxOps = 7;
     final double NEXP = 2.6; // used to generate # of digits 
@@ -28,13 +28,13 @@
     boolean noCarriesCk = false;
     boolean carriesCk = false;
     boolean moreThn2Ck = false;
-    boolean fxDecPtCk = false;
-    boolean varDecPtCk = true;
+    boolean fxDecPtCk = true;
+    boolean varDecPtCk = false;
     String isNoCarries = "";
-    String isMoreThn2 = "";
     String isCarries = "";
-    String isFixedDp = "";
-    String isVarDp = "checked";
+    String isMoreThn2 = "";
+    String isFixedDp = "checked";
+    String isVarDp = "";
     String tmp = "";      // temporary storage for newly gotten 
                           // request parameter
     String whatlvl = "";
@@ -92,7 +92,7 @@
     }
     int ansDp = 0;
     int numDig[] = new int[maxOps]; // how many digits do operands have
-    String isLinedUp = "true";
+  
     
     int sum[];
     sum = new int[SZ2_MX+1];
@@ -101,9 +101,6 @@
     for( int idx = 0; idx < numOps; idx++ ) {
         opDp[idx] = (int)((maxDp+1)*Math.random());
         //System.out.println("opDp[" + idx + "] = " + opDp[idx]);
-        if( varDecPtCk && idx > 0 && opDp[idx] != opDp[idx-1]) {
-            isLinedUp = "false";
-        }
         if( opDp[idx] > ansDp ) {
             ansDp = opDp[idx];
         }
@@ -111,10 +108,10 @@
     }
     
     op = new int[maxOps][SZ2_MX+1];
-    //String[] ans;   // final answer string   
+    int[] ans;    // final answer   
     int[] carry;   // additive carry string 
     carry = new int[SZ2_MX+1];
-    //ans = new String[SZ2_MX+1];
+    ans = new int[SZ2_MX+1];
     int jdx;
     int kdx;
     int ldx = 0;
@@ -131,7 +128,7 @@
         }
         sum[idx] = 0;
         carry[idx] = 0;
-        //ans[idx] = "";
+        ans[idx] = 0;
     }
     
     String numAttmptdV = "0";
@@ -163,101 +160,100 @@
     } 
     
     //generate number of digits first, will be neeeded to prevent carries
+    /*
     for( jdx = numOps-1; jdx >= 0; jdx-- ) {
         // limit the size so it fits the table
         int maxDig = SZ2_MX - ansDp + opDp[jdx];
         // more likely to have more digits than less
         numDig[jdx] = (int)((maxDig-1)*(justLessThn1 - Math.pow(Math.random(), NEXP))) + 2;
-    }
+    
+            */
     int finalAns = 0;
     double maxAns = Math.pow(10, SZ2_MX+1) - 1;
     double powOfTen = 0;
     
+    finalAns = (int)(maxAns*Math.random());
+    int maxAnDig = 0;
+    if( finalAns > 0 ) {
+        maxAnDig = 1 + (int)Math.log10(finalAns );
+    }
     
-    //System.out.println("numOps = " + numOps);
-    outOfAll:
-    for( jdx = numOps-1; jdx >= 0; jdx-- ) { // has to go backwards for No Carries setting otherwise
-        int whatDig = 0;                     // wind up with 0's in front. could possible be changed
-        //System.out.println("numDig[" + jdx + "] = " + numDig[jdx]);
-        for( kdx = 0; kdx < SZ2_MX+1; kdx++ ) {
-            whatDig = kdx-(ansDp - opDp[jdx]);
-            if( whatDig >= numDig[jdx]-1 ) {
-                break; // done with most significant digit of this operand
-            }
-            if( noCarriesCk ) {
-                digMax = 10 - sum[kdx]; // digMax is actually 1 greater than
-                                        // maximum allowed digit value
-                if( (numDig[0]-1) == kdx ) { // msd of op[0] cannot be 0
-                    digMax = digMax - 1;     // so this digit cannot be 9
+    String isLinedUp = "true";
+
+    if( noCarriesCk ) {
+        int ten2pow = (int)Math.pow(10,maxAnDig-1);
+        int tmp3 = finalAns;
+        operand[0] = 0;
+        for( kdx = maxAnDig-1; kdx >= 0; --kdx ) { 
+            ans[kdx] = tmp3/ten2pow;
+            op[0][kdx] = (int)((1+ans[kdx])*Math.random());
+            tmp3 = tmp3 - ten2pow*ans[kdx];
+            System.out.println("tmp3 = " + tmp3 + " ans[" + kdx + "] = " + ans[kdx] + "op[0][" + kdx + "] = " + op[0][kdx]);
+            ten2pow = ten2pow/10;
+            operand[0] = operand[0] + (int)Math.pow(10,kdx)*op[0][kdx];
+        }       
+           
+        numDig[0] = operand[0] == 0 ? 1 : 1 + (int)Math.log10(operand[0]);
+        operand[1] = 0;
+        numDig[1] = maxAnDig;
+        tmp3 = finalAns;
+        ten2pow = (int)Math.pow(10,maxAnDig-1);
+        System.out.println("before loop ten2pow = " + ten2pow + " tmp3 = " + tmp3);
+        numDig[1] = maxAnDig;
+        for( kdx = numDig[1]-1; kdx >= 0; --kdx ) {
+            op[1][kdx] = tmp3/ten2pow;
+            tmp3 = tmp3 - ten2pow*op[1][kdx];
+            if( kdx < numDig[0] ) {
+                op[1][kdx] = op[1][kdx] - op[0][kdx];
+                if( kdx == numDig[1] - 1 && op[1][kdx] == 0 ) {
+                    numDig[1] = numDig[1] - 1;
                 }
             }
-
-            powOfTen = Math.pow(10, kdx);
-            if( powOfTen*digMax > maxAns - finalAns ) {
-                digMax = (int)((maxAns - finalAns)/powOfTen);
-            }
-            if( digMax <= 0 ) {
+            System.out.println("tmp3 = " + tmp3 + " op[1][" + kdx + " ] = " + op[1][kdx] );
+            ten2pow = ten2pow/10;
+            operand[1] = operand[1] + (int)Math.pow(10,kdx)*op[1][kdx];
+        }
+        System.out.println("operand[0] = " + operand[0] + " operand[1] = " + operand[1]);
+    
+    } else {
+        int remaining = finalAns;
+        for( jdx = 0; jdx < numOps; ++jdx ) {
+            int ten2pow = (int)Math.pow(10,ansDp - opDp[jdx]);
+            if( jdx < numOps - 1 && remaining > ten2pow ) {
+                int maxOp = remaining/ten2pow;
+                // mostly big
+                operand[jdx] = 
+                    (new Double((maxOp)*(1 - Math.pow(Math.random(),NEXP)))).intValue();
+            } else {
                 numOps = jdx + 1;
-                numDig[jdx] = whatDig + 1;
-                break outOfAll;
+                operand[jdx] = remaining;
+                opDp[jdx] = ansDp; 
+                // has to be recalculated since opDp may have changed
+                ten2pow = (int)Math.pow(10,ansDp - opDp[jdx]);
             }
-            //System.out.println("powOfTen = " + powOfTen + " maxAns = " + maxAns + " partial sum = " + finalAns + " digMax = " + digMax);
-            if( whatDig >= 0 ) {
-                op[jdx][whatDig] = (int)((digMax)*(justLessThn1 - Math.pow(Math.random(), DEXP)));     
-                //System.out.println("sum[" + kdx + "] = " + sum[kdx] + " digMax = " + digMax + " op[" + jdx + "][" + kdx + "] = " + op[jdx][kdx]);
-                operand[jdx] = operand[jdx] + op[jdx][kdx]*(int)powOfTen;
-                //System.out.println("what operand jdx = " + jdx + " what digit = " + kdx + " ansDp = " + ansDp + " opDp[" + jdx + "] = " + opDp[jdx]);
-                sum[kdx] += op[jdx][whatDig];
-                finalAns += powOfTen*op[jdx][whatDig];
-                //System.out.println("kdx = " + kdx + " partial sum is " + finalAns);
-                //System.out.println("op[" + jdx + "][" + whatDig + "] = " + op[jdx][whatDig] + " sum[" + kdx + "] = " + sum[kdx]);
+            
+            remaining = remaining - ten2pow*operand[jdx];
+            numDig[jdx] = operand[jdx] == 0 ? 1 : 1 + (int)Math.log10(operand[jdx]);
+            int tmp3 = operand[jdx];
+            ten2pow = (int)Math.pow(10, numDig[jdx]-1);
+            System.out.println("finalAns = " + finalAns + " ansDp =  " + ansDp + " operand[" + jdx + "] = " + operand[jdx] + " opDp[" + jdx + "] = " + opDp[jdx] + " numDig[" + jdx + "] = " + numDig[jdx] + " remaining = " + remaining);
+            for( kdx = SZ2_MX; kdx >= 0; --kdx ) {
+                int whatDig = kdx - ansDp + opDp[jdx];
+                if( 0 <= whatDig && whatDig < numDig[jdx] ) {
+                    op[jdx][whatDig] = tmp3/ten2pow;    
+                    sum[kdx] += op[jdx][whatDig];
+                    //System.out.println("sum[" + kdx + "] = " + sum[kdx]);
+                    tmp3 = tmp3 - ten2pow*op[jdx][whatDig];
+                    ten2pow = ten2pow/10;
+                }
             }
-            //System.out.println("op[" + jdx + "][" + kdx + "] = " + op[jdx][kdx]);
+            if( varDecPtCk && jdx > 0 && opDp[jdx] != opDp[jdx-1]) {
+                isLinedUp = "false";
+            }
         }
-        if( noCarriesCk ) {
-            digMax = 10 - sum[kdx];
-        }
-        powOfTen = Math.pow(10, kdx);
-        if( powOfTen*digMax > maxAns - finalAns ) {
-            digMax = (int)((maxAns - finalAns)/powOfTen);
-        }
-        if( digMax <= 0 ) {
-            numOps = jdx + 1;
-            numDig[jdx] = whatDig + 1;
-            //System.out.println("breaking out of all numOps = " + numOps + " numDig[" + jdx + "] = " + numDig[jdx]);
-            break outOfAll;
-        }
-        //System.out.println("powOfTen = " + powOfTen + " maxAns = " + maxAns + " partial sum = " + finalAns + " digMax = " + digMax);
-        if( (fxDecPtCk || varDecPtCk) && whatDig <= opDp[jdx] ) {
-            op[jdx][whatDig] = (int)((digMax-1)*(justLessThn1 - Math.pow(Math.random(), DEXP)));
-        } else {
-            // msb cannot be 0
-            op[jdx][whatDig] = 1 + (int)((digMax-1)*(justLessThn1 - Math.pow(Math.random(), DEXP)));
-        }        
-        //System.out.println("sum[" + jdx + "] = " + sum[jdx] + " digMax = " + digMax + " op[" + jdx + "][" + kdx + "] = " + op[jdx][kdx]);
-
-        //System.out.println("after kdx loop what operand jdx = " + jdx + " what digit kdx = " + kdx + " ansDp = " + ansDp + " opDp[" + jdx + "] = " + opDp[jdx]);
-        if( 0 <= whatDig && whatDig < SZ2_MX+1 ) {
-            sum[kdx] += op[jdx][whatDig];
-            finalAns += Math.pow(10, kdx)*op[jdx][whatDig];
-            //System.out.println("kdx = " + kdx + " partial sum is " + finalAns);
-            //System.out.println("op[" + jdx + "][" + whatDig + "] = " + op[jdx][whatDig] + " sum[" + kdx + "] = " + sum[kdx]);
-        }
-        operand[jdx] = operand[jdx] + op[jdx][kdx]*(int)(Math.pow(10.,(double)kdx));
-        //System.out.println("op[" + jdx + "][" + kdx + "] = " + op[jdx][kdx] + " operand[" + jdx + "] = " + operand[jdx] );
     }
 
-
     for( kdx = 0; kdx < SZ2_MX + 1; ++kdx ) {
-        /*
-        for( jdx = 0; jdx < numOps; jdx++ ) {
-            int whatD = kdx-(ansDp - opDp[jdx]);
-            if( 0 <= whatD && whatD < SZ2_MX+1 ) {
-                carry[kdx] += op[jdx][whatD];
-                //System.out.println("sum[" + kdx + "] = " + carry[kdx]);
-            }
-        }
-        */
         carry[kdx] = sum[kdx];
         if( kdx > 0 ) {
             carry[kdx] += carry[kdx-1];
@@ -272,10 +268,7 @@
         //System.out.println("partial answer is " + maxAns);
     //}
     
-    int maxAnDig = 0;
-    if( finalAns > 0 ) {
-        maxAnDig = 1 + (int)Math.log10(finalAns );
-    }
+
     //maxAnDig += ansDp;
     System.out.print("final answer is " + finalAns + " digits in answer is " + maxAnDig);
 
