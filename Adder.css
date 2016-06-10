@@ -38,14 +38,7 @@ td {
 }
 /* classes -can be used more than once */
 .d1 {
-    -webkit-column-count: 2;
-    -webkit-column-gap: 3em;
-    
-    -moz-column-count:2;
-    -moz-column-gap: 3em;
-    
-    column-count: 2;
-    column-gap: 3em;
+    margin: 2em;
 }
 .d2{
     //padding-top: 1em;
@@ -76,8 +69,8 @@ td {
 }
 .tbl {
   border: 2px solid black;
-  margin-top: 0.2em;
-  margin-left: 10%;
+  //margin-top: 0.2em;
+  //margin-left: 10%;
   background-color: white;
   //min-width: 19em;
   //max-width: 19em;
@@ -197,8 +190,6 @@ td {
 }
 #th-id2 {
     background-color: #ebf1fd;
-  //text-align: center;
-  columns: 3 auto;
 }
 #msg {
     //text-align: left;
@@ -209,4 +200,7 @@ td {
 #statusBox{
     background-color: tan;
     color: black;
+}
+#ndx{
+    margin-left: 10%;
 }

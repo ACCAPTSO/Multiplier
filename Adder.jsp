@@ -18,9 +18,9 @@
    
 <%  // clicking on decimal points in problems that don't have decimal points
     // gives error fixit
-    System.out.println("*****************************************************");
-    System.out.println("starting addition page");
-    System.out.println("*****************************************************");
+    //System.out.println("*****************************************************");
+    //System.out.println("starting addition page");
+    //System.out.println("*****************************************************");
     final int SZ2_MX = 5; // maximum answer size
     final int maxOps = 7;
     final double NEXP = 2.6; // used to generate # of digits 
@@ -188,7 +188,7 @@
             ans[kdx] = tmp3/ten2pow;
             op[0][kdx] = (int)((1+ans[kdx])*Math.random());
             tmp3 = tmp3 - ten2pow*ans[kdx];
-            System.out.println("tmp3 = " + tmp3 + " ans[" + kdx + "] = " + ans[kdx] + "op[0][" + kdx + "] = " + op[0][kdx]);
+            //System.out.println("tmp3 = " + tmp3 + " ans[" + kdx + "] = " + ans[kdx] + "op[0][" + kdx + "] = " + op[0][kdx]);
             ten2pow = ten2pow/10;
             operand[0] = operand[0] + (int)Math.pow(10,kdx)*op[0][kdx];
         }       
@@ -198,7 +198,7 @@
         numDig[1] = maxAnDig;
         tmp3 = finalAns;
         ten2pow = (int)Math.pow(10,maxAnDig-1);
-        System.out.println("before loop ten2pow = " + ten2pow + " tmp3 = " + tmp3);
+        //System.out.println("before loop ten2pow = " + ten2pow + " tmp3 = " + tmp3);
         numDig[1] = maxAnDig;
         for( kdx = numDig[1]-1; kdx >= 0; --kdx ) {
             op[1][kdx] = tmp3/ten2pow;
@@ -209,11 +209,11 @@
                     numDig[1] = numDig[1] - 1;
                 }
             }
-            System.out.println("tmp3 = " + tmp3 + " op[1][" + kdx + " ] = " + op[1][kdx] );
+            //System.out.println("tmp3 = " + tmp3 + " op[1][" + kdx + " ] = " + op[1][kdx] );
             ten2pow = ten2pow/10;
             operand[1] = operand[1] + (int)Math.pow(10,kdx)*op[1][kdx];
         }
-        System.out.println("operand[0] = " + operand[0] + " operand[1] = " + operand[1]);
+        //System.out.println("operand[0] = " + operand[0] + " operand[1] = " + operand[1]);
     
     } else {
         int remaining = finalAns;
@@ -236,7 +236,7 @@
             numDig[jdx] = operand[jdx] == 0 ? 1 : 1 + (int)Math.log10(operand[jdx]);
             int tmp3 = operand[jdx];
             ten2pow = (int)Math.pow(10, numDig[jdx]-1);
-            System.out.println("finalAns = " + finalAns + " ansDp =  " + ansDp + " operand[" + jdx + "] = " + operand[jdx] + " opDp[" + jdx + "] = " + opDp[jdx] + " numDig[" + jdx + "] = " + numDig[jdx] + " remaining = " + remaining);
+            //System.out.println("finalAns = " + finalAns + " ansDp =  " + ansDp + " operand[" + jdx + "] = " + operand[jdx] + " opDp[" + jdx + "] = " + opDp[jdx] + " numDig[" + jdx + "] = " + numDig[jdx] + " remaining = " + remaining);
             for( kdx = SZ2_MX; kdx >= 0; --kdx ) {
                 int whatDig = kdx - ansDp + opDp[jdx];
                 if( 0 <= whatDig && whatDig < numDig[jdx] ) {
@@ -270,7 +270,7 @@
     
 
     //maxAnDig += ansDp;
-    System.out.print("final answer is " + finalAns + " digits in answer is " + maxAnDig);
+    //System.out.print("final answer is " + finalAns + " digits in answer is " + maxAnDig);
 
     int nacarries = 0;
 
@@ -317,6 +317,9 @@
     whatBx[ldx] = qu + 1;
 
     maxBx = ldx; %>
+<table>
+<tr>
+<td>
 <div class="d1" >
 <form id="th-id2" method="get" action="Adder.jsp">
 <div class="d2">
@@ -652,6 +655,8 @@
     </tr>
 </table>
 </div>
+
+</td><td>
 <% for( int i = 0; i < 30; ++i ) {
     String sid = "statusBox" + i; %>
     <div id="<%=sid%>"></div>
@@ -765,6 +770,10 @@
 </form>
 
 </div>
-<a href="index.html">Main Index</a>
+</td>
+</tr>
+<tr><td><a href="index.html" id="ndx">Main Index</a></td><td></td></tr>
+</table>
+
 </body>
 </html>
