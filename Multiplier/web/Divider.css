@@ -1,0 +1,406 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : Dec 2, 2015, 2:41:16 PM
+    Author     : irene
+*/
+
+article, aside, figure, footer, header, hgroup, menu,
+nav, section{ display: block }
+
+/* oddball colors are for debugging - can be changed to blend with the
+  background later. Don't use // comments between definitions, it mucks them up */
+body {
+  //width: 50%;
+  margin: 0 auto;
+  //text-align: left;
+  background-color: #f9f7e9;
+  //columns: 2 auto;
+}
+header {
+  //background-color: #FFBBFF;
+}
+
+th {
+    border:2px solid black;
+    background-color: #451f15;
+    color: white;
+  //text-align: center;
+}
+td {
+    margin: 0;
+    padding: 0;
+    text-align: left;
+}
+button {
+    min-height: 2em;
+    //max-width: 4em;
+}
+/* classes -can be used more than once */
+.d1 {
+    //width: 100%;
+    margin: 1em;
+    //-webkit-column-count: 2;
+    //-webkit-column-gap: 3em;
+    
+    //-moz-column-count:2;
+    -moz-column-gap: 3em;
+    
+    //column-count: 2;
+    //column-gap: 3em;
+}
+.d2{
+    //padding-top: 1em;
+    //padding-bottom: 10em;
+    //width: 60%;
+    //width: 43em;
+    vertical-align: top;
+    min-width: 40em;
+    text-align: center;
+    padding-right: 2em;
+    min-height: 58em;
+}
+.d7 {
+    padding-top: 1em;
+    //padding-bottom: 10em;
+    //width: 30%;
+    width: 20em;
+    max-width: 20em;
+    text-align: center;
+    padding-left: 2em;
+    min-height: 58em;
+    //height: 35em;
+    //margin: 5em;
+    //padding: 5em;
+    //background-color: blue; // dbfxt
+}
+.d3 {
+    //padding-top: 1em;
+    //padding-bottom: 1em;
+    min-height: 3em;
+    //text-align: left;
+    text-align: center;
+    //margin-top: 1em;
+    //padding-left: 5em;
+    //min-height: 3em;
+    margin-top: 1em;
+    //padding-top: 1em;
+    //background-color: orange; // dbfxt
+}
+.d4 {
+    //a1padding-top: 1em;
+    //padding-bottom: 1em;
+    //margin: 1em;
+    //padding-left: 3em;
+
+    text-align: center;
+
+    margin-top: 2em;
+    padding-top: 2em;
+    min-height: 4em;
+    max-height: 4em;
+    padding-bottom: 2em;
+    margin-bottom: 2em;
+    //padding-bottom: 5em;
+    //background-color: pink; // dbfxt
+}
+.d5 {
+    //margin-top: 7em;
+    //padding-top: 1em;
+    //margin: 1em;
+    //padding-left: 1em;
+    margin-top: 2em;
+    //padding-top: 2em;
+    min-height: 15em;
+    //max-height: 9em;
+    //padding-bottom: 2em;
+    margin-bottom: 2em;
+
+    text-align: center;
+    //background-color: yellowgreen; // dbfxt
+}
+.d6 {
+    //padding-top: 1em;
+    //padding-bottom: 1em;
+    min-height: 4em;
+    text-align: center;
+    //margin-top: 1em;
+    //padding-left: 5em;
+    //min-height: 3em;
+    //margin-top: 5em;
+    //padding-top: 3em;
+    //background-color: purple; //dbfxt
+}
+
+/* table cell with space, carry, or decimal point */
+.t2 {
+  text-align: center;
+  //width: 1em;
+  //min-width: 1em;
+  //max-width: 1em;
+  margin-left: 0px;
+  margin-right: 0px;
+  margin-top: 0px;
+  background-color: #f9f7e9;
+  padding: 0px;
+  height: 1.5em;
+  //padding-top: 0px;
+  //padding-bottom: 5px;
+}
+/* table cell with operand or answer digit */
+.t1{
+  text-align: center;
+  //width: 1.5em;
+  //min-width: 1.5em;
+  //max-width: 1.5em;
+  margin-left: 0px;
+  margin-right: 0px;
+  background-color: #f9f7e9;
+  padding: 0px;
+  height: 0px;
+  min-height: 1.5em;
+}
+/* table cell with invisible operator/operand */
+.t3{
+  text-align: center;
+  width: 1.5em;
+  min-width: 1.5em;
+  max-width: 1.5em;
+  margin-left: 0px;
+  margin-right: 0px;
+  background-color: #f9f7e9;
+  color: #f9f7e9;
+  //color: pink; // fixit
+  padding: 0px;
+  height: 1.5em;
+  min-height: 1.5em;
+}
+/* collapsed table cell with space, carry, or decimal point */
+.s2 {
+  text-align: center;
+  width: 1em;
+  min-width: 1em;
+  max-width: 1em;
+  margin-left: 0px;
+  margin-right: 0px;
+  margin-top: 0px;
+  background-color: #f9f7e9;
+  padding: 0px;
+  height: 0px;
+  //padding-top: 0px;
+  //padding-bottom: 5px;
+}
+/* collapsed table cell with operand or answer digit */
+.s1{
+  text-align: center;
+  width: 1.5em;
+  min-width: 1.5em;
+  max-width: 1.5em;
+  margin-left: 0px;
+  margin-right: 0px;
+  background-color: #f9f7e9;
+  padding: 0px;
+  height: 0px;
+}
+/* multiplicative carry boxes */
+.c2 {
+  width: 0.7em;
+  min-width: 0.7em;
+  max-width: 0.7em;
+  //background-color: black;
+  //background-color: orange; // dbfixit
+  text-align: center;
+  border:1px solid black;
+  margin-left: 0px;
+  margin-right: 0px;
+  font: inherit;
+}
+/* collapsed subtractive carry boxes */
+.f2 {
+    width: 0.7em;
+    min-width: 0.7em;
+    max-width: 0.7em;
+    background-color: #f9f7e9;
+    //background-color: pink; // dbfixit
+    //background-color: black;
+    text-align: center;
+    //border:1px solid black;
+    border: none;
+    margin-left: 0px;
+    margin-right: 0px;
+    margin-top: 0px;
+    padding-top: 0px;
+    //font: inherit;
+    height: 0px;
+    //height: 1em; // dbfixit
+}
+/* collapsed borrow boxes */
+.f1 {
+  width: 1.1em;
+  min-width: 1.1em;
+  max-width: 1.1em;
+  background-color: #f9f7e9;
+  //background-color: pink; // dbfixit
+  //background-color: "purple";
+  color: black; 
+  text-align: center;
+  //border: 1px solid black;
+  border: none;
+  //font: inherit;
+  height: 0px;
+  //height: 1em; //dbfixit
+  margin-left: 0px;
+  margin-right: 0px;
+  margin-top: 0px;
+  padding-top: 0px;
+}
+/* blanks that may become 0 */
+.b1 {
+  width: 1.1em;
+  min-width: 1.1em;
+  max-width: 1.1em;
+  margin-left: 0px;
+  margin-right: 0px;
+  border:1px;
+  background-color: #fdfaef;
+  color: #fdfaef;
+  text-align: center;
+  font: inherit;
+  height: 1em;
+  margin-left: 0px;
+  margin-right: 0px;
+}
+/* decimal point */
+.dp{
+    width: 0.7em;
+    height: 1em;
+    //max-height: 4px;
+    text-align: center;
+    //background-color: orange;
+    margin-left: 0px;
+    margin-right: 0px;
+    color: #F5F8FF;
+    //border: 1px solid black;
+    //border-radius: 4px;
+}
+/* visible incorrect decimal point */
+.ep{
+    width: 0.7em;
+    height: 1em;
+    //max-height: 4px;
+    text-align: center;
+    //background-color: orange;
+    margin-left: 0px;
+    margin-right: 0px;
+    color: red;
+    //border: 1px solid black;
+    //border-radius: 4px;
+}
+/* visible correct decimal point */
+.fp{
+    width: 0.7em;
+    height: 1em;
+    //max-height: 4px;
+    text-align: center;
+    //background-color: orange;
+    margin-left: 0px;
+    margin-right: 0px;
+    color: black;
+    //border: 1px solid black;
+    //border-radius: 4px;
+}
+/* answer boxes */
+.a1 {
+  width: 1.1em;
+  min-width: 1.1em;
+  max-width: 1.1em;
+  color: black; 
+  text-align: center;
+  border: 1px solid black;
+  font: inherit;
+  height: 1em;
+  margin-left: 0px;
+  margin-right: 0px;
+}
+.shortbox{
+    width: 5em;
+    text-align: center;
+    color: red;
+    font: inherit;
+}
+.blackbox{
+    width: 5em;
+    text-align: center;
+    color: black;
+    background-color: white;
+    border-top-color: #638456;
+    border-left-color: #638456;
+    border-bottom-color: #bcbebe;
+    border-right-color: #bcbebe;
+    font: inherit;
+}
+
+.th-id1{
+    background-color: #f9f7e9;
+    border: 2px solid #f9f7e9;
+}
+.th-id3{
+  background-color:  #451f15;
+  border:2px solid black;
+}
+.th-class4{
+    background-color: #eddfd0;
+    border: 2px solid #eddfd0;
+}
+.DragBox {
+    color : #fdfaef;
+    //border : none;
+    position : fixed;
+    //display : block; 
+    padding: 0px;
+    margin: 0px;
+}
+#th-id2 {
+  //text-align: center;
+  columns: 3 auto;
+}
+#dispBo {
+    //margin-left: 1em;
+    //color: #160404;
+    color: #f9f7e9; // default text color is background color (hidden)
+}
+#dispR {
+    //margin-left: 1em;
+    //color: #160404;
+    color: #f9f7e9; // default text color is background color (hidden)
+}
+#msg {
+    //margin-left: 1em;
+    color: red;
+}
+#dispRec {
+    color: #f9f7e9; // default text color is background color (hidden)
+}
+#dispRnd {
+    //border: none;
+    //background-color: #f9f7e9;
+    //height: 3em;
+    //width: 40em;
+    color: #f9f7e9; // default text color is background color (hidden)
+}
+#tbl {
+  border: 2px solid black;
+  margin-top: 0.2em;
+  //margin-left: 10%;
+  background-color: #f2eed5;
+  top: 10%;
+  //min-width: 19em;
+  //max-width: 19em;
+/*  width: 192px; */
+}
+#ndx{
+    margin-left: 10%;
+}

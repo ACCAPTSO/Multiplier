@@ -1,0 +1,240 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : Nov 13, 2015, 3:41:04 PM
+    Author     : irene
+*/
+
+article, aside, figure, footer, header, hgroup, menu,
+nav, section{ display: block }
+
+/* oddball colors are for debugging - can be changed to blend with the
+  background later. Don't use // comments between definitions, it mucks them up */
+body {
+  //width: 50%;
+  margin: 0 auto;
+  //text-align: left;
+  //background-color:  #FFFDEF;;
+  background-color: #f4f8fa;
+  //columns: 2 auto;
+}
+header {
+  //background-color: #FFBBFF;
+}
+
+th {
+    border:2px solid black;
+    background-color: #0f1575;
+    color: white;
+  //text-align: center;
+}
+td {
+    margin: 0;
+    padding: 0;
+    text-align: left;
+}
+/* classes -can be used more than once */
+.d1 {
+    margin:  2em;
+}
+.d2{
+    //padding-top: 1em;
+    //padding-bottom: 10em;
+    text-align: center;
+    min-height: 20em;
+}
+.d3 {
+    padding-top: 1em;
+    padding-bottom: 1em;
+    min-height: 3em;
+    text-align: center;
+    //min-height: 3em;
+}
+.d4 {
+    //a1padding-top: 1em;
+    //padding-bottom: 1em;
+    text-align: left;
+    min-height: 6em;
+}
+.d5 {
+    //margin-top: 7em;
+    //padding-top: 1em;
+    margin-bottom: 0px;
+    padding-bottom: 0px;
+    min-height: 8em;
+    text-align: left;
+}
+.tbl {
+  border: 2px solid black;
+  margin-top: 0.2em;
+  margin-left: 10%;
+  //background-color: #f0f0f0;
+  //background-color: #f9f9ff;
+  background-color: white;
+  //min-width: 19em;
+  //max-width: 19em;
+/*  width: 192px; */
+}
+/* table cell with space, carry, or decimal point */
+.t2 {
+  text-align: center;
+  width: 1em;
+  min-width: 1em;
+  max-width: 1em;
+  margin-left: 0px;
+  margin-right: 0px;
+  margin-top: 0px;
+  background-color:  #f4f8fa;
+  padding: 0px;
+  height: 1.5em;
+  //padding-top: 0px;
+  //padding-bottom: 5px;
+}
+/* table cell with operand or answer digit */
+.t1{
+  text-align: center;
+  width: 1.5em;
+  min-width: 1.5em;
+  max-width: 1.5em;
+  margin-left: 0px;
+  margin-right: 0px;
+  background-color: #f4f8fa;
+  padding: 0px;
+  height: 1.5em;
+}
+/* carry boxes */
+.f2 {
+    width: 0.7em;
+    min-width: 0.7em;
+    max-width: 0.7em;
+    //background-color: black;
+    //background-color: #bcbebe;
+    //background-color: #a4a6a7;
+    //background-color: #ccccE8;
+    background-color:  #f4f8fa;
+    text-align: center;
+    //border:1px solid black;
+    border: none;
+    margin-left: 0px;
+    margin-right: 0px;
+    margin-top: 0px;
+    padding-top: 0px;
+    font: inherit;
+}
+/* borrow boxes */
+.f1 {
+  width: 1.1em;
+  min-width: 1.1em;
+  max-width: 1.1em;
+  //background-color: black; #cfd2d1;
+  //background-color: #cac8cd;
+  background-color:  #f4f8fa;
+  color: black; 
+  text-align: center;
+  //border: 1px solid black;
+  border: none;
+  font: inherit;
+  height: 1.7em;
+  margin-left: 0px;
+  margin-right: 0px;
+}
+/* blanks that may become 0 */
+.b1 {
+  width: 1.1em;
+  min-width: 1.1em;
+  max-width: 1.1em;
+  margin-left: 0px;
+  margin-right: 0px;
+  border:1px;
+  background-color: #fdfaef;
+  color: #fdfaef;
+  text-align: center;
+  font: inherit;
+  height: 1.7em;
+  margin-left: 0px;
+  margin-right: 0px;
+}
+/* decimal point */
+.dp{
+    width: 0.7em;
+    height: 1.7em;
+    //max-height: 4px;
+    text-align: center;
+    //background-color: orange;
+    margin-left: 0px;
+    margin-right: 0px;
+    color: #F5F8FF;
+    //border: 1px solid black;
+    //border-radius: 4px;
+}
+/* answer boxes */
+.a1 {
+  width: 1.1em;
+  min-width: 1.1em;
+  max-width: 1.1em;
+  //background-color: black; #cfd2d1;
+  //background-color: #cac8cd;
+  background-color: #8488a4;
+  //background-color: #a4a6a7;
+  color: black; 
+  text-align: center;
+  border: 1px solid black;
+  font: inherit;
+  height: 1.7em;
+  margin-left: 0px;
+  margin-right: 0px;
+}
+.shortbox{
+    width: 5em;
+    text-align: center;
+    color: red;
+    font: inherit;
+}
+.blackbox{
+    width: 5em;
+    text-align: center;
+    color: black;
+    background-color: white;
+    border-top-color: #638456;
+    border-left-color: #638456;
+    border-bottom-color: #bcbebe;
+    border-right-color: #bcbebe;
+    font: inherit;
+}
+
+/* bar under operands */
+.th-id1{
+    background-color: #0f1575;
+
+}
+.DragBox {
+    color : #fdfaef;
+    //border : none;
+    position : fixed;
+    //display : block; 
+    padding: 0px;
+    margin: 0px;
+}
+#th-id2 {
+  //text-align: center;
+  columns: 3 auto;
+}
+#dispBo {
+    //margin-left: 1em;
+    //color: #0f156f;
+    color:  #f4f8fa;
+}
+#msg {;
+    //margin-left: 1em;
+    color: red;
+}
+#statusBox{
+    background-color: tan;
+    color: black;
+}
+#ndx{
+    margin-left: 10%;
+}
