@@ -8,7 +8,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-
+<title>SUBTRACTER</title>
 <link rel="stylesheet" href="Subtractor.css" type="text/css">
 <script src="Multiplier.js"></script>
 <script src="Subtractor.js"></script>
