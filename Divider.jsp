@@ -20,7 +20,7 @@
     // 2nd divisor dig around 5 is harder to estimate fixit
     // count it wrong if the user gueses a quotient digit 3 times fixit
     // showBorrows mode is really slow. any way to speed it up? fixit
-    System.out.println("------------------------Start Anew!-------------------------");
+    //System.out.println("------------------------Start Anew!-------------------------");
     final int SZ2_MX = 12; // maximum dividend + divisor + 1 size
     final int maxOps = 2;
     final double NEXP = 2.6; // used to generate # of digits    
@@ -427,7 +427,7 @@
         dvsrDp = 1 + (new Double(dsMaxDg*(Math.pow(Math.random(),NEXP)))).intValue();
         //System.out.println("dsMaxDg = " + dsMaxDg + " dvsrDp = " + dvsrDp + " is it closer to 1?");
         //dvsrDp = 1 + (int)(dsMaxDg*Math.random());
-        System.out.println("denominator = " + denominator + " minQdp = " + minQdp + " dsMaxDg = " + dsMaxDg + " dvsrDp = " + dvsrDp);
+        //System.out.println("denominator = " + denominator + " minQdp = " + minQdp + " dsMaxDg = " + dsMaxDg + " dvsrDp = " + dvsrDp);
         dsMaxDg = dsMaxDg - 1 - (int)(Math.log10(denominator));
         dsMax = (int)(Math.pow(10, dsMaxDg)) - 1;
         divisor = 1 + (int)(dsMax*Math.random());
@@ -447,17 +447,17 @@
             quotient = 1 + (int)(qtMax*Math.random());
         }
         dividnd = quotient*origDvsr*multiplier; // calculate without denominator it cancels algebraically but may have round off error
-        System.out.println("dsMaxDg = " + dsMaxDg + " initial divisor = " + origDvsr + " qtMaxDg = " + qtMaxDg + " initial quotient = " + quotient+ " dividend = " + dividnd);
+        //System.out.println("dsMaxDg = " + dsMaxDg + " initial divisor = " + origDvsr + " qtMaxDg = " + qtMaxDg + " initial quotient = " + quotient+ " dividend = " + dividnd);
 
         quotient = quotient*multiplier;
         int dvMaxDg = SZ2_MX - dvsrDigs;
-        System.out.println("quotient = " + quotient + " dvMaxDg = " + dvMaxDg );
+        //System.out.println("quotient = " + quotient + " dvMaxDg = " + dvMaxDg );
         dvdDigs = (int)Math.log10(dividnd) + 1;
         while( dvdDigs < dvMaxDg ) {
             quotient = quotient*10;
             dividnd = dividnd*10;
             dvdDigs = (int)Math.log10(dividnd) + 1;
-            System.out.println("quotient = " + quotient/denominator + " dividend = " + dividnd);
+            //System.out.println("quotient = " + quotient/denominator + " dividend = " + dividnd);
         }
         quotient = quotient / denominator;
         quotDigs = (int)Math.log10(quotient) + 1;
@@ -473,7 +473,7 @@
         dividnd = 80000000000L;
         dvdDigs = 11;
         dvdDp = 8; */
-        System.out.println("after: quotient = " + quotient + " quotDp = " + quotDp + " divisor = " + divisor + " dvsrDp = " + dvsrDp + " dividend =  " + dividnd );
+        //System.out.println("after: quotient = " + quotient + " quotDp = " + quotDp + " divisor = " + divisor + " dvsrDp = " + dvsrDp + " dividend =  " + dividnd );
     }
     
     long tmplong = 1L;
@@ -580,7 +580,7 @@
         quotDp = 2;
         quotDp = 2;
         /* dbfxt */
-        System.out.println("before while loop divisor = " + divisor + " dvsrDp = " + dvsrDp + " dividnd = " + dividnd + " quotDp = " + quotDp );
+        //System.out.println("before while loop divisor = " + divisor + " dvsrDp = " + dvsrDp + " dividnd = " + dividnd + " quotDp = " + quotDp );
         // find worst case Dp and Digs, find width of problem and adjust up or down
         int quotWidth = SZ2_MX + 2;
         dvdDp = 1 + (dvsrDp - 1) + (quotDp - 1);
@@ -716,7 +716,7 @@
     int expDvdDp = 1 + (dvdDp - 1) - (dvsrDp - 1);
  
     int expQuotDp = expDvdDp;
-    System.out.println("expDvdDp = " + expDvdDp);
+    //System.out.println("expDvdDp = " + expDvdDp);
     boolean dsdpsettled = 1 == dvsrDp;
     boolean dddpsettled = expDvdDp == dvdDp;
     boolean qtdpsettled = (dsdpsettled && dddpsettled && quotDp == 1 ) ||
@@ -725,8 +725,8 @@
     if( dvdDp > dvdDigs ) {
         dvdDigs = dvdDp;
     }
-    System.out.println("divisor = " + divisor + " quotient = " + quotient + " dividnd = " + dividnd );
-    System.out.println("dvsrDigs = " + dvsrDigs + " dvsrDp = " + dvsrDp + " quotDigs = " + quotDigs + " quotDp = " + quotDp + " dvdDigs = " + dvdDigs + " dvdDp = " + dvdDp);
+    //System.out.println("divisor = " + divisor + " quotient = " + quotient + " dividnd = " + dividnd );
+    //System.out.println("dvsrDigs = " + dvsrDigs + " dvsrDp = " + dvsrDp + " quotDigs = " + quotDigs + " quotDp = " + quotDp + " dvdDigs = " + dvdDigs + " dvdDp = " + dvdDp);
     //System.out.println("expQuotDp = " + expQuotDp + " expDvdDp = " + expDvdDp + " leadzeros = " + leadzeros);
     int rmdrMxDg = SZ2_MX - dvsrDigs - 1 - dvdDigs - 1;
     int rmdrMax = 0;
@@ -735,7 +735,7 @@
 
     if( remaindersCk ) {
         rmdrMax = (int)(Math.pow(10, rmdrMxDg)) - 1;
-        System.out.println("rmdrMax = " + rmdrMax + " divisor = " + divisor);
+        //System.out.println("rmdrMax = " + rmdrMax + " divisor = " + divisor);
         if( rmdrMax >= divisor ) {
             rmdrMax = divisor - 1;
         }
@@ -962,7 +962,7 @@
     int nsubs = 0; // actual subtractions
     while( whatquotDig >= 0 ) {
         if( nsubs > quotDigs - 1 || whatquotDig > SZ2_MX - 1 ){
-            System.out.println("nsubs = " + nsubs + " is greater than quotDigs = " + quotDigs + " or whatQuotDig = " + whatquotDig + " is greater than SZ2_MX = " + SZ2_MX);
+            //System.out.println("nsubs = " + nsubs + " is greater than quotDigs = " + quotDigs + " or whatQuotDig = " + whatquotDig + " is greater than SZ2_MX = " + SZ2_MX);
             break;
         }
         operand[nsubs][0] = qt[whatquotDig]*divisor;
@@ -1114,7 +1114,7 @@
                 dvdDigs - quotDigs + 1 + leadzeros : 
                 wcDig[sbxminus1][1] + numBringDn[sbxminus1] - 1;
         if( kdxmax > SZ2_MX + 1 ) {
-            System.out.println("kdxmax = " + kdxmax + " is greater than 1 + SZ2_MX = " + SZ2_MX );
+            //System.out.println("kdxmax = " + kdxmax + " is greater than 1 + SZ2_MX = " + SZ2_MX );
             break;
         }
         if( sbx > 0 ) {
@@ -1129,7 +1129,7 @@
                 ncarries[sbx][kdx] = 1;
                 nacarries[sbx] += 1;          
             }
-            System.out.println("ncarries[" + sbx + "][" + kdx + "] = " + ncarries[sbx][kdx] + " nacarries[" + sbx + "] = " + nacarries[sbx]);
+            //System.out.println("ncarries[" + sbx + "][" + kdx + "] = " + ncarries[sbx][kdx] + " nacarries[" + sbx + "] = " + nacarries[sbx]);
         }
     }
     
