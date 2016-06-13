@@ -8,14 +8,16 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>SUBTRACTER</title>
+
 <link rel="stylesheet" href="Subtractor.css" type="text/css">
 <script src="Multiplier.js"></script>
 <script src="Subtractor.js"></script>
 <script src="dragger.js"></script>
 </head>
 <body>
-   
+<table>
+<tr>
+<td>
 <%  // 9.3 - 0.014 give wrong error message when you put xx96 for an answer fixit
     final int SZ2_MX = 5; // maximum answer size
     final int maxOps = 2;
@@ -422,10 +424,8 @@
     </tr>
 </table>
 </div>
-<div id="statusBox0" class="d2"></div>
-<div id="statusBox1"></div>
-<div id="statusBox2"></div>
-<div id="statusBox3"></div>
+</td>
+<td>
 
 <% if( isLinedUp == "false" ) { %>
 <table>
@@ -438,7 +438,8 @@
 
 <%  }   %>
 </table>
-    <% } %>
+<% } %>
+<input type="hidden" id="whatbox" value="<%=whatBx[bdx]%>" class="shortbox"> 
 <div class="d3">
 <!--this is where error messages get displayed//-->
 <label id="msg"></label>
@@ -450,7 +451,7 @@
 <%  } %>
 </label>
 </div>
-<input type="hidden" id="whatbox" value="<%=whatBx[bdx]%>" class="shortbox"> 
+
 <div class="d4">  
 <table>
     <tr><th colspan="1">Highest Difficulty Level</th></tr>
@@ -537,7 +538,9 @@
 </form>
 
 </div>
-<a href="index.html">Main Index</a>
+</td>
+</tr>
+<tr><td><a href="index.html" id="ndx">Main Index</a></td><td></td></tr>
 </body>
 </html>
 

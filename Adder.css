@@ -13,23 +13,16 @@ nav, section{ display: block }
 /* oddball colors are for debugging - can be changed to blend with the
   background later. Don't use // comments between definitions, it mucks them up */
 body {
-  //width: 50%;
   margin: 0 auto;
-  //text-align: left;
-  //background-color:  #E9EFFB;
   background-color:  #ebf1fd;
-  //columns: 2 auto;
 }
 header {
-  //background-color: #FFBBFF;
 }
 
 th {
     border:2px solid black;
-    //background-color:  #ebf1fd;
     background-color:  #638456;
     color: white;
-  //text-align: center;
 }
 td {
     margin: 0;
@@ -41,8 +34,6 @@ td {
     margin: 2em;
 }
 .d2{
-    //padding-top: 1em;
-    //padding-bottom: 10em;
     text-align: center;
     min-height: 20em;
 }
@@ -51,17 +42,12 @@ td {
     padding-bottom: 2em;
     min-height: 4em;
     text-align: center;
-    //min-height: 3em;
 }
 .d4 {
-    //padding-top: 1em;
-    //padding-bottom: 1em;
     text-align: left;
     min-height: 6em;
 }
 .d5 {
-    //margin-top: 7em;
-    //padding-top: 1em;
     margin-bottom: 0px;
     padding-bottom: 0px;
     min-height: 8em;
@@ -69,12 +55,7 @@ td {
 }
 .tbl {
   border: 2px solid black;
-  //margin-top: 0.2em;
-  //margin-left: 10%;
   background-color: white;
-  //min-width: 19em;
-  //max-width: 19em;
-/*  width: 192px; */
 }
 /* table cell with space, carry, or decimal point */
 .t2 {
@@ -103,10 +84,7 @@ td {
     width: 0.7em;
     min-width: 0.7em;
     max-width: 0.7em;
-    //background-color: black;
     background-color: #bcbebe;
-    //background-color: #a4a6a7;
-    //background-color: #ccccE8;
     text-align: center;
     border:1px solid black;
     margin-left: 0px;
@@ -133,23 +111,17 @@ td {
 .dp{
     width: 0.7em;
     height: 1.7em;
-    //max-height: 4px;
     text-align: center;
-    //background-color: orange;
     margin-left: 0px;
     margin-right: 0px;
     color: #F5F8FF;
-    //border: 1px solid black;
-    //border-radius: 4px;
 }
 /* answer boxes */
 .a1 {
   width: 1.1em;
   min-width: 1.1em;
   max-width: 1.1em;
-  //background-color: black; #cfd2d1;
   background-color: #bcbebe;
-  //background-color: #a4a6a7;
   color: black; 
   text-align: center;
   border: 1px solid black;
@@ -182,9 +154,7 @@ td {
 }
 .DragBox {
     color : #ebf1fd;
-    //border : none;
     position : fixed;
-    //display : block; 
     padding: 0px;
     margin: 0px;
 }
@@ -192,10 +162,8 @@ td {
     background-color: #ebf1fd;
 }
 #msg {
-    //text-align: left;
     margin-left: 1em;
     color: red;
-    //color: #ebf1fd;
 }
 #statusBox{
     background-color: tan;
