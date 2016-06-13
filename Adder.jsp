@@ -8,7 +8,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-
+<title>ADDER</title>
 <link rel="stylesheet" href="Adder.css" type="text/css">
 <script src="Multiplier.js"></script>
 <script src="Adder.js"></script>

@@ -8,7 +8,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-
+<title>DIVIDER</title>
 <link rel="stylesheet" href="Divider.css" type="text/css">
 <script src="Multiplier.js"></script>
 <script src="Subtractor.js"></script>
