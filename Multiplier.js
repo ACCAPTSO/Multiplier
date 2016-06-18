@@ -37,12 +37,17 @@ function clearthis( ev ) {
 function zeroCounts() {
     var doc = document;    
     // update problem counts
-    doc.getElementById("numAttmptd").value = -1;
-    doc.getElementById("errs").value = 1;
+    doc.getElementById("numAttmptd").value = 0;
+    doc.getElementById("errs").value = 0;
     doc.getElementById("numWoErr").value = 0;   
     doc.getElementById("consWoErr").value = 0;
     doc.getElementById("strtTime").value = Number(Date.now());
-    startAgain();
+    //startAgain();
+    doc.getElementById('th-id2').submit();
+    // what if it's not blank? fixit why would it not be blank?
+    if (doc.getElementById("msg").value === "") {
+        setFocus();
+    }
 }
 // start again button code
 function startAgain() {
