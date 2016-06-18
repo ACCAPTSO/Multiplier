@@ -181,7 +181,6 @@
     String isLinedUp = "true";
 
     if( noCarriesCk ) {
-        // do no carry problems ever overflow and + doesn't show? fixit
         int ten2pow = (int)Math.pow(10,maxAnDig-1);
         int tmp3 = finalAns;
         operand[0] = 0;
@@ -222,7 +221,7 @@
             int ten2pow = (int)Math.pow(10,ansDp - opDp[jdx]);
             if( jdx < numOps - 1 && remaining > ten2pow ) {
                 int maxOp = remaining/ten2pow;
-                int widthLimit = (int)(Math.pow(10,SZ2_MX-ansDp+opDp[jdx]) - 1);
+                int widthLimit = (int)(Math.pow(10,SZ2_MX-ansDp+opDp[0]) - 1);
                 if( jdx == 0 && maxOp > widthLimit ) {
                     maxOp = widthLimit;
                 }
@@ -256,7 +255,7 @@
                 isLinedUp = "false";
             }
         }
-    
+
         for( kdx = 0; kdx < SZ2_MX + 1; ++kdx ) {
             ans[kdx] = sum[kdx];
             if( kdx > 0 ) {
@@ -400,7 +399,7 @@
                     case 5: %>
                         <td class="t1" name="<%=name%>"><%=op[6][5]%></td>
                         <% break;
-                    default:
+                    default: 
                         name = "ze6" + ocol; %>
                         <td class="t1" name="<%=name%>">0</td>
                         <% break;
@@ -440,7 +439,8 @@
                     case 5: %>
                         <td class="t1" name="<%=name%>"><%=op[5][5]%></td>
                         <% break;
-                    default: name = "ze5" + ocol; %>
+                    default:   
+                        name = "ze5" + ocol; %>
                         <td class="t1" name="<%=name%>">0</td>
                         <% break;
                 }       
@@ -479,7 +479,8 @@
                     case 5: %>
                         <td class="t1" name="<%=name%>"><%=op[4][5]%></td>
                         <% break;
-                    default: name = "ze4" + ocol; %>
+                    default:
+                        name = "ze4" + ocol; %>
                         <td class="t1" name="<%=name%>">0</td>
                         <% break;
                 }       
@@ -519,7 +520,8 @@
                     case 5: %>
                         <td class="t1" name="<%=name%>"><%=op[3][5]%></td>
                         <% break;
-                    default: name = "ze3" + ocol; %>
+                    default: 
+                        name = "ze3" + ocol; %>
                         <td class="t1" name="<%=name%>">0</td>
                         <% break;
                 }       
@@ -539,7 +541,6 @@
                 //int col = numDig[2] - idx + spacesb4Op[2] - 1;
                 int ocol = SZ2_MX - idx;
                 String name = "op2" + ocol;
-                //System.out.println("col = " + col + " opDp[2] = " + opDp[2] + " ansDp = " + ansDp);
                 int col = ocol + opDp[2] - ansDp;
                 switch(col) {
                     case 0: %>
@@ -560,7 +561,8 @@
                     case 5: %>
                         <td class="t1" name="<%=name%>"><%=op[2][5]%></td>
                         <% break;
-                    default: name = "ze2" + ocol; %>
+                    default: 
+                        name = "ze2" + ocol; %>
                         <td class="t1" name="<%=name%>">0</td>
                         <% break;
                 }       
@@ -575,11 +577,9 @@
 <%      if( idx < spacesb4Op[1] ) { %>
             <td class="t1"></td>
 <%      } else { 
-            //int col = numDig[1] - idx + spacesb4Op[1] - 1;
-            int ocol = SZ2_MX - idx;
-            String name = "op1" + ocol;
-            //System.out.println("col = " + col + " opDp[1] = " + opDp[1] + " ansDp = " + ansDp);
-            int col = ocol + opDp[1] - ansDp;
+                int ocol = SZ2_MX - idx;
+                String name = "op1" + ocol;
+                int col = ocol + opDp[1] - ansDp;
             switch(col) {
                 case 0: %>
                     <td class="t1" name="<%=name%>"><%=op[1][0]%></td>
@@ -599,8 +599,9 @@
                 case 5: %>
                     <td class="t1" name="<%=name%>"><%=op[1][5]%></td>
                     <% break;
-                default: name = "ze1" + ocol; %>
-                        <td class="t1" name="<%=name%>">0</td>
+                default:
+                    name = "ze1" + ocol; %>
+                    <td class="t1" name="<%=name%>">0</td>
                     <% break;
             }       
         }
@@ -617,10 +618,9 @@
 <%      } else if ( idx == spacesb4Op[0] - 1 ){ %>
             <td class="t1"> + </td>
 <%      } else {
-            //int col = numDig[0] - idx + spacesb4Op[0]; 
-            int ocol = SZ2_MX - idx;
-            String name = "op0" + ocol;
-            int col = ocol + opDp[0] - ansDp;
+                int ocol = SZ2_MX - idx;
+                String name = "op0" + ocol;
+                int col = ocol + opDp[0] - ansDp;
             switch(col) {
                 case 0: %>
                     <td class="t1" name="<%=name%>"><%=op[0][0]%></td>
@@ -640,8 +640,9 @@
                 case 5:  %>
                     <td class="t1" name="<%=name%>"><%=op[0][5]%></td>
                     <% break;
-                default: name = "ze0" + ocol; %>
-                        <td class="t1" name="<%=name%>">0</td>
+                default:
+                    name = "ze0" + ocol; %>
+                    <td class="t1" name="<%=name%>">0</td>
                     <% break;
             }
         }
@@ -675,7 +676,7 @@
             } else {
                 possZero = "notThis";
             } %>
-  %>           <td class="t1"><label class="b1" name="<%=possZero%>">0</label></td>
+            <td class="t1"><label class="b1" name="<%=possZero%>">0</label></td>
 <%      } 
     }  %>  
     </tr>
@@ -684,20 +685,16 @@
 
 </td>
 <td>
-<% for( int i = 0; i < 30; ++i ) {
-    String sid = "statusBox" + i; %>
-    <div id="<%=sid%>"></div>
-<% } %>
 
 <% if( isLinedUp == "false" ) { %>
 <table>
-<%      for( int i = 0; i < numOps; i++ ) { %>
-            <tr class="DragBox">
-<%          for( int idx = 0; idx <= SZ2_MX; idx++ ) { %>
-                <td class="t2">_</td><td class="t1" name="bob">o</td>
-<%          }   %>
-            </tr>
+<%  for( int i = 0; i < numOps; i++ ) { %>
+        <tr class="DragBox">
+<%      for( int idx = 0; idx <= SZ2_MX; idx++ ) { %>
+            <td class="t2">_</td><td class="t1" name="bob">o</td>
 <%      }   %>
+        </tr>
+<%  }   %>
 </table>
 <% } %>
 <div class="d3">
@@ -707,7 +704,6 @@
 <input type="hidden" id="whatbox" value="<%=whatBx[bdx]%>" class="shortbox"> 
 <div class="d5">
 <table>
-
 <tr>    
     <td><label>Problems Attempted</label></td>
     <td>
@@ -743,7 +739,9 @@
 </tr>
 <tr>
     <td>
-    <button type="reset" value="Reset" onclick="startAgain()">Start again</button>
+    <button type="reset" value="Reset" onclick="startAgain()" >
+        Start again
+    </button>
     </td>
     <td></td>
 </tr>
@@ -777,7 +775,7 @@
     <tr><td>
         <input type="radio" name="difflvl" value="More Than 2 Operands" 
             <%=isMoreThn2%> onclick="zeroCounts()"> 
-        <label>More Than 2 Operands</label>
+        <label>MoreThan 2 Operands</label>
     </td></tr>
     <tr><td>
         <input type="radio" name="difflvl" value="Fixed Decimal Point" 
@@ -791,6 +789,9 @@
     </td></tr>
 </table>
 </div>
+
+
+                   
 <input type="hidden" name="started">
 <input type="hidden" id="strtTime" name="strtTimeP" value="<%=strtTime%>" class="shortbox">
 <input type="hidden" id="ansDp" value="<%=ansDp%>" class="shortbox">
@@ -833,6 +834,7 @@
     }  %>  
     </tr>
 </table>
+
 </form>
 
 </div>
