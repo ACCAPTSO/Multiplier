@@ -25,15 +25,15 @@
     final int maxOps = 7;
     final double NEXP = 2.6; // used to generate # of digits 
     final double DEXP = 1.4; // used to generate digits themselves or # operands
-    boolean noCarriesCk = false;
+    boolean noCarriesCk = true;
     boolean carriesCk = false;
     boolean moreThn2Ck = false;
-    boolean fxDecPtCk = true;
+    boolean fxDecPtCk = false;
     boolean varDecPtCk = false;
-    String isNoCarries = "";
+    String isNoCarries = "checked";
     String isCarries = "";
     String isMoreThn2 = "";
-    String isFixedDp = "checked";
+    String isFixedDp = "";
     String isVarDp = "";
     String tmp = "";      // temporary storage for newly gotten 
                           // request parameter
@@ -169,10 +169,10 @@
     
             */
     int finalAns = 0;
-    double maxAns = Math.pow(10, SZ2_MX+1) - 1;
+    double maxAnsPlus1 = Math.pow(10, SZ2_MX+1); // - 1;
     double powOfTen = 0;
     
-    finalAns = (int)(maxAns*Math.random());
+    finalAns = (int)(maxAnsPlus1*Math.random());
     int maxAnDig = 0;
     if( finalAns > 0 ) {
         maxAnDig = 1 + (int)Math.log10(finalAns );
@@ -186,9 +186,13 @@
         operand[0] = 0;
         for( kdx = maxAnDig-1; kdx >= 0; --kdx ) { 
             ans[kdx] = tmp3/ten2pow;
-            op[0][kdx] = (int)((1+ans[kdx])*Math.random());
+            // bottom operand has to be at least one digit smaller than width of
+            // table to allow for "+" sign
+            if( kdx < SZ2_MX ) {
+                op[0][kdx] = (int)((1+ans[kdx])*Math.random());
+            }
             tmp3 = tmp3 - ten2pow*ans[kdx];
-            //System.out.println("tmp3 = " + tmp3 + " ans[" + kdx + "] = " + ans[kdx] + "op[0][" + kdx + "] = " + op[0][kdx]);
+            //System.out.println("tmp3 = " + tmp3 + " ans[" + kdx + "] = " + ans[kdx] + " op[0][" + kdx + "] = " + op[0][kdx]);
             ten2pow = ten2pow/10;
             operand[0] = operand[0] + (int)Math.pow(10,kdx)*op[0][kdx];
         }       
@@ -267,11 +271,6 @@
             //System.out.println("final carry[" + kdx + "] = " + carry[kdx]);
         }
     }
-    //double maxAns = 0;
-    //for( int idx = 0; idx < numOps; idx++ ) {
-        //maxAns += operand[idx]/Math.pow(10,opDp[idx]);
-        //System.out.println("partial answer is " + maxAns);
-    //}
     
 
     //maxAnDig += ansDp;
