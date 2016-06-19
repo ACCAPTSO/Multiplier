@@ -340,11 +340,12 @@
     whatBx[ldx] = qu + 1;
 
     maxBx = ldx; %>
+<form id="th-id2" method="get" action="Adder.jsp">
 <table>
 <tr>
 <td>
 <div class="d1" >
-<form id="th-id2" method="get" action="Adder.jsp">
+
 <div class="d2">
 <table class="tbl">
 <tr><th id="F1" colspan="<%=colspan%>">Addition Problem</th></tr>
@@ -682,7 +683,7 @@
     </tr>
 </table>
 </div>
-
+</div>
 </td>
 <td>
 
@@ -747,48 +748,7 @@
 </tr>
 </table>
 </div>
-<div class="d3">
-    <table>
-    <tr>
-        <td><input type="checkbox" value="Show Carries" name="showcarries" 
-                   <%=isShowCarries%> onclick="zeroCounts()">
-        </td>
-        <td><label>Show Carries</label></td>
-    </tr>
-    </table>
-</div>
-<div class="d4">  
-<table>
-    <tr><th colspan="1">Highest Difficulty Level</th></tr>
-    <tr><td>
-    </td></tr>
-    <tr><td>
-        <input type="radio" name="difflvl" value="No Carries" 
-            <%=isNoCarries%> onclick="zeroCounts()">
-        <label>No Carries</label>
-    </td></tr>
-    <tr><td>
-        <input type="radio" name="difflvl" value="Carries"
-            <%=isCarries%> onclick="zeroCounts()">
-        <label>Carries</label>
-    </td></tr>
-    <tr><td>
-        <input type="radio" name="difflvl" value="More Than 2 Operands" 
-            <%=isMoreThn2%> onclick="zeroCounts()"> 
-        <label>MoreThan 2 Operands</label>
-    </td></tr>
-    <tr><td>
-        <input type="radio" name="difflvl" value="Fixed Decimal Point" 
-            <%=isFixedDp%> onclick="zeroCounts()"> 
-        <label>Fixed Decimal Point</label>
-    </td></tr>
-    <tr><td>
-        <input type="radio" name="difflvl" value="Variable Decimal Point" 
-            <%=isVarDp%> onclick="zeroCounts()">
-        <label>Variable Decimal Point</label>
-    </td></tr>
-</table>
-</div>
+
 
 
                    
@@ -835,13 +795,57 @@
     </tr>
 </table>
 
-</form>
 
-</div>
+
 </td>
-</tr>
-<tr><td><a href="index.html" id="ndx">Main Index</a></td><td></td></tr>
-</table>
 
+</tr>
+
+        <tr><td><a href="index.html" id="ndx">Main Index</a></td><td>
+    <div class="d3">
+    <table>
+    <tr>
+        <td><input type="checkbox" value="Show Carries" name="showcarries" 
+                   <%=isShowCarries%> onclick="zeroCounts()">
+        </td>
+        <td><label>Show Carries</label></td>
+    </tr>
+    </table>
+</div>
+<div class="d4">  
+<table>
+    <tr><th colspan="1">Highest Difficulty Level</th></tr>
+    <tr><td>
+    </td></tr>
+    <tr><td>
+        <input type="radio" name="difflvl" value="No Carries" 
+            <%=isNoCarries%> onclick="zeroCounts()">
+        <label>No Carries</label>
+    </td></tr>
+    <tr><td>
+        <input type="radio" name="difflvl" value="Carries"
+            <%=isCarries%> onclick="zeroCounts()">
+        <label>Carries</label>
+    </td></tr>
+    <tr><td>
+        <input type="radio" name="difflvl" value="More Than 2 Operands" 
+            <%=isMoreThn2%> onclick="zeroCounts()"> 
+        <label>More Than 2 Operands</label>
+    </td></tr>
+    <tr><td>
+        <input type="radio" name="difflvl" value="Fixed Decimal Point" 
+            <%=isFixedDp%> onclick="zeroCounts()"> 
+        <label>Fixed Decimal Point</label>
+    </td></tr>
+    <tr><td>
+        <input type="radio" name="difflvl" value="Variable Decimal Point" 
+            <%=isVarDp%> onclick="zeroCounts()">
+        <label>Variable Decimal Point</label>
+    </td></tr>
+</table>
+</div>
+    </td></tr>
+</table>
+</form>
 </body>
 </html>

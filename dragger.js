@@ -28,7 +28,7 @@ var iMouseDown  = false;
 var lMouseState = false; 
 var curTarget   = null; 
 var activeCont = null; 
-var x = 0;
+//var x = 0;
 function getMouseOffset(target, ev){ 
     ev = ev || window.event; 
     var docPosX    = target.style.left.match(/[0-9]+/); // left of target

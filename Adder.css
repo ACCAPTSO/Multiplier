@@ -31,7 +31,7 @@ td {
 }
 /* classes -can be used more than once */
 .d1 {
-    margin: 2em;
+    margin: 1em;
 }
 .d2{
     text-align: center;
@@ -62,9 +62,10 @@ td {
   width: 1em;
   min-width: 1em;
   max-width: 1em;
+  height: 1.5em;
   margin-left: 0px;
   margin-right: 0px;
-  background-color:  #ebf1fd;;
+  background-color:  #ebf1fd;
   padding: 0px;
 }
 /* table cell with operand or answer digit */
@@ -73,9 +74,10 @@ td {
   width: 1.5em;
   min-width: 1.5em;
   max-width: 1.5em;
+  height: 1.5em;
   margin-left: 0px;
   margin-right: 0px;
-  background-color:  #ebf1fd;;
+  background-color:  #ebf1fd;
   padding: 0px;
 }
 /* carry boxes */
