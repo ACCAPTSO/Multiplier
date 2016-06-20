@@ -38,16 +38,17 @@ button {
 }
 /* classes -can be used more than once */
 .d1 {
-    margin: 2em;
 }
 .d2{
+    margin: 1em;
     text-align: center;
-    min-height: 25em;
+    min-height: 23em;
+    /* background-color: orange; */
 }
 .d3 {
-    padding-top: 2em;
-    padding-bottom: 2em;
+    min-height: 4em;
     text-align: center;
+    /* background-color: pink; */
 }
 .d4 {
     text-align: left;
@@ -56,13 +57,15 @@ button {
 .d5 {
     margin-bottom: 0px;
     padding-bottom: 0px;
-    min-height: 8em;
+    min-height: 21em;
     text-align: left;
+    /* background-color: green; */
 }
 .tbl {
   border: 2px solid black;
   margin-top: 0.2em;
-  margin-left: 10%;
+  margin-left: 3%;
+  margin-right: 3%;
   background-color: ivory;
 }
 /* table cell with space, carry, or decimal point */
@@ -71,6 +74,7 @@ button {
   width: 1em;
   min-width: 1em;
   max-width: 1em;
+  height: 1.5em;
   margin-left: 0px;
   margin-right: 0px;
   background-color: #f5f2d4;
@@ -82,6 +86,7 @@ button {
   width: 1.5em;
   min-width: 1.5em;
   max-width: 1.5em;
+  height: 1.5em;
   margin-left: 0px;
   margin-right: 0px;
   background-color: #f5f2d4;

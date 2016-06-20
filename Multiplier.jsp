@@ -33,9 +33,7 @@ this is a comment -the // is for javascript
 <!-- set focus to correct box and dis-allow user selection of boxes //-->
 <body onload="setFocus();" onmousedown="javascript:return false;"
       onselctstart="javascript:return false;">
-<table>
-<tr>
-<td>
+
 <!-- Multiplier.jsp is what will take the user's input and display it red if 
 incorrect //-->
 <%
@@ -78,8 +76,8 @@ incorrect //-->
     int max = 0;    // loop counter maximum
     int[][] cmult;  // multiplicative carry
     int[][] ansint; // intermediate answer string
-    String[] ans;   // final answer string   
-    // int[] cadd;      // additive carry
+    int[] ans;      // final answer string 
+    int[] acarry;   // additive carry
     
     int nonZeros = 0;
     int msDigit = 0;
@@ -187,7 +185,8 @@ incorrect //-->
     cmult = new int[btmOpDgts][SZ2_MX];
     //cadd = new int[SZ2_MX];
     ansint = new int[3][SZ2_MX+2];
-    ans = new String[SZ2_MX+2];
+    ans = new int[SZ2_MX+2];
+    acarry = new int[SZ2_MX+2];
 
     bdx = 0;
 
@@ -201,7 +200,8 @@ incorrect //-->
     }
     max = SZ2_MX + 2;
     for ( int idx = 0; idx < max; idx++ ) {
-        ans[idx] = "";
+        ans[idx] = 0;
+        acarry[idx] = 0;
         for ( int jdx = 0; jdx < 3; jdx++ ) {
             ansint[jdx][idx] = 0;
         }
@@ -220,7 +220,8 @@ incorrect //-->
     // msb cannot be 0
     op[1][kdx] = (new Double(1+9*Math.random())).intValue();
     operand1 = operand1 + op[1][kdx]*(int)(Math.pow(10.,(double)kdx));
-
+    
+    int nacarries = 0;
     for( kdx = 0; kdx < SZ2_MX; kdx++ ) {
         if( kdx < btmOpDgts - 1 || 
                 (kdx == btmDp && nonZeros > 0 ) ) { // possible leading zero 
@@ -256,8 +257,8 @@ incorrect //-->
                 //System.out.println("op[0][" + kdx + "] * op[1][" + jdx + "] = " + op[0][kdx] + " * " + op[1][jdx] + " = " + prod + " cmult[" + kdx + "][" + jdx + "] = " + cmult[kdx][jdx] + " ansint[" + kdx + "][" + jdx + "] = " + ansint[kdx][jdx]);
             }
             ansint[kdx][topOpDgts] = cmult[kdx][topOpDgts-1];
-            //int junk2 = topOpDgts - 1;
-            //System.out.println("ansint[" + kdx + "][" + topOpDgts + "] = " + ansint[kdx][topOpDgts]);
+            int junk2 = topOpDgts - 1;
+            //System.out.println("ansint[" + kdx + "][" + junk2 + "] = " + ansint[kdx][junk2]);
         }
     }
     
@@ -269,14 +270,15 @@ incorrect //-->
     // maximum digits in bottom/second intermediate answer
     if( op[0][1] != 0 && operand1 != 0 ) {
         maxAdig[1] = 1 + (int)(Math.log10((double)(op[0][1]*operand1)));
+        maxAndig = 1 + (int)(Math.log10((double)(operand0*operand1)));
     }
     if( op[0][2] != 0 && operand1 != 0 ) {
         maxAdig[2] = 1 + (int)(Math.log10((double)(op[0][2]*operand1)));
+        maxAndig = 1 + (int)(Math.log10((double)(operand0*operand1)));
     }
     // maximum digits in final answer
-    maxAndig = 1 + (int)(Math.log10((double)(operand0*operand1)));
     
-    int nacarries = 0;
+
     // if there are at least two intermediate numbers to add
     if( maxAdig[0] != 0 && maxAdig[1] != 0 || maxAdig[0] != 0 && maxAdig[2] != 0
             || maxAdig[1] != 0 && maxAdig[2] != 0 ) {
@@ -305,43 +307,62 @@ incorrect //-->
     //System.out.println("op1 = " + operand1 + " op0 = " + operand0);
     //System.out.println("nacarries = " + nacarries);
     //System.out.println("l,m,n,p,q, r, s, t = " + el + " " + em + " " + en + " " + pe + " " + qu + " " + ar + " " + es + " " + te);
+    boolean showCarriesCk = true;
+    String isShowCarries = "checked";
+
+    if( request.getParameter("started") == null ) {
+        //System.out.println("just started");
+        showCarriesCk = true;
+        isShowCarries = "checked";
+    } else {
+        //System.out.println("starting again parameter = >" + request.getParameter("started") + "<" );
+        String carrylist[] = request.getParameterValues("showcarries");
+        if( carrylist  == null ) {
+            showCarriesCk = false;
+            isShowCarries = "";
+        } else {
+            showCarriesCk = true;
+            isShowCarries = "checked";
+        }
+    }
+
     int idxmax = nonZeros > 1? topOpDgts : topOpDgts + strtRow;
     int idxmin = nonZeros > 1? 0 : strtRow;
     int inc = nonZeros > 1? 0 : strtRow;
     for( int idx = 0; idx < maxAdig[0]; idx++ ) {
         //System.out.println("idx = " + idx + " idxmin = " + idxmin + " idxmax = " + idxmax + " op[0][0] = " + op[0][0] + " cmult[0][" + idx + "] = " + cmult[0][idx]);
-        if( idx > idxmin && idx < idxmax && op[0][0] > 1 &&
+        if( showCarriesCk && idx > idxmin && idx < idxmax && op[0][0] > 1 &&
                 cmult[0][idx-idxmin-1] > 0 ) {
             whatBx[ldx] = em - idx + inc; // first multiplicative carry boxes
-            //System.out.println("mcBx[" + ldx + "] = " + whatBx[ldx] + " = em - idx + inc = " + em + " - " + idx + " + " + inc);
+            //System.out.println("1st mcBx[" + ldx + "] = " + whatBx[ldx] + " = em - idx + inc = " + em + " - " + idx + " + " + inc);
             ldx++;
         }
         whatBx[ldx] = el - idx; // first intermediate answer boxes
-        //System.out.println("multBx[" + ldx + "] = " + whatBx[ldx] + " = el - idx = " + el + " - " + idx);
+        //System.out.println("1st multBx[" + ldx + "] = " + whatBx[ldx] + " = el - idx = " + el + " - " + idx);
         ldx++;
     }
     if( btmOpDgts > 1 ) {
         for( int idx = 0; idx < maxAdig[1]; idx++ ) {
-            if( idx > idxmin && idx < idxmax && op[0][1] > 1 &&
+            if( showCarriesCk && idx > idxmin && idx < idxmax && op[0][1] > 1 &&
                     cmult[1][idx-idxmin-1] > 0 ) {
                 whatBx[ldx] = pe - idx + inc;
-                //System.out.println("mcBx[" + ldx + "] = " + whatBx[ldx] + " = pe - idx + inc = " + pe + " - " + idx + " + " + inc);
+                //System.out.println("2nd mcBx[" + ldx + "] = " + whatBx[ldx] + " = pe - idx + inc = " + pe + " - " + idx + " + " + inc);
                 ldx++;
             }
             whatBx[ldx] = en - idx;
-            //System.out.println("multBx[" + ldx + "] = " + whatBx[ldx] + " = en - idx = " + en + " - " + idx);
+            //System.out.println("2nd multBx[" + ldx + "] = " + whatBx[ldx] + " = en - idx = " + en + " - " + idx);
             ldx++;
         }
         if( btmOpDgts > 2 ) {
             for( int idx = 0; idx < maxAdig[2]; idx++ ) {
-                if( idx > idxmin && idx < idxmax && op[0][2] > 1 &&
+                if( showCarriesCk && idx > idxmin && idx < idxmax && op[0][2] > 1 &&
                     cmult[2][idx-idxmin-1] > 0 ) {
                     whatBx[ldx] = te - idx + inc;
-                            //System.out.println("mcBx[" + ldx + "] = " + whatBx[ldx] + " = te - idx + inc = " + te + " - " + idx + " + " + inc);
+                    //System.out.println("3rd mcBx[" + ldx + "] = " + whatBx[ldx] + " = te - idx + inc = " + te + " - " + idx + " + " + inc);
                     ldx++;
                 }
                 whatBx[ldx] = es - idx;
-                //System.out.println("multBx[" + ldx + "] = " + whatBx[ldx] + " = es - idx = " + es + " - " + idx);
+                //System.out.println("3rd multBx[" + ldx + "] = " + whatBx[ldx] + " = es - idx = " + es + " - " + idx);
                 ldx++;
             }
         }
@@ -350,28 +371,27 @@ incorrect //-->
     int prevcarry = 0;
     if( nonZeros > 1 ) {
         for( int idx = 0; idx < maxAndig; idx++ ) {
-            if( idx > 1 && (msDigit == 2 && idx <= maxAdig[1] && maxAdig[0] != 0
-                || msDigit == 3 && idx <= maxAdig[2]+1 && (maxAdig[1] != 0 || maxAdig[0] != 0) )) {
-                int acarry = 0;
-                for( int jdx = 0; jdx < 3; ++jdx ) {
-                    //System.out.println("idx = " + idx + " jdx = " + jdx);
-                    int i = idx - jdx - 1;
-                    if( 0 <= i && i <  SZ2_MX + 2 ) {
-                        acarry += ansint[jdx][i];
-                        //System.out.println("ansint[" + jdx + "][" + i + "] = " + ansint[jdx][i] + " acarry = " + acarry);
-                    }
-                }
-                acarry += prevcarry;
-                //System.out.println("before truncating acarry = " + acarry);
-                acarry = acarry/10;
-                //System.out.println("after truncating acarry = " + acarry);
-                prevcarry = acarry;
-                if( acarry > 0 ) {
-                    whatBx[ldx] = ar - idx + inc; // additive carry boxes
-                    ldx++;
+            for( int jdx = 0; jdx < 3; ++jdx ) {
+                //System.out.println("digit idx = " + idx + " operand jdx = " + jdx);
+                int i = idx - jdx;
+                if( 0 <= i && i <  SZ2_MX + 2 ) {
+                    ans[idx] += ansint[jdx][i];
+                    //System.out.println("ansint[" + jdx + "][" + i + "] = " + ansint[jdx][i] + " ans[" + idx + "] = " + ans[idx]);
                 }
             }
+            if( showCarriesCk && prevcarry > 0 && ( idx < maxAndig - 1 || ans[idx] > 0 ) ) {
+                whatBx[ldx] = ar - idx + inc; // additive carry boxes
+                //System.out.println("adBx[" + ldx + "] = " + whatBx[ldx] + " = ar - idx + inc = " +  ar + " - " + idx + " + " + inc);
+                ldx++;
+            }
+            ans[idx] += prevcarry;
+            //System.out.println("before truncating ans[" + idx + "] = " + ans[idx]);
+            acarry[idx] = ans[idx]/10;
+            ans[idx] = ans[idx] - 10*acarry[idx];
+            //System.out.println("after truncating acarry = " + acarry);
+            prevcarry = acarry[idx];
             whatBx[ldx] = qu - idx; // final answer boxes
+            //System.out.println("ans[" + ldx + "] = " + whatBx[ldx] + " = qu - idx = " + qu + " - " + idx);
             ldx++;
         }
         whatBx[ldx] = qu + 1;
@@ -383,8 +403,11 @@ incorrect //-->
     maxBx = ldx;
 
 %>
-<div class="d1" >
 <form id="th-id2" method="get" action="Multiplier.jsp">
+<table>
+<tr>
+<td>
+
 <div class="d2">
 <table class="tbl">
 
@@ -475,6 +498,7 @@ incorrect //-->
 </tr> 
 
 <tr><th class="th-id1" colspan="<%=colspan%>"></th></tr>
+<% if( nonZeros > 1 ) { %>
 <tr>
 <%  for( int idx = 0; idx <= SZ2_MX; idx++ ) {
         if( idx >= spacesb4ca && idx < nacarries + spacesb4ca && nacarries > 0 ) { 
@@ -493,8 +517,8 @@ incorrect //-->
     <td class="t1"></td>
 <%  } %>
 </tr>
-
-<%  for( int row = strtRow; row < msDigit; row++ ) { %>
+<% } %>
+<% for( int row = strtRow; row < msDigit; row++ ) { %>
         <tr>
 <%      int spacesb4ai = SZ2_MX + 1; // start with entire width of table
         spacesb4ai = spacesb4ai - maxAdig[row]; // subtract off width of
@@ -539,7 +563,7 @@ incorrect //-->
         } %>        
         </tr>
 <%   }
-if( nonZeros > 1 ) { // more than one intermediate answer => need to add%>
+if( nonZeros > 1 ) { // more than one intermediate answer : need to add %>
     <tr><th class="th-id1" colspan="<%=colspan%>"></th></tr>
     <tr>
 <%  
@@ -552,9 +576,10 @@ if( nonZeros > 1 ) { // more than one intermediate answer => need to add%>
 <%      if( idx >= spacesb4an ) { 
             int col = SZ2_MX - idx; 
             String name = "an" + col;  %>
-            <td class="t1"><input type="text" name="<%=name%>" class="a1" size="1" 
-            value="<%=ans[col]%>"
-            onkeyup="checkAdd(<%=col%>)"></td>
+            <td class="t1">
+                <input type="text" name="<%=name%>" class="a1" size="1" 
+                    onkeyup="checkAdd(<%=col%>)">
+            </td>
 <%      } else { 
             String possZero; 
             if( ansDp >= maxAndig && idx > SZ2_MX - ansDp - 1 ) {
@@ -564,11 +589,12 @@ if( nonZeros > 1 ) { // more than one intermediate answer => need to add%>
             }%>
             <td class="t1"><label class="b1" name="<%=possZero%>">0</label></td>
 <%      } 
-    } 
-}   %>  
+    } %>
     </tr>
+<% } %>  
 
 </table>
+
 </div>
 </td>
 <td>
@@ -577,34 +603,8 @@ if( nonZeros > 1 ) { // more than one intermediate answer => need to add%>
 <!--this is where error messages get displayed//-->
 <label id="msg"></label>
 </div>
-<input type="hidden" id="whatbox" value="<%=whatBx[bdx]%>" class="shortbox">  
-<div class="d4">
-<table>
-    <tr><th colspan="1">Highest Difficulty Level</th></tr>
-    <tr><td>
-    </td></tr>
-    <tr><td>
-        <input type="radio" name="difflvl" value="Single Digits" <%=isSingl%>
-            onclick="zeroCounts()">
-        <label>Single Digits</label>
-    </td></tr>
-    <tr><td>
-        <input type="radio" name="difflvl" value="Tens and Hundreds" <%=isTensh%>
-            onclick="zeroCounts()">
-        <label>Tens and Hundreds</label>
-    </td></tr>
-    <tr><td>
-        <input type="radio" name="difflvl" value="Double and Triple Digits" <%=isTripl%>
-            onclick="zeroCounts()"> 
-        <label>Double and Triple Digits</label>
-    </td></tr>
-    <tr><td>
-        <input type="radio" name="difflvl" value="Decimals" <%=isDecs%>
-            onclick="zeroCounts()">
-        <label>Decimals</label>
-    </td></tr>
-</table>
-</div>
+<input type="hidden" id="whatbox" value="<%=whatBx[bdx]%>" class="shortbox"> 
+
 <div class="d5">
 <table>
 <tr>    
@@ -641,14 +641,14 @@ if( nonZeros > 1 ) { // more than one intermediate answer => need to add%>
                class="blackbox"></td>
 </tr>
 <tr>
-    <td></td>
-    <td>
+<td>
 <button type="reset" value="Reset" onclick="startAgain()" >Start again</button>
-</td>
+ </td>
+<td></td>
 </tr>
 </table>
 </div>
-
+<input type="hidden" name="started">
 <input type="hidden" id="strtTime" name="strtTimeP" value="<%=strtTime%>" class="shortbox">
 <input type="hidden" id="ansDp" value="<%=ansDp%>" class="shortbox">
 <% for( int idx = 0; idx <= maxBx; idx++ ) { %>
@@ -657,12 +657,163 @@ if( nonZeros > 1 ) { // more than one intermediate answer => need to add%>
 <input type="hidden" id="bdx" value="<%=bdx%>" class="shortbox">
 <input type="hidden" id="lastbox" value="<%=maxBx%>" class="shortbox">
 
-</form>
+
 </div>
 </td>
 </tr>
-<tr><td><a href="index.html" id="ndx">Main Index</a></td><td></td></tr>
+<tr>
+<td>
+    <div class="d3">
+        <a href="index.html" id="ndx">Main Index</a>
+    </div>
+    <div class="d4">
+<table>
+<%  String exType = "hidden";
+    for( int ndx = 0; ndx < btmOpDgts; ndx++ ) { 
+        int row = btmOpDgts - 1 - ndx; 
+        if( op[0][row] > 1 ) { %>
+            <tr>
+<%          for( int idx = 0; idx <= SZ2_MX; idx++ ) {
+                if( idx < spacesb4cm || idx == SZ2_MX ) { %>
+                    <td></td>
+<%              } else { 
+                    int col = SZ2_MX - 1 - idx;
+                    String id = "exCr" + row + "" + col; 
+                    
+                    if( col < 0 || col >= SZ2_MX ) {
+                        System.out.println("cm col = " + col + "being set to 0");
+                        col = 0;
+                    }  %>
+                    <td>
+                        <input type="<%=exType%>" id="<%=id%>" value="<%=cmult[row][col]%>">
+                    </td>
+<%              } %>
+                <td></td>
+<%          }%>
+            </tr>
+<%      } 
+    } %>
+<%  if( nonZeros > 1 ) {  %>
+    <tr>
+<%      for( int idx = 0; idx <= SZ2_MX; idx++ ) {
+            if( idx >= spacesb4ca && idx < nacarries + spacesb4ca && nacarries > 0 ) { 
+                int col = SZ2_MX - 2 - idx;
+                int nxtcol = col + 1;
+                String id = "exCa" + col; 
+                if( col < 0 || col >= SZ2_MX ) {
+                    System.out.println("ca col = " + col + "being reduced to 0");
+                    col = 0;
+                } %>
+                <td>
+                <input type="<%=exType%>" id="<%=id%>" value="<%=acarry[nxtcol]%>">
+                </td>
+<%          } else { %>
+                <td></td>
+<%          } %>
+                <td></td>
+<%      } %>
+    </tr>
+<%  } 
+    for( int row = strtRow; row < msDigit; ++row ) { %>
+        <tr>
+<%      int spacesb4ai = SZ2_MX + 1; // start with entire width of table
+        spacesb4ai = spacesb4ai - maxAdig[row]; // subtract off width of
+                                                // intermediate answer
+        spacesb4ai = spacesb4ai - row;  // subtract off offset for x10 or x100
+        
+        int aispaces = spacesb4ai + maxAdig[row]; // combined spaces before and 
+                                                  // answer spaces
+        
+        if( nonZeros == 1 ) {                  // maxAdig is padded with
+            spacesb4ai = spacesb4ai + strtRow; // zeros, you subtracted them
+                                               // off, so add them back in
+        }
+
+        for( int idx = 0; idx <= SZ2_MX; idx++ ) { %>
+            <td></td>
+<%          int col = SZ2_MX - idx; 
+            String id = "exAi" + row + "" + col; 
+            if( idx >= spacesb4ai && idx < aispaces ) {  %>
+                <td>
+                    <input type="<%=exType%>" id="<%=id%>"
+                    value="<%=ansint[row][col-row]%>">
+                </td>
+<%          } else if( idx >= spacesb4ai && nonZeros == 1 ) { %>
+                <td>
+                    <input type="<%=exType%>" id="<%=id%>" value="0">
+                </td>
+<%          } else { %>
+                <td></td>
+<%          } 
+        } %>        
+        </tr>
+<%  }
+    if( nonZeros > 1 ) {  %>
+    <tr>
+<%  for( int idx = 0; idx <= SZ2_MX; idx++ ) { %>
+        <td></td>
+<%      
+    int spacesb4an = SZ2_MX + 1 - maxAndig; // entire width of table minus 
+                                            // answer spaces
+        if( idx >= spacesb4an ) { 
+            int col = SZ2_MX - idx; 
+            int nxtcol = col + 1;
+            String id = "exAn" + col;  %>
+            <td>
+                <input type="<%=exType%>" id="<%=id%>" value="<%=ans[col]%>">
+            </td>
+<%      } else { %>
+            <td></td>
+<%      } 
+    } %>
+    </tr>
+<% } %>  
+
 </table>
+    </div>
+</td>
+<td>
+<div class="d3">
+    <table>
+    <tr>
+        <td><input type="checkbox" value="Show Carries" name="showcarries" 
+                   <%=isShowCarries%> onclick="zeroCounts()">
+        </td>
+        <td><label>Show Carries</label></td>
+    </tr>
+    </table>
+</div>
+<div class="d4">
+<table>
+    <tr><th colspan="1">Highest Difficulty Level</th></tr>
+    <tr><td>
+    </td></tr>
+    <tr><td>
+        <input type="radio" name="difflvl" value="Single Digits" <%=isSingl%>
+            onclick="zeroCounts()">
+        <label>Single Digits</label>
+    </td></tr>
+    <tr><td>
+        <input type="radio" name="difflvl" value="Tens and Hundreds" <%=isTensh%>
+            onclick="zeroCounts()">
+        <label>Tens and Hundreds</label>
+    </td></tr>
+    <tr><td>
+        <input type="radio" name="difflvl" value="Double and Triple Digits" <%=isTripl%>
+            onclick="zeroCounts()"> 
+        <label>Double and Triple Digits</label>
+    </td></tr>
+    <tr><td>
+        <input type="radio" name="difflvl" value="Decimals" <%=isDecs%>
+            onclick="zeroCounts()">
+        <label>Decimals</label>
+    </td></tr>
+</table>
+</div>
+</td>
+</tr>
+</table>
+</form>
 </body>
 </html>
 
