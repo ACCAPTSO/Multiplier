@@ -40,7 +40,6 @@ button {
     vertical-align: top;
     min-width: 40em;
     text-align: center;
-    padding-right: 2em;
     min-height: 58em;
 }
 .d7 {
@@ -48,7 +47,6 @@ button {
     width: 20em;
     max-width: 20em;
     text-align: center;
-    padding-left: 2em;
     min-height: 58em;
 }
 .d3 {
@@ -268,6 +266,9 @@ button {
     padding: 0px;
     margin: 0px;
 }
+.ndx{
+    margin-left: 5%;
+}
 #th-id2 {
 }
 #dispBo {
@@ -290,7 +291,4 @@ button {
   margin-top: 0.2em;
   background-color: #f2eed5;
   top: 10%;
-}
-#ndx{
-    margin-left: 10%;
 }

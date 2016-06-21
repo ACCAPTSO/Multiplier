@@ -32,16 +32,15 @@ td {
 }
 /* classes -can be used more than once */
 .d1 {
-    margin:  2em;
+    margin:  1em;
 }
 .d2{
     text-align: center;
-    min-height: 20em;
+    min-height: 15em;
 }
 .d3 {
-    padding-top: 1em;
-    padding-bottom: 1em;
-    min-height: 3em;
+    margin-top: 1em;
+    min-height: 2em;
     text-align: center;
 }
 .d4 {
@@ -57,7 +56,8 @@ td {
 .tbl {
   border: 2px solid black;
   margin-top: 0.2em;
-  margin-left: 10%;
+  margin-left: 3%;
+  margin-rightt: 3%;
   background-color: white;
 }
 /* table cell with space, carry, or decimal point */
@@ -181,6 +181,9 @@ td {
     padding: 0px;
     margin: 0px;
 }
+.ndx{
+    margin-left: 5%;
+}
 #th-id2 {
 }
 #dispBo {
@@ -192,7 +195,4 @@ td {
 #statusBox{
     background-color: tan;
     color: black;
-}
-#ndx{
-    margin-left: 10%;
 }

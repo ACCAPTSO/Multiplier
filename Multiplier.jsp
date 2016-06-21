@@ -657,14 +657,15 @@ if( nonZeros > 1 ) { // more than one intermediate answer : need to add %>
 <input type="hidden" id="bdx" value="<%=bdx%>" class="shortbox">
 <input type="hidden" id="lastbox" value="<%=maxBx%>" class="shortbox">
 
-
-</div>
 </td>
 </tr>
 <tr>
-<td>
-    <div class="d3">
-        <a href="index.html" id="ndx">Main Index</a>
+    <td>
+    <div>
+        <a href="/" class="ndx">Home</a>
+    </div>
+    <div>
+        <a href="index.html" class="ndx">Back to Practice Index</a>
     </div>
     <div class="d4">
 <table>

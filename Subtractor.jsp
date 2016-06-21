@@ -15,22 +15,20 @@
 <script src="dragger.js"></script>
 </head>
 <body>
-<table>
-<tr>
-<td>
+
 <%  // 9.3 - 0.014 give wrong error message when you put xx96 for an answer fixit
     final int SZ2_MX = 5; // maximum answer size
     final int maxOps = 2;
     final double NEXP = 2.6; // used to generate # of digits 
     final double DEXP = 1.4; // used to generate digits themselves or # operands
-    boolean noBorrowsCk = false;
+    boolean noBorrowsCk = true;
     boolean borrowsCk = false;
     boolean fxDecPtCk = false;
-    boolean varDecPtCk = true;
-    String isNoBorrows = "";
+    boolean varDecPtCk = false;
+    String isNoBorrows = "checked";
     String isBorrows = "";
     String isFixedDp = "";
-    String isVarDp = "checked";
+    String isVarDp = "";
     String tmp = "";      // temporary storage for newly gotten 
                           // request parameter
     String whatlvl = "";
@@ -259,8 +257,12 @@
     whatBx[ldx] = qu + 1;
 
     maxBx = ldx; %>
-<div class="d1" >
 <form id="th-id2" method="get" action="Subtractor.jsp">
+<table>
+<tr>
+<td>
+<div class="d1" >
+
 <div class="d2">
 <table class="tbl">
 <tr><th id="F1" colspan="<%=colspan%>">Subtraction Problem</th></tr>
@@ -452,33 +454,7 @@
 </label>
 </div>
 
-<div class="d4">  
-<table>
-    <tr><th colspan="1">Highest Difficulty Level</th></tr>
-    <tr><td>
-    </td></tr>
-    <tr><td>
-        <input type="radio" name="difflvl" value="No Borrows" 
-            <%=isNoBorrows%> onclick="zeroCounts()">
-        <label>No Borrows</label>
-    </td></tr>
-    <tr><td>
-        <input type="radio" name="difflvl" value="Borrows"
-            <%=isBorrows%> onclick="zeroCounts()">
-        <label>Borrows</label>
-    </td></tr>
-    <tr><td>
-        <input type="radio" name="difflvl" value="Fixed Decimal Point" 
-            <%=isFixedDp%> onclick="zeroCounts()"> 
-        <label>Fixed Decimal Point</label>
-    </td></tr>
-    <tr><td>
-        <input type="radio" name="difflvl" value="Variable Decimal Point" 
-            <%=isVarDp%> onclick="zeroCounts()">
-        <label>Variable Decimal Point</label>
-    </td></tr>
-</table>
-</div>
+
 
 <div class="d5">
 <table>
@@ -516,10 +492,11 @@
                class="blackbox"></td>
 </tr>
 <tr>
-    <td></td>
     <td>
-<button type="reset" value="Reset" onclick="startAgain()" >Start again</button>
-</td>
+    <button type="reset" value="Reset" onclick="startAgain()" >Start again</button>
+    </td>
+    <td>
+    </td>
 </tr>
 </table>
 </div>
@@ -535,12 +512,52 @@
 <input type="hidden" id="linedUp" value="<%=isLinedUp%>" class="shortbox">
 
 
-</form>
+
 
 </div>
 </td>
 </tr>
-<tr><td><a href="index.html" id="ndx">Main Index</a></td><td></td></tr>
+    <tr>
+        <td>
+            <div>
+                <a href="/" class="ndx">Home</a>
+            </div>
+            <div>
+                <a href="index.html" class="ndx">Back to Practice Index</a>
+            </div>
+        </td>
+        <td>
+            <div class="d4">  
+            <table>
+                <tr><th colspan="1">Highest Difficulty Level</th></tr>
+                <tr><td>
+                </td></tr>
+                <tr><td>
+                    <input type="radio" name="difflvl" value="No Borrows" 
+                        <%=isNoBorrows%> onclick="zeroCounts()">
+                    <label>No Borrows</label>
+                </td></tr>
+                <tr><td>
+                    <input type="radio" name="difflvl" value="Borrows"
+                        <%=isBorrows%> onclick="zeroCounts()">
+                    <label>Borrows</label>
+                </td></tr>
+                <tr><td>
+                    <input type="radio" name="difflvl" value="Fixed Decimal Point" 
+                        <%=isFixedDp%> onclick="zeroCounts()"> 
+                    <label>Fixed Decimal Point</label>
+                </td></tr>
+                <tr><td>
+                    <input type="radio" name="difflvl" value="Variable Decimal Point" 
+                        <%=isVarDp%> onclick="zeroCounts()">
+                    <label>Variable Decimal Point</label>
+                </td></tr>
+            </table>
+            </div>
+        </td>
+    </tr>
+</table>
+</form>
 </body>
 </html>
 

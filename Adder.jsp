@@ -793,14 +793,18 @@
     }  %>  
     </tr>
 </table>
-
-
-
 </td>
-
 </tr>
-
-        <tr><td><a href="index.html" id="ndx">Main Index</a></td><td>
+<tr>
+<td>
+    <div>
+        <a href="/" class="ndx">Home</a>
+    </div>
+    <div>
+        <a href="index.html" class="ndx">Back to Practice Index</a>
+    </div>
+</td>
+<td>
     <div class="d3">
     <table>
     <tr>

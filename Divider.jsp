@@ -28,25 +28,24 @@
     final boolean cmdebug = false;
     final boolean lastboxdebug = false;
     
-    boolean immFeedBkCk = false;
-    boolean estRequiredCk = false;
+    boolean immFeedBkCk = true;
+    
     boolean remaindersCk = false;
     boolean exDpCk = false;
     boolean recDpCk = false;
-    boolean rndOffCk = true;
-    String isImmFeedBk = "";
+    boolean rndOffCk = false;
+    String isImmFeedBk = "checked";
     String isEstRequired = "";
     String isRemainders = "";
     String isExDp = "";
     String isRecDp = "";
-    String isRndOff = "checked";
+    String isRndOff = "";
     String tmp = "";      // temporary storage for newly gotten 
                           // request parameter
     String whatlvl = "";
-    double justLessThn1 = 1 - 1/Double.MAX_VALUE;
     if(( tmp = request.getParameter("difflvl")) != null ) {
         immFeedBkCk = false;
-        estRequiredCk = false;
+
         remaindersCk = false;
         exDpCk = false;
         recDpCk = false;
@@ -62,7 +61,7 @@
             immFeedBkCk = true;
             isImmFeedBk = "checked";
         } else if( whatlvl.equals("Estimation Required")) {
-            estRequiredCk = true;
+
             isEstRequired = "checked";
         } else if( whatlvl.equals("Remainders")) {
             remaindersCk = true;
@@ -1715,7 +1714,17 @@ if( thereAreCarries && showBrowsCk ) { %>
 <input type="<%=lbtype%>" id="dividend" value="<%=dividnd%>" >
 </td>
 </tr>
-<tr><td><a href="index.html" id="ndx">Main Index</a></td><td></td></tr>
+<tr>
+    <td>
+    <div>
+        <a href="/" class="ndx">Home</a>
+    </div>
+    <div>
+        <a href="index.html" class="ndx">Back to Practice Index</a>
+    </div>
+    </td>
+    <td></td>
+</tr>
 </tbody>
 </table>
 </form>

@@ -159,6 +159,9 @@ td {
     padding: 0px;
     margin: 0px;
 }
+.ndx{
+    margin-left: 5%;
+}
 #th-id2 {
     background-color: #ebf1fd;
 }
@@ -169,7 +172,4 @@ td {
 #statusBox{
     background-color: tan;
     color: black;
-}
-#ndx{
-    margin-left: 10%;
 }

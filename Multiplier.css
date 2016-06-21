@@ -164,6 +164,19 @@ button {
 .th-id1 {
   background-color: #2E7FA7;
 }
+.ndx{
+    margin-left: 5%;
+}
+.not-active {
+   pointer-events: none;
+   cursor: default;
+   opacity: 0.6;
+}
+.cntrd{
+    width: 50%;
+    margin-left: auto;
+    margin-right: auto;
+}
 #decRmdr{
     color: #f5f2d4;
     margin-left: 1em;
@@ -175,9 +188,6 @@ button {
 }
 #th-id2 {
   background-color: #f5f2d4;
-}
-#ndx{
-    margin-left: 10%;
 }
 
 
