@@ -36,7 +36,7 @@ this is a comment -the // is for javascript
 
 <!-- Multiplier.jsp is what will take the user's input and display it red if 
 incorrect //-->
-<%
+<%  // suggest a goal based on user's progress fixit
     //System.out.println("starting multiplication page");
     String tmp = "";      // temporary storage for newly gotten 
                           // request parameter

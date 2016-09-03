@@ -57,7 +57,11 @@ function startAgain() {
     var max = Num(doc.getElementById('lastbox').value);
     var errCt = Num(doc.getElementById("errs").value);
     var boxNo = Num(doc.getElementById("bdx").value);
-    var errMsg = doc.getElementById("msg").innerHTML;
+    var errBx = doc.getElementById("msg");
+    var errMsg = "";
+    if( errBx ) {
+        errMsg = errBx.innerHTML;
+    }
     var numAttmptd = Num(doc.getElementById("numAttmptd").value);
     var numWoErr = Num(doc.getElementById("numWoErr").value);
     var consWoErr = Num(doc.getElementById("consWoErr").value);
