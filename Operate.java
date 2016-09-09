@@ -151,6 +151,8 @@ public class Operate {
         return decPtAct;
     }
 */
+    // least significant digit not always correct fixit
+    // 7.1 / 243.7 = .2913 fixit
     public static int op( String operator, int MAX_DGTS, boolean decimalsCk,
             long operand1, int decPt1, long operand2, int decPt2, 
             long [] actualInt, String [] expl ) {
@@ -248,23 +250,24 @@ public class Operate {
                     " " + Format.getFormat( round2down, decPt2);
             expl[2] = Format.getFormat( round1up, decPt1 ) + " " + operator + 
                     " " + Format.getFormat( round2up, decPt2 );
+            /* 2 / .1888 = 11 fixit */
         } else if(  operator.compareTo("/") == 0  ) {
-            if( decPt1 != decPt2 ) {
-                decPtAct = MAX_DGTS + decPt1 - decPt2;
-            } else {
-                decPtAct = 0;
-            }
+            //if( decPt1 != decPt2 ) {
+            //    decPtAct = MAX_DGTS + decPt1;
+            //} else {
+                decPtAct = MAX_DGTS;
+            //}
             round2down = ten2pow;
             round2up = 10*ten2pow;
-            if( decimalsCk && decPt1 != decPt2 ) {
-                ten2pow = (int)Math.pow(10, MAX_DGTS);
+            if( decimalsCk ) {
+                ten2pow = (int)Math.pow(10, MAX_DGTS + decPt2 - decPt1);
             } else {
                 ten2pow = 1;
             }
             if( round2down != 0 ) {
                 actualInt[2] = ten2pow*operand1 / round2down;
             }
-            if( operand2 != 0 ) {
+            if( operand2 != 0 ) { // else error or maxint fixit
                 //System.out.println("ten2pow = " + ten2pow + " operand1 = " + operand1);
                 actualInt[1] = (long)ten2pow*operand1;
                 //System.out.println("actualInt[1] = " + actualInt[1]);

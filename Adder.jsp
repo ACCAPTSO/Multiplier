@@ -740,7 +740,7 @@
 <tr>
     <td>
     <button type="reset" value="Reset" onclick="startAgain()" >
-        Start again
+        Next Problem
     </button>
     </td>
     <td></td>

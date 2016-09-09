@@ -493,7 +493,7 @@
 </tr>
 <tr>
     <td>
-    <button type="reset" value="Reset" onclick="startAgain()" >Start again</button>
+    <button type="reset" value="Reset" onclick="startAgain()" >Next Problem</button>
     </td>
     <td>
     </td>

@@ -1600,7 +1600,7 @@ if( thereAreCarries && showBrowsCk ) { %>
 <table>
 <tr>    
     <td>
-    <button type="reset" onclick="startDivAgain()" >Start again</button>
+    <button type="reset" onclick="startDivAgain()" >Next Problem</button>
     </td>
     <td></td>
 </tr>

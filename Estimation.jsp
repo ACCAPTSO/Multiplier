@@ -33,8 +33,7 @@
     System.out.println("XOXOXOXOXOXOXOX   starting estimation problem    XOXOXOXOXOXOXOXOXOXOX");
     int nOperators = 0;
     String[] operators = new String[N_OPERATORS];
-    
-    /* 
+    /*  operators and numbers */
     String[][] alt = {{ "", "1", "2", ".", "00" },
                       { "", "4", "5", "2", ".", "0", "11" },
                       { "", "5", "6", "3", ".", "0", "1", "4", "22" },
@@ -46,8 +45,9 @@
                       { "", "9", "6", "5", "4", "7", "88" },
                       { "", "/", "*", "6", "5", "8", "99" }
     }; 
-    */
-    /* operators only */
+ 
+    /* operators only     }; 
+    
     String[][] alt = {{ "", "1", "2", ".", "00" },
                       { "", "4", "5", "2", ".", "0", "11" },
                       { "", "5", "6", "3", ".", "0", "1", "4", "22" },
@@ -58,7 +58,8 @@
                       { "", "8", "5", "4", "77" },
                       { "", "9", "6", "5", "4", "7", "88" },
                       { "/", "*" }
-    }; 
+    };
+*/
     // how do you code "=" as in problem prematurely terminated? fixit
     // backspace? fixit
     // E? as in *10^ fixit
@@ -225,16 +226,19 @@
     int nOps = 2;
     int whatOp = (int)(nOperators*Math.random());
     System.out.println("nOperators = " + nOperators + " whatOp = " + whatOp);
-    String operator = operators[whatOp];
+    final int maxQstns = 10;
+    final int nMucked = maxQstns - 6;
+    String operator[] = new String[nMucked];
+    operator[0] = operators[whatOp];
     int operand1 = (new Double(maxOpPlus1*(Math.pow(Math.random(),EXP)))).intValue();
     int operand2 = (new Double(maxOpPlus1*(Math.pow(Math.random(),EXP)))).intValue();
-    if( !negativesCk && operand2 > operand1 && operator.compareTo("-") == 0 ) {
+    if( !negativesCk && operand2 > operand1 && operator[0].compareTo("-") == 0 ) {
         while( operand1 == 0 ) {
             operand1 = (new Double(maxOpPlus1*(Math.pow(Math.random(),EXP)))).intValue();
         }
         operand2 = (int)(operand1*Math.random());
     }
-    if( operator.compareTo("/") == 0 ) {
+    if( operator[0].compareTo("/") == 0 ) {
         if( operand2 == 0 ) {
             operand2 = 1;
         }
@@ -251,7 +255,7 @@
         decPt2 = (int)((MAX_DGTS+1)*Math.random());
         if( !negativesCk && 
                 operand2*(int)(Math.pow( 10, decPt1 )) > operand1*(int)(Math.pow(10, decPt2)) && 
-                        operator.compareTo("-") == 0 ) {
+                        operator[0].compareTo("-") == 0 ) {
             int dp2Mn = (int)(Math.log10(operand2*Math.pow(10, decPt1)/operand1));
             decPt2 = dp2Mn + (int)((MAX_DGTS+1-dp2Mn)*Math.random());
             //System.out.println("operand2 = " + operand2 + " decPt1 = " + decPt1 + " operand1 = " + operand1 + " dp2Mn = " + dp2Mn);
@@ -273,14 +277,23 @@
     int nDgts1 = operand1 > 0 ? 1 + (int)Math.log10(operand1) : 1;
     int nDgts2 = operand2 > 0 ? 1 + (int)Math.log10(operand2) : 1;
     
-    String[] opDgts1 = new String[TWO_XDGTS]; // java initiallizes integer array
-    String[] opDgts2 = new String[TWO_XDGTS]; // elements to zero by default
-    
+
+    String[][] opDgts1 = new String[TWO_XDGTS][]; 
+    String[][] opDgts2 = new String[TWO_XDGTS][];
+    for( int idx = 0; idx < TWO_XDGTS; ++idx ) {
+        opDgts1[idx] = new String[nMucked];
+        opDgts2[idx] = new String[nMucked];
+    }
     int tmp1 = operand1;
     int tmp2 = operand2;
+
     for( int i = 0; i < TWO_XDGTS; ++i ) {
-        opDgts1[i] = String.valueOf(tmp1 % 10);
-        opDgts2[i] = String.valueOf(tmp2 % 10);
+        opDgts1[i][0] = String.valueOf(tmp1 % 10);
+        opDgts2[i][0] = String.valueOf(tmp2 % 10);
+        for(int idx = 0; idx < nMucked; ++idx ) {
+            opDgts1[i][idx] = opDgts1[i][0];
+            opDgts2[i][idx] = opDgts2[i][0];
+        }
         tmp1 /= 10;
         tmp2 /= 10;
     }
@@ -309,7 +322,7 @@
 
     //int thisMuchBigger = nDgts1 - decPt1 - (nDgts2 - decPt2);
     String [] expl = new String[3];
-    decPtAct = Operate.op( operator, MAX_DGTS, decimalsCk,
+    decPtAct = Operate.op( operator[0], MAX_DGTS, decimalsCk,
             operand1, decPt1, operand2, decPt2, 
             actualInt, expl );
     /*
@@ -430,233 +443,236 @@
     StringBuffer entireProb = new StringBuffer();
     entireProb.append( Format.getFormat( operand1, decPt1 ) );
     entireProb.append(" ");
-    entireProb.append(operator);
+    entireProb.append(operator[0]);
     entireProb.append(" ");
     entireProb.append( Format.getFormat( operand2, decPt2 ) );
     
-    int whichOpIsMucked = (int)((3*nOps*(nOps-1))*Math.random());
-    if( whichOpIsMucked < 4 ) {
-        int whichDigIsMucked = (int)(nDgts1*Math.random());
-        while( whichDigIsMucked < 0 ) {
-            System.out.println("operand1 = " + operand1 + " nDgts1 = " + nDgts1 + " why is whichDigIsMucked " + whichDigIsMucked + "?");
-            whichDigIsMucked = (int)(nDgts1*Math.random());
-        }
-        int origDig = Integer.parseInt(opDgts1[whichDigIsMucked]);
-        origDig = 3*(1+(int)(3*Math.random())); // gives only 3, 6 or 9 fixit
-        System.out.println("should be 3, 6 or 9: " + origDig);
-        int whichAlt = (int)(alt[origDig].length*Math.random());
-        String altDig = alt[origDig][whichAlt];
-        opDgts1[whichDigIsMucked] = altDig;
-        System.out.println("whichOp = " + whichOpIsMucked +  " whichDig = " + whichDigIsMucked + " whichAlt = " + whichAlt + " altDig = " + altDig);
-    } else if( whichOpIsMucked < 5 ) {
-        int origOp = -1;
-        if( operator.compareTo("+") == 0 ) {
-            origOp = 0;
-        } else if( operator.compareTo("-") == 0 ) {
-            origOp = 1;
-        }else if( operator.compareTo("*") == 0 ) {
-            origOp = 2;
-        } else if( operator.compareTo("/") == 0 ) {
-            origOp = 3;
-        }
-        int whichAlt = (int)(altOp[origOp].length*Math.random());
-        String altDig = altOp[origOp][whichAlt];
-        operator = altDig;
-        System.out.println("whichOp = " + whichOpIsMucked + " whichAlt = " + whichAlt + " altDig = " + altDig);
-    } else {
-        int whichDigIsMucked = (int)(nDgts2*Math.random());
-        while( whichDigIsMucked < 0 ) {
-            System.out.println("operand2 = " + operand2 + " nDgts2 = " + nDgts2 + " why is whichDigIsMucked " + whichDigIsMucked + "?");
-            whichDigIsMucked = (int)(nDgts2*Math.random());
-        }
-        int origDig = Integer.parseInt(opDgts2[whichDigIsMucked]);
-        origDig = 3*(1+(int)(3*Math.random())); // gives only 3, 6 or 9 fixit
-        System.out.println("should be 3, 6 or 9: " + origDig);
-        int whichAlt = (int)(alt[origDig].length*Math.random());
-        String altDig = alt[origDig][whichAlt];
-        opDgts2[whichDigIsMucked] = altDig;
-        System.out.println("whichOp = " + whichOpIsMucked +  " whichDig = " + whichDigIsMucked + " whichAlt = " + whichAlt + " altDig = " + altDig);
-    }
-  
-    StringBuffer muckedProb = new StringBuffer();
-    if( decPt1 >= nDgts1 ) {
-        muckedProb.append("0.");
-    }
-    int tmp4 = decPt1 - 1;
-    while( tmp4 >= nDgts1 ) {
-        muckedProb.append("0");
-        tmp4 = tmp4 - 1;
-    }
-    for( int i = nDgts1 - 1; i >= 0; --i ) {
-        muckedProb.append(opDgts1[i]); 
-        if( i == decPt1 ) {
-            muckedProb.append(".");
-        }
-    }
-    //muckedProb.append(" ");
-    muckedProb.append(operator);
-    //muckedProb.append(" ");
-   if( decPt2 >= nDgts2 ) {
-        muckedProb.append("0.");
-    }
-    tmp4 = decPt2 - 1;
-    while( tmp4 >= nDgts2 ) {
-        muckedProb.append("0");
-        tmp4 = tmp4 - 1;
-    }
-    for( int i = nDgts2 - 1; i >= 0; --i ) {
-        muckedProb.append(opDgts2[i]);
-        if( i == decPt2 ) {
-            muckedProb.append(".");
-        }
-    }
-    
-    StringBuffer tmp5 = new StringBuffer();
-    tmp5.append(muckedProb);
-    Pattern n = Pattern.compile("[0-9]*");
-    Pattern md = Pattern.compile("[/\\*]");
-    Pattern pm = Pattern.compile("[+-]");
-    Pattern b = Pattern.compile("^\\s");
 
-    int mdx = 0;
-    int pdx = 0;
-    int qdx = 0;
-    int[] dofirst = { -1, -1, -1, -1 };
-    int[] dolast = { -1, -1, -1, -1 };
-    long[] num = new long[4];
-    int[] dp = new int[4];
-    String[] muckedOp = new String[4];
-    //boolean stillGoing = true;
-    boolean countingDp = false;
-    System.out.println("mucked Problem: " + muckedProb);
-    // do two consecutive operators imply a "0" between them or is one or the other operators ignored? 
-    // nothing followed by operator implies 0 fixit
-    // two operators in a row: hp only sees first operator fixit
-    // windows only sees second operator fixit
-    // last operand blank hp displays previous operand
-    // last operand blank 5*3+ = = = counts by 15 in windows standard  or scientific calculator
-    // 4+5* = = = 9, 81, 729, 6591 = 9, 9^2, 9^3, 9^4 windows standard calculator
-    // 4+5* = = = 29, 54, 79 = 4+5^2, 4+2*5^2, 4+3*5^2 windows scientific calculator
-    // 4 + 5 * 2 = 18 in windows basic calculator
-    // = 14 in windows scientific calculator
-    while( tmp5.length() > 0 ) {
-        int ndx = 1;
-        // find digits
-        while( ndx <= tmp5.length() &&
-                n.matcher( tmp5.substring( 0, ndx )).matches() ) {
-            //String junk = tmp5.substring( 0, ndx );
-            //System.out.println("substring[" + ndx + "] = " + junk );
-            ++ndx;
-            if( countingDp ) { // count decimal places
-                dp[mdx] = dp[mdx] + 1;
+    long [] finalMucked = new long[nMucked];
+    int [] muckedDp = new int[nMucked];
+    int origOp = -1;
+    if( operator[0].compareTo("+") == 0 ) {
+        origOp = 0;
+    } else if( operator[0].compareTo("-") == 0 ) {
+        origOp = 1;
+    }else if( operator[0].compareTo("*") == 0 ) {
+        origOp = 2;
+    } else if( operator[0].compareTo("/") == 0 ) {
+        origOp = 3;
+    }
+    for( int idx = 1; idx < nMucked; ++idx ) {
+        int whichOpIsMucked = (int)((3*nOps*(nOps-1))*Math.random());
+        if( whichOpIsMucked < 4 ) {
+            int whichDigIsMucked = (int)(nDgts1*Math.random());
+            while( whichDigIsMucked < 0 ) {
+                System.out.println("operand1 = " + operand1 + " nDgts1 = " + nDgts1 + " why is whichDigIsMucked " + whichDigIsMucked + "?");
+                whichDigIsMucked = (int)(nDgts1*Math.random());
             }
-        }
-        int current = 0;
-        if( ndx-1 > 0 ) {
-            try{ // convert digits you have found to an integer
-                current = Integer.valueOf( tmp5.substring( 0, ndx-1 ));
-            } catch( NumberFormatException e ) {
-                System.err.println( "System error: " + e.toString() );
+            int origDig = Integer.parseInt(opDgts1[whichDigIsMucked][idx]);
+            //origDig = 3*(1+(int)(3*Math.random())); // gives only 3, 6 or 9 debug
+            //System.out.println("should be 3, 6 or 9: " + origDig);
+            int whichAlt = (int)(alt[origDig].length*Math.random());
+            String altDig = alt[origDig][whichAlt];
+            opDgts1[whichDigIsMucked][idx] = altDig;
+            System.out.println("whichOp = " + whichOpIsMucked +  " whichDig = " + whichDigIsMucked + " whichAlt = " + whichAlt + " altDig = " + altDig);
+        } else if( whichOpIsMucked < 5 ) {
+
+            if( 0 <= origOp && origOp < 4 ) {
+                int whichAlt = (int)(altOp[origOp].length*Math.random());
+                String altDig = altOp[origOp][whichAlt];
+                operator[idx] = altDig;
+                System.out.println("whichOp = " + whichOpIsMucked + " whichAlt = " + whichAlt + " altDig = " + altDig);
+            } else { 
+                System.out.println("Error: operator = " + operator[idx] + " origOp = " + origOp);
             }
-        }
-        // combine whole and decimal parts
-        num[mdx] = (int)Math.pow(10, ndx-1)*num[mdx] + current;
-        //System.out.println("current = " + current + " num[" + mdx + "] = " + num[mdx]);
-        if( 0 < ndx && ndx <= tmp5.length() && tmp5.charAt(ndx-1) == '.' ) {
-            //System.out.println("char at prev ndx = " + tmp5.charAt(ndx-1) );
-            countingDp = true;
-            tmp5.delete( 0, ndx);
-            //System.out.println("remaining mucked equation = " + tmp5 );
         } else {
-            countingDp = false;
-            while( ndx <= tmp5.length() ){
-                // look for operand
-                if( pm.matcher( tmp5.substring( ndx-1, ndx )).matches() ) {
-                    muckedOp[mdx] = tmp5.substring(ndx-1, ndx);
-                    dolast[mdx] = mdx;
-                    qdx = qdx + 1;
-                    mdx = mdx + 1;
-                    break;
-                } else if( md.matcher( tmp5.substring( ndx-1, ndx )).matches() ) {
-                    muckedOp[mdx] = tmp5.substring(ndx-1, ndx);
-                    dofirst[mdx] = mdx;
-                    pdx = pdx + 1;
-                    mdx = mdx + 1;
-                    break;
-                }
-                //System.out.println("not operator substring = >" + tmp5.substring( ndx-1, ndx ) + "<");
+            int whichDigIsMucked = (int)(nDgts2*Math.random());
+            while( whichDigIsMucked < 0 ) {
+                System.out.println("operand2 = " + operand2 + " nDgts2 = " + nDgts2 + " why is whichDigIsMucked " + whichDigIsMucked + "?");
+                whichDigIsMucked = (int)(nDgts2*Math.random());
+            }
+            int origDig = Integer.parseInt(opDgts2[whichDigIsMucked][idx]);
+            //origDig = 3*(1+(int)(3*Math.random())); // gives only 3, 6 or 9 debug
+            //System.out.println("should be 3, 6 or 9: " + origDig);
+            int whichAlt = (int)(alt[origDig].length*Math.random());
+            String altDig = alt[origDig][whichAlt];
+            opDgts2[whichDigIsMucked][idx] = altDig;
+            System.out.println("whichOp = " + whichOpIsMucked +  " whichDig = " + whichDigIsMucked + " whichAlt = " + whichAlt + " altDig = " + altDig);
+        }
+
+        StringBuffer muckedProb = new StringBuffer();
+        if( decPt1 >= nDgts1 ) {
+            muckedProb.append("0.");
+        }
+        int tmp4 = decPt1 - 1;
+        while( tmp4 >= nDgts1 ) {
+            muckedProb.append("0");
+            tmp4 = tmp4 - 1;
+        }
+        for( int i = nDgts1 - 1; i >= 0; --i ) {
+            muckedProb.append(opDgts1[i][idx]); 
+            if( i == decPt1 ) {
+                muckedProb.append(".");
+            }
+        }
+        //muckedProb.append(" ");
+        muckedProb.append(operator[idx]);
+        //muckedProb.append(" ");
+       if( decPt2 >= nDgts2 ) {
+            muckedProb.append("0.");
+        }
+        tmp4 = decPt2 - 1;
+        while( tmp4 >= nDgts2 ) {
+            muckedProb.append("0");
+            tmp4 = tmp4 - 1;
+        }
+        for( int i = nDgts2 - 1; i >= 0; --i ) {
+            muckedProb.append(opDgts2[i][idx]);
+            if( i == decPt2 ) {
+                muckedProb.append(".");
+            }
+        }
+
+        StringBuffer tmp5 = new StringBuffer();
+        tmp5.append(muckedProb);
+        Pattern n = Pattern.compile("[0-9]*");
+        Pattern md = Pattern.compile("[/\\*]");
+        Pattern pm = Pattern.compile("[+-]");
+        Pattern b = Pattern.compile("^\\s");
+
+        int mdx = 0;
+        int pdx = 0;
+        int qdx = 0;
+        int[] dofirst = { -1, -1, -1, -1 };
+        int[] dolast = { -1, -1, -1, -1 };
+        long[] num = new long[4];
+        int[] dp = new int[4];
+        String[] muckedOp = new String[4];
+        //boolean stillGoing = true;
+        boolean countingDp = false;
+        System.out.println("mucked Problem: " + muckedProb);
+        // do two consecutive operators imply a "0" between them or is one or the other operators ignored? 
+        // nothing followed by operator implies 0 fixit
+        // two operators in a row: hp only sees first operator fixit
+        // windows only sees second operator fixit
+        // last operand blank hp displays previous operand
+        // last operand blank 5*3+ = = = counts by 15 in windows standard  or scientific calculator
+        // 4+5* = = = 9, 81, 729, 6591 = 9, 9^2, 9^3, 9^4 windows standard calculator
+        // 4+5* = = = 29, 54, 79 = 4+5^2, 4+2*5^2, 4+3*5^2 windows scientific calculator
+        // 4 + 5 * 2 = 18 in windows basic calculator
+        // = 14 in windows scientific calculator
+        while( tmp5.length() > 0 ) {
+            int ndx = 1;
+            // find digits
+            while( ndx <= tmp5.length() &&
+                    n.matcher( tmp5.substring( 0, ndx )).matches() ) {
+                //String junk = tmp5.substring( 0, ndx );
+                //System.out.println("substring[" + ndx + "] = " + junk );
                 ++ndx;
+                if( countingDp ) { // count decimal places
+                    dp[mdx] = dp[mdx] + 1;
+                }
             }
-            tmp5.delete( 0, ndx);
-            //System.out.println("mucked equation without operand = >" + tmp5 + "<");
-            // skip over whitespace, if any
-            while( tmp5.length() > 0 && b.matcher( tmp5.substring( 0, 1 )).matches()) {
-                //System.out.println("substring = >" + tmp5.substring( 0, 1 ) + "<");
-                tmp5.delete( 0, 1);
+            int current = 0;
+            if( ndx-1 > 0 ) {
+                try{ // convert digits you have found to an integer
+                    current = Integer.valueOf( tmp5.substring( 0, ndx-1 ));
+                } catch( NumberFormatException e ) {
+                    System.err.println( "System error: " + e.toString() );
+                }
             }
-            //System.out.println("mucked equation without whitespace = >" + tmp5 + "<");
+            // combine whole and decimal parts
+            num[mdx] = (int)Math.pow(10, ndx-1)*num[mdx] + current;
+            //System.out.println("current = " + current + " num[" + mdx + "] = " + num[mdx]);
+            if( 0 < ndx && ndx <= tmp5.length() && tmp5.charAt(ndx-1) == '.' ) {
+                //System.out.println("char at prev ndx = " + tmp5.charAt(ndx-1) );
+                countingDp = true;
+                tmp5.delete( 0, ndx);
+                //System.out.println("remaining mucked equation = " + tmp5 );
+            } else {
+                countingDp = false;
+                while( ndx <= tmp5.length() ){
+                    // look for operand
+                    if( pm.matcher( tmp5.substring( ndx-1, ndx )).matches() ) {
+                        muckedOp[mdx] = tmp5.substring(ndx-1, ndx);
+                        dolast[mdx] = mdx;
+                        qdx = qdx + 1;
+                        mdx = mdx + 1;
+                        break;
+                    } else if( md.matcher( tmp5.substring( ndx-1, ndx )).matches() ) {
+                        muckedOp[mdx] = tmp5.substring(ndx-1, ndx);
+                        dofirst[mdx] = mdx;
+                        pdx = pdx + 1;
+                        mdx = mdx + 1;
+                        break;
+                    }
+                    //System.out.println("not operator substring = >" + tmp5.substring( ndx-1, ndx ) + "<");
+                    ++ndx;
+                }
+                tmp5.delete( 0, ndx);
+                //System.out.println("mucked equation without operand = >" + tmp5 + "<");
+                // skip over whitespace, if any
+                while( tmp5.length() > 0 && b.matcher( tmp5.substring( 0, 1 )).matches()) {
+                    //System.out.println("substring = >" + tmp5.substring( 0, 1 ) + "<");
+                    tmp5.delete( 0, 1);
+                }
+                //System.out.println("mucked equation without whitespace = >" + tmp5 + "<");
+            }
         }
-    }
-    for( int i = 0; i <= mdx; ++i ) {
-        if( muckedOp[i] != null ) {
-            System.out.println(num[i] + " times 10 to the negative " + dp[i] + " " + muckedOp[i] + " ");
-        } else {
-            System.out.println(num[i] + " times 10 to the negative " + dp[i]);
+        for( int i = 0; i <= mdx; ++i ) {
+            if( muckedOp[i] != null ) {
+                System.out.println(num[i] + " times 10 to the negative " + dp[i] + " " + muckedOp[i] + " ");
+            } else {
+                System.out.println(num[i] + " times 10 to the negative " + dp[i]);
+            }
         }
+
+        long[][] prelimAns = new long[4][];
+        int [] prelimDp = new int[4];
+        for( int i = 0; i < 4; ++i ) {
+            prelimAns[i] = new long[3];
+            prelimAns[i][1] = num[i];
+            prelimDp[i] = dp[i];
+        }
+
+        finalMucked[idx] = num[0];
+        muckedDp[idx] = dp[0];
+        String [] junk = new String[3];
+
+        for( int y = 0; y < mdx; ++y ) {
+            int z = dofirst[y];
+            if( z >= 0 ) {
+                System.out.println("num[" + y + "] = " + prelimAns[y][1] +  " dp[" + y + "] = " + prelimDp[y] + " muckedOp[" + y + "] = " + muckedOp[y] + " numyplus1 = " + prelimAns[y+1][1] +  " dpyplus1 = " + prelimDp[y+1] + " = ");
+                prelimDp[y] = Operate.op( muckedOp[y], MAX_DGTS, decimalsCk,
+                prelimAns[y][1], prelimDp[y], prelimAns[y+1][1], prelimDp[y+1], 
+                prelimAns[y], junk );
+                System.out.println(prelimAns[y][1] + " dp " + prelimDp[y]);
+                prelimAns[y+1][1] = prelimAns[y][1];
+                finalMucked[idx] = prelimAns[y][1]; // just in case there is no addidion or subtraction
+                prelimDp[y+1] = prelimDp[y];
+                muckedDp[idx] = prelimDp[y];
+            }
+        }
+
+        for( int y = 0; y < mdx; ++y ) {
+            int z = dolast[y];
+            if( z >= 0 ) {
+                System.out.println("prelimAns[" + y + "] = " + prelimAns[y][1] +  " dp[" + y + "] = " + prelimDp[y] + " muckedOp[" + y + "] = " + muckedOp[y] + " prelimAnsyplus1 = " + prelimAns[y+1][1] +  " dpyplus1 = " + prelimDp[y+1] + " = ");
+                prelimDp[y] = Operate.op( muckedOp[y], MAX_DGTS, decimalsCk,
+                prelimAns[y][1], prelimDp[y], prelimAns[y+1][1], prelimDp[y+1], 
+                prelimAns[y], junk );
+                finalMucked[idx] = prelimAns[y][1];
+                muckedDp[idx] = prelimDp[y];
+                System.out.println(finalMucked[idx] + " mucked dp " + muckedDp[idx]);
+                prelimAns[y+1][1] = prelimAns[y][1];
+                prelimDp[y+1] = prelimDp[y]; 
+            }
+        }
+        System.out.println("finalMucked = " + finalMucked[idx] + " muckedDp = " + muckedDp[idx]);
     }
     
-    long[][] prelimAns = new long[4][];
-    int [] prelimDp = new int[4];
-    for( int i = 0; i < 4; ++i ) {
-        prelimAns[i] = new long[3];
-        prelimAns[i][1] = num[i];
-        prelimDp[i] = dp[i];
-    }
-
-    long [][] muckedAns = new long[4][];
-    for( int i = 0; i < 4; ++i ) {
-        muckedAns[i] = new long[3];
-        muckedAns[i][1] = num[i];
-    }
-    long finalMucked = num[0]; // just in case there is no operand
-    int muckedDp = dp[0];
-    // do num, prelimAns and muckedAns really need to be separate? fixit
-    String [] junk = new String[3];
-    for( int y = 0; y < mdx; ++y ) {
-        int z = dofirst[y];
-        if( z >= 0 ) {
-            prelimDp[y] = Operate.op( muckedOp[y], MAX_DGTS, decimalsCk,
-            num[y], dp[y], num[y+1], dp[y+1], 
-            prelimAns[y], junk );
-            System.out.println("num[" + y + "] = " + num[y] +  " dp[" + y + "] = " + dp[y] + " muckedOp[" + y + "] = " + muckedOp[y] + " numyplus1 = " + num[y+1] +  " dpyplus1 = " + dp[y+1] + " = " + prelimAns[y][1] + " dp " + prelimDp[y]);
-            num[y] = prelimAns[y][1];
-            num[y+1] = prelimAns[y][1];
-            prelimAns[y+1][1] = prelimAns[y][1];
-            finalMucked = prelimAns[y][1]; // just in case there is no addidion or subtraction
-            prelimDp[y+1] = prelimDp[y];
-            dp[y+1] = prelimDp[y];
-            muckedDp = prelimDp[y];
-        }
-    }
-
-    
-    for( int y = 0; y < mdx; ++y ) {
-        int z = dolast[y];
-        if( z >= 0 ) {
-            muckedDp = Operate.op( muckedOp[y], MAX_DGTS, decimalsCk,
-            prelimAns[y][1], prelimDp[y], prelimAns[y+1][1], prelimDp[y+1], 
-            muckedAns[y], junk );
-            finalMucked = muckedAns[y][1];
-            System.out.println("prelimAns[" + y + "] = " + prelimAns[y][1] +  " dp[" + y + "] = " + prelimDp[y] + " muckedOp[" + y + "] = " + muckedOp[y] + " prelimAnsyplus1 = " + prelimAns[y+1][1] +  " dpyplus1 = " + prelimDp[y+1] + " = " + finalMucked + " mucked dp " + muckedDp);
-            prelimAns[y][1] = muckedAns[y][1];
-            prelimAns[y+1][1] = muckedAns[y][1];
-            prelimDp[y+1] = muckedDp;
-        }
-    }
-    System.out.println("finalMucked = " + finalMucked + " muckedDp = " + muckedDp);
-   
-    Question[] questions = new Question[16];
-    for( int i = 0; i < 16; ++i ) {
+    Question[] questions = new Question[maxQstns];
+    for( int i = 0; i < maxQstns; ++i ) {
         questions[i] = new Question();
         if( i % 2 == 0 ) {
             questions[i].setQuesAns( "true" );
@@ -671,11 +687,28 @@
     // if it's in range and has correct lsd, possible
     // if it's equal, true
     // if it's not equal false
-    if( operator.compareTo("/") == 0 ) {
+    final int firstMucked = 7;
+    if( origOp == 3 ) { // division
         questions[0].setQuesText("The most significant digit is " + mostDig);
         int notMostDig = (7 + mostDig) % 10;
         questions[1].setQuesText("The most significant digit is " + notMostDig);
         ten2pow = (int)Math.pow(10,nDigsAct[1]-1);
+        for( int idx = firstMucked; idx < maxQstns; ++ idx ) {
+            int x = idx - firstMucked;
+            questions[idx].setQuesText("Equals     " + Format.getFormat( finalMucked[x], muckedDp[x] ) );
+            if( actualInt[0] <= finalMucked[x] && finalMucked[x] <= actualInt[2]
+                    && muckedDp[x] == decPtAct && 
+                    finalMucked[x] / ten2pow == mostDig ) {
+                questions[idx].setQuesAns( "possible" );
+                if( finalMucked[x] == actualInt[1] && muckedDp[x] == decPtAct ) {
+                    questions[idx].setAltAns( "true" );
+                }
+            } else {
+                questions[idx].setQuesAns( "false" );
+            }
+        }
+        /*
+        
         long somethingInRange = actualInt[0] + (int)((actualInt[2]-actualInt[0])*Math.random());
         long possible = mostDig*ten2pow + somethingInRange - ten2pow*(somethingInRange/ten2pow);
         poss = Format.getFormat( possible, decPtAct );
@@ -713,10 +746,26 @@
         //System.out.println(" 13 withMostDigZeroed = " + withMostDigZeroed + " notPossible = " + notPossible);
         notPoss = Format.getFormat( notPossible, decPtAct );
         questions[13].setQuesText("Equals     " + notPoss);
+        */
     } else {
         questions[0].setQuesText("The least significant digit is " + leastDig);
         int notLeastDig = (7 + leastDig) % 10;
         questions[1].setQuesText("The least significant digit is " + notLeastDig);
+        for( int idx = firstMucked; idx < maxQstns; ++ idx ) {
+            int x = idx - firstMucked;
+            questions[idx].setQuesText("Equals     " + Format.getFormat( finalMucked[x], muckedDp[x] ) );
+            if( actualInt[0] <= finalMucked[x] && finalMucked[x] <= actualInt[2]
+                    && muckedDp[x] == decPtAct && 
+                    finalMucked[x] %10 == leastDig ) {
+                questions[idx].setQuesAns( "possible" );
+                if( finalMucked[x] == actualInt[1] && muckedDp[x] == decPtAct ) {
+                    questions[idx].setAltAns( "true" );
+                }
+            } else {
+                questions[idx].setQuesAns( "false" );
+            }
+        }
+        /*
         long somethingInRange = actualInt[0] + (int)((actualInt[2]-actualInt[0])*Math.random());
         long withLeastDigZeroed = 10*(somethingInRange/10);
         long possible = leastDig + withLeastDigZeroed;
@@ -756,11 +805,16 @@
         notPossible = notLeastDig + 10*(actualInt[1]/10);
         notPoss = Format.getFormat( notPossible, decPtAct );
         questions[13].setQuesText("Equals     " + notPoss);
+*/
     }
-    questions[2].setQuesText("Is greater than " + actual[0]);
-    questions[3].setQuesText("Is less than    " + actual[0]);
-    questions[4].setQuesText("Is less than    " + actual[2]);
-    questions[5].setQuesText("Is greater than " + actual[2]);
+    questions[2].setQuesText("Is greater than or equal to " + actual[0]);
+    questions[3].setQuesText("Is less than or equal to    " + actual[0]);
+    questions[4].setQuesText("Is less than or equal to    " + actual[2]);
+    questions[5].setQuesText("Is greater than or equal to " + actual[2]);
+    questions[6].setQuesText("Equals     " + Format.getFormat( actualInt[1], decPtAct ) );
+    questions[6].setQuesAns( "possible" );
+    questions[6].setAltAns( "true" );
+    /*
     notPossible = (int)(actualInt[0]*Math.random());
     notPoss = Format.getFormat( notPossible, decPtAct );
     questions[8].setQuesText("Can't be " + notPoss);
@@ -769,12 +823,13 @@
     notPoss = Format.getFormat( notPossible, decPtAct );
     questions[10].setQuesText("Can't be " + notPoss);
     questions[11].setQuesText("Equals     " + notPoss);
+*/
     // add wrong operand, wrong decimal point, fixit
         
     // LFSR to scramble questions
     TreeMap<Integer, Question> scramble = new TreeMap();
     int shiftReg = 1 + (int)(0xFFFF*Math.random());
-    for( int i = 0; i < 14; ++i ) {
+    for( int i = 0; i < maxQstns; ++i ) {
         questions[i].setOrderIndex( i );
         scramble.put( shiftReg, questions[i] );
         int bit15 = (0x8000 & shiftReg) > 0? 1 : 0;
@@ -910,7 +965,7 @@
 </table>
 <span class="offs">
 <input type="button" value="Check" onclick="checkTF()">
-<button type="reset" value="Reset" onclick="startAgain()">Start Again</button>
+<button type="reset" value="Reset" onclick="startAgain()">Next Problem</button>
 </span>
     <div class="offs">
         <a href="/" class="ndx">Home</a>

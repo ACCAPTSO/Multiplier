@@ -118,6 +118,9 @@ public class Format {
                 actual.append(",");
             }
             tmp3 = tmp3 - ten2pow*actDig;
+            if( tmp3 == 0 && j <= dp ) {
+                break;
+            }
             ten2pow /= 10;
             //System.out.println("j = " + j + " actDig = " + actDig + " tmp3 = " + tmp3);
         }
@@ -149,6 +152,9 @@ public class Format {
                 actual.append(",");
             }
             tmp3 = tmp3 - ten2pow*actDig;
+            if( tmp3 == 0 && j <= dp ) {
+                break;
+            }
             ten2pow /= 10;
             //System.out.println("j = " + j + " actDig = " + actDig + " tmp3 = " + tmp3);
         }
