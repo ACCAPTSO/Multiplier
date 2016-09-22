@@ -18,15 +18,49 @@
     <script src="Multiplier.js"></script>
 </head>
 <body>
+    <%!
+    public String fudFormat( long num, int dp ) {
+        System.out.println("formatting " + num + " with " + dp + " decimal places");
+        StringBuffer actual = new StringBuffer();
+        long absActual = num;
+        if( num < 0 ) {
+            absActual = -num;
+            actual.append("-");
+        }
+        int digs = absActual > 0? 1 + (int)Math.log10(absActual) : 1;
+        long tmp3 = absActual;
+        long ten2pow = (long)Math.pow(10, digs-1);
+        if( dp >= digs ) {
+            actual.append("0.");
+        }
+        int tmp4 = dp - 1;
+        while( tmp4 >= digs ) {
+            actual.append("0");
+            tmp4 = tmp4 - 1;
+        }
+        for(  int j = digs - 1; j >= 0; --j ) {
+            int actDig = (int)(tmp3/ten2pow);
+            actual.append(String.valueOf(actDig));
+            if( j == dp && j > 0 ) {
+                actual.append(".");
+            } else if( ( j - dp ) % 3 == 0 && j > dp ) {
+                actual.append(",");
+            }
+            System.out.println("j = " + j + " actDig = " + actDig + " tmp3 = " + tmp3 + " ten2pow = " + ten2pow);
+            tmp3 = tmp3 - ten2pow*actDig;
+            if( tmp3 == 0 && j <= dp ) {
+                break;
+            }
+
+            ten2pow /= 10;
+        }
+        return new String( actual );
+    }
+%>
 <% // upper range of 5217 - 5710 is 1000 fixit
-    // least significant digit is sometimes 0 fixit
     // some of the Can't be's need to have possibles fixit
     //sometimes the upper or lower bound is equal the answer fixit
     // crashes when you uncheck every type of prolem fixit
-    // keep getting these errors
-    // Severe:   java.lang.NumberFormatException: For input string: ""
-    // fixit
-    // decimal division upper and lower ranges are reversed fixit
     final int N_OPERATORS = 4;
     //final double EXP = 2.4;
     final double EXP = 1.4;
@@ -226,12 +260,14 @@
     int nOps = 2;
     int whatOp = (int)(nOperators*Math.random());
     System.out.println("nOperators = " + nOperators + " whatOp = " + whatOp);
-    final int maxQstns = 10;
-    final int nMucked = maxQstns - 6;
+    final int maxQstns = 4;
+    final int nMucked = maxQstns - 1;
     String operator[] = new String[nMucked];
     operator[0] = operators[whatOp];
+
     int operand1 = (new Double(maxOpPlus1*(Math.pow(Math.random(),EXP)))).intValue();
     int operand2 = (new Double(maxOpPlus1*(Math.pow(Math.random(),EXP)))).intValue();
+
     if( !negativesCk && operand2 > operand1 && operator[0].compareTo("-") == 0 ) {
         while( operand1 == 0 ) {
             operand1 = (new Double(maxOpPlus1*(Math.pow(Math.random(),EXP)))).intValue();
@@ -261,18 +297,13 @@
             //System.out.println("operand2 = " + operand2 + " decPt1 = " + decPt1 + " operand1 = " + operand1 + " dp2Mn = " + dp2Mn);
         }
     }
+    //operator[0] = operators[2]; // debug
+    //operand1 = 4341;
+    //operand2 = 4131; 
+    //decPt1 = 4;
+    //decPt2 = 3; // debug // upper and lower range are the same and only upper range is valid fixit
     
-    // factorx's line up the decimal points
-    int factor1 = 1;
-    int factor2 = 1;
-    int decPtAct = decPt1; // for addition or subtraction assuming decPt1 >= decPt2
-    
-    if( decPt1 < decPt2 ) {
-        factor1 = (int)Math.pow(10,decPt2-decPt1);
-        decPtAct = decPt2; // for addition or subtraction
-    } else if( decPt1 > decPt2 ) {
-        factor2 = (int)Math.pow(10,decPt1-decPt2);
-    }
+    int decPtAct = decPt1; // for addition or subtraction assuming decPt1 >= decPt
 
     int nDgts1 = operand1 > 0 ? 1 + (int)Math.log10(operand1) : 1;
     int nDgts2 = operand2 > 0 ? 1 + (int)Math.log10(operand2) : 1;
@@ -290,6 +321,7 @@
     for( int i = 0; i < TWO_XDGTS; ++i ) {
         opDgts1[i][0] = String.valueOf(tmp1 % 10);
         opDgts2[i][0] = String.valueOf(tmp2 % 10);
+        System.out.println("opDgts1[" + i + "][0] = " + opDgts1[i][0] + " opDgts2[" + i + "][0] = " + opDgts2[i][0]);
         for(int idx = 0; idx < nMucked; ++idx ) {
             opDgts1[i][idx] = opDgts1[i][0];
             opDgts2[i][idx] = opDgts2[i][0];
@@ -300,133 +332,26 @@
     int leastDig = 0; 
     int mostDig = 9;
     int ten2pow = (int)Math.pow(10, nDgts1 - 1);
-    long round1up = operand1;
-    long round1down = operand1;
-    int round2up = operand2;
-    int round2down = operand2;
-    if( ten2pow != 0 ) {
-        round1up = ten2pow*((ten2pow + operand1)/ten2pow);
-        round1down = ten2pow*(operand1/ten2pow);
-    } else {
-        System.out.println("nDgts1 = " + nDgts1 + " ten2pow = " + ten2pow);
-    }
-    ten2pow = (int)Math.pow(10, nDgts2 - 1);
-    if( ten2pow != 0 ) {
-        round2up = ten2pow*((ten2pow + operand2)/ten2pow);
-        round2down = ten2pow*(operand2/ten2pow);
-    } else {
-        System.out.println("nDgts2 = " + nDgts1 + " ten2pow = " + ten2pow);
-    }
     long[] actualInt = {Integer.MAX_VALUE, 0, 0 };
-    System.out.println("decPt1 = " + decPt1 + " decPt2 = " + decPt2 + " factor1 = " + factor1 + " factor2 = " + factor2 + " operator = " + operator);
+    System.out.println("decPt1 = " + decPt1 + " decPt2 = " + decPt2 + " operator = " + operator[0]);
 
     //int thisMuchBigger = nDgts1 - decPt1 - (nDgts2 - decPt2);
     String [] expl = new String[3];
     decPtAct = Operate.op( operator[0], MAX_DGTS, decimalsCk,
             operand1, decPt1, operand2, decPt2, 
             actualInt, expl );
-    /*
-     String expl2 = "";
-    if( whatOp == plusCase) {   
-        if( thisMuchBigger > 0 ) {
-            ten2pow = (int)Math.pow(10, nDgts1 - thisMuchBigger - 1);
-            if( ten2pow == 0 ) {
-                System.out.println("nDgts1 = " + nDgts1 + " thisMuchBigger = " + thisMuchBigger);
-                ten2pow = 1;
-            }
-            round1up = ten2pow*((ten2pow+operand1)/ten2pow);
-            round1down = ten2pow*(operand1/ten2pow);
-        } else if( thisMuchBigger < 0 ) {
-            ten2pow = (int)Math.pow(10, nDgts2 + thisMuchBigger - 1);
-            if( ten2pow == 0 ) {
-                System.out.println("nDgts2 = " + nDgts2 + " thisMuchBigger = " + thisMuchBigger);
-                ten2pow = 1;
-            }
-            round2up = ten2pow*((ten2pow+operand2)/ten2pow);
-            round2down = ten2pow*(operand2/ten2pow);
+    double doubleAct = actualInt[1]*Math.pow(10,-decPtAct);
+    double doubleMin = actualInt[0]*Math.pow(10,-decPtAct);
+    double doubleMax = actualInt[2]*Math.pow(10,-decPtAct);
+    leastDig = 0;
+    ten2pow = 10;
+    if( actualInt[1] != 0 ) {
+        while( leastDig == 0 ) {
+            leastDig = (int)(10*Math.abs(actualInt[1] % ten2pow))/ten2pow;
+            System.out.println("ten2pow = " + ten2pow + " actualInt = " + actualInt[1] + " leastDig = " + leastDig);
+            ten2pow = ten2pow*10;
         }
-        ten2pow = factor1 > factor2? factor1 : factor2; //(int)Math.pow(10,decPtAct);
-        actualInt[2] = (factor1*round1up + factor2*round2up);
-        actualInt[1] = factor1*operand1 + factor2*operand2;
-        actualInt[0] = (factor1*round1down + factor2*round2down);
-        expl0 = round1down + " " + operator + " " + round2down;
-        expl2 = round1up + " " + operator + " " + round2up;
-    } else if( whatOp == subCase ) {     
-        if( thisMuchBigger > 0 ) {
-            ten2pow = (int)Math.pow(10, nDgts1 - thisMuchBigger - 1);
-            if( ten2pow == 0 ) {
-                System.out.println("nDgts1 = " + nDgts1 + " thisMuchBigger = " + thisMuchBigger);
-                ten2pow = 1;
-            }
-            round1up = ten2pow*((ten2pow+operand1)/ten2pow);
-            round1down = ten2pow*(operand1/ten2pow);
-        } else if( thisMuchBigger < 0 ) {
-            ten2pow = (int)Math.pow(10, nDgts2 + thisMuchBigger - 1);
-            if( ten2pow == 0 ) {
-                System.out.println("nDgts1 = " + nDgts1 + " thisMuchBigger = " + thisMuchBigger);
-                ten2pow = 1;
-            }
-            round2up = ten2pow*((ten2pow+operand2)/ten2pow);
-            round2down = ten2pow*(operand2/ten2pow);
-        }
-        if( operand1 >= operand2 && round2up > round1down ) {
-            round2up = 0;
-        } 
-        ten2pow = factor1 > factor2? factor1 : factor2;
-        actualInt[2] = (factor1*round1up - factor2*round2down);
-        actualInt[1] = factor1*operand1 - factor2*operand2;
-        actualInt[0] = factor1*round1down - factor2*round2up;
-        expl0 = round1down + " " + operator + " " + round2up;
-        expl2 =  round1up + " " + operator + " " + round2down;
-    } else if( whatOp == multCase ) {
-        decPtAct = decPt1 + decPt2;
-        ten2pow = (int)Math.pow(10,decPtAct);
-        actualInt[2] = round1up * round2up;
-        actualInt[1] = operand1 * operand2;
-        actualInt[0] = round1down * round2down;
-        expl0 = round1down + " " + operator + " " + round2down;
-        expl2 = round1up + " " + operator + " " + round2up;
-    } else if( whatOp == divCase ) {
-        if( decPt1 != decPt2 ) {
-            decPtAct = MAX_DGTS + decPt1 - decPt2;
-        } else {
-            decPtAct = 0;
-        }
-        round2down = ten2pow;
-        round2up = 10*ten2pow;
-        if( decimalsCk ) {
-            ten2pow = (int)Math.pow(10, MAX_DGTS);
-        } else {
-            ten2pow = 1;
-        }
-        if( round2down != 0 ) {
-            actualInt[2] = ten2pow*operand1 / round2down;
-        }
-        if( operand2 != 0 ) {
-            System.out.println("ten2pow = " + ten2pow + " operand1 = " + operand1);
-            actualInt[1] = (long)ten2pow*operand1;
-            System.out.println("actualInt[1] = " + actualInt[1]);
-            actualInt[1] = 10*actualInt[1];
-            System.out.println("actualInt[1] = " + actualInt[1]);
-            System.out.println("operand2 = " + operand2);
-            actualInt[1] = actualInt[1]  / operand2;
-            System.out.println("actualInt[1] = " + actualInt[1]);
-            actualInt[1] = actualInt[1] + 5;
-            System.out.println("actualInt[1] = " + actualInt[1]);
-            actualInt[1] = actualInt[1]/10;
-            System.out.println("actualInt[1] = " + actualInt[1]);
-            //actualInt[1] = (10*ten2pow*operand1  / operand2 + 5)/10;
-        }
-        if( round2up != 0 ) {
-            actualInt[0] = ten2pow*operand1 / round2up;
-        }
-        expl0 = Format.getFormat( operand1, decPt1 ) + " " + operator + 
-                " " + Format.getFormat( round2up, decPt2 );
-        expl2 =  Format.getFormat( operand1, decPt1 ) + " " + operator + 
-                " " + Format.getFormat( round2down, decPt2 );
     }
-*/
-    leastDig = (int)(Math.abs(actualInt[1] % 10));
     
     String[] actual = new String[3];
     int[] nDigsAct = new int[3];
@@ -436,9 +361,10 @@
     }
     
     mostDig = (int)(actualInt[1]/((int)Math.pow(10,nDigsAct[1]-1)));
-    System.out.println("operand1 = " + operand1 + " round1up = " + round1up + " round1down = "  + round1down + " nDgts1 = " + nDgts1);
-    System.out.println("operand2 = " + operand2 + " round2up = " + round2up + " round2down = "  + round2down + " nDgts2 = " + nDgts2);
+    System.out.println("operand1 = " + operand1 + " nDgts1 = " + nDgts1);
+    System.out.println("operand2 = " + operand2 + " nDgts2 = " + nDgts2);
     System.out.println("actualInt = " + actualInt[1] + " nDigsAct = " + nDigsAct[1] + " decPtAct = " + decPtAct);
+    System.out.println("doubleMin = " + doubleMin + " doubleAct = " + doubleAct + " doubleMax = " + doubleMax + " mostDig = " + mostDig );
 
     StringBuffer entireProb = new StringBuffer();
     entireProb.append( Format.getFormat( operand1, decPt1 ) );
@@ -449,6 +375,8 @@
     
 
     long [] finalMucked = new long[nMucked];
+    double [] doubleMucked = new double[nMucked];
+    String [] muckedString = new String[nMucked];
     int [] muckedDp = new int[nMucked];
     int origOp = -1;
     if( operator[0].compareTo("+") == 0 ) {
@@ -461,6 +389,7 @@
         origOp = 3;
     }
     for( int idx = 1; idx < nMucked; ++idx ) {
+        operator[idx] = operator[0];
         int whichOpIsMucked = (int)((3*nOps*(nOps-1))*Math.random());
         if( whichOpIsMucked < 4 ) {
             int whichDigIsMucked = (int)(nDgts1*Math.random());
@@ -468,13 +397,14 @@
                 System.out.println("operand1 = " + operand1 + " nDgts1 = " + nDgts1 + " why is whichDigIsMucked " + whichDigIsMucked + "?");
                 whichDigIsMucked = (int)(nDgts1*Math.random());
             }
-            int origDig = Integer.parseInt(opDgts1[whichDigIsMucked][idx]);
+            int origDig = Integer.parseInt(opDgts1[whichDigIsMucked][0]);
             //origDig = 3*(1+(int)(3*Math.random())); // gives only 3, 6 or 9 debug
             //System.out.println("should be 3, 6 or 9: " + origDig);
+            System.out.println("whichOp = " + whichOpIsMucked +  " whichDig = " + whichDigIsMucked + " origDig  = " + origDig );
             int whichAlt = (int)(alt[origDig].length*Math.random());
             String altDig = alt[origDig][whichAlt];
             opDgts1[whichDigIsMucked][idx] = altDig;
-            System.out.println("whichOp = " + whichOpIsMucked +  " whichDig = " + whichDigIsMucked + " whichAlt = " + whichAlt + " altDig = " + altDig);
+            System.out.println("whichAlt = " + whichAlt + " altDig = " + altDig);
         } else if( whichOpIsMucked < 5 ) {
 
             if( 0 <= origOp && origOp < 4 ) {
@@ -491,7 +421,7 @@
                 System.out.println("operand2 = " + operand2 + " nDgts2 = " + nDgts2 + " why is whichDigIsMucked " + whichDigIsMucked + "?");
                 whichDigIsMucked = (int)(nDgts2*Math.random());
             }
-            int origDig = Integer.parseInt(opDgts2[whichDigIsMucked][idx]);
+            int origDig = Integer.parseInt(opDgts2[whichDigIsMucked][0]);
             //origDig = 3*(1+(int)(3*Math.random())); // gives only 3, 6 or 9 debug
             //System.out.println("should be 3, 6 or 9: " + origDig);
             int whichAlt = (int)(alt[origDig].length*Math.random());
@@ -668,164 +598,165 @@
                 prelimDp[y+1] = prelimDp[y]; 
             }
         }
-        System.out.println("finalMucked = " + finalMucked[idx] + " muckedDp = " + muckedDp[idx]);
+        doubleMucked[idx] = finalMucked[idx]*Math.pow(10, -muckedDp[idx]);
+        muckedString[idx] = Format.getFormat( finalMucked[idx], muckedDp[idx] );
+        System.out.println("finalMucked[" + idx + "] = " + finalMucked[idx] + " muckedDp = " + muckedDp[idx] + " string version = " + muckedString[idx]);
+        
+        // eliminate any duplicate
+        for( int i = 1; i < idx; ++i ) {
+            //if( doubleMucked[idx] == doubleMucked[i] ) {
+            if( muckedString[idx].equals(muckedString[i]) ) {
+                System.out.println("duplicate to " + i );
+                for( int j = 0; j < TWO_XDGTS; ++j ) { // can I just replace the one that was mucked? fixit
+                    opDgts1[j][idx] = opDgts1[j][0];
+                    opDgts2[j][idx] = opDgts2[j][0];
+                }
+                idx = idx - 1;
+                break;
+            }
+        }
+        //if( doubleMucked[idx] == doubleAct ) {
+        if( muckedString[idx].equals(actual[1]) ) {
+            System.out.println("duplicate to actualInt" );
+            for( int j = 0; j < TWO_XDGTS; ++j ) { // can I just replace the one that was mucked? fixit
+                opDgts1[j][idx] = opDgts1[j][0];
+                opDgts2[j][idx] = opDgts2[j][0];
+            }
+            idx = idx - 1;
+        }
     }
     
     Question[] questions = new Question[maxQstns];
     for( int i = 0; i < maxQstns; ++i ) {
         questions[i] = new Question();
-        if( i % 2 == 0 ) {
-            questions[i].setQuesAns( "true" );
-        } else {
-            questions[i].setQuesAns( "false" );
-        }
     }
     long notPossible = 0;
     String notPoss = "";
     String poss = "";
-    // need up to two acceptable answers fixit
-    // if it's in range and has correct lsd, possible
-    // if it's equal, true
-    // if it's not equal false
-    final int firstMucked = 7;
+
+    int firstMucked = 0;
+    int whichOtherQuestion = (int)(6*Math.random());
+    System.out.println("whichQuestion = " + whichOtherQuestion );
+    if( whichOtherQuestion < 2 &&
+            actualInt[0]*Math.pow(10, -decPtAct) <
+            actualInt[1]*Math.pow(10, -decPtAct) ) {
+        //double tmP0 = actualInt[0]*Math.pow(10, -decPtAct);
+        //double tmP1 = actualInt[1]*Math.pow(10, -decPtAct);
+        //System.out.println("actualInt0 = " + tmP0 + " is less than actualInt1 " + tmP1);
+        if( whichOtherQuestion == 0 ) {
+            questions[firstMucked].setQuesText("Is less than    " + actual[0]);
+            questions[firstMucked].setQuesAns( "false" );
+            firstMucked = firstMucked + 1;
+        } else {
+            questions[firstMucked].setQuesText(  "Is greater than " + actual[0]);
+            questions[firstMucked].setQuesAns( "true" );
+            firstMucked = firstMucked + 1;
+        }
+    } else if( whichOtherQuestion < 4 &&
+            actualInt[1]*Math.pow(10, -decPtAct) <
+            actualInt[2]*Math.pow(10, -decPtAct) ) {     
+        //double tmP1 = actualInt[1]*Math.pow(10, -decPtAct);
+        //double tmP2 = actualInt[2]*Math.pow(10, -decPtAct);
+        //System.out.println("actualInt1 = " + tmP1 + " is less than actualInt2 " + tmP2);
+        if( whichOtherQuestion == 2 ) {
+            questions[firstMucked].setQuesText("Is greater than " + actual[2]);
+            questions[firstMucked].setQuesAns( "false" );
+            firstMucked = firstMucked + 1;
+        } else {
+            questions[firstMucked].setQuesText(  "Is less than    " + actual[2]);
+            questions[firstMucked].setQuesAns( "true" );
+            firstMucked = firstMucked + 1;
+        }
+    }
+
     if( origOp == 3 ) { // division
-        questions[0].setQuesText("The most significant digit is " + mostDig);
-        int notMostDig = (7 + mostDig) % 10;
-        questions[1].setQuesText("The most significant digit is " + notMostDig);
+        if( whichOtherQuestion == 4 ) {
+            questions[firstMucked].setQuesText("The most significant digit is " + mostDig);
+            questions[firstMucked].setQuesAns( "true" );
+            firstMucked = firstMucked + 1;
+        }
+        if( whichOtherQuestion == 5 ) {
+            int notMostDig = (7 + mostDig) % 10;
+            questions[firstMucked].setQuesText("The most significant digit is " + notMostDig);
+            questions[firstMucked].setQuesAns( "false" );
+            firstMucked = firstMucked + 1;
+        }
         ten2pow = (int)Math.pow(10,nDigsAct[1]-1);
-        for( int idx = firstMucked; idx < maxQstns; ++ idx ) {
-            int x = idx - firstMucked;
-            questions[idx].setQuesText("Equals     " + Format.getFormat( finalMucked[x], muckedDp[x] ) );
-            if( actualInt[0] <= finalMucked[x] && finalMucked[x] <= actualInt[2]
-                    && muckedDp[x] == decPtAct && 
+        for( int idx = firstMucked; idx < maxQstns-1; ++ idx ) {
+            int x = idx; // idx - firstMucked;
+            
+            //questions[idx].setQuesText("Equals     " + Format.getFormat( finalMucked[x], muckedDp[x] ) );
+            System.out.println("about to format " + finalMucked[x]);
+            questions[idx].setQuesText("Equals     " + fudFormat( finalMucked[x], muckedDp[x] ) );
+            long junk3 = finalMucked[x]/ten2pow;
+            System.out.println("doubleMucked[" + x + "] = " + doubleMucked[x] + " mucked msd = " + junk3);       
+            // if it's in range and has correct msd, possible
+            if( doubleMin <= doubleMucked[x] && doubleMucked[x] <= doubleMax && 
                     finalMucked[x] / ten2pow == mostDig ) {
                 questions[idx].setQuesAns( "possible" );
-                if( finalMucked[x] == actualInt[1] && muckedDp[x] == decPtAct ) {
+                //if( finalMucked[x] == actualInt[1] && muckedDp[x] == decPtAct ) {
+                if( muckedString[x].equals(actual[1]) ) {
                     questions[idx].setAltAns( "true" );
+                    System.out.println("in fact true");
+                } else {
+                    questions[idx].setAltAns( "false" );
                 }
             } else {
                 questions[idx].setQuesAns( "false" );
             }
         }
-        /*
-        
-        long somethingInRange = actualInt[0] + (int)((actualInt[2]-actualInt[0])*Math.random());
-        long possible = mostDig*ten2pow + somethingInRange - ten2pow*(somethingInRange/ten2pow);
-        poss = Format.getFormat( possible, decPtAct );
-        questions[6].setQuesText("Equals     " + poss);
-        questions[6].setQuesAns( "possible" );
-        if( possible == actualInt[1]) {
-            questions[6].setAltAns( "true" );
-        } else {
-            questions[6].setAltAns( "false" );
-        }
-        somethingInRange = actualInt[0] + (int)((actualInt[2]-actualInt[0])*Math.random());
-        long withMostDigZeroed = somethingInRange - ten2pow*(somethingInRange/ten2pow);
-        possible = mostDig*ten2pow + withMostDigZeroed;
-        //System.out.println("somethingInRange = " + somethingInRange + " withMostDigZeroed = " + withMostDigZeroed + " possible = " + possible);
-        poss = Format.getFormat( possible, decPtAct );
-        questions[7].setQuesText("Equals " + poss);
-        questions[7].setQuesAns( "possible" );
-        if( possible == actualInt[1]) {
-            questions[7].setAltAns( "true" );
-        } else {
-            questions[7].setAltAns( "false" );       
-        }
-        somethingInRange = actualInt[0] + (int)((actualInt[2]-actualInt[0])*Math.random());
-        possible = mostDig*ten2pow + somethingInRange - ten2pow*(somethingInRange/ten2pow);
-        poss = Format.getFormat( possible, decPtAct );
-        questions[12].setQuesText("Equals   " + poss);
-        questions[12].setQuesAns( "possible" );
-        if( possible == actualInt[1]) {
-            questions[12].setAltAns( "true" );
-        } else {
-            questions[12].setAltAns( "false" );
-        }
-        withMostDigZeroed = actualInt[1] - actualInt[1]/(int)Math.pow(10,nDigsAct[1]);
-        notPossible = notMostDig*(int)Math.pow(10,nDigsAct[1]) + withMostDigZeroed;
-        //System.out.println(" 13 withMostDigZeroed = " + withMostDigZeroed + " notPossible = " + notPossible);
-        notPoss = Format.getFormat( notPossible, decPtAct );
-        questions[13].setQuesText("Equals     " + notPoss);
-        */
     } else {
-        questions[0].setQuesText("The least significant digit is " + leastDig);
-        int notLeastDig = (7 + leastDig) % 10;
-        questions[1].setQuesText("The least significant digit is " + notLeastDig);
-        for( int idx = firstMucked; idx < maxQstns; ++ idx ) {
-            int x = idx - firstMucked;
-            questions[idx].setQuesText("Equals     " + Format.getFormat( finalMucked[x], muckedDp[x] ) );
-            if( actualInt[0] <= finalMucked[x] && finalMucked[x] <= actualInt[2]
-                    && muckedDp[x] == decPtAct && 
-                    finalMucked[x] %10 == leastDig ) {
-                questions[idx].setQuesAns( "possible" );
-                if( finalMucked[x] == actualInt[1] && muckedDp[x] == decPtAct ) {
-                    questions[idx].setAltAns( "true" );
+        if( whichOtherQuestion == 4 && actualInt[1] != 0 ) {
+            questions[firstMucked].setQuesText("The least significant digit is " + leastDig);
+            questions[firstMucked].setQuesAns( "true" );
+            firstMucked = firstMucked + 1;
+        }
+        if( whichOtherQuestion == 5 ) {
+            int notLeastDig = (7 + leastDig) % 10;
+            questions[firstMucked].setQuesText("The least significant digit is " + notLeastDig);
+            questions[firstMucked].setQuesAns( "false" );
+            firstMucked = firstMucked + 1;
+        }
+        for( int idx = firstMucked; idx < maxQstns-1; ++ idx ) {
+            int x = idx; // idx - firstMucked;
+            System.out.println("about to format " + finalMucked[x]);
+            //String muckedString = Format.getFormat( finalMucked[x], muckedDp[x] );
+            questions[idx].setQuesText("Equals     " + fudFormat( finalMucked[x], muckedDp[x] ) );
+            int leastDigx = 0;
+            ten2pow = 10;
+            if( finalMucked[x] != 0 ) {
+                while( leastDigx == 0 ) {
+                    leastDigx = (int)(10*Math.abs(finalMucked[x] % ten2pow))/ten2pow;
+                    System.out.println("ten2pow = " + ten2pow + " actualInt = " + actualInt[1] + " leastDig = " + leastDig);
+                    ten2pow = ten2pow*10;
                 }
-            } else {
+            }
+            System.out.println("doubleMucked[" + x + "] = " + doubleMucked[x] + " leastDigx = " + leastDigx);
+            // if it's in range and has correct lsd, possible
+            if( doubleMin <= doubleMucked[x] && doubleMucked[x] <= doubleMax && 
+                    leastDigx == leastDig ) {
+                questions[idx].setQuesAns( "possible" );
+                // if it's equal, true
+                //if( finalMucked[x] == actualInt[1] && muckedDp[x] == decPtAct ) {
+                if( muckedString[x].equals(actual[1]) ) {
+                    questions[idx].setAltAns( "true" );
+                    System.out.println("in fact true");
+                } else {
+                    questions[idx].setAltAns( "false" );
+                }
+            } else {     // if it's not equal false
                 questions[idx].setQuesAns( "false" );
             }
         }
-        /*
-        long somethingInRange = actualInt[0] + (int)((actualInt[2]-actualInt[0])*Math.random());
-        long withLeastDigZeroed = 10*(somethingInRange/10);
-        long possible = leastDig + withLeastDigZeroed;
-        //System.out.println("somethingInRange = " + somethingInRange + " withLeastDigZeroed = " + withLeastDigZeroed + " possible = " + possible);
-        poss = Format.getFormat( possible, decPtAct );
-        questions[6].setQuesText("Equals    " + poss);
-        questions[6].setQuesAns("possible");
-        if( possible == actualInt[1] ) {
-            questions[6].setAltAns("true");
-        } else {
-             questions[6].setAltAns("false");
-        }
-        somethingInRange = actualInt[0] + (int)((actualInt[2]-actualInt[0])*Math.random());
-        withLeastDigZeroed = 10*(somethingInRange/10);
-        possible = leastDig + withLeastDigZeroed;
-        //System.out.println("somethingInRange = " + somethingInRange + " withLeastDigZeroed = " + withLeastDigZeroed + " possible = " + possible);
-        poss = Format.getFormat( possible, decPtAct );
-        questions[7].setQuesText("Equals " + poss);
-        questions[7].setQuesAns( "possible" );
-        if( possible == actualInt[1]) {
-            questions[7].setAltAns( "true" );
-        } else {
-            questions[7].setAltAns( "false" );       
-        }
-        somethingInRange = actualInt[0] + (int)((actualInt[2]-actualInt[0])*Math.random());
-        withLeastDigZeroed = 10*(somethingInRange/10);
-        possible = leastDig + withLeastDigZeroed;
-        //System.out.println("somethingInRange = " + somethingInRange + " withLeastDigZeroed = " + withLeastDigZeroed + " possible = " + possible);
-        poss = Format.getFormat( possible, decPtAct );
-        questions[12].setQuesText("Equals " + poss);
-        questions[12].setQuesAns( "possible" );
-        if( possible == actualInt[1]) {
-            questions[12].setAltAns( "true" );
-        } else {
-            questions[12].setAltAns( "false" );
-        }
-        notPossible = notLeastDig + 10*(actualInt[1]/10);
-        notPoss = Format.getFormat( notPossible, decPtAct );
-        questions[13].setQuesText("Equals     " + notPoss);
-*/
     }
-    questions[2].setQuesText("Is greater than or equal to " + actual[0]);
-    questions[3].setQuesText("Is less than or equal to    " + actual[0]);
-    questions[4].setQuesText("Is less than or equal to    " + actual[2]);
-    questions[5].setQuesText("Is greater than or equal to " + actual[2]);
-    questions[6].setQuesText("Equals     " + Format.getFormat( actualInt[1], decPtAct ) );
-    questions[6].setQuesAns( "possible" );
-    questions[6].setAltAns( "true" );
-    /*
-    notPossible = (int)(actualInt[0]*Math.random());
-    notPoss = Format.getFormat( notPossible, decPtAct );
-    questions[8].setQuesText("Can't be " + notPoss);
-    questions[9].setQuesText("Equals     " + notPoss);
-    notPossible = actualInt[2] + (int)(actualInt[0]*Math.random());
-    notPoss = Format.getFormat( notPossible, decPtAct );
-    questions[10].setQuesText("Can't be " + notPoss);
-    questions[11].setQuesText("Equals     " + notPoss);
-*/
+    questions[maxQstns-1].setQuesText("Equals     " + Format.getFormat( actualInt[1], decPtAct ) );
+    questions[maxQstns-1].setQuesAns( "possible" );
+    questions[maxQstns-1].setAltAns( "true" );
+
     // add wrong operand, wrong decimal point, fixit
-        
+    // 0.003 / 322.1	= 0 fixit   
+    // grey out "Check" until there is an answer for each fixit
+    // remove the "possible" option for greater than or less thann, lsb and msb questions
     // LFSR to scramble questions
     TreeMap<Integer, Question> scramble = new TreeMap();
     int shiftReg = 1 + (int)(0xFFFF*Math.random());
