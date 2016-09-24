@@ -3,6 +3,27 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
+function enableCheck() {
+    var doc = document;
+    var allchecked = true;
+    for( var i = 0; i < 4; ++i ) {
+        var radioBtns = doc.getElementsByName("q" + i);
+        var len = radioBtns.length;
+        var ichecked = false;
+        for( var j = 0; j < len; ++j ) {
+            if( radioBtns[j].checked ) {
+                ichecked = true;
+                break;
+            }
+        }
+        if( !ichecked ) {
+            allchecked = false;
+        }
+    }
+    if( allchecked ) {
+        doc.getElementById("Check").disabled = false;
+    }
+}
 
 function checkTF() {
     var doc = document;

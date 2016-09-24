@@ -746,15 +746,15 @@
                 </div>
             </td>
             <td class="rad">
-                <input type="radio" name="<%=name%>" value="true">
+                <input type="radio" name="<%=name%>" value="true" onclick="enableCheck()">
             </td>
             <td class="rad">
                 <% if( x > 0 ) { %>
-                    <input type="radio" name="<%=name%>" value="possible">
+                    <input type="radio" name="<%=name%>" value="possible" onclick="enableCheck()">
                 <% } %>
             </td>
             <td class="rad">
-                <input type="radio" name="<%=name%>" value="false">
+                <input type="radio" name="<%=name%>" value="false" onclick="enableCheck()">
             </td>
             <td class="blank" >
                 <!-- this needs to be all one line or localeCompare s don't work  -->
@@ -838,7 +838,7 @@
     </tr>
 </table>
 <span class="offs">
-<input type="button" value="Check" onclick="checkTF()">
+<input type="button" disabled id="Check" value="Check" onclick="checkTF()">
 <button type="reset" value="Reset" onclick="startAgain()">Next Problem</button>
 </span>
     <div class="offs">
