@@ -134,7 +134,7 @@ public class Format {
             actual.append("-");
         }
         long tmp3 = absActual;
-        int ten2pow = (int)Math.pow(10, digs-1);
+        long ten2pow = (int)Math.pow(10, digs-1);
         if( dp >= digs ) {
             actual.append("0.");
         }

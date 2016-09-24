@@ -18,45 +18,7 @@
     <script src="Multiplier.js"></script>
 </head>
 <body>
-    <%!
-    public String fudFormat( long num, int dp ) {
-        System.out.println("formatting " + num + " with " + dp + " decimal places");
-        StringBuffer actual = new StringBuffer();
-        long absActual = num;
-        if( num < 0 ) {
-            absActual = -num;
-            actual.append("-");
-        }
-        int digs = absActual > 0? 1 + (int)Math.log10(absActual) : 1;
-        long tmp3 = absActual;
-        long ten2pow = (long)Math.pow(10, digs-1);
-        if( dp >= digs ) {
-            actual.append("0.");
-        }
-        int tmp4 = dp - 1;
-        while( tmp4 >= digs ) {
-            actual.append("0");
-            tmp4 = tmp4 - 1;
-        }
-        for(  int j = digs - 1; j >= 0; --j ) {
-            int actDig = (int)(tmp3/ten2pow);
-            actual.append(String.valueOf(actDig));
-            if( j == dp && j > 0 ) {
-                actual.append(".");
-            } else if( ( j - dp ) % 3 == 0 && j > dp ) {
-                actual.append(",");
-            }
-            System.out.println("j = " + j + " actDig = " + actDig + " tmp3 = " + tmp3 + " ten2pow = " + ten2pow);
-            tmp3 = tmp3 - ten2pow*actDig;
-            if( tmp3 == 0 && j <= dp ) {
-                break;
-            }
-
-            ten2pow /= 10;
-        }
-        return new String( actual );
-    }
-%>
+    
 <% // upper range of 5217 - 5710 is 1000 fixit
     // some of the Can't be's need to have possibles fixit
     //sometimes the upper or lower bound is equal the answer fixit
@@ -604,10 +566,9 @@
         
         // eliminate any duplicate
         for( int i = 1; i < idx; ++i ) {
-            //if( doubleMucked[idx] == doubleMucked[i] ) {
             if( muckedString[idx].equals(muckedString[i]) ) {
                 System.out.println("duplicate to " + i );
-                for( int j = 0; j < TWO_XDGTS; ++j ) { // can I just replace the one that was mucked? fixit
+                for( int j = 0; j < TWO_XDGTS; ++j ) { // reset all digits
                     opDgts1[j][idx] = opDgts1[j][0];
                     opDgts2[j][idx] = opDgts2[j][0];
                 }
@@ -615,10 +576,9 @@
                 break;
             }
         }
-        //if( doubleMucked[idx] == doubleAct ) {
         if( muckedString[idx].equals(actual[1]) ) {
             System.out.println("duplicate to actualInt" );
-            for( int j = 0; j < TWO_XDGTS; ++j ) { // can I just replace the one that was mucked? fixit
+            for( int j = 0; j < TWO_XDGTS; ++j ) { // reset all digits
                 opDgts1[j][idx] = opDgts1[j][0];
                 opDgts2[j][idx] = opDgts2[j][0];
             }
@@ -630,43 +590,29 @@
     for( int i = 0; i < maxQstns; ++i ) {
         questions[i] = new Question();
     }
-    long notPossible = 0;
-    String notPoss = "";
-    String poss = "";
 
     int firstMucked = 0;
     int whichOtherQuestion = (int)(6*Math.random());
+
     System.out.println("whichQuestion = " + whichOtherQuestion );
-    if( whichOtherQuestion < 2 &&
-            actualInt[0]*Math.pow(10, -decPtAct) <
-            actualInt[1]*Math.pow(10, -decPtAct) ) {
-        //double tmP0 = actualInt[0]*Math.pow(10, -decPtAct);
-        //double tmP1 = actualInt[1]*Math.pow(10, -decPtAct);
-        //System.out.println("actualInt0 = " + tmP0 + " is less than actualInt1 " + tmP1);
+    if( whichOtherQuestion < 2 &&  doubleMin < doubleAct ) {
         if( whichOtherQuestion == 0 ) {
             questions[firstMucked].setQuesText("Is less than    " + actual[0]);
             questions[firstMucked].setQuesAns( "false" );
-            firstMucked = firstMucked + 1;
         } else {
             questions[firstMucked].setQuesText(  "Is greater than " + actual[0]);
-            questions[firstMucked].setQuesAns( "true" );
-            firstMucked = firstMucked + 1;
+            questions[firstMucked].setQuesAns( "true" );          
         }
-    } else if( whichOtherQuestion < 4 &&
-            actualInt[1]*Math.pow(10, -decPtAct) <
-            actualInt[2]*Math.pow(10, -decPtAct) ) {     
-        //double tmP1 = actualInt[1]*Math.pow(10, -decPtAct);
-        //double tmP2 = actualInt[2]*Math.pow(10, -decPtAct);
-        //System.out.println("actualInt1 = " + tmP1 + " is less than actualInt2 " + tmP2);
+        firstMucked = firstMucked + 1;
+    } else if( whichOtherQuestion < 4 && doubleAct < doubleMax ) {     
         if( whichOtherQuestion == 2 ) {
             questions[firstMucked].setQuesText("Is greater than " + actual[2]);
             questions[firstMucked].setQuesAns( "false" );
-            firstMucked = firstMucked + 1;
         } else {
             questions[firstMucked].setQuesText(  "Is less than    " + actual[2]);
             questions[firstMucked].setQuesAns( "true" );
-            firstMucked = firstMucked + 1;
         }
+        firstMucked = firstMucked + 1;
     }
 
     if( origOp == 3 ) { // division
@@ -674,8 +620,7 @@
             questions[firstMucked].setQuesText("The most significant digit is " + mostDig);
             questions[firstMucked].setQuesAns( "true" );
             firstMucked = firstMucked + 1;
-        }
-        if( whichOtherQuestion == 5 ) {
+        } else if( whichOtherQuestion == 5 ) {
             int notMostDig = (7 + mostDig) % 10;
             questions[firstMucked].setQuesText("The most significant digit is " + notMostDig);
             questions[firstMucked].setQuesAns( "false" );
@@ -683,25 +628,22 @@
         }
         ten2pow = (int)Math.pow(10,nDigsAct[1]-1);
         for( int idx = firstMucked; idx < maxQstns-1; ++ idx ) {
-            int x = idx; // idx - firstMucked;
-            
-            //questions[idx].setQuesText("Equals     " + Format.getFormat( finalMucked[x], muckedDp[x] ) );
-            System.out.println("about to format " + finalMucked[x]);
-            questions[idx].setQuesText("Equals     " + fudFormat( finalMucked[x], muckedDp[x] ) );
+            int x = idx;
+            questions[idx].setQuesText("Equals     " + muckedString[x] );
             long junk3 = finalMucked[x]/ten2pow;
             System.out.println("doubleMucked[" + x + "] = " + doubleMucked[x] + " mucked msd = " + junk3);       
             // if it's in range and has correct msd, possible
             if( doubleMin <= doubleMucked[x] && doubleMucked[x] <= doubleMax && 
                     finalMucked[x] / ten2pow == mostDig ) {
                 questions[idx].setQuesAns( "possible" );
-                //if( finalMucked[x] == actualInt[1] && muckedDp[x] == decPtAct ) {
+                // if it's equal, true
                 if( muckedString[x].equals(actual[1]) ) {
                     questions[idx].setAltAns( "true" );
                     System.out.println("in fact true");
-                } else {
+                } else { // if it's not equal false
                     questions[idx].setAltAns( "false" );
                 }
-            } else {
+            } else { // if it's not equal false
                 questions[idx].setQuesAns( "false" );
             }
         }
@@ -718,10 +660,9 @@
             firstMucked = firstMucked + 1;
         }
         for( int idx = firstMucked; idx < maxQstns-1; ++ idx ) {
-            int x = idx; // idx - firstMucked;
+            int x = idx;
             System.out.println("about to format " + finalMucked[x]);
-            //String muckedString = Format.getFormat( finalMucked[x], muckedDp[x] );
-            questions[idx].setQuesText("Equals     " + fudFormat( finalMucked[x], muckedDp[x] ) );
+            questions[idx].setQuesText("Equals     " + muckedString[x] );
             int leastDigx = 0;
             ten2pow = 10;
             if( finalMucked[x] != 0 ) {
@@ -737,11 +678,10 @@
                     leastDigx == leastDig ) {
                 questions[idx].setQuesAns( "possible" );
                 // if it's equal, true
-                //if( finalMucked[x] == actualInt[1] && muckedDp[x] == decPtAct ) {
                 if( muckedString[x].equals(actual[1]) ) {
                     questions[idx].setAltAns( "true" );
                     System.out.println("in fact true");
-                } else {
+                } else { // if it's not equal false
                     questions[idx].setAltAns( "false" );
                 }
             } else {     // if it's not equal false
@@ -749,12 +689,13 @@
             }
         }
     }
-    questions[maxQstns-1].setQuesText("Equals     " + Format.getFormat( actualInt[1], decPtAct ) );
+    questions[maxQstns-1].setQuesText("Equals     " + actual[1] );
     questions[maxQstns-1].setQuesAns( "possible" );
     questions[maxQstns-1].setAltAns( "true" );
 
     // add wrong operand, wrong decimal point, fixit
     // 0.003 / 322.1	= 0 fixit   
+    // Lower Range	7,642 - 7.642	= 7,634.358 fixit should be 7642 - 8
     // grey out "Check" until there is an answer for each fixit
     // remove the "possible" option for greater than or less thann, lsb and msb questions
     // LFSR to scramble questions
@@ -808,7 +749,9 @@
                 <input type="radio" name="<%=name%>" value="true">
             </td>
             <td class="rad">
-                <input type="radio" name="<%=name%>" value="possible">
+                <% if( x > 0 ) { %>
+                    <input type="radio" name="<%=name%>" value="possible">
+                <% } %>
             </td>
             <td class="rad">
                 <input type="radio" name="<%=name%>" value="false">

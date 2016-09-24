@@ -24,9 +24,10 @@ function checkTF() {
             var expAns = doc.getElementById("a" + i).innerHTML;
             var altAns = doc.getElementById("l" + i).innerHTML;
             var radioBtns = doc.getElementsByName("q" + i);
+            var len = radioBtns.length;
             var checkedTrue = radioBtns[0].checked;
-            var checkedPoss = radioBtns[1].checked;
-            var checkedFalse = radioBtns[2].checked;
+            var checkedPoss = len === 3 && radioBtns[1].checked;
+            var checkedFalse = radioBtns[len-1].checked;
             var notExpTrue = !(expAns.localeCompare("true") === 0 ||
                     (altAns && altAns.localeCompare("true") === 0));
             var notExpFalse = !(expAns.localeCompare("false") === 0 ||
