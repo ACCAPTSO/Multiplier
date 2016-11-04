@@ -8,8 +8,21 @@ and open the template in the editor.
     Author     : frieda
 */
 body {
-  margin: 0 auto;
-  background-color: #fffdf9;
+    margin: 0 auto;
+    background-color: #fff4a3;
+    color: #194e80;
+}
+table{
+    /* border: 1px solid pink; */
+    border-collapse: collapse;
+    margin-bottom: 1em;
+}
+th { 
+}
+td {
+    background-color: #fff4a3;
+    padding-right: .5em;
+    /* border-collapse: collapse; */
 }
 .ansbox{
     min-width: 4em;
@@ -19,13 +32,24 @@ body {
     text-align: center;
 }
 .blank{
-    color: #fffdf9;
+    color: #fff4a3;
+}
+.blankhdr{
+    color: #ffa925;
 }
 .firstbox{
     min-width: 12em;
 }
+.hdr{
+
+    padding-left: .5em;
+    padding-right: .5em;
+}
+.hdrRow {
+        border: 2px solid #ffc410;
+}
 .offs{
-    margin-left: 5%;
+    padding-left: 1%;
 }
 .rad{
     text-align: center;
@@ -35,4 +59,10 @@ body {
 }
 .xc{
     min-width: 2em;
+}
+#checkOne{
+    color:  #fff4a3;
+}
+#Check{
+    width: 8em;
 }

@@ -23,6 +23,9 @@
     // some of the Can't be's need to have possibles fixit
     //sometimes the upper or lower bound is equal the answer fixit
     // crashes when you uncheck every type of prolem fixit
+    // division without decimals expects screwy decimal answers fixit
+    // subtraction upper and lower ranges uses different # decimal places fixit
+    // need to disable next problem until after check? fixit
     final int N_OPERATORS = 4;
     //final double EXP = 2.4;
     final double EXP = 1.4;
@@ -264,6 +267,16 @@
     //operand2 = 4131; 
     //decPt1 = 4;
     //decPt2 = 3; // debug // upper and lower range are the same and only upper range is valid fixit
+    //operator[0] = operators[2]; // debug
+    //operand1 = 5491;
+    //operand2 = 5168;
+    //decPt1 = 1;
+    //decPt2 = 4; // debug was giving wrong lower range, think it's fixed
+    //operator[0] = operators[2]; // debug
+    //operand1 = 2066;
+    //operand2 = 1954;
+    //decPt1 = 2;
+    //decPt2 = 2; // debug
     
     int decPtAct = decPt1; // for addition or subtraction assuming decPt1 >= decPt
 
@@ -696,8 +709,7 @@
     // add wrong operand, wrong decimal point, fixit
     // 0.003 / 322.1	= 0 fixit   
     // Lower Range	7,642 - 7.642	= 7,634.358 fixit should be 7642 - 8
-    // grey out "Check" until there is an answer for each fixit
-    // remove the "possible" option for greater than or less thann, lsb and msb questions
+
     // LFSR to scramble questions
     TreeMap<Integer, Question> scramble = new TreeMap();
     int shiftReg = 1 + (int)(0xFFFF*Math.random());
@@ -712,18 +724,26 @@
         //System.out.format("shiftReg = %05X", shiftReg );
     }
 %>
-<form id="th-id2">
-<table class="offs">
+<form id="th-id2" class="offs">
+<table >
     <tr class="blank"><td>Lower Range</td><td><%=expl[0]%></td><td>= <%=actual[0]%></td></tr>
-    <tr><td>Problem</td><td>  <%=entireProb%></td><td class="blank">= <%=actual[1]%></td></tr>
+    <tr class="hdrRow"><td class="hdr">Problem:</td><td class="hdr">  <%=entireProb%></td><td class="blank">= <%=actual[1]%></td></tr>
     <tr class="blank"><td>Upper Range</td></td><td><%=expl[2]%></td><td>= <%=actual[2]%></tr>
 </table>
 <table>
 <tr>
 <td>                        
 <table>
-    <tr><td></td><td></td><td>True</td><td>Possible</td><td>False</td><td class="blank">Acceptable Answers</td>
+    
+    <tr class="hdrRow">
+    <td></td>
+    <td></td>
+    <th colspan=1 class="hdr">True</th>
+    <th colspan=1 class="hdr">Possible</th>
+    <th colspan=1 class="hdr">False</th>
+    <th colspan=2 class="blank">Acceptable Answers</td> 
     </tr>
+    
 <%      for( int i = 0; i < 4; ++i ) { 
             Integer k = scramble.firstKey();
             Question q = scramble.remove( k );
@@ -766,6 +786,19 @@
             </td>
         </tr>
 <%      } %>
+<tr>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td>
+    <input type="button" disabled id="Check" value="Check" onclick="checkTF()">
+    </td>
+    <td></td>
+    <td>
+
+    </td>
+    <td></td>
+</tr>
 </table>
 </td>
 <td>
@@ -803,44 +836,55 @@
     <td><input type="text" id="errs" name="errs" value="<%=errs%>"
                class="blackbox"></td>
 </tr>
+<tr>
+    <td></td>
+    <td></td>
+</tr>
 </table>  
 </td>
 </tr>
 </table>
 <table>
-    <th colspan=12>Estimate Answers to These Types of Problems
+    <tr class="hdrRow">
+    <th colspan=3 id="checkOne">Check One
     </th>
+    <th colspan=6 class="hdr">Estimate Answers to These Types of Problems
+    </th>
+    <th colspan=3>
+    </th>
+    </tr>
     <tr>
         <td><input type="checkbox" value="Addition" name="addition" 
-                   <%=isAddition%> onclick="zeroCounts()">
+                   id="addition"
+                   <%=isAddition%> onclick="checkOne()">
         </td>
-        <td><label>Addition</label></td>
+        <td name="pLables">Addition</td>
         <td><input type="checkbox" value="Multiplication" name="multiplication" 
-                   <%=isMultiplication%> onclick="zeroCounts()">
+                   id="multiplication"
+                   <%=isMultiplication%> onclick="checkOne()">
         </td>
-        <td><label>Multiplication</label></td>
+        <td name="pLables">Multiplication</td>
         <td><input type="checkbox" value="Subtraction" name="subtraction" 
-                   <%=isSubtraction%> onclick="zeroCounts()">
+                   id="subtraction"
+                   <%=isSubtraction%> onclick="checkOne()">
         </td>
-        <td><label>Subtraction</label></td>
+        <td name="pLables">Subtraction</td>
         <td><input type="checkbox" value="Division" name="division" 
-                   <%=isDivision%> onclick="zeroCounts()">
+                   id="division"
+                   <%=isDivision%> onclick="checkOne()">
         </td>
-        <td><label>Division</label></td>
+        <td name="pLables">Division</td>
         <td><input type="checkbox" value="Decimals" name="decimals" 
-                   <%=isDecimals%> onclick="zeroCounts()">
+                   <%=isDecimals%> onclick="checkOne()">
         </td>
         <td><label>With Decimals</label></td>
         <td><input type="checkbox" value="Negatives" name="negatives" 
-                   <%=isNegatives%> onclick="zeroCounts()">
+                   <%=isNegatives%> onclick="checkOne()">
         </td>
         <td><label>With Negative Numbers</label></td>
     </tr>
 </table>
-<span class="offs">
-<input type="button" disabled id="Check" value="Check" onclick="checkTF()">
-<button type="reset" value="Reset" onclick="startAgain()">Next Problem</button>
-</span>
+
     <div class="offs">
         <a href="/" class="ndx">Home</a>
     </div>
