@@ -164,6 +164,7 @@ public class Operate {
         long round2down = operand2;
         long round2up = operand2;
         int ten2pow = (int)Math.pow(10, nDgts1 - 1);
+
         if( ten2pow != 0 ) {
             round1up = ten2pow*((ten2pow + operand1)/ten2pow);
             round1down = ten2pow*(operand1/ten2pow);
@@ -171,6 +172,7 @@ public class Operate {
             System.out.println("nDgts1 = " + nDgts1 + " ten2pow = " + ten2pow);
         }
         ten2pow = (int)Math.pow(10, nDgts2 - 1);
+
         if( ten2pow != 0 ) {
             round2up = ten2pow*((ten2pow + operand2)/ten2pow);
             round2down = ten2pow*(operand2/ten2pow);
@@ -211,9 +213,12 @@ public class Operate {
                     " " + Format.getFormat( round2down, decPt2 );
             expl[2] = Format.getFormat( round1up, decPt1 ) + " " + operator + 
                     " " + Format.getFormat( round2up, decPt2 );
-        } else if(  operator.compareTo("-") == 0  ) {     
+        } else if(  operator.compareTo("-") == 0  ) {   
+            ten2pow = (int)Math.pow(10, nDgts1 - 2); // debug
+            ten2pow = (int)Math.pow(10, nDgts2 - 2); // debug
             if( thisMuchBigger > 0 ) {
                 ten2pow = (int)Math.pow(10, nDgts1 - thisMuchBigger - 1);
+                //ten2pow = (int)Math.pow(10, nDgts1 - thisMuchBigger - 2); // fixit
                 if( ten2pow == 0 ) {
                     System.out.println("nDgts1 = " + nDgts1 + " thisMuchBigger = " + thisMuchBigger);
                     ten2pow = 1;
@@ -229,7 +234,8 @@ public class Operate {
                 round2up = ten2pow*((ten2pow+operand2)/ten2pow);
                 round2down = ten2pow*(operand2/ten2pow);
             }
-            if( operand1 >= operand2 && round2up > round1down ) {
+            if( operand1*Math.pow(10,-decPt1) >= operand2*Math.pow(10, -decPt2) && 
+                    round2up*Math.pow(10, -decPt2) > round1down*Math.pow(10, -decPt1) ) {
                 round2up = round1down;
             } 
             ten2pow = factor1 > factor2? factor1 : factor2;
@@ -255,14 +261,16 @@ public class Operate {
             //if( decPt1 != decPt2 ) {
             //    decPtAct = MAX_DGTS + decPt1;
             //} else {
-                decPtAct = MAX_DGTS;
+
             //}
             round2down = ten2pow;
             round2up = 10*ten2pow;
             if( decimalsCk ) {
                 ten2pow = (int)Math.pow(10, MAX_DGTS + decPt2 - decPt1);
+                decPtAct = MAX_DGTS;
             } else {
                 ten2pow = 1;
+                decPtAct = 0;
             }
             if( round2down != 0 ) {
                 actualInt[2] = ten2pow*operand1 / round2down;
