@@ -41,7 +41,6 @@ td {
     min-width: 12em;
 }
 .hdr{
-
     padding-left: .5em;
     padding-right: .5em;
 }
@@ -50,6 +49,9 @@ td {
 }
 .offs{
     padding-left: 1%;
+}
+.problem{
+    margin-top: 2em;
 }
 .rad{
     text-align: center;
@@ -65,4 +67,5 @@ td {
 }
 #Check{
     width: 8em;
+    color: lightgray;
 }

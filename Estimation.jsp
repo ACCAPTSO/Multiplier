@@ -22,14 +22,12 @@
 <% // upper range of 5217 - 5710 is 1000 fixit
     // some of the Can't be's need to have possibles fixit
     //sometimes the upper or lower bound is equal the answer fixit
-    // crashes when you uncheck every type of prolem fixit
     // division without decimals expects screwy decimal answers fixit
     // subtraction upper and lower ranges uses different # decimal places fixit
-    // need to disable next problem until after check? fixit
     final int N_OPERATORS = 4;
     //final double EXP = 2.4;
     final double EXP = 1.4;
-    System.out.println("XOXOXOXOXOXOXOX   starting estimation problem    XOXOXOXOXOXOXOXOXOXOX");
+    //System.out.println("XOXOXOXOXOXOXOX   starting estimation problem    XOXOXOXOXOXOXOXOXOXOX");
     int nOperators = 0;
     String[] operators = new String[N_OPERATORS];
     /*  operators and numbers */
@@ -224,7 +222,7 @@
     int maxOpPlus1 = (int)Math.pow(10, MAX_DGTS);
     int nOps = 2;
     int whatOp = (int)(nOperators*Math.random());
-    System.out.println("nOperators = " + nOperators + " whatOp = " + whatOp);
+    //System.out.println("nOperators = " + nOperators + " whatOp = " + whatOp);
     final int maxQstns = 4;
     final int nMucked = maxQstns - 1;
     String operator[] = new String[nMucked];
@@ -257,7 +255,7 @@
         if( !negativesCk && 
                 operand2*(int)(Math.pow( 10, decPt1 )) > operand1*(int)(Math.pow(10, decPt2)) && 
                         operator[0].compareTo("-") == 0 ) {
-            int dp2Mn = (int)(Math.log10(operand2*Math.pow(10, decPt1)/operand1));
+            int dp2Mn = 1 + (int)(Math.log10(operand2*Math.pow(10, decPt1)/operand1));
             decPt2 = dp2Mn + (int)((MAX_DGTS+1-dp2Mn)*Math.random());
             //System.out.println("operand2 = " + operand2 + " decPt1 = " + decPt1 + " operand1 = " + operand1 + " dp2Mn = " + dp2Mn);
         }
@@ -296,7 +294,7 @@
     for( int i = 0; i < TWO_XDGTS; ++i ) {
         opDgts1[i][0] = String.valueOf(tmp1 % 10);
         opDgts2[i][0] = String.valueOf(tmp2 % 10);
-        System.out.println("opDgts1[" + i + "][0] = " + opDgts1[i][0] + " opDgts2[" + i + "][0] = " + opDgts2[i][0]);
+        //System.out.println("opDgts1[" + i + "][0] = " + opDgts1[i][0] + " opDgts2[" + i + "][0] = " + opDgts2[i][0]);
         for(int idx = 0; idx < nMucked; ++idx ) {
             opDgts1[i][idx] = opDgts1[i][0];
             opDgts2[i][idx] = opDgts2[i][0];
@@ -308,7 +306,7 @@
     int mostDig = 9;
     int ten2pow = (int)Math.pow(10, nDgts1 - 1);
     long[] actualInt = {Integer.MAX_VALUE, 0, 0 };
-    System.out.println("decPt1 = " + decPt1 + " decPt2 = " + decPt2 + " operator = " + operator[0]);
+    //System.out.println("decPt1 = " + decPt1 + " decPt2 = " + decPt2 + " operator = " + operator[0]);
 
     //int thisMuchBigger = nDgts1 - decPt1 - (nDgts2 - decPt2);
     String [] expl = new String[3];
@@ -323,7 +321,7 @@
     if( actualInt[1] != 0 ) {
         while( leastDig == 0 ) {
             leastDig = (int)(10*Math.abs(actualInt[1] % ten2pow))/ten2pow;
-            System.out.println("ten2pow = " + ten2pow + " actualInt = " + actualInt[1] + " leastDig = " + leastDig);
+            //System.out.println("ten2pow = " + ten2pow + " actualInt = " + actualInt[1] + " leastDig = " + leastDig);
             ten2pow = ten2pow*10;
         }
     }
@@ -336,10 +334,10 @@
     }
     
     mostDig = (int)(actualInt[1]/((int)Math.pow(10,nDigsAct[1]-1)));
-    System.out.println("operand1 = " + operand1 + " nDgts1 = " + nDgts1);
-    System.out.println("operand2 = " + operand2 + " nDgts2 = " + nDgts2);
-    System.out.println("actualInt = " + actualInt[1] + " nDigsAct = " + nDigsAct[1] + " decPtAct = " + decPtAct);
-    System.out.println("doubleMin = " + doubleMin + " doubleAct = " + doubleAct + " doubleMax = " + doubleMax + " mostDig = " + mostDig );
+    //System.out.println("operand1 = " + operand1 + " nDgts1 = " + nDgts1);
+    //System.out.println("operand2 = " + operand2 + " nDgts2 = " + nDgts2);
+    //System.out.println("actualInt = " + actualInt[1] + " nDigsAct = " + nDigsAct[1] + " decPtAct = " + decPtAct);
+    //System.out.println("doubleMin = " + doubleMin + " doubleAct = " + doubleAct + " doubleMax = " + doubleMax + " mostDig = " + mostDig );
 
     StringBuffer entireProb = new StringBuffer();
     entireProb.append( Format.getFormat( operand1, decPt1 ) );
@@ -369,31 +367,31 @@
         if( whichOpIsMucked < 4 ) {
             int whichDigIsMucked = (int)(nDgts1*Math.random());
             while( whichDigIsMucked < 0 ) {
-                System.out.println("operand1 = " + operand1 + " nDgts1 = " + nDgts1 + " why is whichDigIsMucked " + whichDigIsMucked + "?");
+                //System.out.println("operand1 = " + operand1 + " nDgts1 = " + nDgts1 + " why is whichDigIsMucked " + whichDigIsMucked + "?");
                 whichDigIsMucked = (int)(nDgts1*Math.random());
             }
             int origDig = Integer.parseInt(opDgts1[whichDigIsMucked][0]);
             //origDig = 3*(1+(int)(3*Math.random())); // gives only 3, 6 or 9 debug
             //System.out.println("should be 3, 6 or 9: " + origDig);
-            System.out.println("whichOp = " + whichOpIsMucked +  " whichDig = " + whichDigIsMucked + " origDig  = " + origDig );
+            //System.out.println("whichOp = " + whichOpIsMucked +  " whichDig = " + whichDigIsMucked + " origDig  = " + origDig );
             int whichAlt = (int)(alt[origDig].length*Math.random());
             String altDig = alt[origDig][whichAlt];
             opDgts1[whichDigIsMucked][idx] = altDig;
-            System.out.println("whichAlt = " + whichAlt + " altDig = " + altDig);
+            //System.out.println("whichAlt = " + whichAlt + " altDig = " + altDig);
         } else if( whichOpIsMucked < 5 ) {
 
             if( 0 <= origOp && origOp < 4 ) {
                 int whichAlt = (int)(altOp[origOp].length*Math.random());
                 String altDig = altOp[origOp][whichAlt];
                 operator[idx] = altDig;
-                System.out.println("whichOp = " + whichOpIsMucked + " whichAlt = " + whichAlt + " altDig = " + altDig);
+                //System.out.println("whichOp = " + whichOpIsMucked + " whichAlt = " + whichAlt + " altDig = " + altDig);
             } else { 
-                System.out.println("Error: operator = " + operator[idx] + " origOp = " + origOp);
+                // System.out.println("Error: operator = " + operator[idx] + " origOp = " + origOp);
             }
         } else {
             int whichDigIsMucked = (int)(nDgts2*Math.random());
             while( whichDigIsMucked < 0 ) {
-                System.out.println("operand2 = " + operand2 + " nDgts2 = " + nDgts2 + " why is whichDigIsMucked " + whichDigIsMucked + "?");
+                //System.out.println("operand2 = " + operand2 + " nDgts2 = " + nDgts2 + " why is whichDigIsMucked " + whichDigIsMucked + "?");
                 whichDigIsMucked = (int)(nDgts2*Math.random());
             }
             int origDig = Integer.parseInt(opDgts2[whichDigIsMucked][0]);
@@ -402,7 +400,7 @@
             int whichAlt = (int)(alt[origDig].length*Math.random());
             String altDig = alt[origDig][whichAlt];
             opDgts2[whichDigIsMucked][idx] = altDig;
-            System.out.println("whichOp = " + whichOpIsMucked +  " whichDig = " + whichDigIsMucked + " whichAlt = " + whichAlt + " altDig = " + altDig);
+            //System.out.println("whichOp = " + whichOpIsMucked +  " whichDig = " + whichDigIsMucked + " whichAlt = " + whichAlt + " altDig = " + altDig);
         }
 
         StringBuffer muckedProb = new StringBuffer();
@@ -455,7 +453,7 @@
         String[] muckedOp = new String[4];
         //boolean stillGoing = true;
         boolean countingDp = false;
-        System.out.println("mucked Problem: " + muckedProb);
+        //System.out.println("mucked Problem: " + muckedProb);
         // do two consecutive operators imply a "0" between them or is one or the other operators ignored? 
         // nothing followed by operator implies 0 fixit
         // two operators in a row: hp only sees first operator fixit
@@ -526,9 +524,9 @@
         }
         for( int i = 0; i <= mdx; ++i ) {
             if( muckedOp[i] != null ) {
-                System.out.println(num[i] + " times 10 to the negative " + dp[i] + " " + muckedOp[i] + " ");
+                //System.out.println(num[i] + " times 10 to the negative " + dp[i] + " " + muckedOp[i] + " ");
             } else {
-                System.out.println(num[i] + " times 10 to the negative " + dp[i]);
+                //System.out.println(num[i] + " times 10 to the negative " + dp[i]);
             }
         }
 
@@ -547,11 +545,11 @@
         for( int y = 0; y < mdx; ++y ) {
             int z = dofirst[y];
             if( z >= 0 ) {
-                System.out.println("num[" + y + "] = " + prelimAns[y][1] +  " dp[" + y + "] = " + prelimDp[y] + " muckedOp[" + y + "] = " + muckedOp[y] + " numyplus1 = " + prelimAns[y+1][1] +  " dpyplus1 = " + prelimDp[y+1] + " = ");
+                //System.out.println("num[" + y + "] = " + prelimAns[y][1] +  " dp[" + y + "] = " + prelimDp[y] + " muckedOp[" + y + "] = " + muckedOp[y] + " numyplus1 = " + prelimAns[y+1][1] +  " dpyplus1 = " + prelimDp[y+1] + " = ");
                 prelimDp[y] = Operate.op( muckedOp[y], MAX_DGTS, decimalsCk,
                 prelimAns[y][1], prelimDp[y], prelimAns[y+1][1], prelimDp[y+1], 
                 prelimAns[y], junk );
-                System.out.println(prelimAns[y][1] + " dp " + prelimDp[y]);
+                //System.out.println(prelimAns[y][1] + " dp " + prelimDp[y]);
                 prelimAns[y+1][1] = prelimAns[y][1];
                 finalMucked[idx] = prelimAns[y][1]; // just in case there is no addidion or subtraction
                 prelimDp[y+1] = prelimDp[y];
@@ -562,25 +560,25 @@
         for( int y = 0; y < mdx; ++y ) {
             int z = dolast[y];
             if( z >= 0 ) {
-                System.out.println("prelimAns[" + y + "] = " + prelimAns[y][1] +  " dp[" + y + "] = " + prelimDp[y] + " muckedOp[" + y + "] = " + muckedOp[y] + " prelimAnsyplus1 = " + prelimAns[y+1][1] +  " dpyplus1 = " + prelimDp[y+1] + " = ");
+                //System.out.println("prelimAns[" + y + "] = " + prelimAns[y][1] +  " dp[" + y + "] = " + prelimDp[y] + " muckedOp[" + y + "] = " + muckedOp[y] + " prelimAnsyplus1 = " + prelimAns[y+1][1] +  " dpyplus1 = " + prelimDp[y+1] + " = ");
                 prelimDp[y] = Operate.op( muckedOp[y], MAX_DGTS, decimalsCk,
                 prelimAns[y][1], prelimDp[y], prelimAns[y+1][1], prelimDp[y+1], 
                 prelimAns[y], junk );
                 finalMucked[idx] = prelimAns[y][1];
                 muckedDp[idx] = prelimDp[y];
-                System.out.println(finalMucked[idx] + " mucked dp " + muckedDp[idx]);
+                //System.out.println(finalMucked[idx] + " mucked dp " + muckedDp[idx]);
                 prelimAns[y+1][1] = prelimAns[y][1];
                 prelimDp[y+1] = prelimDp[y]; 
             }
         }
         doubleMucked[idx] = finalMucked[idx]*Math.pow(10, -muckedDp[idx]);
         muckedString[idx] = Format.getFormat( finalMucked[idx], muckedDp[idx] );
-        System.out.println("finalMucked[" + idx + "] = " + finalMucked[idx] + " muckedDp = " + muckedDp[idx] + " string version = " + muckedString[idx]);
+        //System.out.println("finalMucked[" + idx + "] = " + finalMucked[idx] + " muckedDp = " + muckedDp[idx] + " string version = " + muckedString[idx]);
         
         // eliminate any duplicate
         for( int i = 1; i < idx; ++i ) {
             if( muckedString[idx].equals(muckedString[i]) ) {
-                System.out.println("duplicate to " + i );
+                //System.out.println("duplicate to " + i );
                 for( int j = 0; j < TWO_XDGTS; ++j ) { // reset all digits
                     opDgts1[j][idx] = opDgts1[j][0];
                     opDgts2[j][idx] = opDgts2[j][0];
@@ -590,7 +588,7 @@
             }
         }
         if( muckedString[idx].equals(actual[1]) ) {
-            System.out.println("duplicate to actualInt" );
+            //System.out.println("duplicate to actualInt" );
             for( int j = 0; j < TWO_XDGTS; ++j ) { // reset all digits
                 opDgts1[j][idx] = opDgts1[j][0];
                 opDgts2[j][idx] = opDgts2[j][0];
@@ -607,7 +605,7 @@
     int firstMucked = 0;
     int whichOtherQuestion = (int)(6*Math.random());
 
-    System.out.println("whichQuestion = " + whichOtherQuestion );
+    //System.out.println("whichQuestion = " + whichOtherQuestion );
     if( whichOtherQuestion < 2 &&  doubleMin < doubleAct ) {
         if( whichOtherQuestion == 0 ) {
             questions[firstMucked].setQuesText("Is less than    " + actual[0]);
@@ -644,7 +642,7 @@
             int x = idx;
             questions[idx].setQuesText("Equals     " + muckedString[x] );
             long junk3 = finalMucked[x]/ten2pow;
-            System.out.println("doubleMucked[" + x + "] = " + doubleMucked[x] + " mucked msd = " + junk3);       
+            //System.out.println("doubleMucked[" + x + "] = " + doubleMucked[x] + " mucked msd = " + junk3);       
             // if it's in range and has correct msd, possible
             if( doubleMin <= doubleMucked[x] && doubleMucked[x] <= doubleMax && 
                     finalMucked[x] / ten2pow == mostDig ) {
@@ -652,7 +650,7 @@
                 // if it's equal, true
                 if( muckedString[x].equals(actual[1]) ) {
                     questions[idx].setAltAns( "true" );
-                    System.out.println("in fact true");
+                    //System.out.println("in fact true");
                 } else { // if it's not equal false
                     questions[idx].setAltAns( "false" );
                 }
@@ -674,18 +672,18 @@
         }
         for( int idx = firstMucked; idx < maxQstns-1; ++ idx ) {
             int x = idx;
-            System.out.println("about to format " + finalMucked[x]);
+            //System.out.println("about to format " + finalMucked[x]);
             questions[idx].setQuesText("Equals     " + muckedString[x] );
             int leastDigx = 0;
             ten2pow = 10;
             if( finalMucked[x] != 0 ) {
                 while( leastDigx == 0 ) {
                     leastDigx = (int)(10*Math.abs(finalMucked[x] % ten2pow))/ten2pow;
-                    System.out.println("ten2pow = " + ten2pow + " actualInt = " + actualInt[1] + " leastDig = " + leastDig);
+                    //System.out.println("ten2pow = " + ten2pow + " actualInt = " + actualInt[1] + " leastDig = " + leastDig);
                     ten2pow = ten2pow*10;
                 }
             }
-            System.out.println("doubleMucked[" + x + "] = " + doubleMucked[x] + " leastDigx = " + leastDigx);
+            //System.out.println("doubleMucked[" + x + "] = " + doubleMucked[x] + " leastDigx = " + leastDigx);
             // if it's in range and has correct lsd, possible
             if( doubleMin <= doubleMucked[x] && doubleMucked[x] <= doubleMax && 
                     leastDigx == leastDig ) {
@@ -693,7 +691,7 @@
                 // if it's equal, true
                 if( muckedString[x].equals(actual[1]) ) {
                     questions[idx].setAltAns( "true" );
-                    System.out.println("in fact true");
+                    //System.out.println("in fact true");
                 } else { // if it's not equal false
                     questions[idx].setAltAns( "false" );
                 }
@@ -725,10 +723,50 @@
     }
 %>
 <form id="th-id2" class="offs">
-<table >
-    <tr class="blank"><td>Lower Range</td><td><%=expl[0]%></td><td>= <%=actual[0]%></td></tr>
+    <table>
+    <tr class="hdrRow">
+    <th colspan=3 id="checkOne">Check One
+    </th>
+    <th colspan=6 class="hdr">Estimate Answers to These Types of Problems
+    </th>
+    <th colspan=3>
+    </th>
+    </tr>
+    <tr>
+        <td><input type="checkbox" value="Addition" name="addition" 
+                   id="addition"
+                   <%=isAddition%> onclick="checkOne()">
+        </td>
+        <td name="pLables">Addition</td>
+        <td><input type="checkbox" value="Multiplication" name="multiplication" 
+                   id="multiplication"
+                   <%=isMultiplication%> onclick="checkOne()">
+        </td>
+        <td name="pLables">Multiplication</td>
+        <td><input type="checkbox" value="Subtraction" name="subtraction" 
+                   id="subtraction"
+                   <%=isSubtraction%> onclick="checkOne()">
+        </td>
+        <td name="pLables">Subtraction</td>
+        <td><input type="checkbox" value="Division" name="division" 
+                   id="division"
+                   <%=isDivision%> onclick="checkOne()">
+        </td>
+        <td name="pLables">Division</td>
+        <td><input type="checkbox" value="Decimals" name="decimals" 
+                   <%=isDecimals%> onclick="checkOne()">
+        </td>
+        <td><label>With Decimals</label></td>
+        <td><input type="checkbox" value="Negatives" name="negatives" 
+                   <%=isNegatives%> onclick="checkOne()">
+        </td>
+        <td><label>With Negative Numbers</label></td>
+    </tr>
+</table>
+<table class="problem">
+    <tr class="blank"><td class="hdr">Lower Range</td><td class="hdr"><%=expl[0]%></td><td>= <%=actual[0]%></td></tr>
     <tr class="hdrRow"><td class="hdr">Problem:</td><td class="hdr">  <%=entireProb%></td><td class="blank">= <%=actual[1]%></td></tr>
-    <tr class="blank"><td>Upper Range</td></td><td><%=expl[2]%></td><td>= <%=actual[2]%></tr>
+    <tr class="blank"><td class="hdr">Upper Range</td><td class="hdr"><%=expl[2]%></td><td>= <%=actual[2]%></tr>
 </table>
 <table>
 <tr>
@@ -844,46 +882,7 @@
 </td>
 </tr>
 </table>
-<table>
-    <tr class="hdrRow">
-    <th colspan=3 id="checkOne">Check One
-    </th>
-    <th colspan=6 class="hdr">Estimate Answers to These Types of Problems
-    </th>
-    <th colspan=3>
-    </th>
-    </tr>
-    <tr>
-        <td><input type="checkbox" value="Addition" name="addition" 
-                   id="addition"
-                   <%=isAddition%> onclick="checkOne()">
-        </td>
-        <td name="pLables">Addition</td>
-        <td><input type="checkbox" value="Multiplication" name="multiplication" 
-                   id="multiplication"
-                   <%=isMultiplication%> onclick="checkOne()">
-        </td>
-        <td name="pLables">Multiplication</td>
-        <td><input type="checkbox" value="Subtraction" name="subtraction" 
-                   id="subtraction"
-                   <%=isSubtraction%> onclick="checkOne()">
-        </td>
-        <td name="pLables">Subtraction</td>
-        <td><input type="checkbox" value="Division" name="division" 
-                   id="division"
-                   <%=isDivision%> onclick="checkOne()">
-        </td>
-        <td name="pLables">Division</td>
-        <td><input type="checkbox" value="Decimals" name="decimals" 
-                   <%=isDecimals%> onclick="checkOne()">
-        </td>
-        <td><label>With Decimals</label></td>
-        <td><input type="checkbox" value="Negatives" name="negatives" 
-                   <%=isNegatives%> onclick="checkOne()">
-        </td>
-        <td><label>With Negative Numbers</label></td>
-    </tr>
-</table>
+
 
     <div class="offs">
         <a href="/" class="ndx">Home</a>

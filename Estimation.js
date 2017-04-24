@@ -50,7 +50,9 @@ function enableCheck() {
         }
     }
     if( allchecked ) {
-        doc.getElementById("Check").disabled = false;
+        var chkBtn = doc.getElementById("Check");
+        chkBtn.disabled = false;
+        chkBtn.style.color = "black";
     }
 }
 
