@@ -233,8 +233,8 @@
     String operator[] = new String[nMucked];
     operator[0] = operators[whatOp];
 
-    int operand1 = (new Double(maxOpPlus1*(Math.pow(Math.random(),EXP)))).intValue();
-    int operand2 = (new Double(maxOpPlus1*(Math.pow(Math.random(),EXP)))).intValue();
+    int operand1 = (new Double(1+(maxOpPlus1)*(1 - Math.pow(Math.random(),DEXP)))).intValue();;
+    int operand2 = (new Double(1+(maxOpPlus1)*(1 - Math.pow(Math.random(),DEXP)))).intValue();
 
     if( !negativesCk && operand2 > operand1 && operator[0].compareTo("-") == 0 ) {
         while( operand1 == 0 ) {
@@ -765,7 +765,7 @@
     <a href="javaScript:{openNewWindow( 'EstimationDirections.html' );}">Click Here for Directions</a>
     <table>
     <tr class="hdrRow">
-    <th colspan=3 id="checkOne">Check One
+        <th colspan=3><div id="checkOne">Check One</div>
     </th>
     <th colspan=6 class="hdr">Estimate Answers to These Types of Problems
     </th>
@@ -804,9 +804,21 @@
     </tr>
 </table>
 <table class="problem">
-    <tr class="blank"><td class="hdr">Upper Range</td><td class="hdr"><%=expl[2]%></td><td>= <%=actual[2]%></tr>
-    <tr class="hdrRow"><td class="hdr">Problem:</td><td class="hdr">  <%=entireProb%></td><td class="blank">= <%=actual[1]%></td></tr>
-    <tr class="blank"><td class="hdr">Lower Range</td><td class="hdr"><%=expl[0]%></td><td>= <%=actual[0]%></td></tr>
+<tr>
+    <td class="hdr"><div class="blank">Upper Range</td>
+    <td class="hdr"><div class="blank"><%=expl[2]%></td>
+    <td><div class="blank">= <%=actual[2]%></div></td>
+</tr>
+<tr class="hdrRow">
+    <td class="hdr">Problem:</td>
+    <td class="hdr">  <%=entireProb%></td>
+    <td><div class="blank">= <%=actual[1]%></div></td>
+</tr>
+<tr>
+    <td class="hdr"><div class="blank">Lower Range    </div></td>
+    <td class="hdr"><div class="blank"><%=expl[0]%>    </div></td>
+    <td><div class="blank">= <%=actual[0]%>    </div></td>
+</tr>
 </table>
 <table>
 <tr>
@@ -819,7 +831,7 @@
     <th colspan=1 class="hdr">True</th>
     <th colspan=1 class="hdr">Possible</th>
     <th colspan=1 class="hdr">False</th>
-    <th colspan=2 class="blank">Acceptable Answers</td> 
+    <th colspan=2><div class="blank">Acceptable Answers</div></th> 
     </tr>
     
 <%      for( int i = 0; i < 4; ++i ) { 
@@ -834,8 +846,8 @@
             String aid = "a" + i;  
             String lid = "l" + i; %>
         <tr>
-            <td class="blank">
-                <div class="xc"><%=x%></div>
+            <td>
+                <div class="xc blank"><%=x%></div>
             </td>
             <td>
                 <!--can't specify min-width of a td -->
@@ -854,13 +866,13 @@
             <td class="rad">
                 <input type="radio" name="<%=name%>" value="false" onclick="enableCheck()" checked="checked">
             </td>
-            <td class="blank" >
+            <td>
                 <!-- this needs to be all one line or localeCompare s don't work  -->
-                <div id="<%=aid%>" class="ansbox"><%=quesAns%></div>
+                <div id="<%=aid%>" class="ansbox blank"><%=quesAns%></div>
             </td>
-            <td class="blank" >
+            <td>
                 <!-- this needs to be all one line or localeCompare s don't work  -->
-                <div id="<%=lid%>" class="ansbox"><%=altAns%></div>
+                <div id="<%=lid%>" class="ansbox blank"><%=altAns%></div>
             </td>
         </tr>
 <%      } %>
@@ -1098,7 +1110,15 @@
                 actualInt[1] = (10*ten2pow*operand1  / operand2 + 5)/10;
             } else { // not sure if this will work when it's not in the jsp page fixit
                 System.err.println("tried to divide by zero");
-                System.exit(1);
+                System.err.println("operator = " + operator);
+                System.err.println("MAX_DGTS" + MAX_DGTS);
+                System.err.println("decimalsCk = " + decimalsCk);
+                System.err.println("operand1" + operand1);
+                System.err.println("decPt1" + decPt1);
+                System.err.println("operand2" + operand2);
+                System.err.println("decPt2" + decPt2);
+                actualInt[1] = 999999;
+                //System.exit(1);
             }
             if( round2up != 0 ) {
                 actualInt[0] = ten2pow*operand1 / round2up;

@@ -22,13 +22,14 @@ function checkOne() {
     if( somethingClicked ) {
         for( var i = 0; i < len; ++i ) {
             pLables[i].style.color = "black";
-            doc.getElementById("checkOne").style.color = "#fff4a3";
+            //doc.getElementById("checkOne").style.color = "#fff4a3";
+            doc.getElementById("checkOne").style.visibility = "hidden";
         }
         zeroCounts();
     } else {
         for( var i = 0; i < len; ++i ) {
             pLables[i].style.color = "red";
-            doc.getElementById("checkOne").style.color = "red";
+            doc.getElementById("checkOne").style.visibility = "visible";
         }
     }
 }
@@ -45,11 +46,22 @@ function enableCheck() {
                 break;
             }
         }
+
         if( !ichecked ) {
             allchecked = false;
         }
     }
-    if( allchecked ) {
+    var somethingClicked = false;
+    if( doc.getElementById("addition").checked ) {
+        somethingClicked = true;
+    } else if( doc.getElementById("subtraction").checked ) {
+        somethingClicked = true;
+    } else if( doc.getElementById("multiplication").checked ) {
+        somethingClicked = true;
+    } else if( doc.getElementById("division").checked ) {
+        somethingClicked = true;
+    }
+    if( allchecked  && somethingClicked) {
         var chkBtn = doc.getElementById("Check");
         chkBtn.disabled = false;
         chkBtn.style.color = "black";
@@ -58,7 +70,7 @@ function enableCheck() {
 
 function checkTF() {
     var doc = document;
-    var visibletxt = "#194e80";
+    //var visibletxt = "#194e80";
     var chkBtn = doc.getElementById("Check");
     if( chkBtn.value === "Check" ) {
         for( var j = 0; j < 10; j++ ) {
@@ -68,7 +80,8 @@ function checkTF() {
         var blanks = doc.getElementsByClassName("blank");
         var len = blanks.length;
         for( var i = 0; i < len; ++i ) {
-            blanks[i].style.color = visibletxt;
+            //blanks[i].style.color = visibletxt;
+            blanks[i].style.visibility = "visible";
         }
         // this is a kludge to make sure the user checks before starting again
         doc.getElementById("bdx").value = 12;

@@ -32,7 +32,9 @@ td {
     text-align: center;
 }
 .blank{
-    color: #fff4a3;
+    /* color: #fff4a3; */
+    visibility: hidden;
+    margin: 1px;
 }
 .blankhdr{
     color: #ffa925;
@@ -63,7 +65,10 @@ td {
     min-width: 2em;
 }
 #checkOne{
-    color:  #fff4a3;
+    visibility: hidden;
+    margin: 1px;
+    color: red;
+    /* color:  #fff4a3; */
 }
 #Check{
     width: 8em;
