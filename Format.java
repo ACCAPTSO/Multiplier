@@ -28,6 +28,8 @@ public class Format {
         if( num < 0 ) {
             absActual = -num;
             actual.append("-");
+        } else if(  num == 0 ) {
+            dp = 0;
         }
         int digs = absActual > 0? 1 + (int)Math.log10(absActual) : 1;
         int tmp3 = absActual;
@@ -60,6 +62,8 @@ public class Format {
         if( num < 0 ) {
             absActual = -num;
             actual.append("-");
+        } else if(  num == 0 ) {
+            dp = 0;
         }
         int tmp3 = absActual;
         int ten2pow = (int)Math.pow(10, digs-1);
@@ -97,6 +101,8 @@ public class Format {
         if( num < 0 ) {
             absActual = -num;
             actual.append("-");
+        } else if(  num == 0 ) {
+            dp = 0;
         }
         int digs = absActual > 0? 1 + (int)Math.log10(absActual) : 1;
         long tmp3 = absActual;
@@ -132,6 +138,8 @@ public class Format {
         if( num < 0 ) {
             absActual = -num;
             actual.append("-");
+        } else if(  num == 0 ) {
+            dp = 0;
         }
         long tmp3 = absActual;
         long ten2pow = (int)Math.pow(10, digs-1);

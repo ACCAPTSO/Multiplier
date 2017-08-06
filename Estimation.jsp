@@ -24,6 +24,14 @@
     // needs mistyped signs fixit
     // needs mistyped decimal points fixit
     // Does it have the right number of decimal places fixit
+    // setting operand2 to 0 and multiplying seems to start an infinite loop
+    // should I figure out why (duplicate to actualInt) or try to prevent it? fixit
+    // doesn't really make sense to estimate the value of 0 times anything -prevent it fixit
+    // how do you calculate upper and lower bounds for 0 in addition, subtraction or first operand of division? fixit
+    // mucked problem with 0 results causing infinite loop fixit
+    // 7.546-99.7* implies 7.546-99.7*0
+    // is there a way to generate a random number that is anything but the correct lsd or msd? fixit
+    // make it so there are always at least 2 significant digits, not 1 fixit
 
     final int N_OPERATORS = 4;
     final double DEXP = 2.6;
@@ -231,6 +239,8 @@
     String operator[] = new String[nMucked];
     operator[0] = operators[whatOp];
 
+    // neither of these should ever be zero. No point. problem is too easy
+    // and how do you calculate a range?
     int operand1 = (new Double(1+(maxOpPlus1)*(1 - Math.pow(Math.random(),DEXP)))).intValue();;
     int operand2 = (new Double(1+(maxOpPlus1)*(1 - Math.pow(Math.random(),DEXP)))).intValue();
 
@@ -260,6 +270,7 @@
         } else {
             while( operand2 == 0 ) {
                 operand2 = (new Double(maxOpPlus1*(Math.pow(Math.random(),EXP)))).intValue();
+                System.out.println("operand2 was zero, now it is " + operand2);
             } 
         }
     }
@@ -341,16 +352,37 @@
             operand1, decPt1, operand2, decPt2, 
             nDgts1, nDgts2, isNeg1, isNeg2,
             actualInt, expl );
+    
+    int origOp = -1;
+    if( operator[0].compareTo("+") == 0 ) {
+        origOp = 0;
+    } else if( operator[0].compareTo("-") == 0 ) {
+        origOp = 1;
+    }else if( operator[0].compareTo("*") == 0 ) {
+        origOp = 2;
+    } else if( operator[0].compareTo("/") == 0 ) {
+        origOp = 3;
+    }
     double doubleAct = actualInt[1]*Math.pow(10,-decPtAct);
     double doubleMin = actualInt[0]*Math.pow(10,-decPtAct);
     double doubleMax = actualInt[2]*Math.pow(10,-decPtAct);
     leastDig = 0;
     int actpow = 10;
+    int rightDp = decPtAct;//origOp == 2? 
+            // decPt1 + decPt2 : decPt1 > decPt2 ? decPt1 : decPt2;
+    System.out.println("operator = " + operator[0] + " decPt1 = " + decPt1 + " decpt2 = " + decPt2 + " rightDp = " + rightDp);
+
     if( actualInt[1] != 0 ) {
+        long absActual = Math.abs(actualInt[1]);
         while( leastDig == 0 ) {
-            leastDig = (int)(10*Math.abs(actualInt[1] % actpow))/actpow;
+            //leastDig = (int)(10*Math.abs(actualInt[1] % actpow))/actpow;
+            leastDig = (int)(10*(absActual % actpow))/actpow;
             System.out.println("actpow = " + actpow + " actualInt = " + actualInt[1] + " leastDig = " + leastDig);
             actpow = actpow*10;
+            if( rightDp > 0 && leastDig == 0 ) {
+                rightDp = rightDp - 1;
+                System.out.println("rightDp = " + rightDp);
+            }
         }
     }
     
@@ -359,7 +391,7 @@
     for( int i = 0; i < 3; ++i ) {
         nDigsAct[i] = Format.getDigs( actualInt[i] );
         actual[i] = Format.getFormat( actualInt[i], decPtAct, nDigsAct[i] );
-        System.out.println("actual[" + i + "] = " + actual[i] + " nDigsAct[" + i + "] = " + nDigsAct[i]);
+        System.out.println("actualInt = " + actualInt[i] + " actual[" + i + "] = " + actual[i] + " decPtAct = " + decPtAct + " nDigsAct[" + i + "] = " + nDigsAct[i]);
     }
     
     mostDig = (int)(Math.abs(actualInt[1])/((int)Math.pow(10,nDigsAct[1]-1)));
@@ -386,23 +418,14 @@
     double [] doubleMucked = new double[nMucked];
     String [] muckedString = new String[nMucked];
     int [] muckedDp = new int[nMucked];
-    int origOp = -1;
-    if( operator[0].compareTo("+") == 0 ) {
-        origOp = 0;
-    } else if( operator[0].compareTo("-") == 0 ) {
-        origOp = 1;
-    }else if( operator[0].compareTo("*") == 0 ) {
-        origOp = 2;
-    } else if( operator[0].compareTo("/") == 0 ) {
-        origOp = 3;
-    }
+
     for( int idx = 1; idx < nMucked; ++idx ) {
         operator[idx] = operator[0];
         // 0 - 5 ? how does operand2 get mucked? fixit
         // mucking with operand2 throws division problems way off and
         // it's obvious which answers are not correct. Perhaps
         // you don't want to muck with operand2 as often
-        //int whichOpIsMucked = (int)((3*nOps*(nOps-1))*Math.random());
+        //int whichOpIsMucked = (int)((3*nOps*(nOps-1))*Math.random()); // gives too many Answer = 0 for division
         int whichOpIsMucked = (int)(9*Math.random());
         if( whichOpIsMucked < 4 ) { // 0, 1, 2, 3:  muck with operand1
             int whichDigIsMucked = (int)(nDgts1*Math.random());
@@ -417,7 +440,7 @@
                 if( 0 <= origDig && origDig <= 9 ) {
                     //origDig = 3*(1+(int)(3*Math.random())); // gives only 3, 6 or 9 debug
                     //System.out.println("should be 3, 6 or 9: " + origDig);
-                    System.out.println("whichOp = " + whichOpIsMucked +  " whichDig = " + whichDigIsMucked + " origDig  = " + origDig );
+                    //System.out.println("whichOp = " + whichOpIsMucked +  " whichDig = " + whichDigIsMucked + " origDig  = " + origDig );
                     int whichAlt = (int)(alt[origDig].length*Math.random());
                     StringBuffer altDig = new StringBuffer(alt[origDig][whichAlt]);
                     if( isNeg && whichDigIsMucked == 0 && 
@@ -425,7 +448,7 @@
                         altDig.insert(0, "-");
                     }
                     opDgts1[whichDigIsMucked][idx] = altDig.toString();
-                    System.out.println("whichAlt = " + whichAlt + " altDig = " + altDig);
+                    //System.out.println("whichAlt = " + whichAlt + " altDig = " + altDig);
                 } else {
                     System.err.println("Error origDig = " + origDig + " should be between 0 and 9 ");
                 }
@@ -452,10 +475,10 @@
             }
             if( 0 <= whichDigIsMucked && whichDigIsMucked < TWO_XDGTS ) {
                 int origDig = Math.abs(Integer.parseInt(opDgts2[whichDigIsMucked][0]));
-                System.out.println("whichOp = " + whichOpIsMucked +  " whichDig = " + whichDigIsMucked + " origDig  = " + origDig );
+                System.out.print("whichOp = " + whichOpIsMucked +  " whichDig = " + whichDigIsMucked + " origDig  = " + origDig );
                 boolean isNeg = origDig < 0;
                 origDig = Math.abs(origDig);
-                //origDig = 3*(1+(int)(3*Math.random())); // gives only 3, 6 or 9 debug
+                //origDig = 3*(1+(int)(3*Math.random())); // gives only 3, 6 or 9
                 //System.out.println("should be 3, 6 or 9: " + origDig);
                 if( 0 <= origDig && origDig <= 9 ) {
                     int whichAlt = (int)(alt[origDig].length*Math.random());
@@ -464,7 +487,7 @@
                         altDig.insert(0, "-");
                     }
                     opDgts2[whichDigIsMucked][idx] = altDig.toString();
-                    System.out.println("whichOp = " + whichOpIsMucked +  " whichDig = " + whichDigIsMucked + " whichAlt = " + whichAlt + " altDig = " + altDig);
+                    System.out.println(" whichAlt = " + whichAlt + " altDig = " + altDig);
                 } else { 
                     System.out.println("Error: operator = " + operator[idx] + " origOp = " + origOp);
                 }
@@ -560,13 +583,13 @@
             if( !countingDp && s.matcher( tmp5.substring( 0, 1 )).matches() ) {
                 sign = -1;
                 tmp5.delete( 0, 1);
-                System.out.println("negative");
+                //System.out.println("negative");
             }
             int ndx = 1;
             // find digits
             while( ndx <= tmp5.length() &&
                     n.matcher( tmp5.substring( 0, ndx )).matches() ) {
-                //String junk = tmp5.substring( 0, ndx );
+                String junk = tmp5.substring( 0, ndx );
                 //System.out.println("substring[" + ndx + "] = " + junk );
                 ++ndx;
                 if( countingDp ) { // count decimal places
@@ -609,14 +632,14 @@
                         muckedOp[mdx] = tmp5.substring(ndx-1, ndx);
                         dofirst[mdx] = mdx;
                         // last chance to take sign into account
-                        num[mdx] = sign*num[mdx];
+                        snum[mdx] = sign*num[mdx];
                         sign  = 1;
                         System.out.println("signed number " + num[mdx] + " operator " + muckedOp[mdx]);
                         //pdx = pdx + 1;
                         mdx = mdx + 1;
                         break;
                     }
-                    System.out.println("not operator substring = >" + tmp5.substring( ndx-1, ndx ) + "<");
+                   //System.out.println("not operator substring = >" + tmp5.substring( ndx-1, ndx ) + "<");
                     ++ndx;
                 }
                 tmp5.delete( 0, ndx);
@@ -631,7 +654,7 @@
         }
         // last chance to take sign into account
         snum[mdx] = sign*num[mdx];
-        System.out.println("signed number " + num[mdx] );
+        System.out.println("signed number " + snum[mdx] );
         for( int i = 0; i <= mdx; ++i ) {
             if( muckedOp[i] != null ) {
                 //System.out.println(num[i] + " times 10 to the negative " + dp[i] + " " + muckedOp[i] + " ");
@@ -646,8 +669,9 @@
         for( int i = 0; i < 4; ++i ) {
             prelimAns[i] = new long[3];
             prelimAns[i][1] = snum[i];
-            prelimDgts[i] = (int)(num[i] > 0 ? Math.log10(num[i]) : 1);
+            prelimDgts[i] = num[i] > 0 ? 1 + (int)Math.log10(num[i]) : 1;
             prelimDp[i] = dp[i];
+            System.out.println("prelimAns[" + i + "][1] = " + prelimAns[i][1] + " prelimDp[" + i + "] = " + prelimDp[i]);
         }
 
         finalMucked[idx] = num[0];
@@ -657,7 +681,7 @@
         for( int y = 0; y < mdx; ++y ) {
             int z = dofirst[y];
             if( z >= 0 ) {
-                //System.out.println("num[" + y + "] = " + prelimAns[y][1] +  " dp[" + y + "] = " + prelimDp[y] + " muckedOp[" + y + "] = " + muckedOp[y] + " numyplus1 = " + prelimAns[y+1][1] +  " dpyplus1 = " + prelimDp[y+1] + " = ");
+                System.out.print("num[" + y + "] = " + prelimAns[y][1] +  " dp[" + y + "] = " + prelimDp[y] + " muckedOp[" + y + "] = " + muckedOp[y] + " numyplus1 = " + prelimAns[y+1][1] +  " dpyplus1 = " + prelimDp[y+1] + " = ");
                 //prelimDp[y] = op( muckedOp[y], MAX_DGTS, decimalsCk,
                 prelimDp[y] = op( muckedOp[y], MAX_DGTS, true,
                 prelimAns[y][1], prelimDp[y], prelimAns[y+1][1], prelimDp[y+1], 
@@ -674,7 +698,7 @@
         for( int y = 0; y < mdx; ++y ) {
             int z = dolast[y];
             if( z >= 0 ) {
-                //System.out.println("prelimAns[" + y + "] = " + prelimAns[y][1] +  " dp[" + y + "] = " + prelimDp[y] + " muckedOp[" + y + "] = " + muckedOp[y] + " prelimAnsyplus1 = " + prelimAns[y+1][1] +  " dpyplus1 = " + prelimDp[y+1] + " = ");
+                System.out.print("prelimAns[" + y + "] = " + prelimAns[y][1] +  " dp[" + y + "] = " + prelimDp[y] + " muckedOp[" + y + "] = " + muckedOp[y] + " prelimAnsyplus1 = " + prelimAns[y+1][1] +  " dpyplus1 = " + prelimDp[y+1] + " = ");
                //prelimDp[y] = op( muckedOp[y], MAX_DGTS, decimalsCk,
                 prelimDp[y] = op( muckedOp[y], MAX_DGTS, true,
                 prelimAns[y][1], prelimDp[y], prelimAns[y+1][1], prelimDp[y+1], 
@@ -719,10 +743,20 @@
     }
 
     int firstMucked = 0;
-    // this needs explanation fixit
+    // if actual answer is equal to the lower bound, don't ask if it's
+    // greater or less than that lower bound. First two posential "other"
+    // questions are about lower bound
     int minQstn = doubleMin < doubleAct ? 0 : 2;
-    int maxQstn = doubleAct < doubleMax ? 6 : 4;
+    // if actual answer is equal to the upper bound, don't ask if it's
+    // greater or less than that upper bound. Last two potential "other"
+    // questions are about upper bound. Middle questions can be asked
+    // about any problem.
+    int askUbndQstn = 8;
+    int uBndQstn = 6;
+    int maxQstn = doubleAct < doubleMax ? askUbndQstn : uBndQstn;
     int whichOtherQuestion = (int)(minQstn + (maxQstn-minQstn)*Math.random());
+    //whichOtherQuestion = (int)(4 + 2*Math.random());
+
 
     //System.out.println("whichQuestion = " + whichOtherQuestion );
     if( whichOtherQuestion < 2 ) {
@@ -736,8 +770,8 @@
         String txt = questions[firstMucked].getQuesText();
         //System.out.println("question[" + firstMucked + "] = " + txt );
         firstMucked = firstMucked + 1;
-    } else if( whichOtherQuestion > 3 ) {     
-        if( whichOtherQuestion == 4 ) {
+    } else if( whichOtherQuestion >= uBndQstn ) {     
+        if( whichOtherQuestion == uBndQstn ) {
             questions[firstMucked].setQuesText("Is greater than " + actual[2]);
             questions[firstMucked].setQuesAns( "false" );
         } else {
@@ -750,13 +784,17 @@
     }
 
     if( origOp == 3 ) { // division
-        if( whichOtherQuestion == 2 ) {
+        // there are only two possible "other" questions for division
+        // besides the upper and lower bound questions
+        if( whichOtherQuestion > 1 && whichOtherQuestion < uBndQstn
+                && whichOtherQuestion%2 == 0 ) {
             questions[firstMucked].setQuesText("The most significant digit is " + mostDig);
             questions[firstMucked].setQuesAns( "true" );
             String txt = questions[firstMucked].getQuesText();
             //System.out.println("question[" + firstMucked + "] = " + txt );
             firstMucked = firstMucked + 1;
-        } else if( whichOtherQuestion == 3 ) {
+        } else if( whichOtherQuestion > 1 && whichOtherQuestion < uBndQstn &&
+                whichOtherQuestion%2 == 1 ) {
             int notMostDig = (7 + mostDig) % 10;
             questions[firstMucked].setQuesText("The most significant digit is " + notMostDig);
             questions[firstMucked].setQuesAns( "false" );
@@ -791,15 +829,21 @@
             } else { // if it's not equal false
                 questions[idx].setQuesAns( "false" );
             }
-            String txt = questions[idx].getQuesText();
+            //String txt = questions[idx].getQuesText();
             //System.out.println("question[" + idx + "] = " + txt );
         }
-    } else {
-        // is this going to give an "Equals null"? fixit
+    } else { // multiplication, addition and subtraction
         if( whichOtherQuestion == 2 && actualInt[1] != 0 ) {
             questions[firstMucked].setQuesText("The least significant digit is " + leastDig);
             questions[firstMucked].setQuesAns( "true" );
-            String txt = questions[firstMucked].getQuesText();
+            //String txt = questions[firstMucked].getQuesText();
+            //System.out.println("question[" + firstMucked + "] = " + txt );
+            firstMucked = firstMucked + 1;
+        }
+        if( whichOtherQuestion == 2 && actualInt[1] == 0 ) {
+            questions[firstMucked].setQuesText("The least significant digit is not defined. However did this happen? Now what?");
+            questions[firstMucked].setQuesAns( "true" );
+            //String txt = questions[firstMucked].getQuesText();
             //System.out.println("question[" + firstMucked + "] = " + txt );
             firstMucked = firstMucked + 1;
         }
@@ -807,7 +851,30 @@
             int notLeastDig = (7 + leastDig) % 10;
             questions[firstMucked].setQuesText("The least significant digit is " + notLeastDig);
             questions[firstMucked].setQuesAns( "false" );
-            String txt = questions[firstMucked].getQuesText();
+            //String txt = questions[firstMucked].getQuesText();
+            //System.out.println("question[" + firstMucked + "] = " + txt );
+            firstMucked = firstMucked + 1;
+        }
+        if( whichOtherQuestion == 4 ) {
+            if( rightDp == 1 ) {
+                questions[firstMucked].setQuesText("Answer has " + rightDp + " decimal place.");
+            } else {
+                questions[firstMucked].setQuesText("Answer has " + rightDp + " decimal places.");
+            }
+            questions[firstMucked].setQuesAns( "true" );
+            //String txt = questions[firstMucked].getQuesText();
+            //System.out.println("question[" + firstMucked + "] = " + txt );
+            firstMucked = firstMucked + 1;
+        }
+        if( whichOtherQuestion == 5 ) {
+            int notRightDp = (rightDp+MAX_DGTS-1)%MAX_DGTS;
+            if( notRightDp == 1 ) {
+                questions[firstMucked].setQuesText("Answer has " + notRightDp + " decimal place.");
+            } else {
+                questions[firstMucked].setQuesText("Answer has " + notRightDp + " decimal places.");
+            }
+            questions[firstMucked].setQuesAns( "false" );
+            //String txt = questions[firstMucked].getQuesText();
             //System.out.println("question[" + firstMucked + "] = " + txt );
             firstMucked = firstMucked + 1;
         }
@@ -825,16 +892,23 @@
                 }
             }
             //System.out.println("doubleMucked[" + x + "] = " + doubleMucked[x] + " leastDigx = " + leastDigx);
-            boolean rightNumDecPlaces = origOp == 2? (muckedDp[idx] <= decPt1 + decPt2) :
-                    (muckedDp[idx] <= decPt1 || muckedDp[idx] <= decPt2);
+           // boolean rightNumDecPlaces = origOp == 2? (muckedDp[idx] <= decPt1 + decPt2) :
+            //        (muckedDp[idx] <= decPt1 || muckedDp[idx] <= decPt2);
             // if it's in range, has correct lsd in correct digit, had correct
-            // number of decimal places possible
-            
-            System.out.println("doubleMucked[x] " + doubleMucked[x] + " righNumDecPlaces " + rightNumDecPlaces);
-            System.out.println("origOp " + origOp + " muckedDp " + muckedDp[idx] + " decPt1 " + decPt1 + " decPt2 " + decPt2);
+            // number of decimal places: mark it "possible"
+            int mDpCopy = muckedDp[x];
+
+
+            if( finalMucked[x] != 0 ) {
+                long fmCopy = finalMucked[x];
+                while( 10*(fmCopy/10) == fmCopy ) {
+                    fmCopy = fmCopy/10;
+                    mDpCopy = mDpCopy - 1;
+                }
+            }
             if( doubleMin <= doubleMucked[x] && doubleMucked[x] <= doubleMax && 
                     leastDigx == leastDig && actpow == ten2pow &&
-                    rightNumDecPlaces ) {
+                    mDpCopy == rightDp ) {
                 questions[idx].setQuesAns( "possible" );
                 // if it's equal, true
                 if( muckedString[x].equals(actual[1]) ) {
@@ -843,17 +917,21 @@
                 } else { // if it's not equal false
                     questions[idx].setAltAns( "false" );
                 }
-            } else {     // if it's not equal false
+            } else {     // if it's no where close: false
+                System.out.print("doubleMin !< doubleMucked !< doubleMax " + doubleMin + " " + doubleMucked[x] + " " + doubleMax);
+                System.out.print(" or leastDigx != leastDig " + leastDigx + " " + leastDig);
+                System.out.print(" or place of least signigicant digits " + ten2pow + " != " +  actpow);
+                System.out.println("or muckedDp[" + x + "] != rightDp " + mDpCopy + " " + rightDp);
                 questions[idx].setQuesAns( "false" );
             }
-            String txt = questions[idx].getQuesText();
+            //String txt = questions[idx].getQuesText();
             //System.out.println("question[" + idx + "] = " + txt );
         }
     }
     questions[nMucked].setQuesText("Answer equals     " + actual[1] );
     questions[nMucked].setQuesAns( "possible" );
     questions[nMucked].setAltAns( "true" );
-    String txt = questions[nMucked].getQuesText();  
+    //String txt = questions[nMucked].getQuesText();  
     //System.out.println("question[" + nMucked + "] = " + txt );
 
     // LFSR to scramble questions
@@ -869,12 +947,6 @@
         shiftReg = (( shiftReg << 1 ) & 0xFFFF ) | (((bit15^bit13)^bit12)^bit10);
         //System.out.format("shiftReg = %05X", shiftReg );
     }
-
-   
-
-   
-
-
 
 %>
 <form id="th-id2" class="offs">
@@ -1072,6 +1144,9 @@
             long operand1, int decPt1, long operand2, int decPt2, 
             int nDgts1, int nDgts2, boolean isNeg1, boolean isNeg2,
             long [] actualInt, String [] expl ) { 
+        System.out.println("op just starting operator = " + operator + " decimalsCK = " + decimalsCk + "operand1 = " + operand1 );
+        System.out.println("decPt1 = " + decPt1 + " operand2 = " + operand2 + " decPt2 = " + decPt2 + " nDgts1 = " + nDgts1 + " nDgts2 = " + nDgts2);
+        System.out.println(" isNeg1 = " + isNeg1 + " isNeg2 = " + isNeg2);
         long absOp1 = Math.abs(operand1);
         long absOp2= Math.abs(operand2);
         //boolean isNeg1 = operand1 < 0;
@@ -1133,10 +1208,12 @@
             if( thisMuchBigger > 0 ) {
                 // if there is no overlap
                 int lsd = decPt1;
-                int copy = (int)absOp1;
-                while( 10*(copy/10) == copy ) {
-                    lsd = lsd + 1;
-                    copy = copy/10;
+                if( absOp1 > 0 ) {
+                    int copy = (int)absOp1;
+                    while( 10*(copy/10) == copy ) {
+                        lsd = lsd + 1;
+                        copy = copy/10;
+                    }
                 }
                 if( decPt2 - nDgts2 >= lsd ) {
                     round1up = operand1;
@@ -1156,10 +1233,12 @@
             } else if( thisMuchBigger < 0 ) {
                 // if there is no overlap
                 int lsd = decPt2;
-                int copy = (int)operand2;
-                while( 10*(copy/10) == copy ) {
-                    lsd = lsd + 1;
-                    copy = copy/10;
+                if( absOp2 > 0 ) {
+                    int copy = (int)absOp2;
+                    while( 10*(copy/10) == copy ) {
+                        lsd = lsd + 1;
+                        copy = copy/10;
+                    }
                 }
                 if( decPt1 - nDgts1 >= decPt2 ) {
                     round2up = operand2;
@@ -1269,7 +1348,9 @@
                 expl[0] = Format.getFormat( round1down, decPt1 ) + " " + operator + 
                         " " + Format.getFormat( round2down, decPt2 );
             }
-
+            //System.out.println("op decPt1 " + decPt1 + " decPt2 " + decPt2 + " decPtAct " + decPtAct);
+            //System.out.println("op " + operator + " round1up " + round1up + " round2up " + round2up + " actualInt[2] " + actualInt[2]);
+            //System.out.println("op " + operator + " round1down " + round1down + " round2down " + round2down + " actualInt[2] " + actualInt[0]);
         // two might be a better lower bound than 1 fixit
         } else if(  operator.compareTo("/") == 0  ) {
             round2down = ten2pow;
@@ -1344,9 +1425,17 @@
                         " " + Format.getFormat( round2down, decPt2 );
             }
         }
-        if( actualInt[1] == 0 ) {
-            decPtAct = 0;
+        //if( actualInt[1] == 0 ) {
+        //    decPtAct = 0;
+        //}
+
+        //System.out.println("op finishing operator = " + operator + " decimalsCK = " + decimalsCk + "operand1 = " + operand1 );
+        //System.out.println("decPt1 = " + decPt1 + " operand2 = " + operand2 + " decPt2 = " + decPt2 + " nDgts1 = " + nDgts1 + " nDgts2 = " + nDgts2);
+        //System.out.println(" isNeg1 = " + isNeg1 + " isNeg2 = " + isNeg2);
+        for( int q = 0; q < 3; q++ ){
+            //System.out.println("actualIn[" + q + "] = " + actualInt[q] + " expl[" + q + "] = " + expl[q] );
         }
+        //System.out.println("op finishing");
         return decPtAct;
     }
 
