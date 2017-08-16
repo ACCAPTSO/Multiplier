@@ -25,7 +25,8 @@
     // needs mistyped decimal points fixit
     // should I figure out why (duplicate to actualInt) or try to prevent it? fixit
     // is there a way to generate a random number that is anything but the correct lsd or msd? fixit
-    // make it so there are always at least 2 significant digits, not 1 fixit
+    // doesn't make sense to ask about decimal places when it's always 0 fixit
+    // may have another infinite loop fixit
 
     final int N_OPERATORS = 4;
     final double DEXP = 2.6;
@@ -301,11 +302,8 @@
             //System.out.println("operand2 = " + operand2 + " decPt1 = " + decPt1 + " operand1 = " + operand1 + " dp2Mn = " + dp2Mn);
         }
         // make sure there are significant digits showing in answer
-        //if( 1 + nDgts2 - decPt2 - (nDgts1 - decPt1) >= MAX_DGTS &&
-                //operator[0].compareTo("/") == 0 ) {
         if( 2 + nDgts2 - decPt2 - (nDgts1 - decPt1) >= MAX_DGTS &&
             operator[0].compareTo("/") == 0 ) {
-            //int dp2Mn = 1 + nDgts2 - (nDgts1 - decPt1) - MAX_DGTS;
             int dp2Mn = 2 + nDgts2 - (nDgts1 - decPt1) - MAX_DGTS;
             decPt2 = dp2Mn + (int)((MAX_DGTS+1-dp2Mn)*Math.random());
             System.out.println("dp2Mn = " + dp2Mn + " decPt2 = " + decPt2);
@@ -752,8 +750,7 @@
     int uBndQstn = 6;
     int maxQstn = doubleAct < doubleMax ? askUbndQstn : uBndQstn;
     int whichOtherQuestion = (int)(minQstn + (maxQstn-minQstn)*Math.random());
-    //whichOtherQuestion = (int)(4 + 2*Math.random());
-
+    //whichOtherQuestion = 4 + (int)(2*Math.random()); // debug
 
     //System.out.println("whichQuestion = " + whichOtherQuestion );
     if( whichOtherQuestion < 2 ) {
@@ -792,7 +789,9 @@
             firstMucked = firstMucked + 1;
         } else if( whichOtherQuestion > 1 && whichOtherQuestion < uBndQstn &&
                 whichOtherQuestion%2 == 1 ) {
-            int notMostDig = (7 + mostDig) % 10;
+            //int notMostDig = (7 + mostDig) % 10;
+            // any digit 0 - 9 except mostDig, mostDig - 1 or mostDig + 1
+            int notMostDig = ((int)(7*Math.random()) + mostDig + 2 ) % 10;
             questions[firstMucked].setQuesText("The most significant digit is " + notMostDig);
             questions[firstMucked].setQuesAns( "false" );
             String txt = questions[firstMucked].getQuesText();
@@ -845,7 +844,9 @@
             firstMucked = firstMucked + 1;
         }
         if( whichOtherQuestion == 3 ) {
-            int notLeastDig = (7 + leastDig) % 10;
+            //int notLeastDig = (7 + leastDig) % 10;
+            // any digit 0 - 9 but leastDig, leastDig - 1 or leastDig + 1
+            int notLeastDig = ((int)(7*Math.random()) + leastDig + 2 ) % 10;
             questions[firstMucked].setQuesText("The least significant digit is " + notLeastDig);
             questions[firstMucked].setQuesAns( "false" );
             //String txt = questions[firstMucked].getQuesText();
@@ -864,7 +865,10 @@
             firstMucked = firstMucked + 1;
         }
         if( whichOtherQuestion == 5 ) {
-            int notRightDp = (rightDp+MAX_DGTS-1)%MAX_DGTS;
+            // a multiplication problem can have more decimal places in the answer
+            int maxDgts = origOp == 2 ? TWO_XDGTS : MAX_DGTS;
+            // anything between 0 and maxDgts but rightDp
+            int notRightDp = ((int)(maxDgts*Math.random()) + rightDp + 1 ) % (maxDgts+1);
             if( notRightDp == 1 ) {
                 questions[firstMucked].setQuesText("Answer has " + notRightDp + " decimal place.");
             } else {
