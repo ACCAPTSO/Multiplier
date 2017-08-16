@@ -23,13 +23,7 @@
 <% 
     // needs mistyped signs fixit
     // needs mistyped decimal points fixit
-    // Does it have the right number of decimal places fixit
-    // setting operand2 to 0 and multiplying seems to start an infinite loop
     // should I figure out why (duplicate to actualInt) or try to prevent it? fixit
-    // doesn't really make sense to estimate the value of 0 times anything -prevent it fixit
-    // how do you calculate upper and lower bounds for 0 in addition, subtraction or first operand of division? fixit
-    // mucked problem with 0 results causing infinite loop fixit
-    // 7.546-99.7* implies 7.546-99.7*0
     // is there a way to generate a random number that is anything but the correct lsd or msd? fixit
     // make it so there are always at least 2 significant digits, not 1 fixit
 
@@ -307,9 +301,12 @@
             //System.out.println("operand2 = " + operand2 + " decPt1 = " + decPt1 + " operand1 = " + operand1 + " dp2Mn = " + dp2Mn);
         }
         // make sure there are significant digits showing in answer
-        if( 1 + nDgts2 - decPt2 - (nDgts1 - decPt1) >= MAX_DGTS &&
-                operator[0].compareTo("/") == 0 ) {
-            int dp2Mn = 1 + nDgts2 - (nDgts1 - decPt1) - MAX_DGTS;
+        //if( 1 + nDgts2 - decPt2 - (nDgts1 - decPt1) >= MAX_DGTS &&
+                //operator[0].compareTo("/") == 0 ) {
+        if( 2 + nDgts2 - decPt2 - (nDgts1 - decPt1) >= MAX_DGTS &&
+            operator[0].compareTo("/") == 0 ) {
+            //int dp2Mn = 1 + nDgts2 - (nDgts1 - decPt1) - MAX_DGTS;
+            int dp2Mn = 2 + nDgts2 - (nDgts1 - decPt1) - MAX_DGTS;
             decPt2 = dp2Mn + (int)((MAX_DGTS+1-dp2Mn)*Math.random());
             System.out.println("dp2Mn = " + dp2Mn + " decPt2 = " + decPt2);
         }
