@@ -24,7 +24,6 @@
     // needs mistyped signs fixit
     // needs mistyped decimal points fixit
     // should I figure out why (duplicate to actualInt) or try to prevent it? fixit
-    // is there a way to generate a random number that is anything but the correct lsd or msd? fixit
     // doesn't make sense to ask about decimal places when it's always 0 fixit
     // may have another infinite loop fixit
 
@@ -254,7 +253,6 @@
             System.out.println("operand1 = " + operand1 + " divided by operand2 = " + operand2 + " is not even");
             while( operand2 == 0 || Math.log(operand2) >= MAX_DGTS - 1 ) {
                 operand2 = (new Double(1+(maxOpPlus1)*(1 - Math.pow(Math.random(),DEXP)))).intValue();
-                //operand2 = (new Double(maxOpPlus1*(Math.pow(Math.random(),EXP)))).intValue();
             }
 
             int finalAns = 
@@ -789,7 +787,6 @@
             firstMucked = firstMucked + 1;
         } else if( whichOtherQuestion > 1 && whichOtherQuestion < uBndQstn &&
                 whichOtherQuestion%2 == 1 ) {
-            //int notMostDig = (7 + mostDig) % 10;
             // any digit 0 - 9 except mostDig, mostDig - 1 or mostDig + 1
             int notMostDig = ((int)(7*Math.random()) + mostDig + 2 ) % 10;
             questions[firstMucked].setQuesText("The most significant digit is " + notMostDig);
@@ -799,24 +796,24 @@
             firstMucked = firstMucked + 1;
         }
         
-        for( int idx = firstMucked; idx < nMucked; ++ idx ) {
+        for( int idx = firstMucked, x = 1; idx < nMucked; ++idx, ++x ) {
             //ten2pow = (int)Math.pow(10,nDigsAct[1]-1); //+muckedDp[idx]);
             //int x = idx;
-            questions[idx].setQuesText("Answer equals     " + muckedString[idx] );
+            questions[idx].setQuesText("Answer equals     " + muckedString[x] );
             //long junk3 = finalMucked[idx]/ten2pow;
             //System.out.println("doubleMucked[" + idx + "] = " + doubleMucked[idx] + " mucked msd = " + junk3);       
             // if it's in range and has correct msd, possible
-            long absMucked = Math.abs(finalMucked[idx]);
+            long absMucked = Math.abs(finalMucked[x]);
             int digsMuckedM1 = absMucked > 0 ? (int)(Math.log10(absMucked)) : 1 ;
             int muckedMostDig = (int)(absMucked/((int)Math.pow(10,digsMuckedM1)));
             System.out.println("absMucked = " + absMucked + " digsMuckedM1 = " + digsMuckedM1 + " muckedMostDig = " + muckedMostDig);
-            System.out.println("doubleMin = " + doubleMin + " doubleMucked[" + idx + "] = " + doubleMucked[idx] + " doubleMax = " + doubleMax);
-            System.out.println("finalMucked[" + idx + "] = " + finalMucked[idx] + " muckedMostDig = " + muckedMostDig + " mostDig = " + mostDig);
-            if( doubleMin <= doubleMucked[idx] && doubleMucked[idx] <= doubleMax && 
+            System.out.println("doubleMin = " + doubleMin + " doubleMucked[" + x + "] = " + doubleMucked[x] + " doubleMax = " + doubleMax);
+            System.out.println("finalMucked[" + x + "] = " + finalMucked[x] + " muckedMostDig = " + muckedMostDig + " mostDig = " + mostDig);
+            if( doubleMin <= doubleMucked[x] && doubleMucked[x] <= doubleMax && 
                     muckedMostDig == mostDig ) {
                 questions[idx].setQuesAns( "possible" );
                 // if it's equal, true
-                if( muckedString[idx].equals(actual[1]) ) {
+                if( muckedString[x].equals(actual[1]) ) {
                     questions[idx].setAltAns( "true" );
                     //System.out.println("in fact true");
                 } else { // if it's not equal false
@@ -829,22 +826,27 @@
             //System.out.println("question[" + idx + "] = " + txt );
         }
     } else { // multiplication, addition and subtraction
-        if( whichOtherQuestion == 2 && actualInt[1] != 0 ) {
+        if( ( whichOtherQuestion == 2 ||
+                (!decimalsCk && whichOtherQuestion > 1 && whichOtherQuestion < uBndQstn
+                && whichOtherQuestion%2 == 0) )
+                && actualInt[1] != 0 ) {
             questions[firstMucked].setQuesText("The least significant digit is " + leastDig);
             questions[firstMucked].setQuesAns( "true" );
             //String txt = questions[firstMucked].getQuesText();
             //System.out.println("question[" + firstMucked + "] = " + txt );
             firstMucked = firstMucked + 1;
-        }
-        if( whichOtherQuestion == 2 && actualInt[1] == 0 ) {
+        } else if( ( whichOtherQuestion == 2 ||
+                (!decimalsCk && whichOtherQuestion > 1 && whichOtherQuestion < uBndQstn
+                && whichOtherQuestion%2 == 0) )
+                && actualInt[1] == 0 ) {
             questions[firstMucked].setQuesText("The least significant digit is not defined. However did this happen? Now what?");
             questions[firstMucked].setQuesAns( "true" );
             //String txt = questions[firstMucked].getQuesText();
             //System.out.println("question[" + firstMucked + "] = " + txt );
             firstMucked = firstMucked + 1;
-        }
-        if( whichOtherQuestion == 3 ) {
-            //int notLeastDig = (7 + leastDig) % 10;
+        } else if( whichOtherQuestion == 3 ||
+                ( !decimalsCk && whichOtherQuestion > 1 && whichOtherQuestion < uBndQstn &&
+                whichOtherQuestion%2 == 1 ) ) {
             // any digit 0 - 9 but leastDig, leastDig - 1 or leastDig + 1
             int notLeastDig = ((int)(7*Math.random()) + leastDig + 2 ) % 10;
             questions[firstMucked].setQuesText("The least significant digit is " + notLeastDig);
@@ -852,8 +854,7 @@
             //String txt = questions[firstMucked].getQuesText();
             //System.out.println("question[" + firstMucked + "] = " + txt );
             firstMucked = firstMucked + 1;
-        }
-        if( whichOtherQuestion == 4 ) {
+        } else if( whichOtherQuestion == 4 ) {
             if( rightDp == 1 ) {
                 questions[firstMucked].setQuesText("Answer has " + rightDp + " decimal place.");
             } else {
@@ -863,8 +864,7 @@
             //String txt = questions[firstMucked].getQuesText();
             //System.out.println("question[" + firstMucked + "] = " + txt );
             firstMucked = firstMucked + 1;
-        }
-        if( whichOtherQuestion == 5 ) {
+        } else if( whichOtherQuestion == 5 ) {
             // a multiplication problem can have more decimal places in the answer
             int maxDgts = origOp == 2 ? TWO_XDGTS : MAX_DGTS;
             // anything between 0 and maxDgts but rightDp
@@ -879,8 +879,8 @@
             //System.out.println("question[" + firstMucked + "] = " + txt );
             firstMucked = firstMucked + 1;
         }
-        for( int idx = firstMucked; idx < nMucked; ++ idx ) {
-            int x = idx;
+        for( int idx = firstMucked, x = 1; idx < nMucked; ++idx, ++x ) {
+            //int x = idx; // what is the point of two variables? comment or fixit
             //System.out.println("about to format finalMucked[" + x + "] = " + finalMucked[x]);
             questions[idx].setQuesText("Answer equals     " + muckedString[x] );
             int leastDigx = 0;
@@ -899,10 +899,9 @@
             // number of decimal places: mark it "possible"
             int mDpCopy = muckedDp[x];
 
-
             if( finalMucked[x] != 0 ) {
                 long fmCopy = finalMucked[x];
-                while( 10*(fmCopy/10) == fmCopy ) {
+                while( 10*(fmCopy/10) == fmCopy && mDpCopy > 0 ) {
                     fmCopy = fmCopy/10;
                     mDpCopy = mDpCopy - 1;
                 }
