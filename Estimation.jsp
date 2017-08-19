@@ -23,9 +23,8 @@
 <% 
     // needs mistyped signs fixit
     // needs mistyped decimal points fixit
-    // should I figure out why (duplicate to actualInt) or try to prevent it? fixit
-    // doesn't make sense to ask about decimal places when it's always 0 fixit
-    // may have another infinite loop fixit
+    // may have another infinite loop fixit.
+    // if there is only one possible, it must be marked true fixit
 
     final int N_OPERATORS = 4;
     final double DEXP = 2.6;
@@ -749,6 +748,7 @@
     int maxQstn = doubleAct < doubleMax ? askUbndQstn : uBndQstn;
     int whichOtherQuestion = (int)(minQstn + (maxQstn-minQstn)*Math.random());
     //whichOtherQuestion = 4 + (int)(2*Math.random()); // debug
+    int possibleCount = 0;
 
     //System.out.println("whichQuestion = " + whichOtherQuestion );
     if( whichOtherQuestion < 2 ) {
@@ -811,13 +811,14 @@
             System.out.println("finalMucked[" + x + "] = " + finalMucked[x] + " muckedMostDig = " + muckedMostDig + " mostDig = " + mostDig);
             if( doubleMin <= doubleMucked[x] && doubleMucked[x] <= doubleMax && 
                     muckedMostDig == mostDig ) {
-                questions[idx].setQuesAns( "possible" );
+                questions[idx].setAltAns( "possible" );
+                possibleCount++;
                 // if it's equal, true
                 if( muckedString[x].equals(actual[1]) ) {
-                    questions[idx].setAltAns( "true" );
+                    questions[idx].setQuesAns( "true" );
                     //System.out.println("in fact true");
                 } else { // if it's not equal false
-                    questions[idx].setAltAns( "false" );
+                    questions[idx].setQuesAns( "false" );
                 }
             } else { // if it's not equal false
                 questions[idx].setQuesAns( "false" );
@@ -880,7 +881,6 @@
             firstMucked = firstMucked + 1;
         }
         for( int idx = firstMucked, x = 1; idx < nMucked; ++idx, ++x ) {
-            //int x = idx; // what is the point of two variables? comment or fixit
             //System.out.println("about to format finalMucked[" + x + "] = " + finalMucked[x]);
             questions[idx].setQuesText("Answer equals     " + muckedString[x] );
             int leastDigx = 0;
@@ -909,13 +909,14 @@
             if( doubleMin <= doubleMucked[x] && doubleMucked[x] <= doubleMax && 
                     leastDigx == leastDig && actpow == ten2pow &&
                     mDpCopy == rightDp ) {
-                questions[idx].setQuesAns( "possible" );
+                questions[idx].setAltAns( "possible" );
+                possibleCount++;
                 // if it's equal, true
                 if( muckedString[x].equals(actual[1]) ) {
-                    questions[idx].setAltAns( "true" );
+                    questions[idx].setQuesAns( "true" );
                     //System.out.println("in fact true");
                 } else { // if it's not equal false
-                    questions[idx].setAltAns( "false" );
+                    questions[idx].setQuesAns( "false" );
                 }
             } else {     // if it's no where close: false
                 System.out.print("doubleMin !< doubleMucked !< doubleMax " + doubleMin + " " + doubleMucked[x] + " " + doubleMax);
@@ -929,8 +930,11 @@
         }
     }
     questions[nMucked].setQuesText("Answer equals     " + actual[1] );
-    questions[nMucked].setQuesAns( "possible" );
-    questions[nMucked].setAltAns( "true" );
+    questions[nMucked].setQuesAns( "true" );
+    if( possibleCount > 0 ) {
+        questions[nMucked].setAltAns( "possible" );
+    }
+
     //String txt = questions[nMucked].getQuesText();  
     //System.out.println("question[" + nMucked + "] = " + txt );
 
