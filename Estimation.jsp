@@ -21,7 +21,6 @@
 <body>
     
 <% 
-    // needs mistyped signs fixit
     // needs mistyped decimal points fixit
     // may have another infinite loop fixit.
     // how do you really want to handle divide by zero? try again or spit back a huge number
@@ -76,6 +75,8 @@
                         { "", "*", "6", "9" }};
     
     String[] altSign =  { "", "9", "8", "7", "" };
+    
+    String[] altPoint = { "", "3", "2", "1", "0" };
     
     // numbers only, no operands or decimal points
     /*
@@ -238,7 +239,7 @@
 
     // neither of these should ever be zero. No point. problem is too easy
     // and how do you calculate a range?
-    int operand1 = (new Double(1+(maxOpPlus1)*(1 - Math.pow(Math.random(),DEXP)))).intValue();;
+    int operand1 = (new Double(1+(maxOpPlus1)*(1 - Math.pow(Math.random(),DEXP)))).intValue();
     int operand2 = (new Double(1+(maxOpPlus1)*(1 - Math.pow(Math.random(),DEXP)))).intValue();
 
     boolean isNeg1 = false;
@@ -276,6 +277,8 @@
     
     String stringSign1 = "";
     String stringSign2 = "";
+    String stringDecPt1 = ".";
+    String stringDecPt2 = ".";
         
     if( negativesCk ) {
         boolean changeSign = Math.random() > 0.5;
@@ -293,7 +296,6 @@
 
     int decPt1 = 0;
     int decPt2 = 0;  
-
     
     if( decimalsCk ) {
         decPt1 = (int)((MAX_DGTS+1)*Math.random());
@@ -423,6 +425,8 @@
         operator[idx] = operator[0];
         stringSign1 = isNeg1? "-" : "";
         stringSign2 = isNeg2? "-" : "";
+        stringDecPt1 = ".";
+        stringDecPt2 = ".";
         // 0 - 5 ? how does operand2 get mucked? fixit
         // mucking with operand2 throws division problems way off and
         // it's obvious which answers are not correct. Perhaps
@@ -436,32 +440,39 @@
                 stringSign1 =  altSign[whatSign];
                 System.out.println("mucking with sign1 whatsign = " + whatSign + " stringSign1 = " + stringSign1 );
             } else {
-                int whichDigIsMucked = (int)(nDgts1*Math.random());
-                while( whichDigIsMucked < 0 ) {
-                    //System.out.println("operand1 = " + operand1 + " nDgts1 = " + nDgts1 + " why is whichDigIsMucked " + whichDigIsMucked + "?");
-                    whichDigIsMucked = (int)(nDgts1*Math.random());
-                }
-                if( 0 <= whichDigIsMucked && whichDigIsMucked < TWO_XDGTS ) {
-                    int origDig = Integer.parseInt(opDgts1[whichDigIsMucked][0]);
-                    System.out.print("whichOp = " + whichOpIsMucked +  " whichDig = " + whichDigIsMucked + " origDig  = " + origDig );
-                    //boolean isNeg = origDig < 0;
-                    origDig = Math.abs(origDig);
-                    if( 0 <= origDig && origDig <= 9 ) {
-                        //origDig = 3*(1+(int)(3*Math.random())); // gives only 3, 6 or 9 debug
-                        //System.out.println("should be 3, 6 or 9: " + origDig);
-                        //System.out.println("whichOp = " + whichOpIsMucked +  " whichDig = " + whichDigIsMucked + " origDig  = " + origDig );
-                        int whichAlt = (int)(alt[origDig].length*Math.random());
-                        StringBuffer altDig = new StringBuffer(alt[origDig][whichAlt]);
-                        // does this do anything? fixit
-                        //if( isNeg1 && whichDigIsMucked == nDgts1 - 1 && altDig.toString().matches("\\d*")) {
-
-                        opDgts1[whichDigIsMucked][idx] = altDig.toString();
-                        System.out.println("whichAlt = " + whichAlt + " altDig = " + altDig);
-                    } else {
-                        System.err.println("Error origDig = " + origDig + " should be between 0 and 9 ");
-                    }
+                boolean muckWithPoint = (int)(5*Math.random()) < 1;
+                if( muckWithPoint ) {
+                    int whatPoint = (int)(altPoint.length*Math.random());
+                    stringDecPt1 = altPoint[whatPoint];
+                    System.out.println("mucking with decimal point whatPoint = " + whatPoint + " stringDecPt1 = " + stringDecPt1);
                 } else {
-                    System.err.println( "Error: whichDigIsMucked = " + whichDigIsMucked + " TWO_XDGTS = " + TWO_XDGTS);
+                    int whichDigIsMucked = (int)(nDgts1*Math.random());
+                    while( whichDigIsMucked < 0 ) {
+                        //System.out.println("operand1 = " + operand1 + " nDgts1 = " + nDgts1 + " why is whichDigIsMucked " + whichDigIsMucked + "?");
+                        whichDigIsMucked = (int)(nDgts1*Math.random());
+                    }
+                    if( 0 <= whichDigIsMucked && whichDigIsMucked < TWO_XDGTS ) {
+                        int origDig = Integer.parseInt(opDgts1[whichDigIsMucked][0]);
+                        System.out.print("whichOp = " + whichOpIsMucked +  " whichDig = " + whichDigIsMucked + " origDig  = " + origDig );
+                        //boolean isNeg = origDig < 0;
+                        origDig = Math.abs(origDig);
+                        if( 0 <= origDig && origDig <= 9 ) {
+                            //origDig = 3*(1+(int)(3*Math.random())); // gives only 3, 6 or 9 debug
+                            //System.out.println("should be 3, 6 or 9: " + origDig);
+                            //System.out.println("whichOp = " + whichOpIsMucked +  " whichDig = " + whichDigIsMucked + " origDig  = " + origDig );
+                            int whichAlt = (int)(alt[origDig].length*Math.random());
+                            StringBuffer altDig = new StringBuffer(alt[origDig][whichAlt]);
+                            // does this do anything? fixit
+                            //if( isNeg1 && whichDigIsMucked == nDgts1 - 1 && altDig.toString().matches("\\d*")) {
+
+                            opDgts1[whichDigIsMucked][idx] = altDig.toString();
+                            System.out.println("whichAlt = " + whichAlt + " altDig = " + altDig);
+                        } else {
+                            System.err.println("Error origDig = " + origDig + " should be between 0 and 9 ");
+                        }
+                    } else {
+                        System.err.println( "Error: whichDigIsMucked = " + whichDigIsMucked + " TWO_XDGTS = " + TWO_XDGTS);
+                    }
                 }
             }
         } else if( whichOpIsMucked < 5 ) { // 4: muck with operator
@@ -482,32 +493,39 @@
                 stringSign2 =  altSign[whatSign];
                 System.out.println("mucking with sign2 whatsign = " + whatSign + " stringSign2 = " + stringSign2 );
             } else {
-                int whichDigIsMucked = (int)(nDgts2*Math.random());
-
-                while( whichDigIsMucked < 0 ) {
-                    System.out.println("operand2 = " + operand2 + " nDgts2 = " + nDgts2 + " why is whichDigIsMucked " + whichDigIsMucked + "?");
-                    whichDigIsMucked = (int)(nDgts2*Math.random());
-                }
-                if( 0 <= whichDigIsMucked && whichDigIsMucked < TWO_XDGTS ) {
-                    int origDig = Math.abs(Integer.parseInt(opDgts2[whichDigIsMucked][0]));
-                    System.out.print("whichOp = " + whichOpIsMucked +  " whichDig = " + whichDigIsMucked + " origDig  = " + origDig );
-                    //boolean isNeg = origDig < 0;
-                    origDig = Math.abs(origDig);
-                    //origDig = 3*(1+(int)(3*Math.random())); // gives only 3, 6 or 9
-                    //System.out.println("should be 3, 6 or 9: " + origDig);
-                    if( 0 <= origDig && origDig <= 9 ) {
-                        int whichAlt = (int)(alt[origDig].length*Math.random());
-                        StringBuffer altDig = new StringBuffer(alt[origDig][whichAlt]);
-                        // does this do anything? fixit
-                        //if( isNeg2 && whichDigIsMucked == nDgts2 - 1 && altDig.toString().matches("\\d*")) {
-
-                        opDgts2[whichDigIsMucked][idx] = altDig.toString();
-                        System.out.println(" whichAlt = " + whichAlt + " altDig = " + altDig);
-                    } else { 
-                        System.out.println("Error: operator = " + operator[idx] + " origOp = " + origOp);
-                    }
+                                boolean muckWithPoint = (int)(5*Math.random()) < 1;
+                if( muckWithPoint ) {
+                    int whatPoint = (int)(altPoint.length*Math.random());
+                    stringDecPt2 = altPoint[whatPoint];
+                    System.out.println("mucking with decimal point whatPoint = " + whatPoint + " stringDecPt2 = " + stringDecPt2);
                 } else {
-                    System.err.println( "Error: whichDigIsMucked = " + whichDigIsMucked + " TWO_XDGTS = " + TWO_XDGTS);
+                    int whichDigIsMucked = (int)(nDgts2*Math.random());
+
+                    while( whichDigIsMucked < 0 ) {
+                        System.out.println("operand2 = " + operand2 + " nDgts2 = " + nDgts2 + " why is whichDigIsMucked " + whichDigIsMucked + "?");
+                        whichDigIsMucked = (int)(nDgts2*Math.random());
+                    }
+                    if( 0 <= whichDigIsMucked && whichDigIsMucked < TWO_XDGTS ) {
+                        int origDig = Math.abs(Integer.parseInt(opDgts2[whichDigIsMucked][0]));
+                        System.out.print("whichOp = " + whichOpIsMucked +  " whichDig = " + whichDigIsMucked + " origDig  = " + origDig );
+                        //boolean isNeg = origDig < 0;
+                        origDig = Math.abs(origDig);
+                        //origDig = 3*(1+(int)(3*Math.random())); // gives only 3, 6 or 9
+                        //System.out.println("should be 3, 6 or 9: " + origDig);
+                        if( 0 <= origDig && origDig <= 9 ) {
+                            int whichAlt = (int)(alt[origDig].length*Math.random());
+                            StringBuffer altDig = new StringBuffer(alt[origDig][whichAlt]);
+                            // does this do anything? fixit
+                            //if( isNeg2 && whichDigIsMucked == nDgts2 - 1 && altDig.toString().matches("\\d*")) {
+
+                            opDgts2[whichDigIsMucked][idx] = altDig.toString();
+                            System.out.println(" whichAlt = " + whichAlt + " altDig = " + altDig);
+                        } else { 
+                            System.out.println("Error: operator = " + operator[idx] + " origOp = " + origOp);
+                        }
+                    } else {
+                        System.err.println( "Error: whichDigIsMucked = " + whichDigIsMucked + " TWO_XDGTS = " + TWO_XDGTS);
+                    }
                 }
             }
         }
@@ -516,7 +534,8 @@
 
         muckedProb.append(stringSign1);
         if( decPt1 >= nDgts1 ) {
-            muckedProb.append("0.");
+            muckedProb.append("0");
+            muckedProb.append(stringDecPt1);
             //System.out.println("op1 0. muckedProb = " + muckedProb);
         }
         int tmp4 = decPt1 - 1;
@@ -529,7 +548,7 @@
             muckedProb.append(opDgts1[i][idx]); 
             //System.out.println("op1 digits muckedProb = " + muckedProb);
             if( i == decPt1 ) {
-                muckedProb.append(".");
+                muckedProb.append(stringDecPt1);
                 //System.out.println("op1 dp muckedProb = " + muckedProb);
             }
         }
@@ -539,7 +558,8 @@
         //muckedProb.append(" ");
         muckedProb.append(stringSign2);
        if( decPt2 >= nDgts2 ) {
-            muckedProb.append("0.");
+            muckedProb.append("0");
+            muckedProb.append(stringDecPt2);
             //System.out.println("op2 0. muckedProb = " + muckedProb);
         }
         tmp4 = decPt2 - 1;
@@ -552,7 +572,7 @@
             muckedProb.append(opDgts2[i][idx]);
             //System.out.println("op2 digits muckedProb = " + muckedProb);
             if( i == decPt2 ) {
-                muckedProb.append(".");
+                muckedProb.append(stringDecPt2);
                 //System.out.println("op2 dp muckedProb = " + muckedProb);
             }
         }
@@ -1393,16 +1413,16 @@
                 /*
                 System.out.println("op ten2pow = " + ten2pow + " operand1 = " + operand1);
                 actualInt[1] = (long)ten2pow*operand1;
-                System.out.println("op actualInt[1] = " + actualInt[1]);
+                System.out.println("op ten2pow*operand1 actualInt[1] = " + actualInt[1]);
                 actualInt[1] = 10*actualInt[1];
-                System.out.println("actualInt[1] = " + actualInt[1]);
+                System.out.println("10*actualInt[1] = " + actualInt[1]);
                 System.out.println("operand2 = " + operand2);
                 actualInt[1] = actualInt[1]  / operand2;
-                System.out.println("actualInt[1] = " + actualInt[1]);
+                System.out.println("divided by operand2 actualInt[1] = " + actualInt[1]);
                 actualInt[1] = actualInt[1] + 5;
-                System.out.println("actualInt[1] = " + actualInt[1]);
+                System.out.println("plus 5 actualInt[1] = " + actualInt[1]);
                 actualInt[1] = actualInt[1]/10;
-                System.out.println("op actualInt[1] = " + actualInt[1]);
+                System.out.println("op divided by 10 actualInt[1] = " + actualInt[1]);
                 */
                 actualInt[1] = (10*ten2pow*absOp1  / absOp2 + 5)/10;
             } else { // not sure if this will work when it's not in the jsp page fixit
