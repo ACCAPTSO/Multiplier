@@ -21,7 +21,6 @@
 <body>
     
 <% 
-    // needs mistyped decimal points fixit
     // may have another infinite loop fixit.
     // how do you really want to handle divide by zero? try again or spit back a huge number
     // as currently done? fixit
@@ -345,11 +344,7 @@
     long[] actualInt = {Integer.MAX_VALUE, 0, 0 };
     System.out.println("decPt1 = " + decPt1 + " decPt2 = " + decPt2 + " operator = " + operator[0]);
 
-    //int thisMuchBigger = nDgts1 - decPt1 - (nDgts2 - decPt2);
     String [] expl = new String[3];
-    /*decPtAct = Operate.op( operator[0], MAX_DGTS, decimalsCk,
-            operand1, decPt1, operand2, decPt2, 
-            actualInt, expl ); */
     decPtAct = op( operator[0], MAX_DGTS, decimalsCk,
             operand1, decPt1, operand2, decPt2, 
             nDgts1, nDgts2, isNeg1, isNeg2,
@@ -462,9 +457,6 @@
                             //System.out.println("whichOp = " + whichOpIsMucked +  " whichDig = " + whichDigIsMucked + " origDig  = " + origDig );
                             int whichAlt = (int)(alt[origDig].length*Math.random());
                             StringBuffer altDig = new StringBuffer(alt[origDig][whichAlt]);
-                            // does this do anything? fixit
-                            //if( isNeg1 && whichDigIsMucked == nDgts1 - 1 && altDig.toString().matches("\\d*")) {
-
                             opDgts1[whichDigIsMucked][idx] = altDig.toString();
                             System.out.println("whichAlt = " + whichAlt + " altDig = " + altDig);
                         } else {
@@ -515,9 +507,6 @@
                         if( 0 <= origDig && origDig <= 9 ) {
                             int whichAlt = (int)(alt[origDig].length*Math.random());
                             StringBuffer altDig = new StringBuffer(alt[origDig][whichAlt]);
-                            // does this do anything? fixit
-                            //if( isNeg2 && whichDigIsMucked == nDgts2 - 1 && altDig.toString().matches("\\d*")) {
-
                             opDgts2[whichDigIsMucked][idx] = altDig.toString();
                             System.out.println(" whichAlt = " + whichAlt + " altDig = " + altDig);
                         } else { 
@@ -715,7 +704,6 @@
             int z = dofirst[y];
             if( z >= 0 ) {
                 System.out.print("num[" + y + "] = " + prelimAns[y][1] +  " dp[" + y + "] = " + prelimDp[y] + " muckedOp[" + y + "] = " + muckedOp[y] + " numyplus1 = " + prelimAns[y+1][1] +  " dpyplus1 = " + prelimDp[y+1] + " = ");
-                //prelimDp[y] = op( muckedOp[y], MAX_DGTS, decimalsCk,
                 prelimDp[y] = op( muckedOp[y], MAX_DGTS, true,
                 prelimAns[y][1], prelimDp[y], prelimAns[y+1][1], prelimDp[y+1], 
                 prelimDgts[y], prelimDgts[y+1], prelimAns[y][1] < 0, prelimAns[y+1][1] < 0,
@@ -738,6 +726,10 @@
                 prelimDgts[y], prelimDgts[y+1], prelimAns[y][1] < 0, prelimAns[y+1][1] < 0,
                 prelimAns[y], junk );
                 finalMucked[idx] = prelimAns[y][1];
+                if( finalMucked[idx] == 999999 ) {
+                    System.out.println("divide by zero -breaking out of loop" );
+                    break;
+                }
                 muckedDp[idx] = prelimDp[y];
                 System.out.println(finalMucked[idx] + " mucked dp " + muckedDp[idx]);
                 prelimAns[y+1][1] = prelimAns[y][1];
@@ -749,25 +741,27 @@
         System.out.println("finalMucked[" + idx + "] = " + finalMucked[idx] + " muckedDp = " + muckedDp[idx] + " string version = " + muckedString[idx]);
         
         // eliminate any duplicate
-        for( int i = 1; i < idx; ++i ) {
-            if( muckedString[idx].equals(muckedString[i]) ) {
-                System.out.println("duplicate to " + i );
-                for( int j = 0; j < TWO_XDGTS; ++j ) { // reset all digits
-                    opDgts1[j][idx] = opDgts1[j][0];
-                    opDgts2[j][idx] = opDgts2[j][0];
-                }
-                idx = idx - 1;
-                break;
-            }
-        }
-        if( muckedString[idx].equals(actual[1]) ) {
-            System.out.println("duplicate to actualInt" );
+        if( muckedString[idx].equals(actual[1]) || finalMucked[1] == 999999 ) {
+            System.out.println("duplicate to actualInt or divide by zero" );
             for( int j = 0; j < TWO_XDGTS; ++j ) { // reset all digits
                 opDgts1[j][idx] = opDgts1[j][0];
                 opDgts2[j][idx] = opDgts2[j][0];
             }
             idx = idx - 1;
+        } else {
+            for( int i = 1; i < idx; ++i ) {
+                if( muckedString[idx].equals(muckedString[i]) ) {
+                    System.out.println("duplicate to " + i );
+                    for( int j = 0; j < TWO_XDGTS; ++j ) { // reset all digits
+                        opDgts1[j][idx] = opDgts1[j][0];
+                        opDgts2[j][idx] = opDgts2[j][0];
+                    }
+                    idx = idx - 1;
+                    break;
+                }
+            }
         }
+
     }
     
     Question[] questions = new Question[maxQstns];
