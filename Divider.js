@@ -724,6 +724,7 @@ function divide(immFeedBkCk, col, qtDig) {
     var origDvdDigs = doc.getElementsByName("dvddigs");
     var bddigs = null;
     var bddigsLength = 0;
+    var dvddigs;
     if (whatRow === 0) {
         dvddigs = origDvdDigs;
     } else {

@@ -416,6 +416,7 @@
     String [] muckedString = new String[nMucked];
     int [] muckedDp = new int[nMucked];
 
+    outer:
     for( int idx = 1; idx < nMucked; ++idx ) {
         operator[idx] = operator[0];
         stringSign1 = isNeg1? "-" : "";
@@ -704,6 +705,15 @@
             int z = dofirst[y];
             if( z >= 0 ) {
                 System.out.print("num[" + y + "] = " + prelimAns[y][1] +  " dp[" + y + "] = " + prelimDp[y] + " muckedOp[" + y + "] = " + muckedOp[y] + " numyplus1 = " + prelimAns[y+1][1] +  " dpyplus1 = " + prelimDp[y+1] + " = ");
+                if( prelimAns[y+1][1] == 0 && muckedOp[y].compareTo("/") == 0 ) {
+                    System.out.println("divide by zero -breaking out of loop" );
+                    for( int j = 0; j < TWO_XDGTS; ) { // reset all digits
+                        opDgts1[j][idx] = opDgts1[j][0];
+                        opDgts2[j][idx] = opDgts2[j][0];
+                    }
+                    idx = idx - 1;
+                    continue outer;
+                }
                 prelimDp[y] = op( muckedOp[y], MAX_DGTS, true,
                 prelimAns[y][1], prelimDp[y], prelimAns[y+1][1], prelimDp[y+1], 
                 prelimDgts[y], prelimDgts[y+1], prelimAns[y][1] < 0, prelimAns[y+1][1] < 0,
@@ -720,34 +730,40 @@
             int z = dolast[y];
             if( z >= 0 ) {
                 System.out.print("prelimAns[" + y + "] = " + prelimAns[y][1] +  " dp[" + y + "] = " + prelimDp[y] + " muckedOp[" + y + "] = " + muckedOp[y] + " prelimAnsyplus1 = " + prelimAns[y+1][1] +  " dpyplus1 = " + prelimDp[y+1] + " = ");
-               //prelimDp[y] = op( muckedOp[y], MAX_DGTS, decimalsCk,
+                if( prelimAns[y+1][1] == 0 && muckedOp[y].compareTo("/") == 0 ) {
+                    System.out.println("divide by zero -breaking out of loop" );
+                    for( int j = 0; j < TWO_XDGTS; ++j ) { // reset all digits
+                        opDgts1[j][idx] = opDgts1[j][0];
+                        opDgts2[j][idx] = opDgts2[j][0];
+                    }
+                    idx = idx - 1;
+                    continue outer;
+                }
                 prelimDp[y] = op( muckedOp[y], MAX_DGTS, true,
                 prelimAns[y][1], prelimDp[y], prelimAns[y+1][1], prelimDp[y+1], 
                 prelimDgts[y], prelimDgts[y+1], prelimAns[y][1] < 0, prelimAns[y+1][1] < 0,
                 prelimAns[y], junk );
                 finalMucked[idx] = prelimAns[y][1];
-                if( finalMucked[idx] == 999999 ) {
-                    System.out.println("divide by zero -breaking out of loop" );
-                    break;
-                }
+
                 muckedDp[idx] = prelimDp[y];
                 System.out.println(finalMucked[idx] + " mucked dp " + muckedDp[idx]);
                 prelimAns[y+1][1] = prelimAns[y][1];
                 prelimDp[y+1] = prelimDp[y]; 
             }
-        }
+        }      
+        
         doubleMucked[idx] = finalMucked[idx]*Math.pow(10, -muckedDp[idx]);
         muckedString[idx] = Format.getFormat( finalMucked[idx], muckedDp[idx] );
         System.out.println("finalMucked[" + idx + "] = " + finalMucked[idx] + " muckedDp = " + muckedDp[idx] + " string version = " + muckedString[idx]);
-        
         // eliminate any duplicate
-        if( muckedString[idx].equals(actual[1]) || finalMucked[1] == 999999 ) {
-            System.out.println("duplicate to actualInt or divide by zero" );
+        if( muckedString[idx].equals(actual[1]) ) {
+            System.out.println("duplicate to actualInt" );
             for( int j = 0; j < TWO_XDGTS; ++j ) { // reset all digits
                 opDgts1[j][idx] = opDgts1[j][0];
                 opDgts2[j][idx] = opDgts2[j][0];
             }
             idx = idx - 1;
+            continue outer;
         } else {
             for( int i = 1; i < idx; ++i ) {
                 if( muckedString[idx].equals(muckedString[i]) ) {
@@ -757,11 +773,11 @@
                         opDgts2[j][idx] = opDgts2[j][0];
                     }
                     idx = idx - 1;
-                    break;
+                    continue outer;
                 }
             }
         }
-
+       
     }
     
     Question[] questions = new Question[maxQstns];
