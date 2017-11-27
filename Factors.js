@@ -30,7 +30,7 @@ function check( ev ) {
         var col = num(id.substr(pos+1, id.length));
         var row = num(id.substr(0,pos));
         //alert("row: " + row + " col: " + col);
-        var checkingPrime = col%2 === 0;
+        var checkingPrime = col%3 === 0;
         //var potentialFact = num(charArray);
         var potentialFact = num(ansBx.value);
         if( checkingPrime ) {
@@ -58,6 +58,12 @@ function check( ev ) {
                     var nextIn = doc.getElementById( row + "_" + col );
                     nextIn.type = "text";
                     nextIn.focus();
+                    var notDone = potentialFact !== whatOp; 
+                    if( notDone ) {
+                        var nextTd = nextIn.parentNode;
+                        nextTd.style.borderLeftColor = "blue";
+                        nextTd.style.borderBottomColor = "blue";
+                    }
                 } else {
                     ansBx.style.color = "red";                
                 }
@@ -67,16 +73,20 @@ function check( ev ) {
         } else {
             //alert("checking division");
             var prevRow = row - 1;
-            prevCol = col - 1;
+            var prevCol = col - 1;
+            var colPlus2;
             var prevOp = num(doc.getElementById(prevRow + "_" + col).value);
             var prevPrime = num(doc.getElementById(prevRow + "_" + prevCol).value);
             if( prevPrime*num(ansBx.value) === prevOp ) {
                 if( num(ansBx.value) === 1 ) {
-                    col = col + 1;
+                    col = col + 2;
                     colPlus2 = col + 1;
                     row = 0;
                     var nextOp = doc.getElementById( row + "_" + colPlus2 );
                     nextOp.type = "text";
+                    var nextTd = nextOp.parentNode;
+                    nextTd.style.borderLeftColor = "blue";
+                    nextTd.style.borderBottomColor = "blue";
                 } else {
                     col = prevCol;
                 }

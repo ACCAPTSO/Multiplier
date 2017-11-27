@@ -11,15 +11,19 @@ body{
     background-color: #d2edf9;
 }
 input{
+    min-width: 4em;
+    max-width: 4em;
     text-align: right;
+    color: blue;
+    background-color: #d2edf9;
+    border: 0px;
 }
 td{
     min-height: 1.3em;
-    min-width: 5em;
-    max-width: 5em;
-    text-align: right;
+    border: 3px solid;
+    border-color: #d2edf9;
 }
 #firstOp{
-    border-left-color: orangered;
-    border-bottom-color: orangered;
+    border-left-color: blue;
+    border-bottom-color: blue;
 }

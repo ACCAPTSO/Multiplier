@@ -10,6 +10,7 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>FACTORS</title>
+        <link rel="stylesheet" href="Factors.css" type="text/css">
         <script src="Factors.js"></script>
     </head>
     <body>
@@ -470,25 +471,21 @@
 
 %>
     <table>
-        <col width="30px" />
-        <col width="30px" />
-        <col width="30px" />
-        <col width="30px" />
-        <col width="30px" />
-        <col width="30px" />
 <%      for( int row = 0; row < 7; ++row ) { %>
             <tr>
-<%          for( int col = 0; col < 6; ++col ) { 
+<%          for( int col = 0; col < 9; ++col ) { 
                 boolean isFirstOp = ( row == 0 && col == 1 );
-                boolean isSecondOp = ( row == 0 && col == 3 );
-                boolean isThirdOp = ( row == 0 && col == 5 );
+                boolean isSecondOp = ( row == 0 && col == 4 );
+                boolean isThirdOp = ( row == 0 && col == 7 );
                 boolean isFirstIn = ( row == 0 && col == 0 );
                 String whatType = isFirstOp || isFirstIn? "text" : "hidden";
                 String whatValue = isFirstOp? String.valueOf(blueOp) : 
                                    isSecondOp? String.valueOf(redOp) :
-                                   isThirdOp? String.valueOf(greenOp) : "           "; 
+                                   isThirdOp? String.valueOf(greenOp) : ""; 
                 String whatId = row + "_" + col; %>
-<%              if( isFirstOp ) { %>
+<%              if( (col+1)%3 == 0 ) { %>
+                    <td><div></div></td>
+<%              } else if( isFirstOp ) { %>
                     <td id="firstOp">
                     <input type="<%=whatType%>" 
                            value="<%=whatValue%>" 
@@ -504,9 +501,8 @@
                            onkeydown="erase( event )">
                     </input>
                     </td>
-<%              } %>
-
-<%          } %>
+<%              }                
+            } %>
             </tr>
             
 <%      } %>
