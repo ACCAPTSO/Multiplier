@@ -11,19 +11,38 @@ body{
     background-color: #d2edf9;
 }
 input{
-    min-width: 4em;
-    max-width: 4em;
+    width: 4em;
+    border: 0px;
+    margin-right: 0px;    
     text-align: right;
-    color: blue;
+    color: #11397a;
     background-color: #d2edf9;
+}
+table{
+    padding: 0px;
     border: 0px;
 }
 td{
     min-height: 1.3em;
-    border: 3px solid;
+    border: 2px solid;
     border-color: #d2edf9;
+    padding-right: 0px;
+    /* width: 4em; */
+}
+th{
+    padding: 1em;
+    width: 28em;
+}
+.blank{
+    width: 2em;
+}
+.op{
+    width: 4em;
 }
 #firstOp{
-    border-left-color: blue;
-    border-bottom-color: blue;
+    border-left-color: #11397a;
+    border-bottom-color: #11397a;
+}
+#instr{
+    color: #11397a;
 }

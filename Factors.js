@@ -8,15 +8,15 @@ var allprimes = [    2,  3,  5,  7, 11,
                     31, 37, 41, 43, 47, 
                     53, 59, 61, 67, 71, 
                     73, 79, 83, 89, 97 ];
-var charArray = "";
+
 function erase( ev ) {
     ev = ev || window.event;
     var ansBx = ev.target;
     if( ansBx.style.color === "red") {
-        charArray = "";
-        ansBx.style.color = "black";
-        var len = ansBx.value.length;
-        ansBx.value = ansBx.value.substring(len, len);
+        ansBx.style.color = "#11397a";
+        var answer = ansBx.value;
+        var len = answer.length;
+        ansBx.value = answer.substring(len, len);
     }
 }
 function check( ev ) {
@@ -31,38 +31,39 @@ function check( ev ) {
         var row = num(id.substr(0,pos));
         //alert("row: " + row + " col: " + col);
         var checkingPrime = col%3 === 0;
-        //var potentialFact = num(charArray);
-        var potentialFact = num(ansBx.value);
+        var answer = num(ansBx.value);
         if( checkingPrime ) {
             //alert("checking prime");
             var opCol = col + 1;
             var whatOp = num(doc.getElementById(row + "_" + opCol ).value);
-            var test = whatOp%potentialFact;
+            //var test = whatOp%potentialFact;
             //alert("whatOp: " + whatOp + " whatOp mod potentialfact: " + test);
-            if( whatOp%potentialFact === 0 ) {
+            if( whatOp%answer === 0 ) {
                 //alert(potentialFact + " is a factor of " + whatOp);
                 var len = allprimes.length;
                 var isPrime = false;
                 for( var i = 0; i < len; ++ i ) {
-                    if( potentialFact === allprimes[i] ) {
+                    if(answer === allprimes[i] ) {
                         isPrime = true;
-                        //alert(potentialFact + " is prime");
+                        //alert(answer + " is prime");
                         break;
                     }
                 }
                 if( isPrime ) {
-                    ansBx.style.color = "black";
+                    ansBx.style.color = "#11397a";
                     col = col + 1;
                     row = row + 1;
                     //alert("next row: " + row + " next col: " + col);
                     var nextIn = doc.getElementById( row + "_" + col );
                     nextIn.type = "text";
                     nextIn.focus();
-                    var notDone = potentialFact !== whatOp; 
+                    doc.getElementById("instr").innerHTML = 
+                            "What is " + whatOp + " divided by " + answer + "? (Enter)";
+                    var notDone =answer !== whatOp; 
                     if( notDone ) {
                         var nextTd = nextIn.parentNode;
-                        nextTd.style.borderLeftColor = "blue";
-                        nextTd.style.borderBottomColor = "blue";
+                        nextTd.style.borderLeftColor = "#11397a";
+                        nextTd.style.borderBottomColor = "#11397a";
                     }
                 } else {
                     ansBx.style.color = "red";                
@@ -77,22 +78,31 @@ function check( ev ) {
             var colPlus2;
             var prevOp = num(doc.getElementById(prevRow + "_" + col).value);
             var prevPrime = num(doc.getElementById(prevRow + "_" + prevCol).value);
-            if( prevPrime*num(ansBx.value) === prevOp ) {
-                if( num(ansBx.value) === 1 ) {
+            if( prevPrime*answer === prevOp ) {
+                if( answer === 1 ) {
                     col = col + 2;
                     colPlus2 = col + 1;
                     row = 0;
                     var nextOp = doc.getElementById( row + "_" + colPlus2 );
-                    nextOp.type = "text";
-                    var nextTd = nextOp.parentNode;
-                    nextTd.style.borderLeftColor = "blue";
-                    nextTd.style.borderBottomColor = "blue";
+                    if( nextOp ) {
+                        nextOp.type = "text";
+                        var nextVal = nextOp.value;
+                        doc.getElementById("instr").innerHTML = 
+                            "What is a prime number that evenly divides " + nextVal + "? (Enter)";
+                        var nextTd = nextOp.parentNode;
+                        nextTd.style.borderLeftColor = "#11397a";
+                        nextTd.style.borderBottomColor = "#11397a";
+                    }
                 } else {
                     col = prevCol;
+                    doc.getElementById("instr").innerHTML = 
+                       "What is a prime number that evenly divides " + answer + "? (Enter)";
                 }
                 var nextIn = doc.getElementById( row + "_" + col );
-                nextIn.type = "text";
-                nextIn.focus();
+                if( nextIn ) {
+                    nextIn.type = "text";
+                    nextIn.focus();
+                }
             } else {
                 ansBx.style.color = "red";
             }
@@ -101,5 +111,15 @@ function check( ev ) {
     }
 };
 window.onload = function(){
-    document.getElementById("0_0").focus();
+    var doc = document;
+    doc.getElementById("0_0").focus();
+    var el = doc.getElementById("0_0");
+    var style = window.getComputedStyle(el, null).getPropertyValue("font");
+    doc.getElementById("instr").style.font = style;
+    var tds = doc.getElementsByTagName("td");
+    var len = tds.length;
+    for( var i = 0; i < len; ++i ) {
+        /* tds[i].style.backgroundColor = "lightgrey"; */
+        tds[i].style.font = style;
+    }
 };

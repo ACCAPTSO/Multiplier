@@ -471,7 +471,8 @@
 
 %>
     <table>
-<%      for( int row = 0; row < 7; ++row ) { %>
+        <th id="instr" colspan="9">What is a prime number that evenly divides <%=blueOp%>? (Enter)</th>
+<%      for( int row = 0; row < 9; ++row ) { %>
             <tr>
 <%          for( int col = 0; col < 9; ++col ) { 
                 boolean isFirstOp = ( row == 0 && col == 1 );
@@ -484,16 +485,16 @@
                                    isThirdOp? String.valueOf(greenOp) : ""; 
                 String whatId = row + "_" + col; %>
 <%              if( (col+1)%3 == 0 ) { %>
-                    <td><div></div></td>
+                    <td class="blank"><div></div></td>
 <%              } else if( isFirstOp ) { %>
-                    <td id="firstOp">
+                    <td id="firstOp" class="op">
                     <input type="<%=whatType%>" 
                            value="<%=whatValue%>" 
                            id="<%=whatId%>">
                     </input>
                     </td>
 <%              } else { %>
-                    <td>
+                    <td class="op">
                     <input type="<%=whatType%>" 
                            value="<%=whatValue%>" 
                            id="<%=whatId%>"
@@ -508,6 +509,5 @@
 <%      } %>
 
     </table>
-<input type="hidden" id="whatOp" value="0" > 
     </body>
 </html>
