@@ -9,9 +9,16 @@ and open the template in the editor.
 */
 body{
     background-color: #d2edf9;
+    width: 1080px;
+    height:720px;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
 }
 input{
     width: 4em;
+    /* height: 1.3em; */
     border: 0px;
     margin-right: 0px;    
     text-align: right;
@@ -23,21 +30,52 @@ table{
     border: 0px;
 }
 td{
-    min-height: 1.3em;
+    /* min-height: 1.3em; */
     border: 2px solid;
     border-color: #d2edf9;
     padding-right: 0px;
     /* width: 4em; */
 }
 th{
-    padding: 1em;
     width: 28em;
 }
 .blank{
     width: 2em;
+    height: 1.4em;
+    height: 20px;
+}
+.dragBox{
+    width: 4em;
+    height: 1.4em;
+    height: 20px;
 }
 .op{
     width: 4em;
+    height: 1.4em;
+    height: 20px;
+}
+.section{
+    position: fixed;
+    color: #d2edf9;
+}
+#draggables{
+    /* background-color: pink; */
+    position: absolute;
+}
+#blankheader{
+    color: #d2edf9;
+}
+#blankheader2{
+    color: #d2edf9;
+    padding-bottom: 1em;
+}
+#ghosts{
+    position: absolute;
+    color: #d2edf9;
+}
+#firstGhost{
+    border-left-color: #11397a;
+    border-bottom-color: #11397a;
 }
 #firstOp{
     border-left-color: #11397a;
@@ -45,4 +83,8 @@ th{
 }
 #instr{
     color: #11397a;
+}
+#instr2{
+    color: #d2edf9;
+    padding-bottom: 1em;
 }

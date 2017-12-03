@@ -470,11 +470,50 @@
         }
 
 %>
-    <table>
-        <th id="instr" colspan="9">What is a prime number that evenly divides <%=blueOp%>? (Enter)</th>
+    <table id="ghosts">
+        <tr><th colspan="8" id="blankheader">What</th></tr>
+        <tr><th colspan="8" id="blankheader2">What</th></tr>
 <%      for( int row = 0; row < 9; ++row ) { %>
             <tr>
-<%          for( int col = 0; col < 9; ++col ) { 
+<%          for( int col = 0; col < 8; ++col ) { 
+                boolean isFirstOp = ( row == 0 && col == 1 );
+                boolean isSecondOp = ( row == 0 && col == 4 );
+                boolean isThirdOp = ( row == 0 && col == 7 );
+                boolean isFirstIn = ( row == 0 && col == 0 );
+                String whatType = isFirstOp || isFirstIn? "text" : "hidden";
+                String whatValue = isFirstOp? String.valueOf(blueOp) : 
+                                   isSecondOp? String.valueOf(redOp) :
+                                   isThirdOp? String.valueOf(greenOp) : "";
+                String whatId = "g" + row + "_" + col;
+                if( (col+1)%3 == 0 ) { %>
+                    <td class="blank"><div></div></td>
+<%              } else if( isFirstOp ) { %>
+                    <td id="firstGhost" class="op">
+                    <input type="<%=whatType%>" 
+                           value="<%=whatValue%>" 
+                           id="<%=whatId%>">
+                    </input>
+                    </td>
+<%              } else { %>
+                    <td class="op">
+                    <input type="<%=whatType%>" 
+                           value="<%=whatValue%>"
+                           id="<%=whatId%>">
+                    </input>
+                    </td>
+<%              }                
+            } %>
+            </tr>
+            
+<%      } %>
+
+    </table>
+    <table id="draggables">
+        <tr><th colspan="8" id="instr">What is a prime number that evenly divides <%=blueOp%>? (Enter)</th></tr>
+        <tr><th colspan="8" id="instr2">What</th></tr>
+<%      for( int row = 0; row < 9; ++row ) { %>
+            <tr>
+<%          for( int col = 0; col < 8; ++col ) { 
                 boolean isFirstOp = ( row == 0 && col == 1 );
                 boolean isSecondOp = ( row == 0 && col == 4 );
                 boolean isThirdOp = ( row == 0 && col == 7 );
@@ -483,18 +522,18 @@
                 String whatValue = isFirstOp? String.valueOf(blueOp) : 
                                    isSecondOp? String.valueOf(redOp) :
                                    isThirdOp? String.valueOf(greenOp) : ""; 
-                String whatId = row + "_" + col; %>
-<%              if( (col+1)%3 == 0 ) { %>
+                String whatId = "d" + row + "_" + col;
+                if( (col+1)%3 == 0 ) { %>
                     <td class="blank"><div></div></td>
 <%              } else if( isFirstOp ) { %>
-                    <td id="firstOp" class="op">
+                    <td id="firstOp" class="dragBox">
                     <input type="<%=whatType%>" 
                            value="<%=whatValue%>" 
                            id="<%=whatId%>">
                     </input>
                     </td>
 <%              } else { %>
-                    <td class="op">
+                    <td class="dragBox">
                     <input type="<%=whatType%>" 
                            value="<%=whatValue%>" 
                            id="<%=whatId%>"
@@ -509,5 +548,19 @@
 <%      } %>
 
     </table>
+    <label id="redLabel" class="section">red</label>
+    <label id="magentaLabel" class="section">magenta</label>
+    <label id="magentaLabel2" class="section">magenta</label>
+    <label id="yellowLabel" class="section">yellow</label>
+    <label id="yellowLabel2" class="section">yellow</label>
+    <label id="whiteLabel" class="section">white</label>
+    <label id="blueLabel" class="section">blue</label>
+    <label id="cyanLabel" class="section">cyan</label>
+    <label id="cyanLabel2" class="section">cyan</label>
+    <label id="greenLabel" class="section">green</div>
+<% for( int i = 0; i < 90; ++i ) {
+    String whatId = "statusBox" + i; %>
+    <div id="<%=whatId%>"></div> 
+<% } %>
     </body>
 </html>

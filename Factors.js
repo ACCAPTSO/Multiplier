@@ -22,20 +22,21 @@ function erase( ev ) {
 function check( ev ) {
     ev = ev || window.event;
     var ansBx = ev.target;
+    var x = 0;
     if (ev.which === 13 || ev.keyCode === 13) {
         var doc = document;
         var num = Number;
         var id = ansBx.id.toString();
         var pos = id.indexOf("_");
         var col = num(id.substr(pos+1, id.length));
-        var row = num(id.substr(0,pos));
+        var row = num(id.substr(1,pos-1));
         //alert("row: " + row + " col: " + col);
         var checkingPrime = col%3 === 0;
         var answer = num(ansBx.value);
         if( checkingPrime ) {
             //alert("checking prime");
             var opCol = col + 1;
-            var whatOp = num(doc.getElementById(row + "_" + opCol ).value);
+            var whatOp = num(doc.getElementById("d" + row + "_" + opCol ).value);
             //var test = whatOp%potentialFact;
             //alert("whatOp: " + whatOp + " whatOp mod potentialfact: " + test);
             if( whatOp%answer === 0 ) {
@@ -51,10 +52,21 @@ function check( ev ) {
                 }
                 if( isPrime ) {
                     ansBx.style.color = "#11397a";
+                    /* shadow 103, 104, 99     #676863 */
+                    /* midrange 66, 112, 177   #4270b1 */
+                    /* mountain 180, 197, 226  #b4c5e2 */
+                    /* rock 226, 181, 161 pink #e2b5a1 */
+                    /* snow 226, 238, 235      #e2eeeb */
+                    /* water 57, 97, 162       #3961a2 */
+                    ansBx.style.backgroundColor = "#b4c5e2";
+                    var ghost = doc.getElementById( "g" + row + "_" + col );
+                    ghost.type = "text";
+                    ghost.value = answer;
+                    ghost.style.backgroundColor = "#4270b1";
                     col = col + 1;
                     row = row + 1;
                     //alert("next row: " + row + " next col: " + col);
-                    var nextIn = doc.getElementById( row + "_" + col );
+                    var nextIn = doc.getElementById( "d" + row + "_" + col );
                     nextIn.type = "text";
                     nextIn.focus();
                     doc.getElementById("instr").innerHTML = 
@@ -62,6 +74,10 @@ function check( ev ) {
                     var notDone =answer !== whatOp; 
                     if( notDone ) {
                         var nextTd = nextIn.parentNode;
+                        nextTd.style.borderLeftColor = "#11397a";
+                        nextTd.style.borderBottomColor = "#11397a";
+                        var nextGhost = doc.getElementById( "g" + row + "_" + col );
+                        nextTd = nextGhost.parentNode;
                         nextTd.style.borderLeftColor = "#11397a";
                         nextTd.style.borderBottomColor = "#11397a";
                     }
@@ -76,14 +92,17 @@ function check( ev ) {
             var prevRow = row - 1;
             var prevCol = col - 1;
             var colPlus2;
-            var prevOp = num(doc.getElementById(prevRow + "_" + col).value);
-            var prevPrime = num(doc.getElementById(prevRow + "_" + prevCol).value);
+            var prevOp = num(doc.getElementById("d" + prevRow + "_" + col).value);
+            var prevPrime = num(doc.getElementById("d" + prevRow + "_" + prevCol).value);
             if( prevPrime*answer === prevOp ) {
+                var ghost = doc.getElementById( "g" + row + "_" + col );
+                ghost.type = "text";
+                ghost.value = answer;
                 if( answer === 1 ) {
                     col = col + 2;
                     colPlus2 = col + 1;
                     row = 0;
-                    var nextOp = doc.getElementById( row + "_" + colPlus2 );
+                    var nextOp = doc.getElementById( "d" + row + "_" + colPlus2 );
                     if( nextOp ) {
                         nextOp.type = "text";
                         var nextVal = nextOp.value;
@@ -92,13 +111,118 @@ function check( ev ) {
                         var nextTd = nextOp.parentNode;
                         nextTd.style.borderLeftColor = "#11397a";
                         nextTd.style.borderBottomColor = "#11397a";
+                        var nextGhost = doc.getElementById( "g" + row + "_" + colPlus2 );
+                        nextGhost.value = nextVal;
+                        nextGhost.type = "text";
+                        nextTd = nextGhost.parentNode;
+                        nextTd.style.borderLeftColor = "#11397a";
+                        nextTd.style.borderBottomColor = "#11397a";
+                    } else {
+                        var snow = "#e2eeeb";
+                        var water = "#3961a2"; //"#3f66a1";
+                        doc.body.style.backgroundImage = "url('Images/factors.png')";
+                        var w = window;
+                        var mat = Math;
+                        var e = doc.documentElement;
+                        var g = doc.getElementsByTagName('body')[0];
+                        var x = w.innerWidth || e.clientWidth || g.clientWidth;
+                        var y = w.innerHeight|| e.clientHeight|| g.clientHeight;
+                        var redLabel = doc.getElementById("redLabel");
+                        var redValue = doc.getElementById("d0_4").value;
+                        var blueValue = doc.getElementById("d0_1").value;
+                        var greenValue = doc.getElementById("d0_7").value;
+                        redLabel.style.color = "white";
+                        redLabel.innerHTML = "Factors of " + redValue + " only";
+                        redLabel.style.marginTop = (mat.floor(0.28*y)) + "px"; //"220px";
+                        redLabel.style.marginLeft = (mat.floor(0.6*x)) + "px"; //"770px";
+                        var magentaLabel = doc.getElementById("magentaLabel");
+                        var magentaLabel2 = doc.getElementById("magentaLabel2");
+                        magentaLabel.style.color = "white";
+                        magentaLabel2.style.color = "white";
+                        magentaLabel.innerHTML = "Factors of " + redValue;
+                        magentaLabel2.innerHTML = "and " + blueValue;
+                        magentaLabel.style.marginTop = (mat.floor(0.42*y)) + "px"; //"370px";
+                        magentaLabel.style.marginLeft = (mat.floor(0.5*x)) + "px"; //"650px";
+                        magentaLabel2.style.marginTop = (mat.floor(0.45*y)) + "px"; //"370px";
+                        magentaLabel2.style.marginLeft = (mat.floor(0.53*x)) + "px"; //"650px";
+                        var yellowLabel = doc.getElementById("yellowLabel");
+                        var yellowLabel2 = doc.getElementById("yellowLabel2");
+                        yellowLabel.style.color = "black";
+                        yellowLabel2.style.color = "black";
+                        yellowLabel.innerHTML = "Factors of " + redValue;
+                        yellowLabel2.innerHTML = "and " + greenValue;
+                        yellowLabel.style.marginTop = (mat.floor(0.42*y)) + "px"; //"370px";
+                        yellowLabel.style.marginLeft = (mat.floor(0.72*x)) + "px"; //"890px";
+                        yellowLabel2.style.marginTop = (mat.floor(0.45*y)) + "px"; //"370px";
+                        yellowLabel2.style.marginLeft = (mat.floor(0.75*x)) + "px"; //"890px";
+                        var whiteLabel = doc.getElementById("whiteLabel");
+                        whiteLabel.style.color = "black";
+                        whiteLabel.innerHTML = "Factors of all three";
+                        whiteLabel.style.marginTop = (mat.floor(0.62*y)) + "px"; //"410px";
+                        whiteLabel.style.marginLeft = (mat.floor(0.61*x)) + "px"; //"770px";
+                        var blueLabel = doc.getElementById("blueLabel");
+                        blueLabel.style.color = "white";
+                        blueLabel.innerHTML = "Factors of " + blueValue + " only";
+                        blueLabel.style.marginTop = (mat.floor(0.7*y)) + "px"; //"520px";
+                        blueLabel.style.marginLeft = (mat.floor(0.4*x)) + "px"; //"610px";
+                        var greenLabel = doc.getElementById("greenLabel");
+                        greenLabel.style.color = "black";
+                        greenLabel.innerHTML = "Factors of " + greenValue + " only";
+                        greenLabel.style.marginTop = (mat.floor(0.7*y)) + "px"; //"540px";
+                        greenLabel.style.marginLeft = (mat.floor(0.8*x)) + "px"; //"930px";
+                        var cyanLabel = doc.getElementById("cyanLabel");
+                        var cyanLabel2 = doc.getElementById("cyanLabel2");
+                        cyanLabel.style.color = "black";
+                        cyanLabel2.style.color = "black";
+                        cyanLabel.innerHTML = "Factors of " + blueValue;
+                        cyanLabel2.innerHTML = "and " + greenValue;
+                        cyanLabel.style.marginTop = (mat.floor(0.74*y)) + "px"; //"580px";
+                        cyanLabel.style.marginLeft = (mat.floor(0.61*x)) + "px"; // "770px"
+                        cyanLabel2.style.marginTop = (mat.floor(0.77*y)) + "px"; //"580px";
+                        cyanLabel2.style.marginLeft = (mat.floor(0.64*x)) + "px"; // "770px"
+                        doc.getElementById("blankheader").style.color = water;
+                        doc.getElementById("blankheader2").style.color = water;
+                        var instr = doc.getElementById("instr");
+                        var instr2 = doc.getElementById("instr2");
+                        instr.style.color = snow;
+                        instr2.style.color = snow;
+                        instr.innerHTML = "Drag each prime factor to the section";
+                        instr2.innerHTML = "of the Venn diagram where it belongs.";
+                        var tds = doc.getElementsByTagName("td");
+                        var len = tds.length;
+                        for( var i = 0; i < len; ++i ) {
+                            tds[i].style.borderColor = water; // "#3961a2"; 
+                            var hasChild = tds[i].childNodes[1];
+                            if( hasChild ) {
+                                var id = hasChild.id;
+                                if( id ) {                              
+                                    var pos = id.indexOf("_");
+                                    var col = num(id.substr(pos+1, id.length));                            
+                                    //doc.getElementById("statusBox" + x).innerHTML = "child id is " + id + " column is " + col;
+                                    //++x;
+                                    if( (col+2)%3 === 0 ) { 
+                                        hasChild.style.backgroundColor = water; // #3961a2"; 
+                                        hasChild.style.color = snow; /* snow colored text  */
+                                        /* tds[i].style.backgroundColor = "#3961a2"; /* water colored background */
+                                        /* tds[i].style.color = "#e2eeeb"; /* snow colored divider text  */
+                                        var val = num(hasChild.value);
+                                        if( val > 1 ) {
+                                            //doc.getElementById("statusBox" + x).innerHTML = "value is " + hasChild.value;
+                                            //++x;
+                                            tds[i].style.borderLeftColor =  snow;
+                                            tds[i].style.borderBottomColor =  snow;
+                                        }
+                                    }
+                                }
+                            }
+                        }
                     }
                 } else {
                     col = prevCol;
                     doc.getElementById("instr").innerHTML = 
                        "What is a prime number that evenly divides " + answer + "? (Enter)";
                 }
-                var nextIn = doc.getElementById( row + "_" + col );
+                var nextIn = doc.getElementById( "d" + row + "_" + col );
                 if( nextIn ) {
                     nextIn.type = "text";
                     nextIn.focus();
@@ -110,16 +234,82 @@ function check( ev ) {
         return false;
     }
 };
+function getPosition(e){ 
+    var left = 0; 
+    var top  = 0; 
+    while (e.offsetParent){ 
+        left += e.offsetLeft; 
+	top  += e.offsetTop; 
+        e     = e.offsetParent; 
+    } 
+    left += e.offsetLeft; 
+    top  += e.offsetTop; 
+    return {x:left, y:top}; 
+}
 window.onload = function(){
     var doc = document;
-    doc.getElementById("0_0").focus();
-    var el = doc.getElementById("0_0");
+
+    var el = doc.getElementById("d0_0");
+    el.focus();
+    /* make 'ems' a consistent unit by setting all fonts the same */  
     var style = window.getComputedStyle(el, null).getPropertyValue("font");
-    doc.getElementById("instr").style.font = style;
-    var tds = doc.getElementsByTagName("td");
-    var len = tds.length;
+    var ths = doc.getElementsByTagName("th");
+    var len = ths.length;
     for( var i = 0; i < len; ++i ) {
-        /* tds[i].style.backgroundColor = "lightgrey"; */
+        ths[i].style.font = style;
+    }
+    var tds = doc.getElementsByTagName("td");
+    len = tds.length;
+    for( var i = 0; i < len; ++i ) {
         tds[i].style.font = style;
     }
+    
+    /* position the draggable table over the ghosts */
+    var ghosts = doc.getElementById("ghosts");
+    var draggables = doc.getElementById("draggables");
+    draggables.style.marginTop  = "14px"; 
+    draggables.style.marginLeft  = "11px"; 
+    ghosts.style.marginTop  = "14px"; 
+    ghosts.style.marginLeft  = "11px";
+    
+;
+};
+window.onresize = function() {
+    var w = window;
+    var doc = document;
+    var mat = Math;
+    var e = doc.documentElement;
+    var g = doc.getElementsByTagName('body')[0];
+    var x = w.innerWidth || e.clientWidth || g.clientWidth;
+    var y = w.innerHeight|| e.clientHeight|| g.clientHeight;
+    var redLabel = doc.getElementById("redLabel");                    
+    redLabel.style.marginTop = (mat.floor(0.28*y)) + "px"; //"220px";
+    redLabel.style.marginLeft = (mat.floor(0.6*x)) + "px"; //"770px";
+    var magentaLabel = doc.getElementById("magentaLabel");
+    var magentaLabel2 = doc.getElementById("magentaLabel2");
+    magentaLabel.style.marginTop = (mat.floor(0.42*y)) + "px"; //"370px";
+    magentaLabel.style.marginLeft = (mat.floor(0.5*x)) + "px"; //"650px";
+    magentaLabel2.style.marginTop = (mat.floor(0.45*y)) + "px"; //"370px";
+    magentaLabel2.style.marginLeft = (mat.floor(0.53*x)) + "px"; //"650px";
+    var yellowLabel = doc.getElementById("yellowLabel");
+    var yellowLabel2 = doc.getElementById("yellowLabel2");
+    yellowLabel.style.marginTop = (mat.floor(0.42*y)) + "px"; //"370px";
+    yellowLabel.style.marginLeft = (mat.floor(0.72*x)) + "px"; //"890px";
+    yellowLabel2.style.marginTop = (mat.floor(0.45*y)) + "px"; //"370px";
+    yellowLabel2.style.marginLeft = (mat.floor(0.75*x)) + "px"; //"890px";
+    var whiteLabel = doc.getElementById("whiteLabel");
+    whiteLabel.style.marginTop = (mat.floor(0.62*y)) + "px"; //"410px";
+    whiteLabel.style.marginLeft = (mat.floor(0.61*x)) + "px"; //"770px";
+    var blueLabel = doc.getElementById("blueLabel");
+    blueLabel.style.marginTop = (mat.floor(0.7*y)) + "px"; //"520px";
+    blueLabel.style.marginLeft = (mat.floor(0.4*x)) + "px"; //"610px";
+    var greenLabel = doc.getElementById("greenLabel");
+    greenLabel.style.marginTop = (mat.floor(0.7*y)) + "px"; //"540px";
+    greenLabel.style.marginLeft = (mat.floor(0.8*x)) + "px"; //"930px";
+    var cyanLabel = doc.getElementById("cyanLabel");
+    var cyanLabel2 = doc.getElementById("cyanLabel2");
+    cyanLabel.style.marginTop = (mat.floor(0.74*y)) + "px"; //"580px";
+    cyanLabel.style.marginLeft = (mat.floor(0.61*x)) + "px"; // "770px"
+    cyanLabel2.style.marginTop = (mat.floor(0.77*y)) + "px"; //"580px";
+    cyanLabel2.style.marginLeft = (mat.floor(0.64*x)) + "px"; // "770px
 };
