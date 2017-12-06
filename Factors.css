@@ -34,6 +34,9 @@ td{
     border: 2px solid;
     border-color: #d2edf9;
     padding-right: 0px;
+    width: 4em;
+    height: 1.4em;
+    height: 20px;
     /* width: 4em; */
 }
 th{
@@ -44,10 +47,13 @@ th{
     height: 1.4em;
     height: 20px;
 }
+
 .dragBox{
-    width: 4em;
-    height: 1.4em;
-    height: 20px;
+    margin: 0px;
+    position: absolute;
+}
+.ghost{
+    margin: 0px;
 }
 .op{
     width: 4em;
@@ -57,6 +63,16 @@ th{
 .section{
     position: fixed;
     color: #d2edf9;
+}
+.shortbox{
+    width: 5em;
+    text-align: center;
+    color: red;
+    font: inherit;
+}
+.stillBox{
+    margin: 0px;
+    position: absolute;
 }
 #draggables{
     /* background-color: pink; */
@@ -81,10 +97,19 @@ th{
     border-left-color: #11397a;
     border-bottom-color: #11397a;
 }
+#home{
+    position: absolute;
+}
 #instr{
     color: #11397a;
+}
+#index{
+    position: absolute;
 }
 #instr2{
     color: #d2edf9;
     padding-bottom: 1em;
+}
+#stats{
+    margin-top: 200px;
 }

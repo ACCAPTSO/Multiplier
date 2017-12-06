@@ -12,10 +12,10 @@
         <title>FACTORS</title>
         <link rel="stylesheet" href="Factors.css" type="text/css">
         <script src="Factors.js"></script>
+        <script src="drag3d.js"></script>
     </head>
     <body>
         <% 
-        int remnder;
         final int MAXBOXES = 500;
         final int UNCLASSED = 0;
         final int NQUES = 17;
@@ -23,10 +23,8 @@
         final int BLUE = 0;
         final int RED = 1;
         final int GREEN = 2;
-        final int WHITE = 3;
-        final int CYAN = 4;
-        final int MAGENTA = 5;
-        final int YELLOW = 6;
+        final boolean debug = false; // true;
+        String itype = debug? "text" : "hidden";
         
         int[] boxCntents;
         int[] rclass;
@@ -66,10 +64,6 @@
         int[] magentaPos = { 530, 285 };
         int[] yellowPos = { 940, 300 };
         int[] greenPos = { 980, 440 };
-        boolean allDone = false;
-        boolean trudown = false;
-        String instruction1;
-        String instruction2;
         int num2s;
         int num3s;
         int num5s;
@@ -125,9 +119,6 @@
         magentaPos[1] = 285;
         yellowPos[1] = 300;
         greenPos[1] = 440;
-        allDone = false;
-        trudown = false;
-        instruction2 = "";
 
         /* generate 7? prime factors, not necessarily unique, more           */
         /* probability * of the smaller ones. generate a 3 bit number to     */
@@ -177,32 +168,8 @@
         numcyans = new int[MAXBOXES];
         numwhites = new int[MAXBOXES];
   
-        int count2s = 0;
         int thisfact = 0;
-        int count3s = 0;
-        int count5s = 0;
-        int count7s = 0;
-        int count11s = 0;
-        int count13s = 0;
-        int count17s = 0;
-        int count19s = 0;
-        int count23s = 0;
-        int count29s = 0;
-        int count31s = 0;
-        int count37s = 0;
-        int count41s = 0;
-        int count43s = 0;
-        int count47s = 0;
-        int count53s = 0;
-        int count59s = 0;
-        int count61s = 0;
-        int count67s = 0;
-        int count71s = 0;
-        int count73s = 0;
-        int count79s = 0;
-        int count83s = 0;
-        int count89s = 0;
-        int count97s = 0;
+
         int[] cat = new int[MAXBOXES];
         int [] whichops = { 1, 2, 4, 3, 5, 6, 7, 7, 7 };
 
@@ -210,10 +177,10 @@
  // throw out any sets of 3 operands where any 2 operands are
          // equal, any operand is too big, there are too many big
          // prime factors or more prime factors of 5's than 2's
-         while( blueOp == redOp | blueOp == greenOp | redOp == greenOp |
-                blueOp > MAXOPRND | redOp > MAXOPRND | greenOp > MAXOPRND |
-                blueOp < 2 | redOp < 2 | greenOp < 2 |
-                ldx > MAXBOXES | howmany5s > howmany2s | howmanybig > 1 ) {
+        while( blueOp == redOp | blueOp == greenOp | redOp == greenOp |
+               blueOp > MAXOPRND | redOp > MAXOPRND | greenOp > MAXOPRND |
+               blueOp < 2 | redOp < 2 | greenOp < 2 |
+               ldx > MAXBOXES | howmany5s > howmany2s | howmanybig > 1 ) {
             // how many distinct factors = numcats
             // how many of each factor in each operand = boccurs, roccurs...
             // how many of each factor total = numoccurs
@@ -267,119 +234,94 @@
                if( indcatr < num2s ) {
                   thisfact = 2;
                   howmany2s += squarefact;
-                  count2s += squarefact;
                } else if( indcatr < num2s+num3s ) {
                   thisfact = 3;
-                  count3s += squarefact;
                } else if( indcatr < num2s+num3s+num5s ) {
                   thisfact = 5;
                   howmany5s += squarefact;
-                  count5s += squarefact;
                } else if( indcatr < num2s+num3s+num5s+num7s ) {
                   thisfact = 7;
-                  count7s += squarefact;
                } else if( indcatr < num2s+num3s+num5s+num7s+num11s ) {
                   thisfact = 11;
-                  count11s += squarefact;
                } else if( indcatr < num2s+num3s+num5s+num7s+num11s + inc ) {
                   thisfact = 13;
                   howmanybig += 1;
-                  count13s += 1;
                   squarefact = 1;
                } else if( indcatr < num2s+num3s+num5s+num7s+num11s + 2*inc ) {
                   thisfact = 17;
                   howmanybig += 1;
-                  count17s += 1;
                   squarefact = 1;
                } else if( indcatr < num2s+num3s+num5s+num7s+num11s + 3*inc ) {
                   thisfact = 19;
                   howmanybig += 1;
-                  count19s += 1;
                   squarefact = 1;
                } else if( indcatr < num2s+num3s+num5s+num7s+num11s + 4*inc ) {
                   thisfact = 23;
                   howmanybig += 1;
-                  count23s += 1;
                   squarefact = 1;
                } else if( indcatr < num2s+num3s+num5s+num7s+num11s + 5*inc ) {
                   thisfact = 29;
                   howmanybig += 1;
-                  count29s += 1;
                   squarefact = 1;
                } else if( indcatr < num2s+num3s+num5s+num7s+num11s + 6*inc ) {
                   thisfact = 31;
                   howmanybig += 1;
-                  count31s += 1;
                   squarefact = 1;
                } else if( indcatr < num2s+num3s+num5s+num7s+num11s + 7*inc ) {
                   thisfact = 37;
                   howmanybig += 1;
-                  count37s += 1;
                   squarefact = 1;
                } else if( indcatr < num2s+num3s+num5s+num7s+num11s + 8*inc ) {
                   thisfact = 41;
                   howmanybig += 1;
-                  count41s += 1;
                   squarefact = 1;
                } else if( indcatr < num2s+num3s+num5s+num7s+num11s + 9*inc ) {
                   thisfact = 43;
                   howmanybig += 1;
-                  count43s += 1;
                   squarefact = 1;
                } else if( indcatr < num2s+num3s+num5s+num7s+num11s + 10*inc ) {
                   thisfact = 47;
                   howmanybig += 1;
-                  count47s += 1;
                   squarefact = 1;
                } else if( indcatr < num2s+num3s+num5s+num7s+num11s + 11*inc ) {
                   thisfact = 53;
                   howmanybig += 1;
-                  count53s += 1;
                   squarefact = 1;
                } else if( indcatr < num2s+num3s+num5s+num7s+num11s + 12*inc ) {
                   thisfact = 59;
                   howmanybig += 1;
-                  count59s += 1;
                   squarefact = 1;
                } else if( indcatr < num2s+num3s+num5s+num7s+num11s + 13*inc ) {
                   thisfact = 61;
                   howmanybig += 1;
-                  count61s += 1;
                   squarefact = 1;
                } else if( indcatr < num2s+num3s+num5s+num7s+num11s + 14*inc ) {
                   thisfact = 67;
                   howmanybig += 1;
-                  count67s += 1;
                   squarefact = 1;
                } else if( indcatr < num2s+num3s+num5s+num7s+num11s + 15*inc ) {
                   thisfact = 71;
                   howmanybig += 1;
-                  count71s += 1;
                   squarefact = 1;
                } else if( indcatr < num2s+num3s+num5s+num7s+num11s + 16*inc ) {
                   thisfact = 73;
                   howmanybig += 1;
-                  count73s += 1;
                   squarefact = 1;
                } else if( indcatr < num2s+num3s+num5s+num7s+num11s + 17*inc ) {
                   thisfact = 79;
                   howmanybig += 1;
-                  count79s += 1;
                   squarefact = 1;
                } else if( indcatr < num2s+num3s+num5s+num7s+num11s + 18*inc ) {
                   thisfact = 83;
                   howmanybig += 1;
-                  count83s += 1;
                   squarefact = 1;
                } else if( indcatr < num2s+num3s+num5s+num7s+num11s + 19*inc ) {
                   thisfact = 89;
                   howmanybig += 1;
-                  count89s += 1;
                   squarefact = 1;
                } else if( indcatr < num2s+num3s+num5s+num7s+num11s + 20*inc ) {
                   thisfact = 97;
                   howmanybig += 1;
-                  count97s += 1;
                   squarefact = 1;
                }
 //               System.out.println("thisfact");
@@ -468,11 +410,129 @@
                count2many5s++;
             }
         }
+        // count how many of each prime factor in each final color category
+        // = numblues, numwhites, numyellows etc.
+        for( int idx = 0; idx < numcats; idx++ ) {
+            if( boccurs[idx] == numoccurs[idx] ) {
+                numblues[idx] = boccurs[idx];
+            } else if( roccurs == numoccurs ) {
+                numreds[idx] = roccurs[idx];
+            } else if( goccurs == numoccurs ) {
+                numgreens[idx] = goccurs[idx];
+            } else { 
+                numwhites[idx] = StrictMath.min( boccurs[idx],
+                    StrictMath.min( roccurs[idx], goccurs[idx] ) );
+                // which has the least?
+                if( boccurs[idx] == numwhites[idx] ) {
+                    if( roccurs[idx] > goccurs[idx] ) { // any goccurs are going
+                                                        // to be white or yellow
+                                                        // there is no green and no cyan
+                        numreds[idx]=roccurs[idx]-goccurs[idx];
+                        numyellows[idx]=roccurs[idx]-numreds[idx]-numwhites[idx];
+                        numgreens[idx] = 0;
+                    } else {
+                        numgreens[idx]=goccurs[idx]-roccurs[idx];
+                        numyellows[idx]=goccurs[idx]-numgreens[idx]-numwhites[idx];
+                        numreds[idx] = 0;
+                    }
+                } else if( roccurs[idx] == numwhites[idx] ) {
+                    if( boccurs[idx] > goccurs[idx] ) {
+                        numblues[idx]=boccurs[idx]-goccurs[idx];
+                        numcyans[idx]=boccurs[idx]-numblues[idx]-numwhites[idx];
+                        numgreens[idx] = 0; 
+                    } else {
+                        numgreens[idx]=goccurs[idx]-boccurs[idx];
+                        numcyans[idx]=goccurs[idx]-numgreens[idx]-numwhites[idx];
+                        numblues[idx] = 0;
+                    }
+                } else { // goccurs == numwhites
+                    if( boccurs[idx] > roccurs[idx] ) {
+                        numblues[idx]=boccurs[idx]-roccurs[idx];
+                        nummagentas[idx]=boccurs[idx]-numblues[idx]-numwhites[idx];
+                        numreds[idx] = 0; 
+                     } else {
+                        numreds[idx]=roccurs[idx]-boccurs[idx];
+                        nummagentas[idx]=roccurs[idx]-numreds[idx]-numwhites[idx];
+                        numblues[idx] = 0;
+                     }
+                }
+            }
+        }
+        int whitefactor = 1;
+        int magentafactor = 1;
+        int redfactor = 1;
+        int yellowfactor = 1;
+        int greenfactor = 1;
+        int cyanfactor = 1;
+        int bluefactor = 1;
+        int totwhites = 0;
+        int totmagentas = 0;
+        int totreds = 0; // total number of priime factors in red section
+        int totyellows = 0;
+        int totgreens = 0;
+        int totcyans = 0;
+        int totblues = 0;
 
-%>
+        // if there is more than one prime factor in a colored section,
+        // flag that (totmagentas, totblues etc. > 1 )
+        // multiply them together to find that factor
+        // (yellowfactor, cyanfactor etc.)
+        for( int idx = 0; idx < numcats; idx++ ) {
+            String catIdx = "c" + idx;
+            for( jdx = 0; jdx < numwhites[idx]; jdx++ ) {
+               whitefactor = whitefactor*cat[idx];
+               totwhites += 1;
+            } 
+            String whiteIdx = "nWhite" + idx;
+            String nWhiteIdx = String.valueOf(numwhites[idx]);
+            for( jdx = 0; jdx < nummagentas[idx]; jdx++ ) {
+               magentafactor = magentafactor*cat[idx];
+               totmagentas += 1;
+            } 
+            String magentaIdx = "nMagenta" + idx;
+            String nMagentaIdx = String.valueOf(nummagentas[idx]);
+            for( jdx = 0; jdx < numreds[idx]; jdx++ ) {
+               redfactor = redfactor*cat[idx];
+               totreds += 1;
+            }  
+            String redIdx = "nRed" + idx;
+            String nRedIdx = String.valueOf(numreds[idx]);
+            for( jdx = 0; jdx < numyellows[idx]; jdx++ ) {
+               yellowfactor = yellowfactor*cat[idx];
+               totyellows += 1;
+            } 
+            String yellowIdx = "nYellow" + idx;
+            String nYellowIdx = String.valueOf(numyellows[idx]);
+            for( jdx = 0; jdx < numgreens[idx]; jdx++ ) {
+               greenfactor = greenfactor*cat[idx];
+               totgreens += 1;
+            }  
+            String greenIdx = "nGreen" + idx;
+            String nGreenIdx = String.valueOf(numgreens[idx]);
+            for( jdx = 0; jdx < numcyans[idx]; jdx++ ) {
+               cyanfactor = cyanfactor*cat[idx];
+               totcyans += 1;
+            }   
+            String cyanIdx = "nCyan" + idx;
+            String nCyanIdx = String.valueOf(numcyans[idx]);
+            for( jdx = 0; jdx < numblues[idx]; jdx++ ) {
+               bluefactor = bluefactor*cat[idx];
+               totblues += 1;
+            } 
+            String blueIdx = "nBlue" + idx;
+            String nBlueIdx = String.valueOf(numblues[idx]); %>    
+            <input type="<%=itype%>" id="<%=catIdx%>" value="<%=cat[idx]%>" class="cat">
+            <input type="<%=itype%>" id="<%=whiteIdx%>" value ="<%=nWhiteIdx%>" >
+            <input type="<%=itype%>" id="<%=magentaIdx%>" value ="<%=nMagentaIdx%>" >
+            <input type="<%=itype%>" id="<%=redIdx%>" value ="<%=nRedIdx%>" >
+            <input type="<%=itype%>" id="<%=yellowIdx%>" value ="<%=nYellowIdx%>" >
+            <input type="<%=itype%>" id="<%=greenIdx%>" value ="<%=nGreenIdx%>" >
+            <input type="<%=itype%>" id="<%=cyanIdx%>" value ="<%=nCyanIdx%>" >
+            <input type="<%=itype%>" id="<%=blueIdx%>" value ="<%=nBlueIdx%>" >
+<%        } %>
     <table id="ghosts">
-        <tr><th colspan="8" id="blankheader">What</th></tr>
-        <tr><th colspan="8" id="blankheader2">What</th></tr>
+        <tr><th colspan="8" id="instr">What is a prime number that evenly divides <%=blueOp%>? (Enter)</th></tr>
+        <tr><th colspan="8" id="instr2">What</th></tr>
 <%      for( int row = 0; row < 9; ++row ) { %>
             <tr>
 <%          for( int col = 0; col < 8; ++col ) { 
@@ -491,14 +551,16 @@
                     <td id="firstGhost" class="op">
                     <input type="<%=whatType%>" 
                            value="<%=whatValue%>" 
-                           id="<%=whatId%>">
+                           id="<%=whatId%>"
+                           class="ghost">
                     </input>
                     </td>
 <%              } else { %>
                     <td class="op">
                     <input type="<%=whatType%>" 
                            value="<%=whatValue%>"
-                           id="<%=whatId%>">
+                           id="<%=whatId%>"
+                           class="ghost">
                     </input>
                     </td>
 <%              }                
@@ -508,12 +570,14 @@
 <%      } %>
 
     </table>
-    <table id="draggables">
-        <tr><th colspan="8" id="instr">What is a prime number that evenly divides <%=blueOp%>? (Enter)</th></tr>
-        <tr><th colspan="8" id="instr2">What</th></tr>
-<%      for( int row = 0; row < 9; ++row ) { %>
-            <tr>
-<%          for( int col = 0; col < 8; ++col ) { 
+    <div id="home">
+        <a href="/" class="ndx">Home</a>
+    </div>
+    <div id="index">
+        <a href="index.html" class="ndx">Back to Practice Index</a>
+    </div>
+<%      for( int row = 0; row < 9; ++row ) {
+            for( int col = 0; col < 8; ++col ) { 
                 boolean isFirstOp = ( row == 0 && col == 1 );
                 boolean isSecondOp = ( row == 0 && col == 4 );
                 boolean isThirdOp = ( row == 0 && col == 7 );
@@ -523,31 +587,35 @@
                                    isSecondOp? String.valueOf(redOp) :
                                    isThirdOp? String.valueOf(greenOp) : ""; 
                 String whatId = "d" + row + "_" + col;
-                if( (col+1)%3 == 0 ) { %>
-                    <td class="blank"><div></div></td>
-<%              } else if( isFirstOp ) { %>
-                    <td id="firstOp" class="dragBox">
+                if( (col+1)%3 == 0 ) { 
+                    ;
+                } else if( isFirstOp ) { %>
                     <input type="<%=whatType%>" 
                            value="<%=whatValue%>" 
-                           id="<%=whatId%>">
+                           id="<%=whatId%>"
+                           class="dragBox"
+                           moved="false">
                     </input>
-                    </td>
-<%              } else { %>
-                    <td class="dragBox">
+<%              } else if( isSecondOp || isThirdOp || col%3 == 0 ) { %>
                     <input type="<%=whatType%>" 
                            value="<%=whatValue%>" 
                            id="<%=whatId%>"
                            onkeyup="check( event )"
-                           onkeydown="erase( event )">
+                           onkeydown="erase( event )"
+                           class="dragBox"
+                           moved="false">
                     </input>
-                    </td>
-<%              }                
-            } %>
-            </tr>
-            
-<%      } %>
+<%              } else { %>
+                    <input type="<%=whatType%>" 
+                    value="<%=whatValue%>" 
+                    id="<%=whatId%>"
+                    onkeyup="check( event )"
+                    onkeydown="erase( event )"
+                    class="stillBox">
+<%              } 
+            } 
+        } %>
 
-    </table>
     <label id="redLabel" class="section">red</label>
     <label id="magentaLabel" class="section">magenta</label>
     <label id="magentaLabel2" class="section">magenta</label>
@@ -557,10 +625,13 @@
     <label id="blueLabel" class="section">blue</label>
     <label id="cyanLabel" class="section">cyan</label>
     <label id="cyanLabel2" class="section">cyan</label>
-    <label id="greenLabel" class="section">green</div>
-<% for( int i = 0; i < 90; ++i ) {
+    <label id="greenLabel" class="section">green</label>
+    <input type="<%=itype%>" id="linedUp" value="false" class="shortbox">
+
+<% for( int i = 0; i < 0; ++i ) {
     String whatId = "statusBox" + i; %>
-    <div id="<%=whatId%>"></div> 
+    <tr><td><%=i%></td><td><div id="<%=whatId%>"></div></td></tr>
 <% } %>
+
     </body>
 </html>

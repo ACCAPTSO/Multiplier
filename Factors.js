@@ -8,6 +8,27 @@ var allprimes = [    2,  3,  5,  7, 11,
                     31, 37, 41, 43, 47, 
                     53, 59, 61, 67, 71, 
                     73, 79, 83, 89, 97 ];
+var redXpos;
+var redYpos;
+var magentaXpos;
+var magentaYpos;
+var whiteXpos;
+var whiteYpos;
+var yellowXpos;
+var yellowYPos;
+var blueXpos;
+var blueYpos;
+var cyanXpos;
+var cyanYpos;
+var greenXpos;
+var greenYpos;
+var redCenterX;
+var redCenterY;
+var blueCenterX;
+var blueCenterY;
+var greenCenterX;
+var greenCenterY;
+var radius;
 
 function erase( ev ) {
     ev = ev || window.event;
@@ -68,15 +89,23 @@ function check( ev ) {
                     //alert("next row: " + row + " next col: " + col);
                     var nextIn = doc.getElementById( "d" + row + "_" + col );
                     nextIn.type = "text";
+                    var nextGhost = doc.getElementById( "g" + row + "_" + col );
+                    nextGhost.type = "text";
+                    var ghostPos = getPos( nextGhost );
+                    var leftPos = ghostPos.x + "px";
+                    var topPos = ghostPos.y + "px";
+                    //alert("leftPos: " + leftPos + " topPos: " + topPos);
+                    nextIn.style.left = leftPos;
+                    nextIn.style.top = topPos;
                     nextIn.focus();
                     doc.getElementById("instr").innerHTML = 
                             "What is " + whatOp + " divided by " + answer + "? (Enter)";
-                    var notDone =answer !== whatOp; 
+                    var notDone = answer !== whatOp; 
                     if( notDone ) {
                         var nextTd = nextIn.parentNode;
                         nextTd.style.borderLeftColor = "#11397a";
                         nextTd.style.borderBottomColor = "#11397a";
-                        var nextGhost = doc.getElementById( "g" + row + "_" + col );
+                        //var nextGhost = doc.getElementById( "g" + row + "_" + col );
                         nextTd = nextGhost.parentNode;
                         nextTd.style.borderLeftColor = "#11397a";
                         nextTd.style.borderBottomColor = "#11397a";
@@ -114,6 +143,12 @@ function check( ev ) {
                         var nextGhost = doc.getElementById( "g" + row + "_" + colPlus2 );
                         nextGhost.value = nextVal;
                         nextGhost.type = "text";
+                        var ghostPos = getPos( nextGhost );
+                        var leftPos = ghostPos.x + "px";
+                        var topPos = ghostPos.y + "px";
+                        //alert("leftPos: " + leftPos + " topPos: " + topPos);
+                        nextOp.style.left = leftPos;
+                        nextOp.style.top = topPos;
                         nextTd = nextGhost.parentNode;
                         nextTd.style.borderLeftColor = "#11397a";
                         nextTd.style.borderBottomColor = "#11397a";
@@ -127,69 +162,94 @@ function check( ev ) {
                         var g = doc.getElementsByTagName('body')[0];
                         var x = w.innerWidth || e.clientWidth || g.clientWidth;
                         var y = w.innerHeight|| e.clientHeight|| g.clientHeight;
+                        redCenterX = mat.floor(0.67*x);
+                        redCenterY = mat.floor(0.42*y);
+                        blueCenterX = mat.floor(0.57*x);
+                        blueCenterY = mat.floor(0.67*y);
+                        greenCenterX = mat.floor(0.77*x);
+                        greenCenterY = mat.floor(0.67*y);
+                        radius = mat.floor(0.2*x);
                         var redLabel = doc.getElementById("redLabel");
                         var redValue = doc.getElementById("d0_4").value;
                         var blueValue = doc.getElementById("d0_1").value;
                         var greenValue = doc.getElementById("d0_7").value;
                         redLabel.style.color = "white";
                         redLabel.innerHTML = "Factors of " + redValue + " only";
-                        redLabel.style.marginTop = (mat.floor(0.28*y)) + "px"; //"220px";
-                        redLabel.style.marginLeft = (mat.floor(0.6*x)) + "px"; //"770px";
+                        redXpos = mat.floor(0.67*x);
+                        redYpos = mat.floor(0.21*y);     
+                        redLabel.style.left = (mat.floor(0.6*x)) + "px";
+                        redLabel.style.top = (mat.floor(0.28*y)) + "px";
                         var magentaLabel = doc.getElementById("magentaLabel");
                         var magentaLabel2 = doc.getElementById("magentaLabel2");
                         magentaLabel.style.color = "white";
                         magentaLabel2.style.color = "white";
                         magentaLabel.innerHTML = "Factors of " + redValue;
                         magentaLabel2.innerHTML = "and " + blueValue;
-                        magentaLabel.style.marginTop = (mat.floor(0.42*y)) + "px"; //"370px";
-                        magentaLabel.style.marginLeft = (mat.floor(0.5*x)) + "px"; //"650px";
-                        magentaLabel2.style.marginTop = (mat.floor(0.45*y)) + "px"; //"370px";
-                        magentaLabel2.style.marginLeft = (mat.floor(0.53*x)) + "px"; //"650px";
+                        magentaXpos = mat.floor(0.53*x);
+                        magentaYpos = mat.floor(0.42*y);
+                        magentaLabel.style.marginLeft = (mat.floor(0.5*x)) + "px";
+                        magentaLabel.style.marginTop = magentaYpos + "px";
+                        magentaLabel2.style.marginLeft = magentaXpos + "px";
+                        magentaLabel2.style.marginTop = (mat.floor(0.45*y)) + "px";
                         var yellowLabel = doc.getElementById("yellowLabel");
                         var yellowLabel2 = doc.getElementById("yellowLabel2");
                         yellowLabel.style.color = "black";
                         yellowLabel2.style.color = "black";
                         yellowLabel.innerHTML = "Factors of " + redValue;
                         yellowLabel2.innerHTML = "and " + greenValue;
-                        yellowLabel.style.marginTop = (mat.floor(0.42*y)) + "px"; //"370px";
-                        yellowLabel.style.marginLeft = (mat.floor(0.72*x)) + "px"; //"890px";
-                        yellowLabel2.style.marginTop = (mat.floor(0.45*y)) + "px"; //"370px";
-                        yellowLabel2.style.marginLeft = (mat.floor(0.75*x)) + "px"; //"890px";
+                        yellowXpos = mat.floor(0.78*x);
+                        yellowYpos = mat.floor(0.42*y);
+                        yellowLabel.style.marginLeft = (mat.floor(0.72*x)) + "px";
+                        yellowLabel.style.marginTop = yellowYpos + "px";
+                        yellowLabel2.style.marginLeft = (mat.floor(0.76*x)) + "px";
+                        yellowLabel2.style.marginTop = (mat.floor(0.45*y)) + "px";
                         var whiteLabel = doc.getElementById("whiteLabel");
                         whiteLabel.style.color = "black";
                         whiteLabel.innerHTML = "Factors of all three";
-                        whiteLabel.style.marginTop = (mat.floor(0.62*y)) + "px"; //"410px";
-                        whiteLabel.style.marginLeft = (mat.floor(0.61*x)) + "px"; //"770px";
+                        whiteXpos = mat.floor(0.66*x);
+                        whiteYpos = mat.floor(0.46*y);    
+                        whiteLabel.style.marginLeft = (mat.floor(0.61*x)) + "px";
+                        whiteLabel.style.marginTop = (mat.floor(0.62*y)) + "px";
                         var blueLabel = doc.getElementById("blueLabel");
                         blueLabel.style.color = "white";
                         blueLabel.innerHTML = "Factors of " + blueValue + " only";
-                        blueLabel.style.marginTop = (mat.floor(0.7*y)) + "px"; //"520px";
-                        blueLabel.style.marginLeft = (mat.floor(0.4*x)) + "px"; //"610px";
+                        blueXpos = mat.floor(0.45*x);
+                        blueYpos = mat.floor(0.62*y);
+                        blueLabel.style.marginLeft = (mat.floor(0.4*x)) + "px";
+                        blueLabel.style.marginTop = (mat.floor(0.7*y)) + "px";
                         var greenLabel = doc.getElementById("greenLabel");
                         greenLabel.style.color = "black";
                         greenLabel.innerHTML = "Factors of " + greenValue + " only";
-                        greenLabel.style.marginTop = (mat.floor(0.7*y)) + "px"; //"540px";
-                        greenLabel.style.marginLeft = (mat.floor(0.8*x)) + "px"; //"930px";
+                        greenXpos = mat.floor(0.86*x);
+                        greenYpos = mat.floor(0.62*y);
+                        greenLabel.style.marginTop = (mat.floor(0.7*y)) + "px";
+                        greenLabel.style.marginLeft = (mat.floor(0.8*x)) + "px";
                         var cyanLabel = doc.getElementById("cyanLabel");
                         var cyanLabel2 = doc.getElementById("cyanLabel2");
                         cyanLabel.style.color = "black";
                         cyanLabel2.style.color = "black";
                         cyanLabel.innerHTML = "Factors of " + blueValue;
                         cyanLabel2.innerHTML = "and " + greenValue;
-                        cyanLabel.style.marginTop = (mat.floor(0.74*y)) + "px"; //"580px";
-                        cyanLabel.style.marginLeft = (mat.floor(0.61*x)) + "px"; // "770px"
-                        cyanLabel2.style.marginTop = (mat.floor(0.77*y)) + "px"; //"580px";
-                        cyanLabel2.style.marginLeft = (mat.floor(0.64*x)) + "px"; // "770px"
-                        doc.getElementById("blankheader").style.color = water;
-                        doc.getElementById("blankheader2").style.color = water;
+                        cyanXpos = mat.floor(0.66*x);
+                        cyanYpos = mat.floor(0.72*y);
+                        cyanLabel.style.marginTop = (mat.floor(0.74*y)) + "px";
+                        cyanLabel.style.marginLeft = (mat.floor(0.61*x)) + "px";
+                        cyanLabel2.style.marginLeft = cyanXpos + "px";
+                        cyanLabel2.style.marginTop = (mat.floor(0.77*y)) + "px";
                         var instr = doc.getElementById("instr");
                         var instr2 = doc.getElementById("instr2");
                         instr.style.color = snow;
                         instr2.style.color = snow;
                         instr.innerHTML = "Drag each prime factor to the section";
                         instr2.innerHTML = "of the Venn diagram where it belongs.";
+                        var stillBoxes = doc.getElementsByClassName("stillBox");
+                        var len = stillBoxes.length;
+                        for( var i = 0; i < len; ++i ) {
+                            stillBoxes[i].style.backgroundColor = water;
+                            stillBoxes[i].style.color = snow;
+                        }
                         var tds = doc.getElementsByTagName("td");
-                        var len = tds.length;
+                        len = tds.length;
                         for( var i = 0; i < len; ++i ) {
                             tds[i].style.borderColor = water; // "#3961a2"; 
                             var hasChild = tds[i].childNodes[1];
@@ -225,6 +285,14 @@ function check( ev ) {
                 var nextIn = doc.getElementById( "d" + row + "_" + col );
                 if( nextIn ) {
                     nextIn.type = "text";
+                    var nextGhost = doc.getElementById( "g" + row + "_" + col );
+                    nextGhost.type = "text";
+                    var ghostPos = getPos( nextGhost );
+                    var leftPos = ghostPos.x + "px";
+                    var topPos = ghostPos.y + "px";
+                    //alert("leftPos: " + leftPos + " topPos: " + topPos);
+                    nextIn.style.left = leftPos;
+                    nextIn.style.top = topPos;
                     nextIn.focus();
                 }
             } else {
@@ -234,7 +302,7 @@ function check( ev ) {
         return false;
     }
 };
-function getPosition(e){ 
+function getPos(e){ 
     var left = 0; 
     var top  = 0; 
     while (e.offsetParent){ 
@@ -244,13 +312,16 @@ function getPosition(e){
     } 
     left += e.offsetLeft; 
     top  += e.offsetTop; 
+    left += 2;
+    top += 2;
     return {x:left, y:top}; 
 }
 window.onload = function(){
     var doc = document;
-
+    var num = Number;
     var el = doc.getElementById("d0_0");
     el.focus();
+    draggerSetup();
     /* make 'ems' a consistent unit by setting all fonts the same */  
     var style = window.getComputedStyle(el, null).getPropertyValue("font");
     var ths = doc.getElementsByTagName("th");
@@ -264,17 +335,32 @@ window.onload = function(){
         tds[i].style.font = style;
     }
     
-    /* position the draggable table over the ghosts */
-    var ghosts = doc.getElementById("ghosts");
-    var draggables = doc.getElementById("draggables");
-    draggables.style.marginTop  = "14px"; 
-    draggables.style.marginLeft  = "11px"; 
+    /* position the draggable values over the ghosts */
+    var ghosts = doc.getElementById("ghosts"); 
     ghosts.style.marginTop  = "14px"; 
     ghosts.style.marginLeft  = "11px";
-    
-;
+    var home = doc.getElementById("home");
+    home.style.marginTop = "670px";
+    var index = doc.getElementById("index");
+   index.style.marginTop = "700px";
+    var ghostArray = doc.getElementsByClassName("ghost");
+    //var len = ghostArray.length;
+    for( var i = 0; i < 2; ++i ) {
+        var whatGhost = ghostArray[i];
+        var id = whatGhost.id;
+        var idlen = id.length;
+        var idnum = id.substr(1,idlen);
+        var ghostPos = getPos( whatGhost );
+        var dBox = doc.getElementById("d" + idnum);
+        var leftPos = ghostPos.x + "px";
+        var topPos = ghostPos.y + "px";
+        //alert("i: " + i + " id: " + id + " idnum: " + idnum + " leftPos: " + leftPos + " topPos: " + topPos);
+        dBox.style.left = leftPos;
+        dBox.style.top = topPos;
+    }
 };
 window.onresize = function() {
+    
     var w = window;
     var doc = document;
     var mat = Math;
@@ -283,33 +369,33 @@ window.onresize = function() {
     var x = w.innerWidth || e.clientWidth || g.clientWidth;
     var y = w.innerHeight|| e.clientHeight|| g.clientHeight;
     var redLabel = doc.getElementById("redLabel");                    
-    redLabel.style.marginTop = (mat.floor(0.28*y)) + "px"; //"220px";
-    redLabel.style.marginLeft = (mat.floor(0.6*x)) + "px"; //"770px";
+    redLabel.style.marginTop = (mat.floor(0.28*y)) + "px";
+    redLabel.style.marginLeft = (mat.floor(0.6*x)) + "px";
     var magentaLabel = doc.getElementById("magentaLabel");
     var magentaLabel2 = doc.getElementById("magentaLabel2");
-    magentaLabel.style.marginTop = (mat.floor(0.42*y)) + "px"; //"370px";
-    magentaLabel.style.marginLeft = (mat.floor(0.5*x)) + "px"; //"650px";
-    magentaLabel2.style.marginTop = (mat.floor(0.45*y)) + "px"; //"370px";
-    magentaLabel2.style.marginLeft = (mat.floor(0.53*x)) + "px"; //"650px";
+    magentaLabel.style.marginTop = (mat.floor(0.42*y)) + "px";
+    magentaLabel.style.marginLeft = (mat.floor(0.5*x)) + "px";
+    magentaLabel2.style.marginTop = (mat.floor(0.45*y)) + "px";
+    magentaLabel2.style.marginLeft = (mat.floor(0.53*x)) + "px";
     var yellowLabel = doc.getElementById("yellowLabel");
     var yellowLabel2 = doc.getElementById("yellowLabel2");
-    yellowLabel.style.marginTop = (mat.floor(0.42*y)) + "px"; //"370px";
-    yellowLabel.style.marginLeft = (mat.floor(0.72*x)) + "px"; //"890px";
-    yellowLabel2.style.marginTop = (mat.floor(0.45*y)) + "px"; //"370px";
-    yellowLabel2.style.marginLeft = (mat.floor(0.75*x)) + "px"; //"890px";
+    yellowLabel.style.marginTop = (mat.floor(0.42*y)) + "px";
+    yellowLabel.style.marginLeft = (mat.floor(0.72*x)) + "px";
+    yellowLabel2.style.marginTop = (mat.floor(0.45*y)) + "px";
+    yellowLabel2.style.marginLeft = (mat.floor(0.75*x)) + "px";
     var whiteLabel = doc.getElementById("whiteLabel");
-    whiteLabel.style.marginTop = (mat.floor(0.62*y)) + "px"; //"410px";
-    whiteLabel.style.marginLeft = (mat.floor(0.61*x)) + "px"; //"770px";
+    whiteLabel.style.marginTop = (mat.floor(0.62*y)) + "px";
+    whiteLabel.style.marginLeft = (mat.floor(0.61*x)) + "px";
     var blueLabel = doc.getElementById("blueLabel");
-    blueLabel.style.marginTop = (mat.floor(0.7*y)) + "px"; //"520px";
-    blueLabel.style.marginLeft = (mat.floor(0.4*x)) + "px"; //"610px";
+    blueLabel.style.marginTop = (mat.floor(0.7*y)) + "px";
+    blueLabel.style.marginLeft = (mat.floor(0.4*x)) + "px";
     var greenLabel = doc.getElementById("greenLabel");
-    greenLabel.style.marginTop = (mat.floor(0.7*y)) + "px"; //"540px";
-    greenLabel.style.marginLeft = (mat.floor(0.8*x)) + "px"; //"930px";
+    greenLabel.style.marginTop = (mat.floor(0.7*y)) + "px";
+    greenLabel.style.marginLeft = (mat.floor(0.8*x)) + "px";
     var cyanLabel = doc.getElementById("cyanLabel");
     var cyanLabel2 = doc.getElementById("cyanLabel2");
-    cyanLabel.style.marginTop = (mat.floor(0.74*y)) + "px"; //"580px";
-    cyanLabel.style.marginLeft = (mat.floor(0.61*x)) + "px"; // "770px"
-    cyanLabel2.style.marginTop = (mat.floor(0.77*y)) + "px"; //"580px";
-    cyanLabel2.style.marginLeft = (mat.floor(0.64*x)) + "px"; // "770px
+    cyanLabel.style.marginTop = (mat.floor(0.74*y)) + "px";
+    cyanLabel.style.marginLeft = (mat.floor(0.61*x)) + "px";
+    cyanLabel2.style.marginTop = (mat.floor(0.77*y)) + "px";
+    cyanLabel2.style.marginLeft = (mat.floor(0.64*x)) + "px";
 };
