@@ -111,10 +111,12 @@ function check( ev ) {
                         nextTd.style.borderBottomColor = "#11397a";
                     }
                 } else {
-                    ansBx.style.color = "red";                
+                    ansBx.style.color = "red";    
+                    doc.getElementById("instr").innerHTML = answer + " is not prime.";
                 }
             } else {
-                ansBx.style.color = "red";                
+                ansBx.style.color = "red";   
+                doc.getElementById("instr").innerHTML = answer + " does not divide " + whatOp + " evenly.";
             }
         } else {
             //alert("checking division");
@@ -297,6 +299,7 @@ function check( ev ) {
                 }
             } else {
                 ansBx.style.color = "red";
+                doc.getElementById("instr").innerHTML = prevOp + " divided by " + prevPrime + " is not " + answer + ".";
             }
         }
         return false;

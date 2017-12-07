@@ -497,6 +497,7 @@
             }  
             String redIdx = "nRed" + idx;
             String nRedIdx = String.valueOf(numreds[idx]);
+            String roccursIdx = "roccurs" + idx;
             for( jdx = 0; jdx < numyellows[idx]; jdx++ ) {
                yellowfactor = yellowfactor*cat[idx];
                totyellows += 1;
@@ -509,6 +510,7 @@
             }  
             String greenIdx = "nGreen" + idx;
             String nGreenIdx = String.valueOf(numgreens[idx]);
+            String goccursIdx = "goccurs" + idx;
             for( jdx = 0; jdx < numcyans[idx]; jdx++ ) {
                cyanfactor = cyanfactor*cat[idx];
                totcyans += 1;
@@ -520,7 +522,8 @@
                totblues += 1;
             } 
             String blueIdx = "nBlue" + idx;
-            String nBlueIdx = String.valueOf(numblues[idx]); %>    
+            String nBlueIdx = String.valueOf(numblues[idx]); 
+            String boccursIdx = "boccurs" + idx; %>    
             <input type="<%=itype%>" id="<%=catIdx%>" value="<%=cat[idx]%>" class="cat">
             <input type="<%=itype%>" id="<%=whiteIdx%>" value ="<%=nWhiteIdx%>" >
             <input type="<%=itype%>" id="<%=magentaIdx%>" value ="<%=nMagentaIdx%>" >
@@ -529,6 +532,9 @@
             <input type="<%=itype%>" id="<%=greenIdx%>" value ="<%=nGreenIdx%>" >
             <input type="<%=itype%>" id="<%=cyanIdx%>" value ="<%=nCyanIdx%>" >
             <input type="<%=itype%>" id="<%=blueIdx%>" value ="<%=nBlueIdx%>" >
+            <input type="<%=itype%>" id="<%=roccursIdx%>" value="<%=roccurs[idx]%>">
+            <input type="<%=itype%>" id="<%=goccursIdx%>" value="<%=goccurs[idx]%>">
+            <input type="<%=itype%>" id="<%=boccursIdx%>" value="<%=boccurs[idx]%>">
 <%        } %>
     <table id="ghosts">
         <tr><th colspan="8" id="instr">What is a prime number that evenly divides <%=blueOp%>? (Enter)</th></tr>
