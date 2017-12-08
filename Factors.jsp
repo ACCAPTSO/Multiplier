@@ -81,15 +81,9 @@
         int indcatr = 0;
         int indcatrprev = 0;
         int indcatr2prev = 0;
-        int count2manybig = 0;
         int numshared = 0; 
         int whichshared = 0;
         int squarefact = 0;
-        int countequal = 0;
-        int count2big = 0;
-        int count2small = 0;
-        int count2mnyboxes = 0;
-        int count2many5s = 0;
         
         for( int idx = 0; idx < MAXBOXES; idx++ ) {
             textString[idx] = "";
@@ -174,9 +168,9 @@
         int [] whichops = { 1, 2, 4, 3, 5, 6, 7, 7, 7 };
 
 
- // throw out any sets of 3 operands where any 2 operands are
-         // equal, any operand is too big, there are too many big
-         // prime factors or more prime factors of 5's than 2's
+        // throw out any sets of 3 operands where any 2 operands are
+        // equal, any operand is too big, there are too many big
+        // prime factors or more prime factors of 5's than 2's
         while( blueOp == redOp | blueOp == greenOp | redOp == greenOp |
                blueOp > MAXOPRND | redOp > MAXOPRND | greenOp > MAXOPRND |
                blueOp < 2 | redOp < 2 | greenOp < 2 |
@@ -206,12 +200,10 @@
                numwhites[idx] = 0;
             }
             numcats = 0;
-//            for( idx = 0; idx < 2; idx++ ) {
             for( int idx = 0; idx < 4; idx++ ) {
                while( ( mdx == mdxprev & indcatr == indcatrprev ) |
                      ( mdx == mdx2prev & indcatr == indcatr2prev ) ) {
                   if( howmanybig > 0 ) {
-                     count2manybig++;
                      possbl = num2s+num3s+num5s+num7s+num11s;
                   }
                   indcatr = (int)(StrictMath.random()*possbl);
@@ -221,7 +213,6 @@
                   whichshared = (int)( StrictMath.random()*3. );
                   mdx = 3*numshared+whichshared;
                   squarefact = 1 + ( int )( 1.6*StrictMath.random() );
-//                  squarefact = 1;
                }
                mdx2prev = mdxprev;
                mdxprev = mdx;
@@ -366,49 +357,34 @@
                   ldx += 2;
                }
             }
-            System.out.println("blue operand");
-            System.out.println( blueOp );
+            //System.out.println("blue operand");
+            //System.out.println( blueOp );
             ldx += 1;
             thisOp[RED] = ldx;
             redOp = 1;
-            System.out.println("red box index");
-            System.out.println(ldx);
+            //System.out.println("red box index");
+            //System.out.println(ldx);
             for( int idx = 0; idx < numcats; idx++ ) {
                for( jdx = 0; jdx < roccurs[idx]; jdx ++ ) {
                   redOp *= cat[idx];
                   ldx += 2;
                }
             }
-            System.out.println("red operand");
-            System.out.println( redOp);
+            //System.out.println("red operand");
+            //System.out.println( redOp);
             ldx += 1;
             thisOp[GREEN] = ldx;
             greenOp = 1;
-            System.out.println("green box index");
-            System.out.println(ldx);
+            //System.out.println("green box index");
+            //System.out.println(ldx);
             for( int idx = 0; idx < numcats; idx++ ) {
                for( jdx = 0; jdx < goccurs[idx]; jdx ++ ) {
                   greenOp *= cat[idx];
                   ldx += 2;
                }
             }
-            System.out.println("green operand");
-            System.out.println( greenOp );
-            if( blueOp == redOp | blueOp == greenOp | redOp == greenOp ) {
-               countequal++;
-            }
-            if( blueOp > MAXOPRND | redOp > MAXOPRND | greenOp > MAXOPRND ) {
-               count2big++;
-            }
-            if( blueOp < 2 | redOp < 2 | greenOp < 2 ) {
-               count2small++;
-            }
-            if( ldx > MAXBOXES ) {
-               count2mnyboxes++;
-            }
-            if( howmany5s > howmany2s ) {
-               count2many5s++;
-            }
+            //System.out.println("green operand");
+            //System.out.println( greenOp );
         }
         // count how many of each prime factor in each final color category
         // = numblues, numwhites, numyellows etc.
@@ -536,10 +512,21 @@
             <input type="<%=itype%>" id="<%=goccursIdx%>" value="<%=goccurs[idx]%>">
             <input type="<%=itype%>" id="<%=boccursIdx%>" value="<%=boccurs[idx]%>">
 <%        } %>
+
     <table id="ghosts">
-        <tr><th colspan="8" id="instr">What is a prime number that evenly divides <%=blueOp%>? (Enter)</th></tr>
+        <tr>
+        <th colspan="8" id="instr0">
+        Resize your browser window so that the scrollbars just disappear.
+        </th>
+        </tr>
+        <tr>
+            <th colspan="8" id="instr">What is a         
+                <a href="/Tutorials/FindPrimes.jsp" class="ndx"> Prime </a>
+                number that evenly divides <%=blueOp%>? (Enter)
+        </th>
+        </tr>
         <tr><th colspan="8" id="instr2">What</th></tr>
-<%      for( int row = 0; row < 9; ++row ) { %>
+<%      for( int row = 0; row < 8; ++row ) { %>
             <tr>
 <%          for( int col = 0; col < 8; ++col ) { 
                 boolean isFirstOp = ( row == 0 && col == 1 );
@@ -582,7 +569,7 @@
     <div id="index">
         <a href="index.html" class="ndx">Back to Practice Index</a>
     </div>
-<%      for( int row = 0; row < 9; ++row ) {
+<%      for( int row = 0; row < 8; ++row ) {
             for( int col = 0; col < 8; ++col ) { 
                 boolean isFirstOp = ( row == 0 && col == 1 );
                 boolean isSecondOp = ( row == 0 && col == 4 );
@@ -633,11 +620,11 @@
     <label id="cyanLabel2" class="section">cyan</label>
     <label id="greenLabel" class="section">green</label>
     <input type="<%=itype%>" id="linedUp" value="false" class="shortbox">
-
+    <table id="statusTable">
 <% for( int i = 0; i < 0; ++i ) {
     String whatId = "statusBox" + i; %>
     <tr><td><%=i%></td><td><div id="<%=whatId%>"></div></td></tr>
 <% } %>
-
+    </table>
     </body>
 </html>

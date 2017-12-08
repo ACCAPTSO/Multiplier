@@ -11,10 +11,10 @@ body{
     background-color: #d2edf9;
     width: 1080px;
     height:720px;
-    -webkit-background-size: cover;
-    -moz-background-size: cover;
-    -o-background-size: cover;
-    background-size: cover;
+    -webkit-background-size: contain;
+    -moz-background-size: contain;
+    -o-background-size: contain;
+    background-size: contain;
 }
 input{
     width: 4em;
@@ -34,8 +34,8 @@ td{
     border: 2px solid;
     border-color: #d2edf9;
     padding-right: 0px;
-    width: 4em;
-    height: 1.4em;
+    /* width: 4em; */
+    /* height: 1.4em; */
     height: 20px;
     /* width: 4em; */
 }
@@ -100,6 +100,9 @@ th{
 #home{
     position: absolute;
 }
+#instr0{
+    color: #d2edf9;
+}
 #instr{
     color: #11397a;
 }
@@ -110,6 +113,8 @@ th{
     color: #d2edf9;
     padding-bottom: 1em;
 }
-#stats{
-    margin-top: 200px;
+#statusTable{
+    position: absolute;
+    top: 30%;
+    left: 10%;
 }

@@ -18,7 +18,7 @@
 	if(iMouseDown && !lMouseState) // button just clicked!
 	if(!iMouseDown && lMouseState) // button just released!
 	*/ 
-var x = 0;
+//var x = 0;
 var dragHelper  = new Array();
 var redTarg = false;
 var greenTarg = false;
@@ -43,8 +43,7 @@ var mouseOffset = null;
 var iMouseDown  = false; 
 var lMouseState = false; 
 var curTarget   = null; 
-var activeCont = null; 
-//var x = 0;
+
 function getMouseOffset(target, ev){ 
     ev = ev || window.event; 
     var docPosX    = target.style.left.match(/[0-9]+/); // left of target
@@ -157,6 +156,7 @@ function checklineup() {
     var doc = document;
     var num = Number;
     var mat = Math;
+
     if( doc.getElementById("linedUp").value === "false") {
         var allLinedUp = false;
         // for every distinct prime factor
@@ -369,6 +369,18 @@ function checklineup() {
                     }
                     doc.getElementById("instr").innerHTML = instString;
                     // explain about where it originated and what places are taken already fixit
+                    //doc.getElementById("statusBox" + x).innerHTML = "possPlaces: " + possPlaces + " takenPlaces: " + takenPlaces;
+                    //++x;
+                    //doc.getElementById("statusBox" + x).innerHTML = "whitePoss:  " + whitePoss + " magentaPoss: " + magentaPoss;
+                    //++x;
+                    //doc.getElementById("statusBox" + x).innerHTML = "yellowPoss: " + yellowPoss + " cyanPoss: " + cyanPoss;
+                    //++x;
+                    //doc.getElementById("statusBox" + x).innerHTML = "bluePoss:   " + bluePoss + " redPoss: " + redPoss;
+                    //++x;
+                    //doc.getElementById("statusBox" + x).innerHTML = "greenPoss:  " + greenPoss;
+                    //++x;
+                    // if you move a factor out again the error message is meaningless fixit
+                    // plus you can't put it anywhere
                     var instString2 = "It can go in the ";
                     var poss = new Array( whitePoss, magentaPoss, yellowPoss, 
                                         cyanPoss, bluePoss, redPoss, greenPoss );
