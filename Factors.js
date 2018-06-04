@@ -29,6 +29,7 @@ var blueCenterY;
 var greenCenterX;
 var greenCenterY;
 var radius;
+var pcount = 0;
 
 function erase( ev ) {
     ev = ev || window.event;
@@ -38,6 +39,42 @@ function erase( ev ) {
         var answer = ansBx.value;
         var len = answer.length;
         ansBx.value = answer.substring(len, len);
+    }
+}
+function checkM( ev ) {
+    ev = ev || window.event;
+    var ansBx = ev.target;
+    var x = 0;
+    if (ev.which === 13 || ev.keyCode === 13) {
+        var doc = document;
+        var num = Number;
+        var id = ansBx.id.toString();
+        var ans = num(ansBx.value);
+        var pos = id.indexOf("_");
+        var colorSection = id.substr(0,pos);
+        var desiredId = colorSection + "factor";
+        //alert("looking for " + desiredId);
+        var corrAns = num(doc.getElementById(desiredId).value);
+        var instr = "Multiply out the prime factors in";
+        var instr2 = "each section";
+        if( ans === corrAns ) {
+            ansBx.style.color = "black";
+            var products = doc.getElementsByName("prod");
+            var plen = products.length;
+            pcount = pcount + 1;
+            if( pcount < plen ) {
+                products[pcount].focus();
+            } else {
+                instr = "Answer the questions on";
+                instr2 = "the white graph paper";
+            }
+        } else {
+            instr = "Product is";
+            instr2 = "not " + ans;
+            ansBx.style.color = "red";
+        }
+        doc.getElementById("instr").innerHTML = instr;
+        doc.getElementById("instr2").innerHTML = instr2;
     }
 }
 function check( ev ) {
@@ -88,9 +125,17 @@ function check( ev ) {
                     row = row + 1;
                     //alert("next row: " + row + " next col: " + col);
                     var nextIn = doc.getElementById( "d" + row + "_" + col );
-                    nextIn.type = "text";
+                    if( nextIn ) {
+                        nextIn.type = "text";
+                    } else {
+                        alert("Factors.js line 94 d" + row + "_" + col + " does not exist");
+                    }
                     var nextGhost = doc.getElementById( "g" + row + "_" + col );
-                    nextGhost.type = "text";
+                    if( nextGhost ) {
+                        nextGhost.type = "text";
+                    } else {
+                        alert("Factors.js line 100 g" + row + "_" + col + " does not exist");
+                    }
                     var ghostPos = getPos( nextGhost );
                     var leftPos = ghostPos.x + "px";
                     var topPos = ghostPos.y + "px";

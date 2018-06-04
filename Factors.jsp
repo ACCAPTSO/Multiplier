@@ -14,7 +14,7 @@
         <script src="Factors.js"></script>
         <script src="drag3d.js"></script>
     </head>
-    <body>
+    <body id="thisbody">
         <% 
         final int MAXBOXES = 500;
         final int UNCLASSED = 0;
@@ -23,7 +23,7 @@
         final int BLUE = 0;
         final int RED = 1;
         final int GREEN = 2;
-        final boolean debug = false; // true;
+        final boolean debug = false;
         String itype = debug? "text" : "hidden";
         
         int[] boxCntents;
@@ -132,12 +132,12 @@
         blueOp = 0;
         redOp = 0;
         greenOp = 0;
-        int ldx = 0;
+        int ldx = 0; // what is it for? fixit
         int howmanybig = 0;
         int howmany2s = 0;
         int howmany5s = 0;
-        int[] thisOp;
-        thisOp = new int[4];
+        //int[] thisOp;
+        //thisOp = new int[4];
         int numcats = 50;
         int[] numoccurs;
         int[] boccurs; // how many of each factor under the first operand
@@ -166,7 +166,9 @@
 
         int[] cat = new int[MAXBOXES];
         int [] whichops = { 1, 2, 4, 3, 5, 6, 7, 7, 7 };
-
+        int bluefacts = 0;
+        int redfacts = 0;
+        int greenfacts = 0;
 
         // throw out any sets of 3 operands where any 2 operands are
         // equal, any operand is too big, there are too many big
@@ -180,9 +182,9 @@
             // how many of each factor total = numoccurs
             // how many copies of a given factor in each section = numyellows..
             // clear out any previous ones
-            thisOp[BLUE] = 0;
-            thisOp[RED] = 0;
-            thisOp[GREEN] = 0;
+            //thisOp[BLUE] = 0;
+            //thisOp[RED] = 0;
+            //thisOp[GREEN] = 0;
             howmany2s = 0;
             howmany5s = 0;
             howmanybig = 0;
@@ -330,6 +332,7 @@
                if( ( whichops[mdx] & 1 ) > 0 ) {
                   boccurs[jdx] += squarefact;
                   numoccurs[jdx] += squarefact;
+
 //                  System.out.println("boccurs");
 //                  System.out.println(boccurs[jdx]);
                }
@@ -349,39 +352,45 @@
 //               System.out.println(numoccurs[jdx]);
             }
             ldx = 0;
-            thisOp[BLUE] = ldx;
+            //thisOp[BLUE] = ldx;
             blueOp = 1;
+            bluefacts = 0;
             for( int idx = 0; idx < numcats; idx++ ) {
                for( jdx = 0; jdx < boccurs[idx]; jdx ++ ) {
                   blueOp *= cat[idx];
                   ldx += 2;
                }
+               bluefacts += boccurs[idx];
             }
             //System.out.println("blue operand");
             //System.out.println( blueOp );
             ldx += 1;
-            thisOp[RED] = ldx;
+            //thisOp[RED] = ldx;
             redOp = 1;
             //System.out.println("red box index");
             //System.out.println(ldx);
+            redfacts = 0;
             for( int idx = 0; idx < numcats; idx++ ) {
                for( jdx = 0; jdx < roccurs[idx]; jdx ++ ) {
                   redOp *= cat[idx];
                   ldx += 2;
                }
+               redfacts += roccurs[idx];
             }
             //System.out.println("red operand");
             //System.out.println( redOp);
             ldx += 1;
-            thisOp[GREEN] = ldx;
+            //thisOp[GREEN] = ldx;
             greenOp = 1;
             //System.out.println("green box index");
             //System.out.println(ldx);
+            greenfacts = 0;
             for( int idx = 0; idx < numcats; idx++ ) {
                for( jdx = 0; jdx < goccurs[idx]; jdx ++ ) {
                   greenOp *= cat[idx];
                   ldx += 2;
                }
+               greenfacts += goccurs[idx];
             }
             //System.out.println("green operand");
             //System.out.println( greenOp );
@@ -443,7 +452,7 @@
         int bluefactor = 1;
         int totwhites = 0;
         int totmagentas = 0;
-        int totreds = 0; // total number of priime factors in red section
+        int totreds = 0; // total number of prime factors in red section
         int totyellows = 0;
         int totgreens = 0;
         int totcyans = 0;
@@ -499,7 +508,9 @@
             } 
             String blueIdx = "nBlue" + idx;
             String nBlueIdx = String.valueOf(numblues[idx]); 
-            String boccursIdx = "boccurs" + idx; %>    
+            String boccursIdx = "boccurs" + idx; 
+        
+             %>    
             <input type="<%=itype%>" id="<%=catIdx%>" value="<%=cat[idx]%>" class="cat">
             <input type="<%=itype%>" id="<%=whiteIdx%>" value ="<%=nWhiteIdx%>" >
             <input type="<%=itype%>" id="<%=magentaIdx%>" value ="<%=nMagentaIdx%>" >
@@ -511,7 +522,26 @@
             <input type="<%=itype%>" id="<%=roccursIdx%>" value="<%=roccurs[idx]%>">
             <input type="<%=itype%>" id="<%=goccursIdx%>" value="<%=goccurs[idx]%>">
             <input type="<%=itype%>" id="<%=boccursIdx%>" value="<%=boccurs[idx]%>">
-<%        } %>
+            
+<%      } 
+    int maxrow = bluefacts > redfacts? bluefacts : redfacts;
+    maxrow = maxrow > greenfacts? maxrow : greenfacts; 
+    maxrow = maxrow + 1; %>
+    <input type="<%=itype%>" id="totwhites" value="<%=totwhites%>">
+    <input type="<%=itype%>" id="totmagentas" value="<%=totmagentas%>">
+    <input type="<%=itype%>" id="totreds" value="<%=totreds%>">
+    <input type="<%=itype%>" id="totyellows" value="<%=totyellows%>">
+    <input type="<%=itype%>" id="totgreens" value="<%=totgreens%>">
+    <input type="<%=itype%>" id="totcyans" value="<%=totcyans%>">
+    <input type="<%=itype%>" id="totblues" value="<%=totblues%>">
+    
+    <input type="<%=itype%>" id="whitefactor" value="<%=whitefactor%>">
+    <input type="<%=itype%>" id="magentafactor" value="<%=magentafactor%>">
+    <input type="<%=itype%>" id="redfactor" value="<%=redfactor%>">
+    <input type="<%=itype%>" id="yellowfactor" value="<%=yellowfactor%>">
+    <input type="<%=itype%>" id="greenfactor" value="<%=greenfactor%>">
+    <input type="<%=itype%>" id="cyanfactor" value="<%=cyanfactor%>">
+    <input type="<%=itype%>" id="bluefactor" value="<%=bluefactor%>">
 
     <table id="ghosts">
         <tr>
@@ -526,7 +556,7 @@
         </th>
         </tr>
         <tr><th colspan="8" id="instr2">What</th></tr>
-<%      for( int row = 0; row < 8; ++row ) { %>
+<%      for( int row = 0; row < maxrow; ++row ) { %>
             <tr>
 <%          for( int col = 0; col < 8; ++col ) { 
                 boolean isFirstOp = ( row == 0 && col == 1 );
@@ -569,7 +599,7 @@
     <div id="index">
         <a href="index.html" class="ndx">Back to Practice Index</a>
     </div>
-<%      for( int row = 0; row < 8; ++row ) {
+<%      for( int row = 0; row < maxrow; ++row ) {
             for( int col = 0; col < 8; ++col ) { 
                 boolean isFirstOp = ( row == 0 && col == 1 );
                 boolean isSecondOp = ( row == 0 && col == 4 );
@@ -580,6 +610,9 @@
                                    isSecondOp? String.valueOf(redOp) :
                                    isThirdOp? String.valueOf(greenOp) : ""; 
                 String whatId = "d" + row + "_" + col;
+                // not all these dragBoxes are ever to contain a value or to be
+                // moved. Don't call them dragBox and especially don't
+                // mark them moved="false"  fixit
                 if( (col+1)%3 == 0 ) { 
                     ;
                 } else if( isFirstOp ) { %>
@@ -587,7 +620,7 @@
                            value="<%=whatValue%>" 
                            id="<%=whatId%>"
                            class="dragBox"
-                           moved="false">
+                           moved="true">
                     </input>
 <%              } else if( isSecondOp || isThirdOp || col%3 == 0 ) { %>
                     <input type="<%=whatType%>" 
