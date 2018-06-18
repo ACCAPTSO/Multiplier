@@ -9,8 +9,8 @@ and open the template in the editor.
 */
 body{
     background-color: #d2edf9;
-    width: 1080px;
-    height:720px;
+    /* width: 1080px;
+    height:720px; */
     -webkit-background-size: contain;
     -moz-background-size: contain;
     -o-background-size: contain;
@@ -61,7 +61,8 @@ th{
     height: 20px;
 }
 .section{
-    position: fixed;
+    width: 10em;
+    position: absolute;
     color: #d2edf9;
 }
 .shortbox{
@@ -84,6 +85,12 @@ th{
 #blankheader2{
     color: #d2edf9;
     padding-bottom: 1em;
+}
+#circles{
+    position: fixed;
+    /* position: relative; */
+    text-align: left;
+    color: white;
 }
 #ghosts{
     position: absolute;

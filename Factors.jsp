@@ -546,7 +546,7 @@
     <table id="ghosts">
         <tr>
         <th colspan="8" id="instr0">
-        Resize your browser window so that the scrollbars just disappear.
+        Maximize your browser window
         </th>
         </tr>
         <tr>
@@ -583,6 +583,8 @@
                     <input type="<%=whatType%>" 
                            value="<%=whatValue%>"
                            id="<%=whatId%>"
+                           onkeyup="check( event )"
+                           onkeydown="erase( event )"
                            class="ghost">
                     </input>
                     </td>
@@ -599,59 +601,25 @@
     <div id="index">
         <a href="index.html" class="ndx">Back to Practice Index</a>
     </div>
-<%      for( int row = 0; row < maxrow; ++row ) {
-            for( int col = 0; col < 8; ++col ) { 
-                boolean isFirstOp = ( row == 0 && col == 1 );
-                boolean isSecondOp = ( row == 0 && col == 4 );
-                boolean isThirdOp = ( row == 0 && col == 7 );
-                boolean isFirstIn = ( row == 0 && col == 0 );
-                String whatType = isFirstOp || isFirstIn? "text" : "hidden";
-                String whatValue = isFirstOp? String.valueOf(blueOp) : 
-                                   isSecondOp? String.valueOf(redOp) :
-                                   isThirdOp? String.valueOf(greenOp) : ""; 
-                String whatId = "d" + row + "_" + col;
-                // not all these dragBoxes are ever to contain a value or to be
-                // moved. Don't call them dragBox and especially don't
-                // mark them moved="false"  fixit
-                if( (col+1)%3 == 0 ) { 
-                    ;
-                } else if( isFirstOp ) { %>
-                    <input type="<%=whatType%>" 
-                           value="<%=whatValue%>" 
-                           id="<%=whatId%>"
-                           class="dragBox"
-                           moved="true">
-                    </input>
-<%              } else if( isSecondOp || isThirdOp || col%3 == 0 ) { %>
-                    <input type="<%=whatType%>" 
-                           value="<%=whatValue%>" 
-                           id="<%=whatId%>"
-                           onkeyup="check( event )"
-                           onkeydown="erase( event )"
-                           class="dragBox"
-                           moved="false">
-                    </input>
-<%              } else { %>
-                    <input type="<%=whatType%>" 
-                    value="<%=whatValue%>" 
-                    id="<%=whatId%>"
-                    onkeyup="check( event )"
-                    onkeydown="erase( event )"
-                    class="stillBox">
-<%              } 
-            } 
-        } %>
-
-    <label id="redLabel" class="section">red</label>
-    <label id="magentaLabel" class="section">magenta</label>
-    <label id="magentaLabel2" class="section">magenta</label>
-    <label id="yellowLabel" class="section">yellow</label>
-    <label id="yellowLabel2" class="section">yellow</label>
-    <label id="whiteLabel" class="section">white</label>
-    <label id="blueLabel" class="section">blue</label>
-    <label id="cyanLabel" class="section">cyan</label>
-    <label id="cyanLabel2" class="section">cyan</label>
-    <label id="greenLabel" class="section">green</label>
+    <div id="circles">   
+        <label id="redLabel" class="section">red</label>
+        <label id="redLabel2" class="section">red</label>
+        <label id="magentaLabel" class="section">magenta</label>
+        <label id="magentaLabel2" class="section">magenta</label>
+        <label id="magentaLabel3" class="section">magenta</label>
+        <label id="magentaLabel4" class="section">magenta</label>
+        <label id="yellowLabel" class="section">yellow</label>
+        <label id="yellowLabel2" class="section">yellow</label>
+        <label id="yellowLabel3" class="section">yellow</label>
+        <label id="yellowLabel4" class="section">yellow</label>
+        <label id="whiteLabel" class="section">white</label>
+        <label id="blueLabel" class="section">blue</label>
+        <label id="cyanLabel" class="section">cyan</label>
+        <label id="cyanLabel2" class="section">cyan</label>
+        <label id="cyanLabel3" class="section">cyan</label>
+        <label id="cyanLabel4" class="section">cyan</label>
+        <label id="greenLabel" class="section">green</label>       
+    </div>
     <input type="<%=itype%>" id="linedUp" value="false" class="shortbox">
     <table id="statusTable">
 <% for( int i = 0; i < 0; ++i ) {
