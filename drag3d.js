@@ -38,6 +38,13 @@ var cStrtY = 0;
 var cHgtY =  0;
 var targPos = 0;
 var whatTarg = 0;
+var catRed = 0;
+var catMagenta = 0;
+var catWhite = 0;
+var catYellow = 0;
+var catBlue = 0;
+var catCyan = 0;
+var catGreen = 0;
         
 var mouseOffset = null; 
 var iMouseDown  = false; 
@@ -127,10 +134,11 @@ function mouseDown(ev){
         var bottom = top + bxHgt;
         var left = hPos.x; // Num(dHelper[i].style.marginLeft.match(/[0-9]+/));
         var right = left + bxWid;
-        
+        var alreadyMoved = dHelp.getAttribute("moved");
         //document.getElementById("statusBox" + x).innerHTML = "i: " +i + " top: " + top + " bottom: " + bottom + " left: " + left + " right: " + right;
         //x = (x + 1)%10;
-        if( top < mousePos.y && mousePos.y < bottom &&
+        if( alreadyMoved === "false" &&
+                top < mousePos.y && mousePos.y < bottom &&
                    left < mousePos.x && mousePos.x < right ) {
             var val = dHelp.value;
             var id = dHelp.id;
@@ -172,7 +180,8 @@ function checklineup() {
         var ncats = cats.length;
         
         for( var kdx = 0; kdx < ncats; ++kdx ) {
-            var whatCat = cats[kdx];        var dHelperIdx = dragBox;
+            var whatCat = cats[kdx];        
+            var dHelperIdx = dragBox;
             var dVal = dHelperIdx.value;
             if( whatCat.value === dVal ) {
                 var bxHgt = boxHeight;
@@ -257,82 +266,96 @@ function checklineup() {
                         distFromRed < rad && 
                         distFromBlue < rad && 
                         distFromGreen < rad ) {
+                    var cW = catWhite;
                     var leftPos = whiteXpos;
-                    var topPos = whiteYpos;
+                    var topPos = whiteYpos + cW*0.03*y;
                     setBox( dHelperIdx, dPosX, dPosY, leftPos, topPos );
                     //alert("about to copy cols leftPos: " + leftPos + " topPos: " + topPos);
                     copyCols( dVal, col === 0, col === 3, col === 6, leftPos, topPos);
-                    whiteYpos = topPos + 0.03*y;
+                    //whiteYpos = topPos + 0.03*y;
                     //alert("nWhite: " + nWhite);
                     nWhite = nWhite - 1;
                     whiteBx.value = nWhite;
+                    catWhite = cW + 1;
                 } else if( magentaPoss && 
                     distFromRed < rad && 
                     distFromBlue < rad &&
                     distFromGreen > rad ) {
+                    var cM = catMagenta;
                     var leftPos = magentaXpos;
-                    var topPos = magentaYpos;
+                    var topPos = magentaYpos + cM*0.03*y;
                     setBox( dHelperIdx, dPosX, dPosY, leftPos, topPos );  
                     copyCols( dVal, col === 0, col === 3, true, leftPos, topPos );
-                    magentaYpos = topPos + 0.03*y;
+                    //magentaYpos = topPos + 0.03*y;
                     //alert("nMagenta: " + nMagenta);
                     nMagenta = nMagenta - 1;
                     magentaBx.value = nMagenta;
+                    catMagenta = cM + 1;
                 } else if( yellowPoss && 
                     distFromRed < rad && 
                     distFromGreen < rad &&
                     distFromBlue > rad ) {
+                    var cY = catYellow;
                     var leftPos = yellowXpos;
-                    var topPos = yellowYpos;
+                    var topPos = yellowYpos + cY*.03*y;
                     setBox( dHelperIdx, dPosX, dPosY, leftPos, topPos );
                     copyCols( dVal, true, col === 3, col === 6, leftPos, topPos );
-                    yellowYpos = topPos + 0.03*y;
+                    //yellowYpos = topPos + 0.03*y;
                     //alert("nYellow: " + nYellow);
                     nYellow = nYellow - 1;
                     yellowBx.value = nYellow;
+                    catYellow = cY + 1;
                 } else if( cyanPoss && 
                     distFromBlue < rad && 
                     distFromGreen < rad &&
                     distFromRed > rad ) {
+                    var cC = catCyan;
                     var leftPos = cyanXpos;
-                    var topPos = cyanYpos;
+                    var topPos = cyanYpos + cC*.03*y;
                     setBox( dHelperIdx, dPosX, dPosY, leftPos, topPos ); 
                     copyCols( dVal, col === 0, true, col === 6, leftPos, topPos );
-                    cyanYpos = topPos + 0.03*y;
+                    //cyanYpos = topPos + 0.03*y;
                     //alert("nCyan: " + nCyan);
                     nCyan = nCyan - 1;
                     cyanBx.value = nCyan;
+                    catCyan = cC + 1;
                 } else if( bluePoss && 
                     distFromBlue < rad && 
                     distFromGreen > rad &&
                     distFromRed > rad ) {
-                    var topPos = blueYpos;
+                    var cB = catBlue;
+                    var topPos = blueYpos + cB*.03*y;
                     setBox( dHelperIdx, dPosX, dPosY, blueXpos, topPos );  
-                    blueYpos = topPos + 0.03*y;
+                    //blueYpos = topPos + 0.03*y;
                     //alert("nBlue: " + nBlue);
                     nBlue = nBlue - 1;
                     blueBx.value = nBlue;
+                    catBlue = cB + 1;
                 } else if( redPoss && 
                     distFromBlue > rad && 
                     distFromGreen > rad &&
                     distFromRed < rad ) {
-                    var topPos = redYpos;
+                    var cR = catRed;
+                    var topPos = redYpos + cR*.03*y;
                     setBox( dHelperIdx, dPosX, dPosY, redXpos, topPos );  
-                    redYpos = topPos + 0.03*y;
+                    //redYpos = topPos + 0.03*y;
                     //alert("nRed: " + nRed);
                     nRed = nRed - 1;
                     redBx.value = nRed;
+                    catRed = cR + 1;
                     //dHelperIdx.style.color = "#3961a2";
                 } else if( greenPoss && 
                     distFromBlue > rad && 
                     distFromGreen < rad &&
                     distFromRed > rad ) {
-                    var topPos = greenYpos;
+                    var cG = catGreen;
+                    var topPos = greenYpos + cG*.03*y;
                     setBox( dHelperIdx, dPosX, dPosY, greenXpos, topPos ); 
-                    greenYpos = topPos + 0.03*y;
+                    //greenYpos = topPos + 0.03*y;
                     //alert("nGreen: " + nGreen);
                     nGreen = nGreen - 1;
                     greenBx.value = nGreen;
+                    catGreen = cG + 1;
                 } else {
                     dHelperIdx.style.color = "red";
                     var instString = dVal + " is a factor of ";
@@ -388,6 +411,8 @@ function checklineup() {
                     //++x;
                     // if you move a factor out again the error message is meaningless fixit
                     // plus you can't put it anywhere
+                    // don't allow it to be moved. Create another drag box for moving it to the 
+                    // white graph paper and erase that drag box once the problem is done
                     var instString2 = "It can go in the ";
                     var poss = new Array( whitePoss, magentaPoss, yellowPoss, 
                                         cyanPoss, bluePoss, redPoss, greenPoss );
@@ -490,14 +515,14 @@ document.onmousedown = mouseDown;
 document.onmouseup   = mouseUp; 
 function draggerSetup(){ 
     var doc = document;
-    var num = Number;
-    var getstyle = getComputedStyle;
+
     //for( var j = 0; j < 18; j++ ) {
         //doc.getElementById("statusBox" + j).innerHTML = "";
     //}
     
-
-    if( doc.getElementById("linedUp").value !== "true") {
+    if( doc.getElementById("linedUp").value !== "true" ) {
+        var num = Number;
+        var getstyle = getComputedStyle;
 	var ghostBoxes = doc.getElementsByClassName("ghost");
 	var glen = ghostBoxes.length;
 	for( var i = 0; i < glen; ++i ) {
@@ -531,6 +556,12 @@ function draggerSetup(){
             }
 	}
         var dHelper  = doc.getElementsByClassName("dragBox");
+        var instr = doc.getElementById("instr");
+        var instr2 = doc.getElementById("instr2");
+        instr.style.color = "#e2eeeb";
+        instr2.style.color = "#e2eeeb";
+        instr.innerHTML = "Drag each prime factor to the section";
+        instr2.innerHTML = "of the Venn diagram where it belongs.";
         boxHeight = num(getstyle(dHelper[0]).height.match(/[0-9]+/));
         boxWidth = num(getstyle(dHelper[0]).width.match(/[0-9]+/));
         dragHelper = dHelper;

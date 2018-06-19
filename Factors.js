@@ -29,6 +29,8 @@ var blueCenterY;
 var greenCenterX;
 var greenCenterY;
 var radius;
+var prevTop = 0;
+var prevLeft = 0;
 
 function erase( ev ) {
     ev = ev || window.event;
@@ -89,14 +91,6 @@ function check( ev ) {
                     //alert("next row: " + row + " next col: " + col);
                     var nextIn = doc.getElementById( "g" + row + "_" + col );
                     nextIn.type = "text";
-                    /* var nextGhost = doc.getElementById( "g" + row + "_" + col );
-                    nextGhost.type = "text";
-                    var ghostPos = getPos( nextGhost );
-                    var leftPos = ghostPos.x + "px";
-                    var topPos = ghostPos.y + "px"; */
-                    //alert("leftPos: " + leftPos + " topPos: " + topPos);
-                    //nextIn.style.left = leftPos;
-                    //nextIn.style.top = topPos;
                     nextIn.focus();
                     doc.getElementById("instr").innerHTML = 
                             "What is " + whatOp + " divided by " + answer + "? (Enter)";
@@ -105,10 +99,6 @@ function check( ev ) {
                         var nextTd = nextIn.parentNode;
                         nextTd.style.borderLeftColor = "#11397a";
                         nextTd.style.borderBottomColor = "#11397a";
-                        //var nextGhost = doc.getElementById( "g" + row + "_" + col );
-                        //nextTd = nextGhost.parentNode;
-                        //nextTd.style.borderLeftColor = "#11397a";
-                        //nextTd.style.borderBottomColor = "#11397a";
                     }
                 } else {
                     ansBx.style.color = "red";    
@@ -142,18 +132,6 @@ function check( ev ) {
                         var nextTd = nextOp.parentNode;
                         nextTd.style.borderLeftColor = "#11397a";
                         nextTd.style.borderBottomColor = "#11397a";
-                        //var nextGhost = doc.getElementById( "g" + row + "_" + colPlus2 );
-                        //nextGhost.value = nextVal;
-                        //nextGhost.type = "text";
-                        //var ghostPos = getPos( nextGhost );
-                        //var leftPos = ghostPos.x + "px";
-                        //var topPos = ghostPos.y + "px";
-                        //alert("leftPos: " + leftPos + " topPos: " + topPos);
-                        //nextOp.style.left = leftPos;
-                        //nextOp.style.top = topPos;
-                        //nextTd = nextGhost.parentNode;
-                        //nextTd.style.borderLeftColor = "#11397a";
-                        //nextTd.style.borderBottomColor = "#11397a";
                     } else {
                         //alert("adding image, labels and testInput");
                         var snow = "#e2eeeb";
@@ -165,7 +143,6 @@ function check( ev ) {
                         var minDim = hgt < wid ? hgt : wid;
                         var frame = doc.getElementById("circles");                               	 
                         var img = doc.createElement("img");
-                        //img.id = "circles";
                         img.style.position = "absolute";
                         var imgHgt = 0.75*minDim;
                         img.style.height = imgHgt + "px";
@@ -182,20 +159,8 @@ function check( ev ) {
                         frame.insertBefore(img, frame.childNodes[0]);
                         //doc.body.appendChild(frame);
                         img.src = 'Images/factors2.png'; // "url('Images/factors.png')";
-                        /*var testInput = doc.createElement("input");
-                        testInput.id = "testInput";
-                        testInput.type="text";
-                        testInput.setAttribute("value","9999");
-                        testInput.setAttribute("class","dragBox");
-                        testInput.setAttribute("position", "absolute");
-                        testInput.onkeyup="check( event )";
-                        testInput.onkeydown="erase( event )";
-                        testInput.setAttribute("moved","false"); 
-                        testInput.style.background = "pink";
-                        testInput.style.topPos = "300px";
-                        testInput.style.leftPos = "400px";
-                        doc.body.appendChild(testInput); */
-                        draggerSetup();
+                        doc.getElementById("instr").style.color = "#3961a2";
+                        doc.getElementById("instr2").style.color = "#3961a2";
                         movelabels();
                         var redValue = doc.getElementById("g0_4").value;
                         var blueValue = doc.getElementById("g0_1").value;
@@ -251,12 +216,7 @@ function check( ev ) {
                         var cyanLabel4 = doc.getElementById("cyanLabel4");
                         cyanLabel4.style.color = "black";
                         cyanLabel4.innerHTML = greenValue;
-                        var instr = doc.getElementById("instr");
-                        var instr2 = doc.getElementById("instr2");
-                        instr.style.color = snow;
-                        instr2.style.color = snow;
-                        instr.innerHTML = "Drag each prime factor to the section";
-                        instr2.innerHTML = "of the Venn diagram where it belongs.";
+                        
                         var stillBoxes = doc.getElementsByClassName("stillBox");
                         var len = stillBoxes.length;
                         for( var i = 0; i < len; ++i ) {
@@ -300,14 +260,6 @@ function check( ev ) {
                 var nextIn = doc.getElementById( "g" + row + "_" + col );
                 if( nextIn ) {
                     nextIn.type = "text";
-                    var nextGhost = doc.getElementById( "g" + row + "_" + col );
-                    nextGhost.type = "text";
-                    var ghostPos = getPos( nextGhost );
-                    var leftPos = ghostPos.x + "px";
-                    var topPos = ghostPos.y + "px";
-                    //alert("leftPos: " + leftPos + " topPos: " + topPos);
-                    nextIn.style.left = leftPos;
-                    nextIn.style.top = topPos;
                     nextIn.focus();
                 }
             } else {
@@ -328,21 +280,17 @@ function getPos(e){
     } 
     left += e.offsetLeft; 
     top  += e.offsetTop; 
-    left += 2;
-    top += 2;
+    //left += 2;
+    //top += 2;
     return {x:left, y:top}; 
 }
 function movelabels() {
     // move any previously moved drag boxes fixit
+    // don't allow any movement until window is maximized
     var w = window;
     var doc = document;
     var mat = Math;
     var num = Number;
-    var e = doc.documentElement;
-    var g = doc.getElementsByTagName('body')[0];
-    var f = doc.getElementById("circles");
-    //var x = f.innerWidth; // || e.clientWidth || body.clientWidth;
-    //var y = f.innerHeight; //|| e.clientHeight|| body.clientHeight;
     var hgt = num(w.innerHeight);
     var wid = num(w.innerWidth);
     var minDim = hgt < wid ? hgt : wid;        
@@ -360,100 +308,133 @@ function movelabels() {
         }
         frame.style.left = leftPos + "px";  
         frame.style.top = topPos + "px";
-        redCenterX = leftPos + mat.floor(0.5*imgWid);
-        redCenterY = topPos + mat.floor(0.349*imgHgt);
-        blueCenterX = leftPos + mat.floor(0.3*imgWid);
-        blueCenterY = topPos + mat.floor(0.6*imgHgt);
-        greenCenterX = leftPos + mat.floor(0.7*imgWid);
-        greenCenterY = topPos + mat.floor(0.6*imgHgt);
-        radius = mat.floor(0.333*imgWid);
-        redXpos = leftPos + mat.floor(0.51*imgWid);
-        redYpos = topPos + mat.floor(0.06*imgHgt); 
-        magentaXpos = leftPos + mat.floor(0.21*imgWid);
-        magentaYpos = topPos + mat.floor(0.34*imgHgt);
-        yellowXpos = leftPos + mat.floor(0.68*imgWid);
-        yellowYpos = topPos + mat.floor(0.34*imgHgt);
-        whiteXpos = leftPos + mat.floor(0.44*imgWid);
-        whiteYpos = topPos + mat.floor(0.41*imgHgt);
-        blueXpos = leftPos + mat.floor(0.08*imgWid);
-        blueYpos = topPos + mat.floor(0.53*imgHgt);
-        greenXpos = leftPos + mat.floor(0.8*imgWid);
-        greenYpos = topPos + mat.floor(0.53*imgHgt);
-        cyanXpos = leftPos + mat.floor(0.51*imgWid);
-        cyanYpos = topPos + mat.floor(0.71*imgHgt);
+        var prevX = prevLeft;
+        var prevY = prevTop;
+        //
+        //alert("prevX: " + prevX + " prevY: " + prevY);
+        redCenterX = leftPos + mat.round(0.5*imgWid);
+        redCenterY = topPos + mat.round(0.349*imgHgt);
+        blueCenterX = leftPos + mat.round(0.3*imgWid);
+        blueCenterY = topPos + mat.round(0.6*imgHgt);
+        greenCenterX = leftPos + mat.round(0.7*imgWid);
+        greenCenterY = topPos + mat.round(0.6*imgHgt);
+        radius = mat.round(0.333*imgWid);  
+        redXpos = leftPos + mat.round(0.51*imgWid);
+        magentaXpos = leftPos + mat.round(0.21*imgWid);
+        yellowXpos = leftPos + mat.round(0.68*imgWid);
+        whiteXpos = leftPos + mat.round(0.44*imgWid);
+        blueXpos = leftPos + mat.round(0.08*imgWid);
+        greenXpos = leftPos + mat.round(0.8*imgWid);
+        cyanXpos = leftPos + mat.round(0.51*imgWid);
+        //if( prevY === 0 ) {
+            redYpos = topPos + mat.round(0.06*imgHgt);
+            magentaYpos = topPos + mat.round(0.34*imgHgt);
+            yellowYpos = topPos + mat.round(0.34*imgHgt);
+            whiteYpos = topPos + mat.round(0.41*imgHgt);
+            blueYpos = topPos  + mat.round(0.53*imgHgt);
+            greenYpos = topPos  + mat.round(0.53*imgHgt);
+            cyanYpos = topPos + mat.round(0.71*imgHgt);
+        /* } else {
+            redYpos = redYpos + topPos - prevY;
+            magentaYpos = magentaYpos + topPos - prevY;
+            yellowYpos = yellowYpos + topPos - prevY;
+            whiteYpos = whiteYpos + topPos - prevY;
+            blueYpos = blueYpos + topPos - prevY;
+            greenYpos = greenYpos + topPos - prevY;
+            cyanYpos = cyanYpos + topPos - prevY; 
+        } */
+        var allDragBoxes = doc.getElementsByClassName("dragBox");
+        var dboxLen = allDragBoxes.length;   
+        for( var i = 0; i < dboxLen; ++i ) {
+            var whatBx = allDragBoxes[i];
+            if( whatBx.getAttribute("moved") === "true") {
+                var pos = getPos( whatBx );
+                var xPos = pos.x + leftPos - prevX;
+                var yPos = pos.y + topPos - prevY;
+                whatBx.style.left = xPos + "px";
+                whatBx.style.top = yPos + "px";
+            }
+        }
+        prevTop = topPos;
+        prevLeft = leftPos;
     }
     var home = doc.getElementById("home");
-    var homepos = mat.floor(hgt*0.87);
+    var homepos = mat.round(hgt*0.87);
     home.style.marginTop = homepos + "px";
     var index = doc.getElementById("index");
-    var indexpos = mat.floor(hgt*0.91);
+    var indexpos = mat.round(hgt*0.91);
     index.style.marginTop = indexpos + "px";
     //alert("window size x: " + x + " y: " + y); // 1090, 742 // 1078, 727 // 1124, 758
     //if( 1000  < x && x < 1200 && 740 < y && y < 760 ) {
     var fullscr = w.fullScreen;
-    var swid = num(screen.width);
-    var shgt = num(screen.height);
+    var s = screen;
+    var swid = num(s.width);
+    var shgt = num(s.height);
     hgt = num(w.outerHeight);
     //alert("w.fullscreen: " + fullscr + " screen.width: " + swid + " screen.height: " + shgt + " w.width: " + wid + " w.height: " + hgt );
     if( fullscr ||
         ( wid === swid && shgt - 15 <= hgt && hgt <= shgt )) {
         doc.getElementById("instr0").style.color = "#3961a2";
+        var dragExists = doc.getElementsByClassName("dragBox");
+        if( !dragExists[0] ) {
+            draggerSetup();
+        }
     } else {
         doc.getElementById("instr0").style.color = "#d2edf9";
     }
 
 
     var redLabel = doc.getElementById("redLabel");                    
-    redLabel.style.marginTop = (mat.floor(0.14*imgHgt)) + "px";
-    redLabel.style.marginLeft = (mat.floor(0.25*imgWid)) + "px";
+    redLabel.style.marginTop = (mat.round(0.14*imgHgt)) + "px";
+    redLabel.style.marginLeft = (mat.round(0.25*imgWid)) + "px";
     var redLabel2 = doc.getElementById("redLabel2");                    
-    redLabel2.style.marginTop = (mat.floor(0.17*imgHgt)) + "px";
-    redLabel2.style.marginLeft = (mat.floor(0.25*imgWid)) + "px";
+    redLabel2.style.marginTop = (mat.round(0.17*imgHgt)) + "px";
+    redLabel2.style.marginLeft = (mat.round(0.25*imgWid)) + "px";
     var magentaLabel = doc.getElementById("magentaLabel");
-    magentaLabel.style.marginTop = (mat.floor(0.33*imgHgt)) + "px";
-    magentaLabel.style.marginLeft = (mat.floor(0.34*imgWid)) + "px";
+    magentaLabel.style.marginTop = (mat.round(0.33*imgHgt)) + "px";
+    magentaLabel.style.marginLeft = (mat.round(0.34*imgWid)) + "px";
     var magentaLabel2 = doc.getElementById("magentaLabel2");
-    magentaLabel2.style.marginTop = (mat.floor(0.36*imgHgt)) + "px";
-    magentaLabel2.style.marginLeft = (mat.floor(0.34*imgWid)) + "px";
+    magentaLabel2.style.marginTop = (mat.round(0.36*imgHgt)) + "px";
+    magentaLabel2.style.marginLeft = (mat.round(0.34*imgWid)) + "px";
     var magentaLabel3 = doc.getElementById("magentaLabel3");
-    magentaLabel3.style.marginTop = (mat.floor(0.39*imgHgt)) + "px";
-    magentaLabel3.style.marginLeft = (mat.floor(0.34*imgWid)) + "px";
+    magentaLabel3.style.marginTop = (mat.round(0.39*imgHgt)) + "px";
+    magentaLabel3.style.marginLeft = (mat.round(0.34*imgWid)) + "px";
     var magentaLabel4 = doc.getElementById("magentaLabel4");
-    magentaLabel4.style.marginTop = (mat.floor(0.42*imgHgt)) + "px";
-    magentaLabel4.style.marginLeft = (mat.floor(0.34*imgWid)) + "px";
+    magentaLabel4.style.marginTop = (mat.round(0.42*imgHgt)) + "px";
+    magentaLabel4.style.marginLeft = (mat.round(0.34*imgWid)) + "px";
     var yellowLabel = doc.getElementById("yellowLabel");   
-    yellowLabel.style.marginTop = (mat.floor(0.33*imgHgt)) + "px";
-    yellowLabel.style.marginLeft = (mat.floor(0.54*imgWid)) + "px";
+    yellowLabel.style.marginTop = (mat.round(0.33*imgHgt)) + "px";
+    yellowLabel.style.marginLeft = (mat.round(0.54*imgWid)) + "px";
     var yellowLabel2 = doc.getElementById("yellowLabel2");
-    yellowLabel2.style.marginTop = (mat.floor(0.36*imgHgt)) + "px";
-    yellowLabel2.style.marginLeft = (mat.floor(0.56*imgWid)) + "px";
+    yellowLabel2.style.marginTop = (mat.round(0.36*imgHgt)) + "px";
+    yellowLabel2.style.marginLeft = (mat.round(0.56*imgWid)) + "px";
     var yellowLabel3 = doc.getElementById("yellowLabel3");
-    yellowLabel3.style.marginTop = (mat.floor(0.39*imgHgt)) + "px";
-    yellowLabel3.style.marginLeft = (mat.floor(0.59*imgWid)) + "px";
+    yellowLabel3.style.marginTop = (mat.round(0.39*imgHgt)) + "px";
+    yellowLabel3.style.marginLeft = (mat.round(0.59*imgWid)) + "px";
     var yellowLabel4 = doc.getElementById("yellowLabel4");
-    yellowLabel4.style.marginTop = (mat.floor(0.42*imgHgt)) + "px";
-    yellowLabel4.style.marginLeft = (mat.floor(0.61*imgWid)) + "px";
+    yellowLabel4.style.marginTop = (mat.round(0.42*imgHgt)) + "px";
+    yellowLabel4.style.marginLeft = (mat.round(0.61*imgWid)) + "px";
     var whiteLabel = doc.getElementById("whiteLabel");
-    whiteLabel.style.marginTop = (mat.floor(0.62*imgHgt)) + "px";
-    whiteLabel.style.marginLeft = (mat.floor(0.39*imgWid)) + "px";
+    whiteLabel.style.marginTop = (mat.round(0.62*imgHgt)) + "px";
+    whiteLabel.style.marginLeft = (mat.round(0.39*imgWid)) + "px";
     var blueLabel = doc.getElementById("blueLabel");
-    blueLabel.style.marginTop = (mat.floor(0.92*imgHgt)) + "px";
-    blueLabel.style.marginLeft = (mat.floor(0.18*imgWid)) + "px";
+    blueLabel.style.marginTop = (mat.round(0.92*imgHgt)) + "px";
+    blueLabel.style.marginLeft = (mat.round(0.18*imgWid)) + "px";
     var greenLabel = doc.getElementById("greenLabel");
-    greenLabel.style.marginTop = (mat.floor(0.92*imgHgt)) + "px";
-    greenLabel.style.marginLeft = (mat.floor(0.55*imgWid)) + "px";
+    greenLabel.style.marginTop = (mat.round(0.92*imgHgt)) + "px";
+    greenLabel.style.marginLeft = (mat.round(0.55*imgWid)) + "px";
     var cyanLabel = doc.getElementById("cyanLabel");
-    cyanLabel.style.marginTop = (mat.floor(0.7*imgHgt)) + "px";
-    cyanLabel.style.marginLeft = (mat.floor(0.35*imgWid)) + "px";
+    cyanLabel.style.marginTop = (mat.round(0.7*imgHgt)) + "px";
+    cyanLabel.style.marginLeft = (mat.round(0.35*imgWid)) + "px";
     var cyanLabel2 = doc.getElementById("cyanLabel2");
-    cyanLabel2.style.marginTop = (mat.floor(0.73*imgHgt)) + "px";
-    cyanLabel2.style.marginLeft = (mat.floor(0.36*imgWid)) + "px";
+    cyanLabel2.style.marginTop = (mat.round(0.73*imgHgt)) + "px";
+    cyanLabel2.style.marginLeft = (mat.round(0.36*imgWid)) + "px";
     var cyanLabel3 = doc.getElementById("cyanLabel3");
-    cyanLabel3.style.marginTop = (mat.floor(0.76*imgHgt)) + "px";
-    cyanLabel3.style.marginLeft = (mat.floor(0.37*imgWid)) + "px";
+    cyanLabel3.style.marginTop = (mat.round(0.76*imgHgt)) + "px";
+    cyanLabel3.style.marginLeft = (mat.round(0.37*imgWid)) + "px";
     var cyanLabel4 = doc.getElementById("cyanLabel4");
-    cyanLabel4.style.marginTop = (mat.floor(0.79*imgHgt)) + "px";
-    cyanLabel4.style.marginLeft = (mat.floor(0.38*imgWid)) + "px";
+    cyanLabel4.style.marginTop = (mat.round(0.79*imgHgt)) + "px";
+    cyanLabel4.style.marginLeft = (mat.round(0.38*imgWid)) + "px";
 }
 window.onload = function(){
     var doc = document;
@@ -484,27 +465,13 @@ window.onload = function(){
     ghosts.style.marginTop  = "14px"; 
     ghosts.style.marginLeft  = "11px";
     var home = doc.getElementById("home");
-    var homepos = mat.floor(hgt*0.87);
+    var homepos = mat.round(hgt*0.87);
     home.style.marginTop = homepos + "px";
     var index = doc.getElementById("index");
-    var indexpos = mat.floor(hgt*0.91);
+    var indexpos = mat.round(hgt*0.91);
     index.style.marginTop = indexpos + "px";
-    //var ghostArray = doc.getElementsByClassName("ghost");
-    //var len = ghostArray.length;
-    //for( var i = 0; i < 2; ++i ) {
-        //var whatGhost = ghostArray[i];
-        //var id = whatGhost.id;
-        //var idlen = id.length;
-        //var idnum = id.substr(1,idlen);
-        //var ghostPos = getPos( whatGhost );
-        //var dBox = doc.getElementById("d" + idnum);
-        //var leftPos = ghostPos.x + "px";
-        //var topPos = ghostPos.y + "px";
-        //alert("i: " + i + " id: " + id + " idnum: " + idnum + " leftPos: " + leftPos + " topPos: " + topPos);
-        //dBox.style.left = leftPos;
-        //dBox.style.top = topPos;
-    //}
 };
-window.onresize = function() { 
-    movelabels();
+window.onresize = function() {
+    //window.settimout( 
+    movelabels(); //, 1000 );
 };
