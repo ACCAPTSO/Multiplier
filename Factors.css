@@ -110,7 +110,7 @@ th{
 #instr0{
     color: #d2edf9;
 }
-#instr{
+#instr1{
     color: #11397a;
 }
 #index{
@@ -118,7 +118,7 @@ th{
 }
 #instr2{
     color: #d2edf9;
-    padding-bottom: 1em;
+    /* padding-bottom: 1em; */
 }
 #statusTable{
     position: absolute;

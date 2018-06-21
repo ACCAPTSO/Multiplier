@@ -545,18 +545,21 @@
 
     <table id="ghosts">
         <tr>
-        <th colspan="8" id="instr0">
+        <th colspan="8" id="instr0" class="instrs">
         Maximize your browser window
         </th>
         </tr>
         <tr>
-            <th colspan="8" id="instr">What is a         
+            <th colspan="8" id="instr1" class="instrs">What is a         
                 <a href="/Tutorials/FindPrimes.jsp" class="ndx"> Prime </a>
                 number that evenly divides <%=blueOp%>? (Enter)
         </th>
         </tr>
-        <tr><th colspan="8" id="instr2">What</th></tr>
-<%      for( int row = 0; row < maxrow; ++row ) { %>
+<%      for( int i = 2; i < 6; ++i ) {
+            String whatId = "instr" + i; %>
+            <tr><th colspan="8" id="<%=whatId%>" class="instrs">What</th></tr>
+<%      }
+for( int row = 0; row < maxrow; ++row ) { %>
             <tr>
 <%          for( int col = 0; col < 8; ++col ) { 
                 boolean isFirstOp = ( row == 0 && col == 1 );

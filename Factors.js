@@ -92,7 +92,7 @@ function check( ev ) {
                     var nextIn = doc.getElementById( "g" + row + "_" + col );
                     nextIn.type = "text";
                     nextIn.focus();
-                    doc.getElementById("instr").innerHTML = 
+                    doc.getElementById("instr1").innerHTML = 
                             "What is " + whatOp + " divided by " + answer + "? (Enter)";
                     var notDone = answer !== whatOp; 
                     if( notDone ) {
@@ -102,11 +102,11 @@ function check( ev ) {
                     }
                 } else {
                     ansBx.style.color = "red";    
-                    doc.getElementById("instr").innerHTML = answer + " is not prime.";
+                    doc.getElementById("instr1").innerHTML = answer + " is not prime.";
                 }
             } else {
                 ansBx.style.color = "red";   
-                doc.getElementById("instr").innerHTML = answer + " does not divide " + whatOp + " evenly.";
+                doc.getElementById("instr1").innerHTML = answer + " does not divide " + whatOp + " evenly.";
             }
         } else {
             //alert("checking division");
@@ -127,7 +127,7 @@ function check( ev ) {
                     if( nextOp ) {
                         nextOp.type = "text";
                         var nextVal = nextOp.value;
-                        doc.getElementById("instr").innerHTML = 
+                        doc.getElementById("instr1").innerHTML = 
                             "What is a prime number that evenly divides " + nextVal + "? (Enter)";
                         var nextTd = nextOp.parentNode;
                         nextTd.style.borderLeftColor = "#11397a";
@@ -159,7 +159,7 @@ function check( ev ) {
                         frame.insertBefore(img, frame.childNodes[0]);
                         //doc.body.appendChild(frame);
                         img.src = 'Images/factors2.png'; // "url('Images/factors.png')";
-                        doc.getElementById("instr").style.color = "#3961a2";
+                        doc.getElementById("instr1").style.color = "#3961a2";
                         doc.getElementById("instr2").style.color = "#3961a2";
                         movelabels();
                         var redValue = doc.getElementById("g0_4").value;
@@ -254,7 +254,7 @@ function check( ev ) {
                     }
                 } else {
                     col = prevCol;
-                    doc.getElementById("instr").innerHTML = 
+                    doc.getElementById("instr1").innerHTML = 
                        "What is a prime number that evenly divides " + answer + "? (Enter)";
                 }
                 var nextIn = doc.getElementById( "g" + row + "_" + col );
@@ -264,7 +264,7 @@ function check( ev ) {
                 }
             } else {
                 ansBx.style.color = "red";
-                doc.getElementById("instr").innerHTML = prevOp + " divided by " + prevPrime + " is not " + answer + ".";
+                doc.getElementById("instr1").innerHTML = prevOp + " divided by " + prevPrime + " is not " + answer + ".";
             }
         }
         return false;
@@ -285,7 +285,7 @@ function getPos(e){
     return {x:left, y:top}; 
 }
 function movelabels() {
-    // move any previously moved drag boxes fixit
+    // move any previously moved drag boxes
     // don't allow any movement until window is maximized
     var w = window;
     var doc = document;
@@ -304,14 +304,34 @@ function movelabels() {
         if( img ) {   
             img.style.height = imgHgt + "px";
             img.style.width = imgWid + "px";
-            //alert("window hgt, wid: " + hgt + ", " + wid + " imgHgt, imgWid: " + imgHgt + ", " + imgWid + " topPos, leftPos: " + topPos  + ", " + leftPos );
+            var fullscr = w.fullScreen;
+            var s = screen;
+            var swid = num(s.width);
+            var shgt = num(s.height);
+            hgt = num(w.outerHeight);
+            //alert("w.fullscreen: " + fullscr + " screen.width: " + swid + " screen.height: " + shgt + " w.width: " + wid + " w.height: " + hgt );
+            if( fullscr ||
+                ( wid === swid && shgt - 15 <= hgt && hgt <= shgt )) {
+                //doc.getElementById("instr0").style.color = "#3961a2";
+                var dragExists = doc.getElementsByClassName("dragBox");
+                if( !dragExists[0] ) {
+                    draggerSetup();
+                }
+            } else {
+                var instr0 = doc.getElementById("instr0");
+                instr0.style.color = "red";
+                instr0.innerHTML = "Maximize your browser window";
+                var mx = doc.getElementsByClassName("instrs").length;
+                for( var instIdx = 1; instIdx < mx; ++instIdx) {
+                    var whatInstr = doc.getElementById("instr" + instIdx);
+                    whatInstr.style.color = "#3961a2";
+                }
+            }
         }
         frame.style.left = leftPos + "px";  
         frame.style.top = topPos + "px";
         var prevX = prevLeft;
         var prevY = prevTop;
-        //
-        //alert("prevX: " + prevX + " prevY: " + prevY);
         redCenterX = leftPos + mat.round(0.5*imgWid);
         redCenterY = topPos + mat.round(0.349*imgHgt);
         blueCenterX = leftPos + mat.round(0.3*imgWid);
@@ -326,23 +346,13 @@ function movelabels() {
         blueXpos = leftPos + mat.round(0.08*imgWid);
         greenXpos = leftPos + mat.round(0.8*imgWid);
         cyanXpos = leftPos + mat.round(0.51*imgWid);
-        //if( prevY === 0 ) {
-            redYpos = topPos + mat.round(0.06*imgHgt);
-            magentaYpos = topPos + mat.round(0.34*imgHgt);
-            yellowYpos = topPos + mat.round(0.34*imgHgt);
-            whiteYpos = topPos + mat.round(0.41*imgHgt);
-            blueYpos = topPos  + mat.round(0.53*imgHgt);
-            greenYpos = topPos  + mat.round(0.53*imgHgt);
-            cyanYpos = topPos + mat.round(0.71*imgHgt);
-        /* } else {
-            redYpos = redYpos + topPos - prevY;
-            magentaYpos = magentaYpos + topPos - prevY;
-            yellowYpos = yellowYpos + topPos - prevY;
-            whiteYpos = whiteYpos + topPos - prevY;
-            blueYpos = blueYpos + topPos - prevY;
-            greenYpos = greenYpos + topPos - prevY;
-            cyanYpos = cyanYpos + topPos - prevY; 
-        } */
+        redYpos = topPos + mat.round(0.06*imgHgt);
+        magentaYpos = topPos + mat.round(0.34*imgHgt);
+        yellowYpos = topPos + mat.round(0.34*imgHgt);
+        whiteYpos = topPos + mat.round(0.41*imgHgt);
+        blueYpos = topPos  + mat.round(0.53*imgHgt);
+        greenYpos = topPos  + mat.round(0.53*imgHgt);
+        cyanYpos = topPos + mat.round(0.71*imgHgt);
         var allDragBoxes = doc.getElementsByClassName("dragBox");
         var dboxLen = allDragBoxes.length;   
         for( var i = 0; i < dboxLen; ++i ) {
@@ -359,30 +369,14 @@ function movelabels() {
         prevLeft = leftPos;
     }
     var home = doc.getElementById("home");
-    var homepos = mat.round(hgt*0.87);
+    var homepos = mat.round(hgt*0.76);
     home.style.marginTop = homepos + "px";
     var index = doc.getElementById("index");
-    var indexpos = mat.round(hgt*0.91);
+    var indexpos = mat.round(hgt*0.80);
     index.style.marginTop = indexpos + "px";
     //alert("window size x: " + x + " y: " + y); // 1090, 742 // 1078, 727 // 1124, 758
     //if( 1000  < x && x < 1200 && 740 < y && y < 760 ) {
-    var fullscr = w.fullScreen;
-    var s = screen;
-    var swid = num(s.width);
-    var shgt = num(s.height);
-    hgt = num(w.outerHeight);
-    //alert("w.fullscreen: " + fullscr + " screen.width: " + swid + " screen.height: " + shgt + " w.width: " + wid + " w.height: " + hgt );
-    if( fullscr ||
-        ( wid === swid && shgt - 15 <= hgt && hgt <= shgt )) {
-        doc.getElementById("instr0").style.color = "#3961a2";
-        var dragExists = doc.getElementsByClassName("dragBox");
-        if( !dragExists[0] ) {
-            draggerSetup();
-        }
-    } else {
-        doc.getElementById("instr0").style.color = "#d2edf9";
-    }
-
+    
 
     var redLabel = doc.getElementById("redLabel");                    
     redLabel.style.marginTop = (mat.round(0.14*imgHgt)) + "px";

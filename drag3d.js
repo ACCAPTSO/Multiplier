@@ -207,53 +207,136 @@ function checklineup() {
                 var catid = whatCat.id;
                 var catidlen = catid.length;
                 var idnum = catid.substr(1,catidlen);
-                //var roccurs = num(doc.getElementById("roccurs" + idnum));
-                //var goccurs = num(doc.getElementById("goccurs" + idnum));
-                //var boccurs = num(doc.getElementById("boccurs" + idnum));
-                    
+                //doc.getElementById("statusBox" + x).innerHTML = "dVal, catid, idnum:  " + dVal + ", " + catid + ", " + idnum;
+                //x = (x + 1)%10;
+                var roccurs = num(doc.getElementById("roccurs" + idnum).value);
+                var goccurs = num(doc.getElementById("goccurs" + idnum).value);
+                var boccurs = num(doc.getElementById("boccurs" + idnum).value);
+		var redWasPoss = false;
+		var magentaWasPoss = false;
+		var whiteWasPoss = false;
+		var yellowWasPoss = false;
+		var blueWasPoss = false;
+		var cyanWasPoss = false;
+		var greenWasPoss = false;
                 var possPlaces = 0;
+                //doc.getElementById("statusBox" + x).innerHTML = "roccurs, goccurs, boccurs:  " + roccurs + ", " + goccurs + ", " + boccurs;
+                //x = (x + 1)%10;
+                //doc.getElementById("statusBox" + x).innerHTML = "origRed, origGreen, origBlue:  " + origRed + ", " + origGreen + ", " + origBlue;
+                //x = (x + 1)%10;
+		if( origRed ) {
+                    if( roccurs > goccurs && roccurs > boccurs ) {
+			// could have gone into red
+                        redWasPoss = true;
+                        possPlaces += 1;
+                    }
+                    if( goccurs > boccurs && roccurs > boccurs) {
+			// could have gone into yellow
+                        yellowWasPoss = true;
+                        possPlaces += 1;
+                    } else if( boccurs > goccurs && roccurs > goccurs ) {
+			// could have gone into magenta
+                        magentaWasPoss = true;
+                        possPlaces += 1;
+                    }
+                    if( goccurs >= roccurs && boccurs >= roccurs ||
+                            roccurs >= goccurs && roccurs >= boccurs &&
+                            goccurs > 0 && boccurs > 0) {
+                        // could have gone into white
+                        whiteWasPoss = true;
+                        possPlaces += 1;
+                    }
+		} else if( origBlue ) {
+                    if( boccurs > roccurs && boccurs > goccurs ) {
+                        // could have gone into blue
+                        blueWasPoss = true;
+                        possPlaces += 1;
+                    }
+                    if( roccurs > goccurs && boccurs > goccurs) {
+                        // could have gone into magenta
+                        magentaWasPoss = true;
+                        possPlaces += 1;
+                    } else if( goccurs > roccurs && boccurs > roccurs) {
+                        // could have gone into cyan
+                        cyanWasPoss = true;
+                        possPlaces += 1;
+                    }
+                    if( roccurs >= boccurs && goccurs >= boccurs ||
+                            boccurs >= roccurs && boccurs >= goccurs &&
+                            roccurs > 0 && goccurs > 0) {
+                        // could have gone into white
+                        whiteWasPoss = true;
+                        possPlaces += 1;
+                    }
+		} else if( origGreen ) {
+                    if( goccurs > roccurs && goccurs > boccurs ) {
+                        // could have gone into green
+                        greenWasPoss = true;
+                        possPlaces += 1;
+                    }
+                    if( roccurs > boccurs && goccurs > boccurs) {
+                        // could have gone into yellow
+                        yellowWasPoss = true;
+                        possPlaces += 1;
+                    } else if( boccurs > roccurs && goccurs > roccurs) {
+                        // could have gone into cyan
+                        cyanWasPoss = true;
+                        possPlaces += 1;
+                    }
+                    if( roccurs >= goccurs && boccurs >= goccurs ||
+                            goccurs >= roccurs && goccurs >= boccurs &&
+                            roccurs > 0 && boccurs > 0 ) {
+			// could have gone into white
+                        whiteWasPoss = true;
+                        possPlaces += 1;
+                    }
+		} else {
+                    alert( dVal + " didn't originate anywhere");
+		}
+                    
+                //var possPlaces = 0;
                 var whiteBx = doc.getElementById("nWhite" + idnum);
                 var nWhite = num(whiteBx.value);
                 var whitePoss = nWhite > 0;
-                if( whitePoss ) {
-                    possPlaces += 1;
-                }
+                //if( whitePoss ) {
+                 //   possPlaces += 1;
+                //}
                 var magentaBx = doc.getElementById("nMagenta" + idnum);
                 var nMagenta = num(magentaBx.value);
                 var magentaPoss = nMagenta > 0 && (origRed || origBlue);
-                if( magentaPoss ) {
+                /* if( magentaPoss ) {
                     possPlaces += 1;
-                }
+                } */
                 var yellowBx = doc.getElementById("nYellow" + idnum);
                 var nYellow = num(yellowBx.value);
                 var yellowPoss = nYellow > 0 && (origRed || origGreen); 
-                if( yellowPoss ) {
+                /* if( yellowPoss ) {
                     possPlaces += 1;
-                }
+                } */
                 var cyanBx = doc.getElementById("nCyan" + idnum);
                 var nCyan = num(cyanBx.value);
                 var cyanPoss = nCyan > 0 && (origBlue || origGreen);
-                if( cyanPoss ) {
+                /* if( cyanPoss ) {
                     possPlaces += 1;
-                }
+                } */
                 var blueBx = doc.getElementById("nBlue" + idnum);
                 var nBlue = num(blueBx.value);
                 var bluePoss = nBlue > 0 && origBlue;
-                if( bluePoss ) {
+                /* if( bluePoss ) {
                     possPlaces += 1;
-                }
+                } */
                 var redBx = doc.getElementById("nRed" + idnum);
                 var nRed = num(redBx.value);
                 var redPoss = nRed > 0 && origRed;
-                if( redPoss ) {
+                /* if( redPoss ) {
                     possPlaces += 1;
-                }
+                } */
                 var greenBx = doc.getElementById("nGreen" + idnum);
                 var nGreen = num(greenBx.value);
                 var greenPoss = nGreen > 0 &&  origGreen;
-                if( greenPoss ) {
+                /* if( greenPoss ) {
                     possPlaces += 1;
-                }
+                } */
 
                 var takenPlaces = possPlaces;
                 var dPosX = getPosition( dHelperIdx ).x + bxWid/2;
@@ -261,6 +344,8 @@ function checklineup() {
                 var distFromRed = mat.sqrt(mat.pow(dPosX-rCentX, 2) + mat.pow(dPosY-rCentY, 2));
                 var distFromGreen = mat.sqrt(mat.pow(dPosX-gCentX, 2) + mat.pow(dPosY-gCentY, 2));
                 var distFromBlue = mat.sqrt(mat.pow(dPosX-bCentX, 2) + mat.pow(dPosY-bCentY, 2));
+                //doc.getElementById("statusBox" + x).innerHTML = "nWhite: " + nWhite + " distFromRed: " + distFromRed + " distFromGreen: " + distFromGreen + " distFromBlue: " + distFromBlue + " radius: " + rad;
+                //x = (x + 1)%10;
                 //alert("nWhite: " + nWhite + " distFromRed: " + distFromRed + " distFromGreen: " + distFromGreen + " distFromBlue: " + distFromBlue + " radius: " + rad );
                 if( whitePoss && 
                         distFromRed < rad && 
@@ -331,6 +416,17 @@ function checklineup() {
                     nBlue = nBlue - 1;
                     blueBx.value = nBlue;
                     catBlue = cB + 1;
+                    var instr0 = doc.getElementById("instr0");
+                    var instr1 = doc.getElementById("instr1");
+                    instr0.style.color = "#e2eeeb";
+                    instr1.style.color = "#e2eeeb";
+                    instr0.innerHTML = "Drag each prime factor to the section";
+                    instr1.innerHTML = "of the Venn diagram where it belongs.";
+                    var mx = doc.getElementsByClassName("instrs").length;
+                    for( var instIdx = 2; instIdx < mx; ++instIdx) {
+                        var whatInstr = doc.getElementById("instr" + instIdx);
+                        whatInstr.style.color = "#3961a2";
+                    }
                 } else if( redPoss && 
                     distFromBlue > rad && 
                     distFromGreen > rad &&
@@ -343,6 +439,17 @@ function checklineup() {
                     nRed = nRed - 1;
                     redBx.value = nRed;
                     catRed = cR + 1;
+                    var instr0 = doc.getElementById("instr0");
+                    var instr1 = doc.getElementById("instr1");
+                    instr0.style.color = "#e2eeeb";
+                    instr1.style.color = "#e2eeeb";
+                    instr0.innerHTML = "Drag each prime factor to the section";
+                    instr1.innerHTML = "of the Venn diagram where it belongs.";
+                    var mx = doc.getElementsByClassName("instrs").length;
+                    for( var instIdx = 2; instIdx < mx; ++instIdx) {
+                        var whatInstr = doc.getElementById("instr" + instIdx);
+                        whatInstr.style.color = "#3961a2";
+                    }
                     //dHelperIdx.style.color = "#3961a2";
                 } else if( greenPoss && 
                     distFromBlue > rad && 
@@ -356,9 +463,29 @@ function checklineup() {
                     nGreen = nGreen - 1;
                     greenBx.value = nGreen;
                     catGreen = cG + 1;
+                    var instr0 = doc.getElementById("instr0");
+                    var instr1 = doc.getElementById("instr1");
+                    instr0.style.color = "#e2eeeb";
+                    instr1.style.color = "#e2eeeb";
+                    instr0.innerHTML = "Drag each prime factor to the section";
+                    instr1.innerHTML = "of the Venn diagram where it belongs.";
+                    var mx = doc.getElementsByClassName("instrs").length;
+                    for( var instIdx = 2; instIdx < mx; ++instIdx) {
+                        var whatInstr = doc.getElementById("instr" + instIdx);
+                        whatInstr.style.color = "#3961a2";
+                    }
                 } else {
+                    var instrs = new Array(5);
+                    var instIdx = 0;
                     dHelperIdx.style.color = "red";
-                    var instString = dVal + " is a factor of ";
+                    var nextCol = col + 1;
+                    var origOp = doc.getElementById("g0_" + nextCol).value;
+                    instrs[instIdx] = "This " + dVal + " factor originated from " + origOp;
+                    var whatInstr = doc.getElementById("instr" + instIdx);
+                    whatInstr.innerHTML = instrs[instIdx];
+                    whatInstr.style.color = "#e2eeeb";
+                    ++instIdx;
+                    /* instrs[instIdx] = dVal + " is a factor of ";
                     var blueVal = num(doc.getElementById("g0_1").value);
                     var redVal = num(doc.getElementById("g0_4").value);
                     var greenVal = num(doc.getElementById("g0_7").value);
@@ -377,68 +504,200 @@ function checklineup() {
                     }
                     if( divCount < 2 ) {
                         if( divByBlue ) {
-                            instString = instString + blueVal + ".";
+                            instrs[instIdx] = instrs[instIdx] + blueVal + ".";
                         } else if( divByRed ) {
-                            instString = instString + redVal + ".";
+                            instrs[instIdx] = instrs[instIdx] + redVal + ".";
                         } else if( divByGreen ) {
-                            instString = instString + greenVal + ".";
+                            instrs[instIdx] = instrs[instIdx] + greenVal + ".";
                         }
                     } else if( divCount < 3 ) {
                         if( divByBlue ) {
-                            instString = instString + blueVal + " and ";
+                            instrs[instIdx] = instrs[instIdx] + blueVal + " and ";
                             if( divByRed ) {
-                                instString = instString + redVal;
+                                instrs[instIdx] = instrs[instIdx] + redVal;
                             } else {
-                                instString = instString + greenVal;
+                                instrs[instIdx] = instrs[instIdx] + greenVal;
                             }
                         } else {
-                            instString = instString + redVal + " and " + greenVal;
+                            instrs[instIdx] = instrs[instIdx] + redVal + " and " + greenVal;
                         }
                     } else {
-                        instString = instString + blueVal + ", " + redVal + " and " + greenVal;
+                        instrs[instIdx] = instrs[instIdx] + blueVal + ", " + redVal + " and " + greenVal;
                     }
-                    doc.getElementById("instr").innerHTML = instString;
+                    whatInstr = doc.getElementById("instr" + instIdx);
+                    whatInstr.innerHTML = instrs[instIdx];
+                    whatInstr.style.color = "#e2eeeb";
+                    ++instIdx; */
                     // explain about where it originated and what places are taken already fixit
-                    //doc.getElementById("statusBox" + x).innerHTML = "possPlaces: " + possPlaces + " takenPlaces: " + takenPlaces;
-                    //++x;
-                    //doc.getElementById("statusBox" + x).innerHTML = "whitePoss:  " + whitePoss + " magentaPoss: " + magentaPoss;
-                    //++x;
-                    //doc.getElementById("statusBox" + x).innerHTML = "yellowPoss: " + yellowPoss + " cyanPoss: " + cyanPoss;
-                    //++x;
-                    //doc.getElementById("statusBox" + x).innerHTML = "bluePoss:   " + bluePoss + " redPoss: " + redPoss;
-                    //++x;
-                    //doc.getElementById("statusBox" + x).innerHTML = "greenPoss:  " + greenPoss;
-                    //++x;
-                    // if you move a factor out again the error message is meaningless fixit
-                    // plus you can't put it anywhere
-                    // don't allow it to be moved. Create another drag box for moving it to the 
-                    // white graph paper and erase that drag box once the problem is done
-                    var instString2 = "It can go in the ";
+                    /*
+                    doc.getElementById("statusBox" + x).innerHTML = "possPlaces: " + possPlaces + " takenPlaces: " + takenPlaces;
+                    x = (x + 1)%10;
+                    doc.getElementById("statusBox" + x).innerHTML = "whiteWasPoss:  " + whiteWasPoss + " magentaWasPoss: " + magentaWasPoss + " yellowWasPoss: " + yellowWasPoss;
+                    x = (x + 1)%10;
+                    doc.getElementById("statusBox" + x).innerHTML =  " cyanWasPoss: " + cyanWasPoss + " blueWasPoss:   " + blueWasPoss + " redWasPoss: " + redWasPoss + " greenWasPoss:  " + greenWasPoss;
+                    x = (x + 1)%10;
+                    doc.getElementById("statusBox" + x).innerHTML = "whitePoss:  " + whitePoss + " magentaPoss: " + magentaPoss + " yellowPoss: " + yellowPoss;
+                    x = (x + 1)%10;
+                    doc.getElementById("statusBox" + x).innerHTML =  " cyanPoss: " + cyanPoss + " bluePoss:   " + bluePoss + " redPoss: " + redPoss + " greenPoss:  " + greenPoss;
+                    x = (x + 1)%10;
+                    */
+                    // don't allow inputs to be moved once placed. Create another 
+                    // drag box for moving it to the white graph paper and erase 
+                    // that drag box once the problem is done
+                                        
+                    if( possPlaces === 1 ) {
+                        if( origRed && boccurs === 0 && goccurs === 0 ||
+                                origBlue && goccurs === 0 && roccurs === 0 ||
+                                origGreen && roccurs === 0 && boccurs === 0) {
+                            var onlyPlace = redWasPoss? "red" : greenWasPoss? "green" : "blue";
+                            instrs[instIdx] = "Only " + origOp + " has a factor of " + dVal + ", so " + dVal + " goes in " + onlyPlace + ".";
+                        } else if( whiteWasPoss ) {
+                            var otherCol1 = (col + 3)%9 + 1;
+                            var otherOp1 = doc.getElementById("g0_" + otherCol1).value;
+                            var otherCol2 = (col + 6)%9 + 1;
+                            var otherOp2 = doc.getElementById("g0_" + otherCol2).value;
+                            instrs[instIdx] = otherOp1 + " & " + otherOp2 + " have >= number of " + dVal + "s than " + origOp + ", so " + dVal + " goes in white.";
+                        } else if( magentaWasPoss ) {
+                            var otherCol1 = col === 0? 4 : 1;
+                            var otherOp1 = doc.getElementById("g0_" + otherCol1).value;
+                            var otherCol2 = 7;
+                            var otherOp2 = doc.getElementById("g0_" + otherCol2).value;
+                            instrs[instIdx] =  otherOp1 + " has >= # " + dVal + "s than " + origOp + ", " + otherOp2 + " has none, so " + dVal + " goes in magenta.";
+                        } else if( yellowWasPoss ) {
+                            var otherCol1 = col === 3? 7 : 4;
+                            var otherOp1 = doc.getElementById("g0_" + otherCol1).value;
+                            var otherCol2 = 1;
+                            var otherOp2 = doc.getElementById("g0_" + otherCol2).value;
+                            instrs[instIdx] = otherOp1 + " has >= # " + dVal + "s than " + origOp + ", " + otherOp2 + " has none, so " + dVal + " goes in yellow.";
+                        } else if( cyanWasPoss ) {
+                            var otherCol1 = col === 0? 7 : 1;
+                            var otherOp1 = doc.getElementById("g0_" + otherCol1).value;
+                            var otherCol2 = 4;
+                            var otherOp2 = doc.getElementById("g0_" + otherCol2).value;
+                            instrs[instIdx] = otherOp1 + " has >=  # " + dVal + "s than " + origOp + ", " + otherOp2 + " has none, so " + dVal + " goes in cyan.";
+                        }
+                        whatInstr = doc.getElementById("instr" + instIdx);
+                        whatInstr.innerHTML = instrs[instIdx];
+                        whatInstr.style.color = "#e2eeeb";
+                        ++instIdx;
+                        //doc.getElementById("instr2").style.color = "#3961a2";
+                    } else {
+                        if( whiteWasPoss ) {
+                            var otherCol1 = (col + 3)%9 + 1;
+                            var otherOp1 = doc.getElementById("g0_" + otherCol1).value;
+                            var otherCol2 = (col + 6)%9 + 1;
+                            var otherOp2 = doc.getElementById("g0_" + otherCol2).value;
+                            instrs[instIdx] = otherOp1 + " & " + otherOp2 + " have one or more " + dVal + "s also, so " + dVal + " can go in white.";
+                            whatInstr = doc.getElementById("instr" + instIdx);
+                            whatInstr.innerHTML = instrs[instIdx];
+                            whatInstr.style.color = "#e2eeeb";
+                            ++instIdx;
+                        }
+                        if( magentaWasPoss ) {
+                            var otherCol1 = col === 0? 4 : 1;
+                            var otherOp1 = doc.getElementById("g0_" + otherCol1).value;
+                            var otherCol2 = 7;
+                            var otherOp2 = doc.getElementById("g0_" + otherCol2).value;
+                            instrs[instIdx] = origOp + " & " + otherOp1 + " have >= # " + dVal + "s than " + otherOp2 + ", so " + dVal + " can go in magenta.";
+                            whatInstr = doc.getElementById("instr" + instIdx);
+                            whatInstr.innerHTML = instrs[instIdx];
+                            whatInstr.style.color = "#e2eeeb";
+                            ++instIdx;
+                        } else if( yellowWasPoss ) {
+                            var otherCol1 = col === 3? 7 : 4;
+                            var otherOp1 = doc.getElementById("g0_" + otherCol1).value;
+                            var otherCol2 = 1;
+                            var otherOp2 = doc.getElementById("g0_" + otherCol2).value;
+                            instrs[instIdx] = origOp + " & " + otherOp1 + " have >= # " + dVal + "s than " + otherOp2 + ", so " + dVal + " can go in yellow.";
+                            whatInstr = doc.getElementById("instr" + instIdx);
+                            whatInstr.innerHTML = instrs[instIdx];
+                            whatInstr.style.color = "#e2eeeb";
+                            ++instIdx;
+                        } else if( cyanWasPoss ) {
+                            var otherCol1 = col === 0? 7 : 1;
+                            var otherOp1 = doc.getElementById("g0_" + otherCol1).value;
+                            var otherCol2 = 4;
+                            var otherOp2 = doc.getElementById("g0_" + otherCol2).value;
+                            instrs[instIdx] = origOp + " & " + otherOp1 + " have >= # " + dVal + "s than " + otherOp2 + ", so " + dVal + " can go in cyan.";
+                            whatInstr = doc.getElementById("instr" + instIdx);
+                            whatInstr.innerHTML = instrs[instIdx];
+                            whatInstr.style.color = "#e2eeeb";
+                            ++instIdx;
+                        }
+                        if( redWasPoss ) {
+                            var otherOp1 = doc.getElementById("g0_1").value;
+                            var otherOp2 = doc.getElementById("g0_7").value;
+                            instrs[instIdx] = origOp + " has >= # " + dVal + "s than " + otherOp1 + " or "+ otherOp2 + ", so " + dVal + " can go in red.";
+                            whatInstr = doc.getElementById("instr" + instIdx);
+                            whatInstr.innerHTML = instrs[instIdx];
+                            whatInstr.style.color = "#e2eeeb";
+                            ++instIdx;
+                        } else if( blueWasPoss ) {
+                            var otherOp1 = doc.getElementById("g0_4").value;
+                            var otherOp2 = doc.getElementById("g0_7").value;
+                            instrs[instIdx] = origOp + " has >= # " + dVal + "s than " + otherOp1 + " or "+ otherOp2 + ", so " + dVal + " can go in blue.";
+                            whatInstr = doc.getElementById("instr" + instIdx);
+                            whatInstr.innerHTML = instrs[instIdx];
+                            whatInstr.style.color = "#e2eeeb";
+                            ++instIdx;
+                        } else if( greenWasPoss ) {
+                            var otherOp1 = doc.getElementById("g0_1").value;
+                            var otherOp2 = doc.getElementById("g0_4").value;
+                            instrs[instIdx] = origOp + " has >= # " + dVal + "s than " + otherOp1 + " or "+ otherOp2 + ", so " + dVal + " can go in green.";
+                            whatInstr = doc.getElementById("instr" + instIdx);
+                            whatInstr.innerHTML = instrs[instIdx];
+                            whatInstr.style.color = "#e2eeeb";
+                            ++instIdx;
+                        }
+                    }
+                    var idx = instIdx;
+                    //instrs[idx] = "It can go in the ";
+                    var wasPoss = new Array( whiteWasPoss, magentaWasPoss, 
+			    		yellowWasPoss, cyanWasPoss, 
+			    blueWasPoss, redWasPoss, greenWasPoss );
                     var poss = new Array( whitePoss, magentaPoss, yellowPoss, 
                                         cyanPoss, bluePoss, redPoss, greenPoss );
                     var sections = new Array( " white", " magenta", " yellow", 
                                         " cyan", " blue", " red", " green" );
-                    var raylen = poss.length;
+                    var raylen = wasPoss.length;
+                    
                     for( var i = 0; i < raylen; ++i ) {
-                        if( poss[i] ) {
-                            instString2 = instString2 + sections[i];
-                            if( takenPlaces > 2 ) {
-                                instString2 = instString2 + ", ";
-                            } else if( takenPlaces > 1 ) {
-                                instString2 = instString2 + " or";
-                            } else {
-                                break;
+                        if( wasPoss[i] && !poss[i] ) {
+                                instrs[instIdx++] = "The " + dVal + "s in the " + sections[i] + " section are accounted for, so don't put it there."; 
                             }
-                            takenPlaces -= 1;
-                        }
+                      //      instrs[idx] = instrs[idx] + sections[i];
+                      //      if( takenPlaces > 2 ) {
+                      //          instrs[idx] = instrs[idx] + ", ";
+                      //      } else if( takenPlaces > 1 ) {
+                      //          instrs[idx] = instrs[idx] + " or";
+                      //      } else {
+                      //          break;
+                      //      }
+                      //      takenPlaces -= 1;
+                      //  }
                     }
-                    instString2 = instString2  + " section";
-                    if( possPlaces > 1 ) {
-                        instString2 = instString2  + "s.";
-                    } else {
-                        instString2 = instString2  + ".";
+                    //instrs[idx] = instrs[idx]  + " section";
+                    //if( possPlaces > 1 ) {
+                    //    instrs[idx] = instrs[idx]  + "s.";
+                    //} else {
+                    //    instrs[idx] = instrs[idx]  + " only.";
+                    //}
+                    //whatInstr = doc.getElementById("instr" + idx);
+                    //whatInstr.innerHTML = instrs[idx];
+                    //whatInstr.style.color = "#e2eeeb";
+                    
+                    for( ; idx < instIdx; ++idx ) {
+                        whatInstr = doc.getElementById("instr" + idx);
+                        whatInstr.innerHTML = instrs[idx];
+                        whatInstr.style.color = "#e2eeeb";
                     }
-                    doc.getElementById("instr2").innerHTML = instString2;
+                    // ++instIdx;
+                    var mx = doc.getElementsByClassName("instrs").length;
+                    while( instIdx < mx ) {
+                        whatInstr = doc.getElementById("instr" + instIdx);
+                        whatInstr.style.color = "#3961a2";
+                        ++instIdx;
+                    }
                 }
                 break;
             }
@@ -453,16 +712,6 @@ function checklineup() {
                 break;
             }
         }
-        //doc.getElementById("statusBox1").innerHTML = "before all lined up check";
-        if( allLinedUp ) {
-            //doc.getElementById("linedUp").value = "true"; 
-            //doc.getElementById("statusBox1").innerHTML = "all lined up";
-            //doc.getElementById("instr").innerHTML = "";
-        } else {
-            //doc.getElementById("statusBox1").innerHTML = "not lined up yet";
-            //doc.getElementById("instr").innerHTML = "Drag factors";
-        }
-        //doc.getElementById("statusBox2").innerHTML = "after all lined up check";
     }
     dragBox  = null;
 }
@@ -497,6 +746,7 @@ function copyCols( val, col0Moved, col3Moved, col6Moved, leftPos, topPos ) {
                     bxCol === 6 && !col6Moved    ) {
                     whatBx.style.left = leftPos + "px";
                     whatBx.style.top = topPos + "px";
+                    whatBx.style.color = "#3961a2";
                     whatBx.setAttribute("moved", "true");
                     col0Moved = col0Moved || bxCol === 0;
                     col3Moved = col3Moved || bxCol === 3;
@@ -507,6 +757,17 @@ function copyCols( val, col0Moved, col3Moved, col6Moved, leftPos, topPos ) {
                 }
             }
         }
+    }
+    var instr0 = doc.getElementById("instr0");
+    var instr1 = doc.getElementById("instr1");
+    instr0.style.color = "#e2eeeb";
+    instr1.style.color = "#e2eeeb";
+    instr0.innerHTML = "Drag each prime factor to the section";
+    instr1.innerHTML = "of the Venn diagram where it belongs.";
+    var mx = doc.getElementsByClassName("instrs").length;
+    for( var instIdx = 2; instIdx < mx; ++instIdx) {
+        var whatInstr = doc.getElementById("instr" + instIdx);
+        whatInstr.style.color = "#3961a2";
     }
 }
        
@@ -556,26 +817,19 @@ function draggerSetup(){
             }
 	}
         var dHelper  = doc.getElementsByClassName("dragBox");
-        var instr = doc.getElementById("instr");
-        var instr2 = doc.getElementById("instr2");
-        instr.style.color = "#e2eeeb";
-        instr2.style.color = "#e2eeeb";
-        instr.innerHTML = "Drag each prime factor to the section";
-        instr2.innerHTML = "of the Venn diagram where it belongs.";
+        var instr0 = doc.getElementById("instr0");
+        var instr1 = doc.getElementById("instr1");
+        instr0.style.color = "#e2eeeb";
+        instr1.style.color = "#e2eeeb";
+        instr0.innerHTML = "Drag each prime factor to the section";
+        instr1.innerHTML = "of the Venn diagram where it belongs.";
+        var mx = doc.getElementsByClassName("instrs").length;
+        for( var instIdx = 2; instIdx < mx; ++instIdx) {
+            var whatInstr = doc.getElementById("instr" + instIdx);
+            whatInstr.style.color = "#3961a2";
+        }
         boxHeight = num(getstyle(dHelper[0]).height.match(/[0-9]+/));
         boxWidth = num(getstyle(dHelper[0]).width.match(/[0-9]+/));
         dragHelper = dHelper;
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
