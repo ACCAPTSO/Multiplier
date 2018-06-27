@@ -625,9 +625,10 @@ for( int row = 0; row < maxrow; ++row ) { %>
     </div>
     <input type="<%=itype%>" id="linedUp" value="false" class="shortbox">
     <table id="statusTable">
-<% for( int i = 0; i < 0; ++i ) {
-    String whatId = "statusBox" + i; %>
-    <tr><td><%=i%></td><td><div id="<%=whatId%>"></div></td></tr>
+<% for( int i = 0, j = 1; i < 0; i += 2, j += 2 ) {
+    String whatId = "statusBox" + i; 
+    String whatId2 = "statusBox" + j; %>
+    <tr><td><%=i%></td><td><div id="<%=whatId%>"></div></td><td><%=j%></td><td><div id="<%=whatId2%>"></div></td></tr>
 <% } %>
     </table>
     </body>

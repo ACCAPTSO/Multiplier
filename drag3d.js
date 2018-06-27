@@ -45,11 +45,13 @@ var catYellow = 0;
 var catBlue = 0;
 var catCyan = 0;
 var catGreen = 0;
+
         
 var mouseOffset = null; 
 var iMouseDown  = false; 
 var lMouseState = false; 
-var curTarget   = null; 
+var curTarget   = null;
+
 
 function getMouseOffset(target, ev){ 
     ev = ev || window.event; 
@@ -178,12 +180,13 @@ function checklineup() {
         // count the dhelpers that have been dragged there
         var cats = doc.getElementsByClassName("cat");
         var ncats = cats.length;
-        
+        //var sections = new Array( " white", " magenta", " yellow", 
+        //                                " cyan", " blue", " red", " green" );
         for( var kdx = 0; kdx < ncats; ++kdx ) {
             var whatCat = cats[kdx];        
             var dHelperIdx = dragBox;
-            var dVal = dHelperIdx.value;
-            if( whatCat.value === dVal ) {
+            var dVal = num(dHelperIdx.value);
+            if( num(whatCat.value) === dVal ) {
                 var bxHgt = boxHeight;
                 var bxWid = boxWidth;
                 var rad = radius;
@@ -226,119 +229,90 @@ function checklineup() {
                 //x = (x + 1)%10;
 		if( origRed ) {
                     if( roccurs > goccurs && roccurs > boccurs ) {
-			// could have gone into red
                         redWasPoss = true;
                         possPlaces += 1;
                     }
                     if( goccurs > boccurs && roccurs > boccurs) {
-			// could have gone into yellow
                         yellowWasPoss = true;
                         possPlaces += 1;
                     } else if( boccurs > goccurs && roccurs > goccurs ) {
-			// could have gone into magenta
                         magentaWasPoss = true;
                         possPlaces += 1;
                     }
                     if( goccurs >= roccurs && boccurs >= roccurs ||
                             roccurs >= goccurs && roccurs >= boccurs &&
                             goccurs > 0 && boccurs > 0) {
-                        // could have gone into white
                         whiteWasPoss = true;
                         possPlaces += 1;
                     }
 		} else if( origBlue ) {
                     if( boccurs > roccurs && boccurs > goccurs ) {
-                        // could have gone into blue
                         blueWasPoss = true;
                         possPlaces += 1;
                     }
                     if( roccurs > goccurs && boccurs > goccurs) {
-                        // could have gone into magenta
                         magentaWasPoss = true;
                         possPlaces += 1;
                     } else if( goccurs > roccurs && boccurs > roccurs) {
-                        // could have gone into cyan
                         cyanWasPoss = true;
                         possPlaces += 1;
                     }
                     if( roccurs >= boccurs && goccurs >= boccurs ||
                             boccurs >= roccurs && boccurs >= goccurs &&
                             roccurs > 0 && goccurs > 0) {
-                        // could have gone into white
                         whiteWasPoss = true;
                         possPlaces += 1;
                     }
 		} else if( origGreen ) {
                     if( goccurs > roccurs && goccurs > boccurs ) {
-                        // could have gone into green
                         greenWasPoss = true;
                         possPlaces += 1;
                     }
                     if( roccurs > boccurs && goccurs > boccurs) {
-                        // could have gone into yellow
                         yellowWasPoss = true;
                         possPlaces += 1;
                     } else if( boccurs > roccurs && goccurs > roccurs) {
-                        // could have gone into cyan
                         cyanWasPoss = true;
                         possPlaces += 1;
                     }
                     if( roccurs >= goccurs && boccurs >= goccurs ||
                             goccurs >= roccurs && goccurs >= boccurs &&
                             roccurs > 0 && boccurs > 0 ) {
-			// could have gone into white
                         whiteWasPoss = true;
                         possPlaces += 1;
                     }
 		} else {
-                    alert( dVal + " didn't originate anywhere");
+                    //alert( dVal + " didn't originate anywhere");
 		}
                     
-                //var possPlaces = 0;
                 var whiteBx = doc.getElementById("nWhite" + idnum);
                 var nWhite = num(whiteBx.value);
                 var whitePoss = nWhite > 0;
-                //if( whitePoss ) {
-                 //   possPlaces += 1;
-                //}
+
                 var magentaBx = doc.getElementById("nMagenta" + idnum);
                 var nMagenta = num(magentaBx.value);
                 var magentaPoss = nMagenta > 0 && (origRed || origBlue);
-                /* if( magentaPoss ) {
-                    possPlaces += 1;
-                } */
+
                 var yellowBx = doc.getElementById("nYellow" + idnum);
                 var nYellow = num(yellowBx.value);
                 var yellowPoss = nYellow > 0 && (origRed || origGreen); 
-                /* if( yellowPoss ) {
-                    possPlaces += 1;
-                } */
+
                 var cyanBx = doc.getElementById("nCyan" + idnum);
                 var nCyan = num(cyanBx.value);
                 var cyanPoss = nCyan > 0 && (origBlue || origGreen);
-                /* if( cyanPoss ) {
-                    possPlaces += 1;
-                } */
+
                 var blueBx = doc.getElementById("nBlue" + idnum);
                 var nBlue = num(blueBx.value);
                 var bluePoss = nBlue > 0 && origBlue;
-                /* if( bluePoss ) {
-                    possPlaces += 1;
-                } */
+
                 var redBx = doc.getElementById("nRed" + idnum);
                 var nRed = num(redBx.value);
                 var redPoss = nRed > 0 && origRed;
-                /* if( redPoss ) {
-                    possPlaces += 1;
-                } */
+
                 var greenBx = doc.getElementById("nGreen" + idnum);
                 var nGreen = num(greenBx.value);
                 var greenPoss = nGreen > 0 &&  origGreen;
-                /* if( greenPoss ) {
-                    possPlaces += 1;
-                } */
 
-                var takenPlaces = possPlaces;
                 var dPosX = getPosition( dHelperIdx ).x + bxWid/2;
                 var dPosY = getPosition( dHelperIdx ).y + bxHgt/2;
                 var distFromRed = mat.sqrt(mat.pow(dPosX-rCentX, 2) + mat.pow(dPosY-rCentY, 2));
@@ -355,10 +329,11 @@ function checklineup() {
                     var leftPos = whiteXpos;
                     var topPos = whiteYpos + cW*0.03*y;
                     setBox( dHelperIdx, dPosX, dPosY, leftPos, topPos );
+                    dHelperIdx.setAttribute("name", "white");
+                    dHelperIdx.setAttribute("position", topPos);
+                    dHelperIdx.setAttribute("moved", "true");
                     //alert("about to copy cols leftPos: " + leftPos + " topPos: " + topPos);
-                    copyCols( dVal, col === 0, col === 3, col === 6, leftPos, topPos);
-                    //whiteYpos = topPos + 0.03*y;
-                    //alert("nWhite: " + nWhite);
+                    copyCols( dVal, col === 0, col === 3, col === 6, leftPos, topPos, "white" );
                     nWhite = nWhite - 1;
                     whiteBx.value = nWhite;
                     catWhite = cW + 1;
@@ -369,10 +344,11 @@ function checklineup() {
                     var cM = catMagenta;
                     var leftPos = magentaXpos;
                     var topPos = magentaYpos + cM*0.03*y;
-                    setBox( dHelperIdx, dPosX, dPosY, leftPos, topPos );  
-                    copyCols( dVal, col === 0, col === 3, true, leftPos, topPos );
-                    //magentaYpos = topPos + 0.03*y;
-                    //alert("nMagenta: " + nMagenta);
+                    setBox( dHelperIdx, dPosX, dPosY, leftPos, topPos ); 
+                    dHelperIdx.setAttribute("name", "magenta");
+                    dHelperIdx.setAttribute("position", topPos);
+                    dHelperIdx.setAttribute("moved", "true");
+                    copyCols( dVal, col === 0, col === 3, true, leftPos, topPos, "magenta" );
                     nMagenta = nMagenta - 1;
                     magentaBx.value = nMagenta;
                     catMagenta = cM + 1;
@@ -384,9 +360,10 @@ function checklineup() {
                     var leftPos = yellowXpos;
                     var topPos = yellowYpos + cY*.03*y;
                     setBox( dHelperIdx, dPosX, dPosY, leftPos, topPos );
-                    copyCols( dVal, true, col === 3, col === 6, leftPos, topPos );
-                    //yellowYpos = topPos + 0.03*y;
-                    //alert("nYellow: " + nYellow);
+                    dHelperIdx.setAttribute("name", "yellow");
+                    dHelperIdx.setAttribute("position", topPos);
+                    dHelperIdx.setAttribute("moved", "true");
+                    copyCols( dVal, true, col === 3, col === 6, leftPos, topPos, "yellow" );
                     nYellow = nYellow - 1;
                     yellowBx.value = nYellow;
                     catYellow = cY + 1;
@@ -398,9 +375,10 @@ function checklineup() {
                     var leftPos = cyanXpos;
                     var topPos = cyanYpos + cC*.03*y;
                     setBox( dHelperIdx, dPosX, dPosY, leftPos, topPos ); 
-                    copyCols( dVal, col === 0, true, col === 6, leftPos, topPos );
-                    //cyanYpos = topPos + 0.03*y;
-                    //alert("nCyan: " + nCyan);
+                    dHelperIdx.setAttribute("name", "cyan");
+                    dHelperIdx.setAttribute("position", topPos);
+                    dHelperIdx.setAttribute("moved", "true");
+                    copyCols( dVal, col === 0, true, col === 6, leftPos, topPos, "cyan" );
                     nCyan = nCyan - 1;
                     cyanBx.value = nCyan;
                     catCyan = cC + 1;
@@ -411,8 +389,8 @@ function checklineup() {
                     var cB = catBlue;
                     var topPos = blueYpos + cB*.03*y;
                     setBox( dHelperIdx, dPosX, dPosY, blueXpos, topPos );  
-                    //blueYpos = topPos + 0.03*y;
-                    //alert("nBlue: " + nBlue);
+                    dHelperIdx.setAttribute("name", "blue");
+                    dHelperIdx.setAttribute("position", topPos);
                     nBlue = nBlue - 1;
                     blueBx.value = nBlue;
                     catBlue = cB + 1;
@@ -434,8 +412,8 @@ function checklineup() {
                     var cR = catRed;
                     var topPos = redYpos + cR*.03*y;
                     setBox( dHelperIdx, dPosX, dPosY, redXpos, topPos );  
-                    //redYpos = topPos + 0.03*y;
-                    //alert("nRed: " + nRed);
+                    dHelperIdx.setAttribute("name", "red");
+                    dHelperIdx.setAttribute("position", topPos);
                     nRed = nRed - 1;
                     redBx.value = nRed;
                     catRed = cR + 1;
@@ -450,7 +428,6 @@ function checklineup() {
                         var whatInstr = doc.getElementById("instr" + instIdx);
                         whatInstr.style.color = "#3961a2";
                     }
-                    //dHelperIdx.style.color = "#3961a2";
                 } else if( greenPoss && 
                     distFromBlue > rad && 
                     distFromGreen < rad &&
@@ -458,8 +435,8 @@ function checklineup() {
                     var cG = catGreen;
                     var topPos = greenYpos + cG*.03*y;
                     setBox( dHelperIdx, dPosX, dPosY, greenXpos, topPos ); 
-                    //greenYpos = topPos + 0.03*y;
-                    //alert("nGreen: " + nGreen);
+                    dHelperIdx.setAttribute("name", "green");
+                    dHelperIdx.setAttribute("position", topPos);
                     nGreen = nGreen - 1;
                     greenBx.value = nGreen;
                     catGreen = cG + 1;
@@ -485,49 +462,6 @@ function checklineup() {
                     whatInstr.innerHTML = instrs[instIdx];
                     whatInstr.style.color = "#e2eeeb";
                     ++instIdx;
-                    /* instrs[instIdx] = dVal + " is a factor of ";
-                    var blueVal = num(doc.getElementById("g0_1").value);
-                    var redVal = num(doc.getElementById("g0_4").value);
-                    var greenVal = num(doc.getElementById("g0_7").value);
-                    var divByBlue = blueVal%dVal === 0;
-                    var divByRed = redVal%dVal === 0;
-                    var divByGreen = greenVal%dVal === 0;
-                    var divCount = 0;
-                    if( divByBlue ) {
-                        divCount += 1;
-                    }
-                    if( divByRed ) {
-                        divCount += 1;
-                    }
-                    if( divByGreen ) {
-                        divCount += 1;
-                    }
-                    if( divCount < 2 ) {
-                        if( divByBlue ) {
-                            instrs[instIdx] = instrs[instIdx] + blueVal + ".";
-                        } else if( divByRed ) {
-                            instrs[instIdx] = instrs[instIdx] + redVal + ".";
-                        } else if( divByGreen ) {
-                            instrs[instIdx] = instrs[instIdx] + greenVal + ".";
-                        }
-                    } else if( divCount < 3 ) {
-                        if( divByBlue ) {
-                            instrs[instIdx] = instrs[instIdx] + blueVal + " and ";
-                            if( divByRed ) {
-                                instrs[instIdx] = instrs[instIdx] + redVal;
-                            } else {
-                                instrs[instIdx] = instrs[instIdx] + greenVal;
-                            }
-                        } else {
-                            instrs[instIdx] = instrs[instIdx] + redVal + " and " + greenVal;
-                        }
-                    } else {
-                        instrs[instIdx] = instrs[instIdx] + blueVal + ", " + redVal + " and " + greenVal;
-                    }
-                    whatInstr = doc.getElementById("instr" + instIdx);
-                    whatInstr.innerHTML = instrs[instIdx];
-                    whatInstr.style.color = "#e2eeeb";
-                    ++instIdx; */
                     // explain about where it originated and what places are taken already fixit
                     /*
                     doc.getElementById("statusBox" + x).innerHTML = "possPlaces: " + possPlaces + " takenPlaces: " + takenPlaces;
@@ -580,7 +514,6 @@ function checklineup() {
                         whatInstr.innerHTML = instrs[instIdx];
                         whatInstr.style.color = "#e2eeeb";
                         ++instIdx;
-                        //doc.getElementById("instr2").style.color = "#3961a2";
                     } else {
                         if( whiteWasPoss ) {
                             var otherCol1 = (col + 3)%9 + 1;
@@ -651,47 +584,27 @@ function checklineup() {
                         }
                     }
                     var idx = instIdx;
-                    //instrs[idx] = "It can go in the ";
                     var wasPoss = new Array( whiteWasPoss, magentaWasPoss, 
 			    		yellowWasPoss, cyanWasPoss, 
 			    blueWasPoss, redWasPoss, greenWasPoss );
                     var poss = new Array( whitePoss, magentaPoss, yellowPoss, 
                                         cyanPoss, bluePoss, redPoss, greenPoss );
-                    var sections = new Array( " white", " magenta", " yellow", 
-                                        " cyan", " blue", " red", " green" );
+                    var sections = new Array( "white", "magenta", "yellow", 
+                                        "cyan", "blue", "red", "green" );
+                                        
                     var raylen = wasPoss.length;
                     
                     for( var i = 0; i < raylen; ++i ) {
                         if( wasPoss[i] && !poss[i] ) {
                                 instrs[instIdx++] = "The " + dVal + "s in the " + sections[i] + " section are accounted for, so don't put it there."; 
                             }
-                      //      instrs[idx] = instrs[idx] + sections[i];
-                      //      if( takenPlaces > 2 ) {
-                      //          instrs[idx] = instrs[idx] + ", ";
-                      //      } else if( takenPlaces > 1 ) {
-                      //          instrs[idx] = instrs[idx] + " or";
-                      //      } else {
-                      //          break;
-                      //      }
-                      //      takenPlaces -= 1;
-                      //  }
                     }
-                    //instrs[idx] = instrs[idx]  + " section";
-                    //if( possPlaces > 1 ) {
-                    //    instrs[idx] = instrs[idx]  + "s.";
-                    //} else {
-                    //    instrs[idx] = instrs[idx]  + " only.";
-                    //}
-                    //whatInstr = doc.getElementById("instr" + idx);
-                    //whatInstr.innerHTML = instrs[idx];
-                    //whatInstr.style.color = "#e2eeeb";
                     
                     for( ; idx < instIdx; ++idx ) {
                         whatInstr = doc.getElementById("instr" + idx);
                         whatInstr.innerHTML = instrs[idx];
                         whatInstr.style.color = "#e2eeeb";
                     }
-                    // ++instIdx;
                     var mx = doc.getElementsByClassName("instrs").length;
                     while( instIdx < mx ) {
                         whatInstr = doc.getElementById("instr" + instIdx);
@@ -707,14 +620,28 @@ function checklineup() {
         var len = allboxes.length;
         //doc.getElementById("statusBox0").innerHTML = "len: " + len;
         for( var i = 0; i < len; ++i ) {
-            if( allboxes[i].getAttribute("moved") === false ) {
+            if( allboxes[i].getAttribute("moved") === "false" ) {
                 allLinedUp = false;
                 break;
             }
         }
+        if( allLinedUp ) {
+            //alert("it's all lined up");
+            doc.getElementById("instr0").innerHTML = "Multiply the factors in each section";
+            var mx = doc.getElementsByClassName("instrs").length;
+            for( var instIdx = 1; instIdx < mx; ++instIdx) {
+                var whatInstr = doc.getElementById("instr" + instIdx);
+                whatInstr.style.color = "#3961a2";
+            }
+            dragBox  = null;
+            //cdx = 0;
+            //gprod = 1;
+            getMultiplying();
+        }
     }
     dragBox  = null;
 }
+
 function setBox( dHelperIdx, dPosX, dPosY, leftPos, topPos ){
     if( dPosX !== leftPos ) { // line them up if not exact        
         dHelperIdx.style.left = leftPos + "px";
@@ -725,34 +652,48 @@ function setBox( dHelperIdx, dPosX, dPosY, leftPos, topPos ){
     dHelperIdx.style.color = "#3961a2";
     dHelperIdx.setAttribute("moved", "true");
 }
-function copyCols( val, col0Moved, col3Moved, col6Moved, leftPos, topPos ) {
+function copyCols( val, col0Moved, col3Moved, col6Moved, leftPos, topPos, boxName ) {
     var doc = document;
     var num = Number;
     var allBoxes = doc.getElementsByClassName("dragBox");
     var allBxLen = allBoxes.length;
+    x = 0;
+    //for( var j = 0; j < 14; j++ ) {
+        //doc.getElementById("statusBox" + j).innerHTML = "";
+    //}
     for( var i = 0; i < allBxLen; ++i ) {
-        var whatBx = allBoxes[i];
-        var bxVal = whatBx.value;
-        if( bxVal === val ) {
-            var notMovedYet = whatBx.getAttribute("moved") === "false";
-            //alert("notMovedYet: " + notMovedYet + " id: " + (whatBx.id));
-            if( notMovedYet ) {
-                var bxid = whatBx.id;
-                var bxidlen = bxid.length;
-                var pos = bxid.indexOf("_");
-                var bxCol = num(bxid.substr(pos+1, bxidlen));
-                if( bxCol === 0 && !col0Moved ||
-                    bxCol === 3 && !col3Moved ||
-                    bxCol === 6 && !col6Moved    ) {
-                    whatBx.style.left = leftPos + "px";
-                    whatBx.style.top = topPos + "px";
-                    whatBx.style.color = "#3961a2";
-                    whatBx.setAttribute("moved", "true");
-                    col0Moved = col0Moved || bxCol === 0;
-                    col3Moved = col3Moved || bxCol === 3;
-                    col6Moved = col6Moved || bxCol === 6;
-                    if( col0Moved && col3Moved && col6Moved ) {
-                        break;
+        var whatBx = allBoxes[i];  
+        if( whatBx ) {
+            var bxid = whatBx.id;
+            var bxVal = num(whatBx.value);
+            //doc.getElementById("statusBox" + x).innerHTML = "i: " + i + " val: " + val + " id: " + bxid;
+            //x = (x + 1)%14;
+            if( bxVal === val ) {
+                var notMovedYet = whatBx.getAttribute("moved") === "false";
+                //doc.getElementById("statusBox" + x).innerHTML = "i: " + i + " allBxLen: " + allBxLen + " notMovedYet: " + notMovedYet;
+                //x = (x + 1)%14;
+                //alert("notMovedYet: " + notMovedYet + " id: " + (whatBx.id));
+                if( notMovedYet ) {
+                    var bxidlen = bxid.length;
+                    var pos = bxid.indexOf("_");
+                    var bxCol = num(bxid.substr(pos+1, bxidlen));
+                    //doc.getElementById("statusBox" + x).innerHTML = "i: " + i + " bxid" + bxid + " col036Moved: " + col0Moved + col3Moved + col6Moved;
+                    //x = (x + 1)%14;
+                    if( bxCol === 0 && !col0Moved ||
+                        bxCol === 3 && !col3Moved ||
+                        bxCol === 6 && !col6Moved    ) {
+                        whatBx.style.left = leftPos + "px";
+                        whatBx.style.top = topPos + "px";
+                        whatBx.style.color = "#3961a2";
+                        whatBx.setAttribute("moved", "true");
+                        whatBx.setAttribute("name", boxName);
+                        whatBx.setAttribute("position", topPos);
+                        col0Moved = col0Moved || bxCol === 0;
+                        col3Moved = col3Moved || bxCol === 3;
+                        col6Moved = col6Moved || bxCol === 6;
+                        if( col0Moved && col3Moved && col6Moved ) {
+                            break;
+                        }
                     }
                 }
             }
@@ -814,6 +755,7 @@ function draggerSetup(){
                 testInput.style.left = xcoord + "px";
                 testInput.style.top = ycoord + "px";
             	doc.body.appendChild(testInput);
+                
             }
 	}
         var dHelper  = doc.getElementsByClassName("dragBox");

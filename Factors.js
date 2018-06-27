@@ -31,7 +31,225 @@ var greenCenterY;
 var radius;
 var prevTop = 0;
 var prevLeft = 0;
+// variables for multiplying out factors
+var factors;
+var indexes = new Array();
+var gprod = 1;
+var gmdx = 0;
+var cdx = 0;
+var glen = 0;
+var ginc = 1;
+var firsTimeAround = true;
+function getMultiplying() {
+    var doc = document;
+    var num = Number;
+    var ndx = cdx;
+    
+    //for( var j = 0; j < 28; j++ ) {
+        //doc.getElementById("statusBox" + j).innerHTML = "";
+    //}
+    //x = 0;
+    switch( ndx) {
+        case 0:
+            factors = doc.getElementsByName("white");
+            //alert("starting white column ndx: " + ndx);
+            ginc = 3;
+            firsTimeAround = true;
+            break;
+        case 1:
+            factors = doc.getElementsByName("magenta");
+            //alert("starting magenta column ndx: " + ndx);
+            ginc = 2;
+            firsTimeAround = true;
+            break;
+        case 2:
+            factors = doc.getElementsByName("yellow");
+            //alert("starting yellow column ndx: " + ndx);
+            ginc = 2;
+            firsTimeAround = true;
+            break;
+        case 3:
+            factors = doc.getElementsByName("cyan");
+            //alert("starting cyan column ndx: " + ndx);
+           ginc = 2;
+           firsTimeAround = true;
+            break;
+        case 4:
+            factors = doc.getElementsByName("blue");
+            //alert("starting blue column ndx: " + ndx);
+            ginc = 1;
+            firsTimeAround = true;
+            break;
+        case 5:
+            factors = doc.getElementsByName("red");
+            //alert("starting red column ndx: " + ndx);
+            ginc = 1;
+            firsTimeAround = true;
+            break;
+        case 6:
+            factors = doc.getElementsByName("green");
+            //alert("starting green column ndx: " + ndx);
+            ginc = 1;
+            firsTimeAround = true;
+            break;
+    }
+    //alert(" got this name: " + whatName + " factors: " + factors );
+    //alert("factors[0]: " + factors[0] + " color ndx: " + ndx);
+    var pstns = new Array();
+    
+    if( factors ) {
+        var len = factors.length;
+	var idx = 0;
+        for( idx = 0; idx < len; ++idx ) {
+            var value = factors[idx].value;
+            pstns[idx] = num(factors[idx].getAttribute("position"));
+            indexes[idx] = idx;
+            //doc.getElementById("statusBox" + x).innerHTML = "idx: " + idx + " value: " + value + " original position: " + pstns[idx];
+            //x = (x + 1)%28;
+        }
+        // sort in order of distance from top of screen
+        for( idx = 0; idx < len-1; ++idx ) {    
+            var min = pstns[idx];
+            for( var jdx = idx+1; jdx < len; ++jdx ) {
+                var possMin = (pstns[jdx]);
+                if( possMin < min ) {
+                    //alert("idx: " + idx + " jdx: " + jdx + " switching min " + min + " possMin " + possMin );
+                    var tmp = pstns[idx];
+                    pstns[idx] = pstns[jdx];
+                    pstns[jdx] = tmp;
+                    var tmp2 = indexes[idx]; // index of the larger y positioned box
+                    indexes[idx] = indexes[jdx];
+                    indexes[jdx] = tmp2;
+                    min = possMin;
+                    //break;
+                }
+            }
+        }
+        for( idx = 0; idx < len; ++idx ) { 
+            var kdx = indexes[idx];
+            //doc.getElementById("statusBox" + x).innerHTML = "idx: " + idx + " indexes[idx]: " + indexes[idx] + " value: " + factors[kdx].value;
+            //x = (x + 1)%28;
+        }
+        glen = len;
+        //gindexes = indexes; // does having a local "copy" work with arrays? fixit
+        multiply();
+    } else {
+        cdx = cdx + 1;
+    }
+}
+function multiply() {
+    var mdx = gmdx;
+    var len = glen;
+    var ndx = cdx;
 
+   //alert("starting multiply row index: " + mdx + " col height: " + len + " column index: " + ndx + " prod: " + gprod);
+    if(  ndx < 7 ) {
+        if( len === 0 ) {
+            cdx = ndx + 1;
+            getMultiplying(); // start multiplying a new column
+            return;
+        } else if( mdx >= len ) { // finished one col. go on to next
+            gmdx = 0;
+            gprod = 1;
+            getMultiplying(); // start multiplying a new column
+            return;
+        }    
+    } else {
+       //alert("done multiplying");
+        return;
+    }
+    var inc = ginc;
+    var lprod = gprod;
+    var doc = document;
+    var num = Number;
+    var kdx;
+    var notFirstTime = !firsTimeAround;
+    // how do you get it to keep multiplying subsequent factors
+    // fixit
+    while( mdx  < len &&( mdx <= inc || lprod < 9 || notFirstTime ) ) {
+        kdx = indexes[mdx];
+        var factor = num(factors[kdx].value);
+        lprod = lprod*factor;
+       //alert("iterating col: " + ndx + " row mdx: " + mdx + " factor kdx: " + kdx + " prod: " + lprod);
+        mdx = mdx + inc;
+    }
+   //alert("after iterating col index: " + ndx + " prod: " + lprod + " mdx: " + mdx + " len: " + len);
+    // if prod has 2+ digits, make a box and multiply it out
+    if( lprod > 9 && mdx > 0 && mdx < len ) {
+       //alert("stop and multply " + lprod);
+        cdx = ndx;
+        gprod = lprod;
+        gmdx = mdx;
+        // set up box
+        var dBox = doc.createElement("input");
+        //alert("stop and multiply getting position of factors[" + kdx + "]");
+        var pos = getPos(factors[kdx]);
+        var xcoord = pos.x;
+        var ydiff = 0.03*num(window.innerHeight);
+	    //alert("pos.y: " + pos.y + " ydiff: " + ydiff);
+        var ycoord = pos.y + ydiff;
+        dBox.style.top = ycoord + "px";
+        dBox.style.left = xcoord + "px";
+        // move the rest of the factors fixit
+        //ydiff = ydiff + 20;
+        for( var i = mdx; i < len; ++i ) {
+            var m = indexes[i];
+            var whatId = factors[m].id;
+            var whatBx = doc.getElementById(whatId);
+            if( i%inc === 0 ) {
+                ycoord = ycoord + ydiff;
+            }
+            whatBx.style.top = ycoord + "px";
+            //whatBx.style.color = "magenta";
+            //alert("whatId: " + whatId + " whatBx: " + whatBx + " whatBx.value: " + whatBx.value + " whatBx.style.color: " + whatBx.style.color);
+        }
+        dBox.style.position = "absolute";
+        dBox.setAttribute("moved","false"); 
+        //var newId = "d" + whatId.substring(1, idlen);
+        //testInput.id = newId;
+        dBox.type="text";
+        dBox.setAttribute("class","dragBox");
+        //testInput.style.background = "#e2eeeb";
+        //testInput.style.color = "#3961a2";
+        doc.body.appendChild(dBox);
+        dBox.focus();
+        dBox.onkeyup=checkM;
+        dBox.onkeydown=erase;
+    } else if( inc < len && len <= mdx ) { 
+        //if( lprod > 1 ) { // last multiplication
+           //alert("stop and multply " + lprod);
+            cdx = ndx + 1;
+            gprod = lprod;
+            gmdx = mdx;
+            // set up box
+            var dBox = doc.createElement("input");
+            //alert("last multiplication getting position of factors[" + kdx + "]");
+            var pos = getPos(factors[kdx]);
+            var xcoord = pos.x;
+            var ydiff = 0.03*num(window.innerHeight);
+            var ycoord = pos.y + ydiff;
+            dBox.style.top = ycoord + "px";
+            dBox.style.left = xcoord + "px";
+            dBox.style.position = "absolute";
+            dBox.setAttribute("moved","false"); 
+            //var newId = "d" + whatId.substring(1, idlen);
+            //testInput.id = newId;
+            dBox.type="text";
+            dBox.setAttribute("class","dragBox");
+            //testInput.style.background = "#e2eeeb";
+            //testInput.style.color = "#3961a2";
+            doc.body.appendChild(dBox);
+            dBox.focus();
+            dBox.onkeyup=checkM;
+            dBox.onkeydown=erase;
+        //}
+    } else {
+        gmdx = mdx;
+        cdx = ndx + 1;
+       //alert("nothing to multiply, storing row index: " + mdx + " starting column: " + cdx);
+        multiply(); // there is nothing to multiply, just start over with next col
+    }
+}
 function erase( ev ) {
     ev = ev || window.event;
     var ansBx = ev.target;
@@ -40,6 +258,24 @@ function erase( ev ) {
         var answer = ansBx.value;
         var len = answer.length;
         ansBx.value = answer.substring(len, len);
+    }
+}
+function checkM( ev ) {
+    ev = ev || window.event;
+    var ansBx = ev.target;
+    //alert("checking multiplication");
+    if (ev.which === 13 || ev.keyCode === 13) {
+        //var doc = document;
+        var num = Number;
+        var answer = num(ansBx.value);
+       //alert("entered: " + answer + " should be: " + gprod);
+	if( answer === gprod ) {
+            // multiply again or remove previous boxes and getMultiplying another column
+            firsTimeAround = false;
+            multiply();
+	} else {
+            ansBx.style.color = "red";
+	}
     }
 }
 function check( ev ) {
@@ -161,6 +397,12 @@ function check( ev ) {
                         img.src = 'Images/factors2.png'; // "url('Images/factors.png')";
                         doc.getElementById("instr1").style.color = "#3961a2";
                         doc.getElementById("instr2").style.color = "#3961a2";
+                        var links = document.getElementsByTagName("a");
+                        for(var i=0;i<links.length;i++) {
+                            if(links[i].href) {
+                                links[i].style.color = "black";//"#11397a"; 
+                            }
+                        }  
                         movelabels();
                         var redValue = doc.getElementById("g0_4").value;
                         var blueValue = doc.getElementById("g0_1").value;
@@ -340,7 +582,7 @@ function movelabels() {
         greenCenterY = topPos + mat.round(0.6*imgHgt);
         radius = mat.round(0.333*imgWid);  
         redXpos = leftPos + mat.round(0.51*imgWid);
-        magentaXpos = leftPos + mat.round(0.21*imgWid);
+        magentaXpos = leftPos + mat.round(0.2*imgWid);
         yellowXpos = leftPos + mat.round(0.68*imgWid);
         whiteXpos = leftPos + mat.round(0.44*imgWid);
         blueXpos = leftPos + mat.round(0.08*imgWid);
@@ -386,16 +628,16 @@ function movelabels() {
     redLabel2.style.marginLeft = (mat.round(0.25*imgWid)) + "px";
     var magentaLabel = doc.getElementById("magentaLabel");
     magentaLabel.style.marginTop = (mat.round(0.33*imgHgt)) + "px";
-    magentaLabel.style.marginLeft = (mat.round(0.34*imgWid)) + "px";
+    magentaLabel.style.marginLeft = (mat.round(0.32*imgWid)) + "px";
     var magentaLabel2 = doc.getElementById("magentaLabel2");
     magentaLabel2.style.marginTop = (mat.round(0.36*imgHgt)) + "px";
-    magentaLabel2.style.marginLeft = (mat.round(0.34*imgWid)) + "px";
+    magentaLabel2.style.marginLeft = (mat.round(0.32*imgWid)) + "px";
     var magentaLabel3 = doc.getElementById("magentaLabel3");
     magentaLabel3.style.marginTop = (mat.round(0.39*imgHgt)) + "px";
-    magentaLabel3.style.marginLeft = (mat.round(0.34*imgWid)) + "px";
+    magentaLabel3.style.marginLeft = (mat.round(0.32*imgWid)) + "px";
     var magentaLabel4 = doc.getElementById("magentaLabel4");
     magentaLabel4.style.marginTop = (mat.round(0.42*imgHgt)) + "px";
-    magentaLabel4.style.marginLeft = (mat.round(0.34*imgWid)) + "px";
+    magentaLabel4.style.marginLeft = (mat.round(0.32*imgWid)) + "px";
     var yellowLabel = doc.getElementById("yellowLabel");   
     yellowLabel.style.marginTop = (mat.round(0.33*imgHgt)) + "px";
     yellowLabel.style.marginLeft = (mat.round(0.54*imgWid)) + "px";
