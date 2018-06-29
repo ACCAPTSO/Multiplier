@@ -462,19 +462,7 @@ function checklineup() {
                     whatInstr.innerHTML = instrs[instIdx];
                     whatInstr.style.color = "#e2eeeb";
                     ++instIdx;
-                    // explain about where it originated and what places are taken already fixit
-                    /*
-                    doc.getElementById("statusBox" + x).innerHTML = "possPlaces: " + possPlaces + " takenPlaces: " + takenPlaces;
-                    x = (x + 1)%10;
-                    doc.getElementById("statusBox" + x).innerHTML = "whiteWasPoss:  " + whiteWasPoss + " magentaWasPoss: " + magentaWasPoss + " yellowWasPoss: " + yellowWasPoss;
-                    x = (x + 1)%10;
-                    doc.getElementById("statusBox" + x).innerHTML =  " cyanWasPoss: " + cyanWasPoss + " blueWasPoss:   " + blueWasPoss + " redWasPoss: " + redWasPoss + " greenWasPoss:  " + greenWasPoss;
-                    x = (x + 1)%10;
-                    doc.getElementById("statusBox" + x).innerHTML = "whitePoss:  " + whitePoss + " magentaPoss: " + magentaPoss + " yellowPoss: " + yellowPoss;
-                    x = (x + 1)%10;
-                    doc.getElementById("statusBox" + x).innerHTML =  " cyanPoss: " + cyanPoss + " bluePoss:   " + bluePoss + " redPoss: " + redPoss + " greenPoss:  " + greenPoss;
-                    x = (x + 1)%10;
-                    */
+
                     // don't allow inputs to be moved once placed. Create another 
                     // drag box for moving it to the white graph paper and erase 
                     // that drag box once the problem is done

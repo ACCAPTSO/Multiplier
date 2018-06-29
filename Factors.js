@@ -40,6 +40,9 @@ var cdx = 0;
 var glen = 0;
 var ginc = 1;
 var firsTimeAround = true;
+
+var x = 0;
+
 function getMultiplying() {
     var doc = document;
     var num = Number;
@@ -164,8 +167,6 @@ function multiply() {
     var num = Number;
     var kdx;
     var notFirstTime = !firsTimeAround;
-    // how do you get it to keep multiplying subsequent factors
-    // fixit
     while( mdx  < len &&( mdx <= inc || lprod < 9 || notFirstTime ) ) {
         kdx = indexes[mdx];
         var factor = num(factors[kdx].value);
@@ -181,6 +182,7 @@ function multiply() {
         gprod = lprod;
         gmdx = mdx;
         // set up box
+        // actually want a table row so you can enter digits backwards fixit
         var dBox = doc.createElement("input");
         //alert("stop and multiply getting position of factors[" + kdx + "]");
         var pos = getPos(factors[kdx]);
@@ -190,8 +192,7 @@ function multiply() {
         var ycoord = pos.y + ydiff;
         dBox.style.top = ycoord + "px";
         dBox.style.left = xcoord + "px";
-        // move the rest of the factors fixit
-        //ydiff = ydiff + 20;
+        // move the rest of the factors 
         for( var i = mdx; i < len; ++i ) {
             var m = indexes[i];
             var whatId = factors[m].id;
@@ -213,6 +214,7 @@ function multiply() {
         //testInput.style.color = "#3961a2";
         doc.body.appendChild(dBox);
         dBox.focus();
+        // actually want a table row so you can enter digits backwards fixit
         dBox.onkeyup=checkM;
         dBox.onkeydown=erase;
     } else if( inc < len && len <= mdx ) { 
@@ -222,7 +224,21 @@ function multiply() {
             gprod = lprod;
             gmdx = mdx;
             // set up box
-            var dBox = doc.createElement("input");
+            //var dBox = doc.createElement("input");
+            var dBox = doc.createElement("tr");
+	    for( var i = 0; i < 7; ++i ) {
+		var td = doc.createElement("td");
+		var nput = doc.createElement("input");
+		nput.style.width = "1em";
+		nput.onkeyup=passFocus;
+                nput.onkeydown=erase;
+		td.appendChild(nput);
+		dBox.appendChild(td);
+                if( i === 6 ) {
+                    nput.style.background = "magenta";
+                    nput.focus(); // turning magenta but focus goes elsewhere fixit
+                }
+	    }
             //alert("last multiplication getting position of factors[" + kdx + "]");
             var pos = getPos(factors[kdx]);
             var xcoord = pos.x;
@@ -239,9 +255,9 @@ function multiply() {
             //testInput.style.background = "#e2eeeb";
             //testInput.style.color = "#3961a2";
             doc.body.appendChild(dBox);
-            dBox.focus();
-            dBox.onkeyup=checkM;
-            dBox.onkeydown=erase;
+            //dBox.focus();
+            //dBox.onkeyup=checkM;
+            //dBox.onkeydown=erase;
         //}
     } else {
         gmdx = mdx;
@@ -260,6 +276,90 @@ function erase( ev ) {
         ansBx.value = answer.substring(len, len);
     }
 }
+function passFocus( ev ) {
+    ev = ev || window.event;
+    var ansBx = ev.target;
+    //var doc = document;
+    //doc.getElementById("statusBox" + x).innerHTML = "passing focus ansBx.value: " + ansBx.value;
+    //x = (x + 1)%14;
+    if (ev.which === 13 || ev.keyCode === 13) {
+        checkBackM(ev);
+    } else {
+        var parent = ansBx.parentNode;
+	var grandparent = parent.parentNode;
+	var i = 0;
+	var parents = grandparent.childNodes;
+	var prevBox = null;
+	var thisBox = null;
+        var parentNode = parents[i];
+        // not quite right probably won't work for larger numbers fixit
+	while( ( parentNode = parents[i]).NodeType !== 1 ) {
+            prevBox = thisBox;
+            var children = parentNode.childNodes;
+            thisBox = children[0];
+            //doc.getElementById("statusBox" + x).innerHTML = "grandparent tag name: " + grandparent.tagName + " parentNode tag name" + parentNode.tagName + " this box tag name " + thisBox.tagName;
+            //x = (x + 1)%14;
+            ++i;
+            if( thisBox === ansBx ) {
+		break;
+            }
+	}
+        prevBox.style.background = "magenta";
+	prevBox.focus();
+    }
+}
+function checkBackM( ev ) {
+    ev = ev || window.event;
+    var ansBx = ev.target;
+    //alert("backwards checking multiplication");
+    if (ev.which === 13 || ev.keyCode === 13) {
+        var doc = document;
+        var num = Number;
+	var parent = ansBx.parentNode;
+	var grandparent = parent.parentNode;
+	var parents = grandparent.childNodes;
+        var parentNode = parents[0];
+        var boxLen = 0;
+        var boxes = new Array();
+        var len = parents.length;
+        for( var i = 0; i < len; ++i ) {
+            if( ( parentNode = parents[i]).NodeType !== 1 ) {
+                var allBoxes = parentNode.childNodes;
+                boxes[boxLen] = num(allBoxes[0].value);
+                doc.getElementById("statusBox" + x).innerHTML = "grandparent tag name: " + grandparent.tagName + " parentNode tag name" + parentNode.tagName + "  typeof( boxes[boxLen] ): " +  typeof( boxes[boxLen] )
+                x = (x + 1)%14;
+                if( typeof( boxes[boxLen] ) === "number" ) {
+                    doc.getElementById("statusBox" + x).innerHTML = "allBoxes[0].tagName " + allBoxes[0].tagName + " boxes[" + boxLen + "]: " + boxes[boxLen];
+                    x = (x + 1)%14;
+                    ++boxLen;
+                }
+            }
+	}
+        var answer = 0;
+	var ten2pow = 1;
+	for( var i = boxLen-1; i >= 0; --i ) {
+            doc.getElementById("statusBox" + x).innerHTML = "answer: " + answer + " ten2pow: " + ten2pow + " boxes[" + i + "]: " + boxes[i];
+            x = (x + 1)%14;
+	    answer = answer + ten2pow*boxes[i];
+	    ten2pow = ten2pow*10;
+	}
+        alert("entered: " + answer + " should be: " + gprod);
+	if( answer === gprod ) {
+            // multiply again or remove previous boxes and getMultiplying another column
+            firsTimeAround = false;
+            multiply();
+	} else {
+            // need to focus on the lsb fixit
+            for( var i = 0; i < len; ++i ) {
+                if( ( parentNode = parents[i]).NodeType !== 1 ) {
+                    var allBoxes = parentNode.childNodes;
+                    allBoxes[0].style.color = "red";               
+                }
+            }   
+	}
+    }
+}
+// need to fix this so it takes one digit at a time fixit
 function checkM( ev ) {
     ev = ev || window.event;
     var ansBx = ev.target;
