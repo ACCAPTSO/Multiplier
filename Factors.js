@@ -41,8 +41,18 @@ var glen = 0;
 var ginc = 1;
 var firsTimeAround = true;
 
-var x = 0;
+// doesn't always have the correct product, sometimes lists the last
+// factor as the correct answer fixit
 
+// 11x11x7x7
+// stops and puts intermediate box at 121, not at 847, fixit
+
+var x = 0;
+var nSbxs = 28;
+function callmymethod(){
+    //here I want to prevent default
+    return false;
+}
 function getMultiplying() {
     var doc = document;
     var num = Number;
@@ -104,7 +114,7 @@ function getMultiplying() {
         var len = factors.length;
 	var idx = 0;
         for( idx = 0; idx < len; ++idx ) {
-            var value = factors[idx].value;
+            //var value = factors[idx].value;
             pstns[idx] = num(factors[idx].getAttribute("position"));
             indexes[idx] = idx;
             //doc.getElementById("statusBox" + x).innerHTML = "idx: " + idx + " value: " + value + " original position: " + pstns[idx];
@@ -128,11 +138,11 @@ function getMultiplying() {
                 }
             }
         }
-        for( idx = 0; idx < len; ++idx ) { 
-            var kdx = indexes[idx];
+        //for( idx = 0; idx < len; ++idx ) { 
+            //var kdx = indexes[idx];
             //doc.getElementById("statusBox" + x).innerHTML = "idx: " + idx + " indexes[idx]: " + indexes[idx] + " value: " + factors[kdx].value;
             //x = (x + 1)%28;
-        }
+        //}
         glen = len;
         //gindexes = indexes; // does having a local "copy" work with arrays? fixit
         multiply();
@@ -213,6 +223,8 @@ function multiply() {
         //testInput.style.background = "#e2eeeb";
         //testInput.style.color = "#3961a2";
         doc.body.appendChild(dBox);
+        //doc.getElementById("statusBox" + x).innerHTML = "foc line 218";
+        //x = (x + 1)%nSbxs;
         dBox.focus();
         // actually want a table row so you can enter digits backwards fixit
         dBox.onkeyup=checkM;
@@ -225,18 +237,30 @@ function multiply() {
             gmdx = mdx;
             // set up box
             //var dBox = doc.createElement("input");
+	    var dTble = doc.createElement("table");
             var dBox = doc.createElement("tr");
+            doc.body.appendChild(dTble);
+	    dTble.appendChild(dBox);
 	    for( var i = 0; i < 7; ++i ) {
 		var td = doc.createElement("td");
 		var nput = doc.createElement("input");
 		nput.style.width = "1em";
 		nput.onkeyup=passFocus;
-                nput.onkeydown=erase;
+                
 		td.appendChild(nput);
 		dBox.appendChild(td);
                 if( i === 6 ) {
-                    nput.style.background = "magenta";
+                    //nput.id = "whatId";
+                    //nput.style.background = "magenta";
+                    //nput.setAttribute('tabindex', '0');
+                    //doc.getElementById("statusBox" + x).innerHTML = "foc small box";
+                    //x = (x + 1)%nSbxs;
+                    doc.activeElement.blur();
                     nput.focus(); // turning magenta but focus goes elsewhere fixit
+                    nput.onkeydown=eraseAll;
+                    //var whatNow = doc.activeElement.tagName;
+                    //doc.getElementById("statusBox" + x).innerHTML = "activeElement: " + whatNow;
+                    //x = (x + 1)%nSbxs;
                 }
 	    }
             //alert("last multiplication getting position of factors[" + kdx + "]");
@@ -254,7 +278,7 @@ function multiply() {
             dBox.setAttribute("class","dragBox");
             //testInput.style.background = "#e2eeeb";
             //testInput.style.color = "#3961a2";
-            doc.body.appendChild(dBox);
+            //doc.body.appendChild(dBox);
             //dBox.focus();
             //dBox.onkeyup=checkM;
             //dBox.onkeydown=erase;
@@ -264,6 +288,28 @@ function multiply() {
         cdx = ndx + 1;
        //alert("nothing to multiply, storing row index: " + mdx + " starting column: " + cdx);
         multiply(); // there is nothing to multiply, just start over with next col
+    }
+}
+function eraseAll( ev ) {
+    ev = ev || window.event;
+    var ansBx = ev.target;
+    if( ansBx.style.color === "red") {
+        ansBx.style.color = "#11397a";
+        var answer = ansBx.value;
+        var len = answer.length;    
+        var parent = ansBx.parentNode;
+	var grandparent = parent.parentNode;
+	var parents = grandparent.childNodes;
+        var parentNode = parents[0];
+        var len = parents.length;
+        for( var i = 0; i < len; ++i ) {
+            if( ( parentNode = parents[i]).NodeType !== 1 ) {
+                var allBoxes = parentNode.childNodes;
+                allBoxes[0].value = "";
+                allBoxes[0].color = "#11397a"; // color not always changing fixit
+            }
+	}
+        ansBx.value = answer.substring(len, len);
     }
 }
 function erase( ev ) {
@@ -304,7 +350,9 @@ function passFocus( ev ) {
 		break;
             }
 	}
-        prevBox.style.background = "magenta";
+        //prevBox.style.background = "magenta";
+        //document.getElementById("statusBox" + x).innerHTML = "foc line 314";
+        //x = (x + 1)%nSbxs;
 	prevBox.focus();
     }
 }
@@ -326,11 +374,11 @@ function checkBackM( ev ) {
             if( ( parentNode = parents[i]).NodeType !== 1 ) {
                 var allBoxes = parentNode.childNodes;
                 boxes[boxLen] = num(allBoxes[0].value);
-                doc.getElementById("statusBox" + x).innerHTML = "grandparent tag name: " + grandparent.tagName + " parentNode tag name" + parentNode.tagName + "  typeof( boxes[boxLen] ): " +  typeof( boxes[boxLen] )
-                x = (x + 1)%14;
+                //doc.getElementById("statusBox" + x).innerHTML = "grandparent tag name: " + grandparent.tagName + " parentNode tag name" + parentNode.tagName + "  typeof( boxes[boxLen] ): " +  typeof( boxes[boxLen] )
+                //x = (x + 1)%14;
                 if( typeof( boxes[boxLen] ) === "number" ) {
-                    doc.getElementById("statusBox" + x).innerHTML = "allBoxes[0].tagName " + allBoxes[0].tagName + " boxes[" + boxLen + "]: " + boxes[boxLen];
-                    x = (x + 1)%14;
+                    //doc.getElementById("statusBox" + x).innerHTML = "allBoxes[0].tagName " + allBoxes[0].tagName + " boxes[" + boxLen + "]: " + boxes[boxLen];
+                    //x = (x + 1)%14;
                     ++boxLen;
                 }
             }
@@ -338,8 +386,8 @@ function checkBackM( ev ) {
         var answer = 0;
 	var ten2pow = 1;
 	for( var i = boxLen-1; i >= 0; --i ) {
-            doc.getElementById("statusBox" + x).innerHTML = "answer: " + answer + " ten2pow: " + ten2pow + " boxes[" + i + "]: " + boxes[i];
-            x = (x + 1)%14;
+            //doc.getElementById("statusBox" + x).innerHTML = "answer: " + answer + " ten2pow: " + ten2pow + " boxes[" + i + "]: " + boxes[i];
+            //x = (x + 1)%14;
 	    answer = answer + ten2pow*boxes[i];
 	    ten2pow = ten2pow*10;
 	}
@@ -353,7 +401,10 @@ function checkBackM( ev ) {
             for( var i = 0; i < len; ++i ) {
                 if( ( parentNode = parents[i]).NodeType !== 1 ) {
                     var allBoxes = parentNode.childNodes;
-                    allBoxes[0].style.color = "red";               
+                    allBoxes[0].style.color = "red";
+                    if( i === len-1 ) {
+                        allBoxes[0].focus();
+                    }
                 }
             }   
 	}
@@ -381,7 +432,7 @@ function checkM( ev ) {
 function check( ev ) {
     ev = ev || window.event;
     var ansBx = ev.target;
-    var x = 0;
+    //var x = 0;
     if (ev.which === 13 || ev.keyCode === 13) {
         var doc = document;
         var num = Number;
@@ -427,6 +478,8 @@ function check( ev ) {
                     //alert("next row: " + row + " next col: " + col);
                     var nextIn = doc.getElementById( "g" + row + "_" + col );
                     nextIn.type = "text";
+                    //doc.getElementById("statusBox" + x).innerHTML = "foc line 438";
+                    //x = (x + 1)%nSbxs;
                     nextIn.focus();
                     doc.getElementById("instr1").innerHTML = 
                             "What is " + whatOp + " divided by " + answer + "? (Enter)";
@@ -600,9 +653,13 @@ function check( ev ) {
                        "What is a prime number that evenly divides " + answer + "? (Enter)";
                 }
                 var nextIn = doc.getElementById( "g" + row + "_" + col );
-                if( nextIn ) {
+                if( nextIn && !(!nextOp && answer === 1)) {
+                    //doc.getElementById("statusBox" + x).innerHTML = "foc line 615";
+                    //x = (x + 1)%nSbxs;
                     nextIn.type = "text";
                     nextIn.focus();
+                } else {
+                    ansBx.blur();
                 }
             } else {
                 ansBx.style.color = "red";
@@ -781,6 +838,8 @@ window.onload = function(){
     var wid = num(win.innerWidth);
     minDim = hgt < wid ? hgt : wid;
     var el = doc.getElementById("g0_0");
+    //doc.getElementById("statusBox" + x).innerHTML = "foc line 794";
+    //x = (x + 1)%nSbxs;
     el.focus();
     //draggerSetup();
     /* make 'ems' a consistent unit by setting all fonts the same */  
@@ -806,6 +865,11 @@ window.onload = function(){
     var index = doc.getElementById("index");
     var indexpos = mat.round(hgt*0.91);
     index.style.marginTop = indexpos + "px";
+    //var allInputs = doc.getElementsByTagName("input");
+    //var len = allInputs.length;
+    //for( var i = 0; i < len; ++i ) {
+    //    allInputs[i].onclick="return callmymethod()";
+    //}
 };
 window.onresize = function() {
     //window.settimout( 

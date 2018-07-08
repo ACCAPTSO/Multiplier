@@ -85,9 +85,10 @@ function mouseCoords(ev){
 function mouseMove(ev){ 
     ev         = ev || window.event; 
     var mousePos = mouseCoords(ev);
-    var dBox = dragBox;
+    
             
     if( dragging ){ 
+        var dBox = dragBox;
 	// if the user is just starting to drag the element 
 	if(iMouseDown && !lMouseState){ 
             mouseOffset   = getMouseOffset(dBox, ev); 
@@ -615,6 +616,7 @@ function checklineup() {
         }
         if( allLinedUp ) {
             //alert("it's all lined up");
+            // don't show this if there is no multiplication to be done fixit
             doc.getElementById("instr0").innerHTML = "Multiply the factors in each section";
             var mx = doc.getElementsByClassName("instrs").length;
             for( var instIdx = 1; instIdx < mx; ++instIdx) {
@@ -645,7 +647,7 @@ function copyCols( val, col0Moved, col3Moved, col6Moved, leftPos, topPos, boxNam
     var num = Number;
     var allBoxes = doc.getElementsByClassName("dragBox");
     var allBxLen = allBoxes.length;
-    x = 0;
+    //x = 0;
     //for( var j = 0; j < 14; j++ ) {
         //doc.getElementById("statusBox" + j).innerHTML = "";
     //}
