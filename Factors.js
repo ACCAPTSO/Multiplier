@@ -49,6 +49,14 @@ var firsTimeAround = true;
 
 // doesn't always advance to the next product 2646 1323 54 fixit
 
+// perhaps change onkeyup or onkeydown to eliminate typing 2 digits in one product box fixit
+
+// make intermediate boxes disappear once the final product is entered correctly fixit
+
+// change input focus outline to something more appealing than orange. make it red when a box is misplaced fixit
+
+// when number is entered too fast, neither the input boxes nor the alert show the correct entry fixit
+
 var x = 0;
 var nSbxs = 28;
 function callmymethod(){
@@ -181,15 +189,16 @@ function multiply() {
     // either this is the first factor multi-digot or not or
     // product is still less than 9 or
     // there has been a multiplication box befor this
-    while( mdx  < len &&( mdx <= inc || lprod <= 9 || notFirstTime ) ) {
+    //kdx = indexes[mdx]; // just in case it never goes through the next while loop
+    do { // || notFirstTime ) ) {  
         kdx = indexes[mdx];
         var factor = num(factors[kdx].value);
         lprod = lprod*factor;
         doc.getElementById("statusBox" + x).innerHTML = "iterating col: " + ndx + " row mdx: " + mdx + " factor kdx: " + kdx + " prod: " + lprod;
         x = (x + 1)%nSbxs;
        //alert("iterating col: " + ndx + " row mdx: " + mdx + " factor kdx: " + kdx + " prod: " + lprod);
-        mdx = mdx + inc;
-    }
+        mdx = mdx + inc;     
+    } while( mdx  < len &&( mdx <= inc || lprod <= 9 ) );
     // if prod has 2+ digits, 
     // if it is indeed a product of two or more factors
     // but you still have more factors to go
@@ -199,6 +208,14 @@ function multiply() {
         cdx = ndx;
         gprod = lprod;
         gmdx = mdx;
+        // kdx invalid after entering wrong answer fixit
+        if( factors[kdx] ) {
+            doc.getElementById("statusBox" + x).innerHTML = "finding position of factors[" + kdx + "] with value " + factors[kdx].value;
+            x = (x + 1)%nSbxs;
+        } else {
+            doc.getElementById("statusBox" + x).innerHTML = "factors[" + kdx + "] doesn't exist";
+            x = (x + 1)%nSbxs;
+        }
         var pos = getPos(factors[kdx]);
         var xcoord = pos.x;
         var ydiff = 0.03*num(window.innerHeight);
@@ -274,6 +291,13 @@ function multiply() {
                 nput.onkeydown=eraseAll;
             }
 	}
+        if( factors[kdx] ) {
+            doc.getElementById("statusBox" + x).innerHTML = "finding position of factors[" + kdx + "] with value " + factors[kdx].value;
+            x = (x + 1)%nSbxs;
+        } else {
+            doc.getElementById("statusBox" + x).innerHTML = "factors[" + kdx + "] doesn't exist";
+            x = (x + 1)%nSbxs;
+        }
         var pos = getPos(factors[kdx]);
         var xcoord = pos.x;
         var ydiff = 0.03*num(window.innerHeight);
