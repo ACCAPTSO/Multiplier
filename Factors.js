@@ -36,10 +36,10 @@ var factors;
 var indexes = new Array();
 var gprod = 1;
 var gmdx = 0;
+var fmdx = 0;
 var cdx = 0;
 var glen = 0;
 var ginc = 1;
-var firsTimeAround = true;
 
 // doesn't always have the correct product, sometimes lists the last
 // factor as the correct answer fixit
@@ -56,6 +56,8 @@ var firsTimeAround = true;
 // change input focus outline to something more appealing than orange. make it red when a box is misplaced fixit
 
 // when number is entered too fast, neither the input boxes nor the alert show the correct entry fixit
+
+// table rows need a backup fixit
 
 var x = 0;
 var nSbxs = 28;
@@ -76,44 +78,51 @@ function getMultiplying() {
         case 0:
             factors = doc.getElementsByName("white");
             //alert("starting white column ndx: " + ndx);
+            fmdx = 0;
             ginc = 3;
-            firsTimeAround = true;
+            indexes = new Array();
             break;
         case 1:
             factors = doc.getElementsByName("magenta");
             //alert("starting magenta column ndx: " + ndx);
+            fmdx = 0;
             ginc = 2;
-            firsTimeAround = true;
+            indexes = new Array();
             break;
         case 2:
             factors = doc.getElementsByName("yellow");
             //alert("starting yellow column ndx: " + ndx);
+            fmdx = 0;
             ginc = 2;
-            firsTimeAround = true;
+            indexes = new Array();
             break;
         case 3:
             factors = doc.getElementsByName("cyan");
             //alert("starting cyan column ndx: " + ndx);
-           ginc = 2;
-           firsTimeAround = true;
+            fmdx = 0;
+            ginc = 2;
+            indexes = new Array();
             break;
         case 4:
             factors = doc.getElementsByName("blue");
             //alert("starting blue column ndx: " + ndx);
+            fmdx = 0;
             ginc = 1;
-            firsTimeAround = true;
+            indexes = new Array();
             break;
         case 5:
             factors = doc.getElementsByName("red");
             //alert("starting red column ndx: " + ndx);
+            fmdx = 0;
             ginc = 1;
-            firsTimeAround = true;
+            indexes = new Array();
             break;
         case 6:
             factors = doc.getElementsByName("green");
             //alert("starting green column ndx: " + ndx);
+            fmdx = 0;
             ginc = 1;
-            firsTimeAround = true;
+            indexes = new Array();
             break;
     }
     //alert(" got this name: " + whatName + " factors: " + factors );
@@ -151,8 +160,8 @@ function getMultiplying() {
         //gindexes = indexes; // does having a local "copy" work with arrays? fixit
         multiply();
     } else {
-        doc.getElementById("statusBox" + x).innerHTML = "There were no factors in col " + cdx;
-        x = (x + 1)%nSbxs;
+        //doc.getElementById("statusBox" + x).innerHTML = "There were no factors in col " + cdx;
+        //x = (x + 1)%nSbxs;
         cdx = cdx + 1;
     }
 }
@@ -165,8 +174,8 @@ function multiply() {
    //alert("starting multiply row index: " + mdx + " col height: " + len + " column index: " + ndx + " prod: " + gprod);
     if(  ndx < 7 ) {
         if( len === 0 ) {
-            doc.getElementById("statusBox" + x).innerHTML = "factors " + ndx + " has length 0";
-            x = (x + 1)%nSbxs;
+            //doc.getElementById("statusBox" + x).innerHTML = "factors " + ndx + " has length 0";
+            //x = (x + 1)%nSbxs;
             cdx = ndx + 1;
             getMultiplying(); // start multiplying a new column
             return;
@@ -184,18 +193,16 @@ function multiply() {
     var lprod = gprod;
     var num = Number;
     var kdx;
-    var notFirstTime = !firsTimeAround;
     // while mdx is less than number of factors in this colored segment and
     // either this is the first factor multi-digot or not or
     // product is still less than 9 or
     // there has been a multiplication box befor this
-    //kdx = indexes[mdx]; // just in case it never goes through the next while loop
-    do { // || notFirstTime ) ) {  
+    do {
         kdx = indexes[mdx];
         var factor = num(factors[kdx].value);
         lprod = lprod*factor;
-        doc.getElementById("statusBox" + x).innerHTML = "iterating col: " + ndx + " row mdx: " + mdx + " factor kdx: " + kdx + " prod: " + lprod;
-        x = (x + 1)%nSbxs;
+        //doc.getElementById("statusBox" + x).innerHTML = "iterating col: " + ndx + " row mdx: " + mdx + " factor kdx: " + kdx + " prod: " + lprod;
+        //x = (x + 1)%nSbxs;
        //alert("iterating col: " + ndx + " row mdx: " + mdx + " factor kdx: " + kdx + " prod: " + lprod);
         mdx = mdx + inc;     
     } while( mdx  < len &&( mdx <= inc || lprod <= 9 ) );
@@ -208,20 +215,23 @@ function multiply() {
         cdx = ndx;
         gprod = lprod;
         gmdx = mdx;
-        // kdx invalid after entering wrong answer fixit
-        if( factors[kdx] ) {
-            doc.getElementById("statusBox" + x).innerHTML = "finding position of factors[" + kdx + "] with value " + factors[kdx].value;
-            x = (x + 1)%nSbxs;
-        } else {
-            doc.getElementById("statusBox" + x).innerHTML = "factors[" + kdx + "] doesn't exist";
-            x = (x + 1)%nSbxs;
-        }
+        //if( factors[kdx] ) {
+          //  doc.getElementById("statusBox" + x).innerHTML = "finding position of factors[" + kdx + "] with value " + factors[kdx].value;
+            //x = (x + 1)%nSbxs;
+        //} else {
+          //  doc.getElementById("statusBox" + x).innerHTML = "factors[" + kdx + "] doesn't exist";
+            //x = (x + 1)%nSbxs;
+        //}
         var pos = getPos(factors[kdx]);
         var xcoord = pos.x;
         var ydiff = 0.03*num(window.innerHeight);
         var ycoord = pos.y + ydiff;
         // set up box
         var dBox = doc.createElement("tr");
+	dBox.setAttribute("name", "ntrmed");
+        if( fmdx === 0 ) {
+            fmdx = mdx;
+        }
         dBox.style.padding = 0;
         dBox.style.margin = 0;
         doc.body.appendChild(dBox);
@@ -246,6 +256,8 @@ function multiply() {
             }
 	}
         dBox.style.top = ycoord + "px";
+        //doc.getElementById("statusBox" + x).innerHTML = "placing intermediate box at " + ycoord;
+        //x = (x + 1)%nSbxs;
         dBox.style.left = xcoord + "px";
         // move the rest of the factors 
         for( var i = mdx; i < len; ++i ) {
@@ -261,13 +273,14 @@ function multiply() {
         dBox.setAttribute("moved","false"); 
         dBox.setAttribute("class","dragBox");
     } else if( inc < len && len <= mdx ) { // last multiplication
-        doc.getElementById("statusBox" + x).innerHTML = "last multiplication";
-        x = (x + 1)%nSbxs;
+        //doc.getElementById("statusBox" + x).innerHTML = "last multiplication";
+        //x = (x + 1)%nSbxs;
         cdx = ndx + 1;
         gprod = lprod;
         gmdx = mdx;
         // set up box
         var dBox = doc.createElement("tr");
+	dBox.setAttribute("name", "final");
         dBox.style.padding = 0;
         dBox.style.margin = 0;
         doc.body.appendChild(dBox);
@@ -291,13 +304,13 @@ function multiply() {
                 nput.onkeydown=eraseAll;
             }
 	}
-        if( factors[kdx] ) {
-            doc.getElementById("statusBox" + x).innerHTML = "finding position of factors[" + kdx + "] with value " + factors[kdx].value;
-            x = (x + 1)%nSbxs;
-        } else {
-            doc.getElementById("statusBox" + x).innerHTML = "factors[" + kdx + "] doesn't exist";
-            x = (x + 1)%nSbxs;
-        }
+        //if( factors[kdx] ) {
+          //  doc.getElementById("statusBox" + x).innerHTML = "finding position of factors[" + kdx + "] with value " + factors[kdx].value;
+            //x = (x + 1)%nSbxs;
+        //} else {
+          //  doc.getElementById("statusBox" + x).innerHTML = "factors[" + kdx + "] doesn't exist";
+            //x = (x + 1)%nSbxs;
+        //}
         var pos = getPos(factors[kdx]);
         var xcoord = pos.x;
         var ydiff = 0.03*num(window.innerHeight);
@@ -310,8 +323,8 @@ function multiply() {
         dBox.setAttribute("class","dragBox");
     } else {
         gmdx = mdx;
-        doc.getElementById("statusBox" + x).innerHTML = "There was only one factor in col " + cdx;
-        x = (x + 1)%nSbxs;
+        //doc.getElementById("statusBox" + x).innerHTML = "There was only one factor in col " + cdx;
+        //x = (x + 1)%nSbxs;
         cdx = ndx + 1;
        //alert("nothing to multiply, storing row index: " + mdx + " starting column: " + cdx);
         multiply(); // there is nothing to multiply, just start over with next col
@@ -418,10 +431,57 @@ function checkBackM( ev ) {
 	    answer = answer + ten2pow*boxes[i];
 	    ten2pow = ten2pow*10;
 	}
-        alert("entered: " + answer + " should be: " + gprod);
+        //alert("entered: " + answer + " should be: " + gprod);
 	if( answer === gprod ) {
-            // multiply again or remove previous boxes and getMultiplying another column
-            firsTimeAround = false;
+            var bxName = grandparent.getAttribute("name");
+            //doc.getElementById("statusBox" + x).innerHTML = "bxName: " + bxName;
+            //x = (x + 1)%nSbxs;
+            if( bxName === "final" ) {
+                // remove previous intermediate boxes
+                var intermediates = doc.getElementsByName("ntrmed");
+                var iLen = intermediates.length;
+                if( iLen > 0 ) { 
+                    //doc.getElementById("statusBox" + x).innerHTML = "finding position of intermediates[0]";
+                    //x = (x + 1)%nSbxs;
+                    var pos = getPos(intermediates[0]);
+                    //for( var i = 0; i < iLen; ++i ) {
+                        //doc.getElementById("statusBox" + x).innerHTML = "intermediates[" + i + "]: " + intermediates[i];
+                        //x = (x + 1)%nSbxs;
+                    //}
+                    for( var i = 0; i < iLen; ++i ) {
+                        var whichInt = intermediates[0];
+                        var whichParent = whichInt.parentNode;
+                        whichParent.removeChild( whichInt );  
+                    }
+                    var ydiff = 0.03*num(window.innerHeight);
+                    var ycoord = pos.y;
+                     
+                    // what was mdx when the first intermediate box was placed
+                    var mdx = fmdx;
+		    var len = indexes.length;
+                    var inc = ginc;
+                    // move the rest of the factors
+                    for( var i = mdx; i < len; ++i ) {
+                        var m = indexes[i];
+                        //doc.getElementById("statusBox" + x).innerHTML = "i: " + i + " inc: " + inc + " len: " + len + " m: " + m;
+                        //x = (x + 1)%nSbxs;
+                        var whatId = factors[m].id;
+
+                        // is this step necessary? fixit
+                        var whatBx = doc.getElementById(whatId);
+                        if( i > mdx && i%inc === 0 ) {
+                            ycoord = ycoord + ydiff;
+                        }
+                        //doc.getElementById("statusBox" + x).innerHTML = "factors[m].value: " + factors[m].value + " pos: " + ycoord;
+                        //x = (x + 1)%nSbxs;
+                        whatBx.style.top = ycoord + "px";          
+                    }
+                    ycoord = ycoord + ydiff;
+                    //doc.getElementById("statusBox" + x).innerHTML = "placing final at " + ycoord;
+                    //x = (x + 1)%nSbxs;
+                    grandparent.style.top = ycoord + "px";
+                }
+            }
             multiply();
 	} else {
             for( var i = 0; i < len; ++i ) {
@@ -433,24 +493,6 @@ function checkBackM( ev ) {
                     }
                 }
             }   
-	}
-    }
-}
-function checkM( ev ) {
-    ev = ev || window.event;
-    var ansBx = ev.target;
-    //alert("checking multiplication");
-    if (ev.which === 13 || ev.keyCode === 13) {
-        //var doc = document;
-        var num = Number;
-        var answer = num(ansBx.value);
-       //alert("entered: " + answer + " should be: " + gprod);
-	if( answer === gprod ) {
-            // multiply again or remove previous boxes and getMultiplying another column
-            firsTimeAround = false;
-            multiply();
-	} else {
-            ansBx.style.color = "red";
 	}
     }
 }
