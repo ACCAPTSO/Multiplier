@@ -24,11 +24,8 @@ input{
     text-align: right;
     color: #11397a;
     background-color: #d2edf9;
-    
-
-
 }
-input:focus { outline: 3px solid orange; }
+input:focus { outline: 3px solid #11397a; }
 table{
     padding: 0px;
     border: 0px;

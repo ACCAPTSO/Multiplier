@@ -51,8 +51,6 @@ var ginc = 1;
 
 // perhaps change onkeyup or onkeydown to eliminate typing 2 digits in one product box fixit
 
-// make intermediate boxes disappear once the final product is entered correctly fixit
-
 // change input focus outline to something more appealing than orange. make it red when a box is misplaced fixit
 
 // when number is entered too fast, neither the input boxes nor the alert show the correct entry fixit
@@ -431,7 +429,7 @@ function checkBackM( ev ) {
 	    answer = answer + ten2pow*boxes[i];
 	    ten2pow = ten2pow*10;
 	}
-        //alert("entered: " + answer + " should be: " + gprod);
+        
 	if( answer === gprod ) {
             var bxName = grandparent.getAttribute("name");
             //doc.getElementById("statusBox" + x).innerHTML = "bxName: " + bxName;
@@ -484,6 +482,7 @@ function checkBackM( ev ) {
             }
             multiply();
 	} else {
+            alert("entered: " + answer + " should be: " + gprod);
             for( var i = 0; i < len; ++i ) {
                 if( ( parentNode = parents[i]).NodeType !== 1 ) {
                     var allBoxes = parentNode.childNodes;

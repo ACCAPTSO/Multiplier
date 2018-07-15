@@ -18,6 +18,9 @@
 	if(iMouseDown && !lMouseState) // button just clicked!
 	if(!iMouseDown && lMouseState) // button just released!
 	*/ 
+       
+       // not catching whiteWasPoss if originally from operand that has
+       // middle number of that factor?? fixit
 var x = 0;
 var dragHelper  = new Array();
 var redTarg = false;
@@ -456,6 +459,7 @@ function checklineup() {
                     var instrs = new Array(5);
                     var instIdx = 0;
                     dHelperIdx.style.color = "red";
+                    dHelperIdx.style.border = "3px solid red";
                     var nextCol = col + 1;
                     var origOp = doc.getElementById("g0_" + nextCol).value;
                     instrs[instIdx] = "This " + dVal + " factor originated from " + origOp;
@@ -640,6 +644,7 @@ function setBox( dHelperIdx, dPosX, dPosY, leftPos, topPos ){
         dHelperIdx.style.top = topPos + "px";
     }
     dHelperIdx.style.color = "#3961a2";
+    dHelperIdx.style.border = "none";
     dHelperIdx.setAttribute("moved", "true");
 }
 function copyCols( val, col0Moved, col3Moved, col6Moved, leftPos, topPos, boxName ) {
