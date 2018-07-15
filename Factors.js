@@ -199,8 +199,8 @@ function multiply() {
         kdx = indexes[mdx];
         var factor = num(factors[kdx].value);
         lprod = lprod*factor;
-        //doc.getElementById("statusBox" + x).innerHTML = "iterating col: " + ndx + " row mdx: " + mdx + " factor kdx: " + kdx + " prod: " + lprod;
-        //x = (x + 1)%nSbxs;
+        doc.getElementById("statusBox" + x).innerHTML = "iterating col: " + ndx + " row mdx: " + mdx + " factor kdx: " + kdx + " prod: " + lprod;
+        x = (x + 1)%nSbxs;
        //alert("iterating col: " + ndx + " row mdx: " + mdx + " factor kdx: " + kdx + " prod: " + lprod);
         mdx = mdx + inc;     
     } while( mdx  < len &&( mdx <= inc || lprod <= 9 ) );

@@ -244,7 +244,7 @@ function checklineup() {
                         possPlaces += 1;
                     }
                     if( goccurs >= roccurs && boccurs >= roccurs ||
-                            roccurs >= goccurs && roccurs >= boccurs &&
+                            ( roccurs >= goccurs || roccurs >= boccurs ) &&
                             goccurs > 0 && boccurs > 0) {
                         whiteWasPoss = true;
                         possPlaces += 1;
@@ -262,7 +262,7 @@ function checklineup() {
                         possPlaces += 1;
                     }
                     if( roccurs >= boccurs && goccurs >= boccurs ||
-                            boccurs >= roccurs && boccurs >= goccurs &&
+                           ( boccurs >= roccurs || boccurs >= goccurs )&&
                             roccurs > 0 && goccurs > 0) {
                         whiteWasPoss = true;
                         possPlaces += 1;
@@ -280,7 +280,7 @@ function checklineup() {
                         possPlaces += 1;
                     }
                     if( roccurs >= goccurs && boccurs >= goccurs ||
-                            goccurs >= roccurs && goccurs >= boccurs &&
+                            ( goccurs >= roccurs || goccurs >= boccurs ) &&
                             roccurs > 0 && boccurs > 0 ) {
                         whiteWasPoss = true;
                         possPlaces += 1;
