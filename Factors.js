@@ -41,6 +41,9 @@ var cdx = 0;
 var glen = 0;
 var ginc = 1;
 
+// not focusing on the next column because factors[kdx] is not defined.
+// which of the variables is not being updated? fixit
+
 // doesn't always have the correct product, sometimes lists the last
 // factor as the correct answer fixit
 
@@ -68,99 +71,98 @@ function getMultiplying() {
     var num = Number;
     var ndx = cdx;
     
-    //for( var j = 0; j < 28; j++ ) {
-        //doc.getElementById("statusBox" + j).innerHTML = "";
-    //}
-    //x = 0;
-    switch( ndx ) {
-        case 0:
-            factors = doc.getElementsByName("white");
-            //alert("starting white column ndx: " + ndx);
-            fmdx = 0;
-            ginc = 3;
-            indexes = new Array();
-            break;
-        case 1:
-            factors = doc.getElementsByName("magenta");
-            //alert("starting magenta column ndx: " + ndx);
-            fmdx = 0;
-            ginc = 2;
-            indexes = new Array();
-            break;
-        case 2:
-            factors = doc.getElementsByName("yellow");
-            //alert("starting yellow column ndx: " + ndx);
-            fmdx = 0;
-            ginc = 2;
-            indexes = new Array();
-            break;
-        case 3:
-            factors = doc.getElementsByName("cyan");
-            //alert("starting cyan column ndx: " + ndx);
-            fmdx = 0;
-            ginc = 2;
-            indexes = new Array();
-            break;
-        case 4:
-            factors = doc.getElementsByName("blue");
-            //alert("starting blue column ndx: " + ndx);
-            fmdx = 0;
-            ginc = 1;
-            indexes = new Array();
-            break;
-        case 5:
-            factors = doc.getElementsByName("red");
-            //alert("starting red column ndx: " + ndx);
-            fmdx = 0;
-            ginc = 1;
-            indexes = new Array();
-            break;
-        case 6:
-            factors = doc.getElementsByName("green");
-            //alert("starting green column ndx: " + ndx);
-            fmdx = 0;
-            ginc = 1;
-            indexes = new Array();
-            break;
-    }
-    //alert(" got this name: " + whatName + " factors: " + factors );
-    //alert("factors[0]: " + factors[0] + " color ndx: " + ndx);
-    var pstns = new Array();
-    
-    if( factors ) {
-        var len = factors.length;
-	var idx = 0;
-        for( idx = 0; idx < len; ++idx ) {
-            //var value = factors[idx].value;
-            pstns[idx] = num(factors[idx].getAttribute("position"));
-            indexes[idx] = idx;
-            //doc.getElementById("statusBox" + x).innerHTML = "idx: " + idx + " value: " + value + " original position: " + pstns[idx];
-            //x = (x + 1)%28;
+    var len = 0;
+    var inc = 1;
+    //alert("get multiplying " + ndx);
+    //x = (x + 1)%nSbxs;
+    while( len < 2*inc && ndx < 7 ) {
+        chooseColor: switch( ndx ) {
+            case 0:
+                factors = doc.getElementsByName("white");
+                //alert("starting white column ndx: " + ndx);
+                inc = 3;
+                break chooseColor;
+            case 1:
+                factors = doc.getElementsByName("magenta");
+                //alert("starting magenta column ndx: " + ndx);
+                inc = 2;
+                break chooseColor;
+            case 2:
+                factors = doc.getElementsByName("yellow");
+                //alert("starting yellow column ndx: " + ndx);
+                inc = 2;
+                break chooseColor;
+            case 3:
+                factors = doc.getElementsByName("cyan");
+                //alert("starting cyan column ndx: " + ndx);
+                inc = 2;
+                break chooseColor;
+            case 4:
+                factors = doc.getElementsByName("blue");
+                //alert("starting blue column ndx: " + ndx);
+                inc = 1;
+                break chooseColor;
+            case 5:
+                factors = doc.getElementsByName("red");
+                //alert("starting red column ndx: " + ndx);
+                inc = 1;
+                break chooseColor;
+            case 6:
+                factors = doc.getElementsByName("green");
+                //alert("starting green column ndx: " + ndx);
+                inc = 1;
+                break chooseColor;
         }
-        // sort in order of distance from top of screen
-        for( idx = 0; idx < len-1; ++idx ) {    
-            var min = pstns[idx];
-            for( var jdx = idx+1; jdx < len; ++jdx ) {
-                var possMin = (pstns[jdx]);
-                if( possMin < min ) {
-                    //alert("idx: " + idx + " jdx: " + jdx + " switching min " + min + " possMin " + possMin );
-                    var tmp = pstns[idx];
-                    pstns[idx] = pstns[jdx];
-                    pstns[jdx] = tmp;
-                    var tmp2 = indexes[idx]; // index of the larger y positioned box
-                    indexes[idx] = indexes[jdx];
-                    indexes[jdx] = tmp2;
-                    min = possMin;
+        //alert("factors[0]: " + factors[0] + " color ndx: " + ndx);
+        var pstns = new Array();
+        len = factors.length;
+        //alert("factors[" + ndx + "] length: " + len );
+        if( len > inc ) {
+            var instr0 = doc.getElementById("instr0");
+            instr0.style.color = "#e2eeeb";
+            instr0.innerHTML = "Multiply the factors in each section";
+            indexes = new Array();
+            var idx = 0;
+            for( idx = 0; idx < len; ++idx ) {
+                //var value = factors[idx].value;
+                pstns[idx] = num(factors[idx].getAttribute("position"));
+                indexes[idx] = idx;
+                //doc.getElementById("statusBox" + x).innerHTML = "idx: " + idx + " value: " + value + " original position: " + pstns[idx];
+                //x = (x + 1)%28;
+            }
+            // sort in order of distance from top of screen
+            for( idx = 0; idx < len-1; ++idx ) {    
+                var min = pstns[idx];
+                for( var jdx = idx+1; jdx < len; ++jdx ) {
+                    var possMin = (pstns[jdx]);
+                    if( possMin < min ) {
+                        //alert("idx: " + idx + " jdx: " + jdx + " switching min " + min + " possMin " + possMin );
+                        var tmp = pstns[idx];
+                        pstns[idx] = pstns[jdx];
+                        pstns[jdx] = tmp;
+                        var tmp2 = indexes[idx]; // index of the larger y positioned box
+                        indexes[idx] = indexes[jdx];
+                        indexes[jdx] = tmp2;
+                        min = possMin;
+                    }
                 }
             }
+            cdx = ndx;
+            fmdx = 0;
+            ginc = inc;
+            glen = len;
+            gmdx = 0;
+            gprod = 1;
+            //gindexes = indexes; // does having a local "copy" work with arrays? fixit
+            multiply();
+        } else {
+            //doc.getElementById("statusBox" + x).innerHTML = "There were no factors in col " + cdx;
+            //x = (x + 1)%nSbxs;
+            ndx = ndx + 1;
         }
-        glen = len;
-        //gindexes = indexes; // does having a local "copy" work with arrays? fixit
-        multiply();
-    } else {
-        //doc.getElementById("statusBox" + x).innerHTML = "There were no factors in col " + cdx;
-        //x = (x + 1)%nSbxs;
-        cdx = cdx + 1;
+    }
+    if( ndx > 6 ) {
+        doc.getElementById("instr0").innerHTML = "Work the problems on the white graph paper";
     }
 }
 function multiply() {
@@ -170,10 +172,11 @@ function multiply() {
     var doc = document;
     
    //alert("starting multiply row index: " + mdx + " col height: " + len + " column index: " + ndx + " prod: " + gprod);
-    if(  ndx < 7 ) {
+    /* if(  ndx < 7 ) {
         if( len === 0 ) {
             //doc.getElementById("statusBox" + x).innerHTML = "factors " + ndx + " has length 0";
             //x = (x + 1)%nSbxs;
+            alert("this should not be happening ndx/cdx: " + ndx );
             cdx = ndx + 1;
             getMultiplying(); // start multiplying a new column
             return;
@@ -183,14 +186,17 @@ function multiply() {
             getMultiplying(); // start multiplying a new column
             return;
         }    
-    } else {
+    } else { */
        //alert("done multiplying");
+    if( ndx > 6 ) {
         return;
     }
     var inc = ginc;
     var lprod = gprod;
     var num = Number;
     var kdx;
+    //doc.getElementById("statusBox" + x).innerHTML = "before do-while mdx: " + mdx + " len: " + len + " inc: " + inc + " ndx: " + ndx;
+    //x = (x + 1)%nSbxs;
     // while mdx is less than number of factors in this colored segment and
     // either this is the first factor multi-digot or not or
     // product is still less than 9 or
@@ -199,8 +205,8 @@ function multiply() {
         kdx = indexes[mdx];
         var factor = num(factors[kdx].value);
         lprod = lprod*factor;
-        doc.getElementById("statusBox" + x).innerHTML = "iterating col: " + ndx + " row mdx: " + mdx + " factor kdx: " + kdx + " prod: " + lprod;
-        x = (x + 1)%nSbxs;
+        //doc.getElementById("statusBox" + x).innerHTML = "iterating col: " + ndx + " row mdx: " + mdx + " factor kdx: " + kdx + " prod: " + lprod;
+        //x = (x + 1)%nSbxs;
        //alert("iterating col: " + ndx + " row mdx: " + mdx + " factor kdx: " + kdx + " prod: " + lprod);
         mdx = mdx + inc;     
     } while( mdx  < len &&( mdx <= inc || lprod <= 9 ) );
@@ -230,6 +236,8 @@ function multiply() {
         if( fmdx === 0 ) {
             fmdx = mdx;
         }
+        gprod = lprod;
+        gmdx = mdx;
         dBox.style.padding = 0;
         dBox.style.margin = 0;
         doc.body.appendChild(dBox);
@@ -320,12 +328,16 @@ function multiply() {
         dBox.type="text";
         dBox.setAttribute("class","dragBox");
     } else {
-        gmdx = mdx;
+        //gmdx = mdx;
         //doc.getElementById("statusBox" + x).innerHTML = "There was only one factor in col " + cdx;
         //x = (x + 1)%nSbxs;
-        cdx = ndx + 1;
+        //cdx = ndx + 1;
        //alert("nothing to multiply, storing row index: " + mdx + " starting column: " + cdx);
-        multiply(); // there is nothing to multiply, just start over with next col
+        gmdx = 0;
+        gprod = 1;
+        getMultiplying(); // start multiplying a new column
+        //return;
+        //multiply(); // there is nothing to multiply, just start over with next col
     }
 }
 function eraseAll( ev ) {
@@ -394,6 +406,8 @@ function passFocus( ev ) {
 	prevBox.focus();
     }
 }
+// advances to next column before current product is entered and expects a value
+// of one no matter what the actual product is fixit
 function checkBackM( ev ) {
     ev = ev || window.event;
     var ansBx = ev.target;
@@ -480,7 +494,15 @@ function checkBackM( ev ) {
                     grandparent.style.top = ycoord + "px";
                 }
             }
-            multiply();
+            if( cdx < 7 ) {
+                if( gmdx >= glen ) { // finished one col. go on to next
+                    getMultiplying();
+                } else {
+                    multiply();
+                }
+            } else {
+                doc.getElementById("instr0").innerHTML = "Work the problems on the white graph paper";
+            }
 	} else {
             alert("entered: " + answer + " should be: " + gprod);
             for( var i = 0; i < len; ++i ) {

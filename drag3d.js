@@ -621,9 +621,8 @@ function checklineup() {
         if( allLinedUp ) {
             //alert("it's all lined up");
             // don't show this if there is no multiplication to be done fixit
-            doc.getElementById("instr0").innerHTML = "Multiply the factors in each section";
             var mx = doc.getElementsByClassName("instrs").length;
-            for( var instIdx = 1; instIdx < mx; ++instIdx) {
+            for( var instIdx = 0; instIdx < mx; ++instIdx) {
                 var whatInstr = doc.getElementById("instr" + instIdx);
                 whatInstr.style.color = "#3961a2";
             }
@@ -680,6 +679,7 @@ function copyCols( val, col0Moved, col3Moved, col6Moved, leftPos, topPos, boxNam
                         whatBx.style.left = leftPos + "px";
                         whatBx.style.top = topPos + "px";
                         whatBx.style.color = "#3961a2";
+                        whatBx.style.border = "none";
                         whatBx.setAttribute("moved", "true");
                         whatBx.setAttribute("name", boxName);
                         whatBx.setAttribute("position", topPos);
