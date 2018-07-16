@@ -317,20 +317,45 @@ function erase( ev ) {
 function passFocus( ev ) {
     ev = ev || window.event;
     var ansBx = ev.target;
-
-    if (ev.which === 13 || ev.keyCode === 13) {
+    
+    if (ev.which === 8 || ev.keyCode === 8) { // backspace
+        // find previous box
+        // blank out previous box
+        // focus on previous box
+        var parent = ansBx.parentNode;
+	var grandparent = parent.parentNode;
+	var i = 0;
+	var parents = grandparent.childNodes;
+	var thisBox = null;
+        var parentNode = parents[i];
+        var foundCurrentBx = false;
+        // not quite right probably won't work for larger numbers fixit
+	while( ( parentNode = parents[i]).NodeType !== 1 ) {
+            var children = parentNode.childNodes;
+            thisBox = children[0];
+            if( foundCurrentBx ) {
+                thisBox.value = "";
+                thisBox.focus();
+                break;
+            }
+            ++i;
+            if( thisBox === ansBx ) {
+		foundCurrentBx = true;
+            }
+	}
+    } else if (ev.which === 13 || ev.keyCode === 13) { // return
         checkBackM(ev);
     } else {
         var parent = ansBx.parentNode;
 	var grandparent = parent.parentNode;
 	var i = 0;
 	var parents = grandparent.childNodes;
-	var prevBox = null;
+	var nextBox = null;
 	var thisBox = null;
         var parentNode = parents[i];
         // not quite right probably won't work for larger numbers fixit
 	while( ( parentNode = parents[i]).NodeType !== 1 ) {
-            prevBox = thisBox;
+            nextBox = thisBox;
             var children = parentNode.childNodes;
             thisBox = children[0];
             ++i;
@@ -338,10 +363,7 @@ function passFocus( ev ) {
 		break;
             }
 	}
-        //prevBox.style.background = "magenta";
-        //document.getElementById("statusBox" + x).innerHTML = "foc line 314";
-        //x = (x + 1)%nSbxs;
-	prevBox.focus();
+	nextBox.focus();
     }
 }
 function checkBackM( ev ) {
@@ -412,23 +434,12 @@ function checkBackM( ev ) {
                     // move the rest of the factors
                     for( var i = mdx; i < len; ++i ) {
                         var m = indexes[i];
-                        //doc.getElementById("statusBox" + x).innerHTML = "i: " + i + " inc: " + inc + " len: " + len + " m: " + m;
-                        //x = (x + 1)%nSbxs;
-                        //var whatId = factors[m].id;
-
-                        // is this step necessary? fixit
-                        //var whatBx = doc.getElementById(whatId);
                         if( i > mdx && i%inc === 0 ) {
                             ycoord = ycoord + ydiff;
-                        }
-                        //doc.getElementById("statusBox" + x).innerHTML = "factors[m].value: " + factors[m].value + " pos: " + ycoord;
-                        //x = (x + 1)%nSbxs;
-                        //whatBx.style.top = ycoord + "px";    
+                        }    
                         factors[m].style.top = ycoord + "px"; 
                     }
                     ycoord = ycoord + ydiff;
-                    //doc.getElementById("statusBox" + x).innerHTML = "placing final at " + ycoord;
-                    //x = (x + 1)%nSbxs;
                     grandparent.style.top = ycoord + "px";
                 }
             }
