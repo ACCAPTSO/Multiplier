@@ -329,7 +329,6 @@ function passFocus( ev ) {
 	var thisBox = null;
         var parentNode = parents[i];
         var foundCurrentBx = false;
-        // not quite right probably won't work for larger numbers fixit
 	while( ( parentNode = parents[i]).NodeType !== 1 ) {
             var children = parentNode.childNodes;
             thisBox = children[0];

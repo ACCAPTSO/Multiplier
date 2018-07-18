@@ -19,8 +19,6 @@
 	if(!iMouseDown && lMouseState) // button just released!
 	*/ 
        
-       // not catching whiteWasPoss if originally from operand that has
-       // middle number of that factor?? fixit
 var x = 0;
 var dragHelper  = new Array();
 var redTarg = false;
@@ -619,16 +617,12 @@ function checklineup() {
             }
         }
         if( allLinedUp ) {
-            //alert("it's all lined up");
-            // don't show this if there is no multiplication to be done fixit
             var mx = doc.getElementsByClassName("instrs").length;
             for( var instIdx = 0; instIdx < mx; ++instIdx) {
                 var whatInstr = doc.getElementById("instr" + instIdx);
                 whatInstr.style.color = "#3961a2";
             }
             dragBox  = null;
-            //cdx = 0;
-            //gprod = 1;
             getMultiplying();
         }
     }

@@ -16,10 +16,11 @@
     </head>
     <body id="thisbody">
         <% 
-        final int MAXBOXES = 500;
+            // this needs some serious commenting so I know how to modify distribution fixit
+        final int MAXBOXES = 5000; // one too many 0s fixit
         final int UNCLASSED = 0;
         final int NQUES = 17;
-        final double MAXOPRND = 99999.;
+        final double MAXOPRND = 999999.; // one too many 9s fixit
         final int BLUE = 0;
         final int RED = 1;
         final int GREEN = 2;
@@ -118,9 +119,9 @@
         /* probability * of the smaller ones. generate a 3 bit number to     */
         /* determine which of the three operands it goes in.                 */
 
-        num2s = 5;
-        num3s = 2;
-        num5s = 2;
+        num2s = 50;
+        num3s = 50;
+        num5s = 15;
         num7s = 1;
         num11s = 3;
         num11s = 1;
@@ -132,7 +133,7 @@
         blueOp = 0;
         redOp = 0;
         greenOp = 0;
-        int ldx = 0; // what is it for? fixit
+        int ldx = 0; // how many boxes are used so you don't write outside array
         int howmanybig = 0;
         int howmany2s = 0;
         int howmany5s = 0;
@@ -165,7 +166,10 @@
         int thisfact = 0;
 
         int[] cat = new int[MAXBOXES];
-        int [] whichops = { 1, 2, 4, 3, 5, 6, 7, 7, 7 };
+        //                 blue, red, green, magenta, yellow, cyan,  white, white, white
+        //int [] whichops = { 1,   2,     4,       3,      6,    5,     7,     7,     7 };
+        int [] whichops = { 1, 1, 2, 2, 4, 4, 3, 5, 3, 6, 5, 6, 7, 7, 7, 7, 7, 7 };
+        //int [] whichops = { 6, 6, 6, 6, 6, 6, 6, 6, 6 };
         int bluefacts = 0;
         int redfacts = 0;
         int greenfacts = 0;
@@ -174,10 +178,11 @@
         // equal, any operand is too big, there are too many big
         // prime factors or more prime factors of 5's than 2's
         while( blueOp == redOp | blueOp == greenOp | redOp == greenOp |
-               blueOp > MAXOPRND | redOp > MAXOPRND | greenOp > MAXOPRND |
+                blueOp > MAXOPRND | redOp > MAXOPRND | greenOp > MAXOPRND |
                blueOp < 2 | redOp < 2 | greenOp < 2 |
-               ldx > MAXBOXES | howmany5s > howmany2s | howmanybig > 1 ) {
-            // how many distinct factors = numcats
+               ldx > MAXBOXES | howmanybig > 1 | howmany5s > howmany2s ) { // fixit
+            
+            // how many actual distinct factors = numcats
             // how many of each factor in each operand = boccurs, roccurs...
             // how many of each factor total = numoccurs
             // how many copies of a given factor in each section = numyellows..
@@ -202,152 +207,162 @@
                numwhites[idx] = 0;
             }
             numcats = 0;
-            for( int idx = 0; idx < 4; idx++ ) {
-               while( ( mdx == mdxprev & indcatr == indcatrprev ) |
-                     ( mdx == mdx2prev & indcatr == indcatr2prev ) ) {
-                  if( howmanybig > 0 ) {
-                     possbl = num2s+num3s+num5s+num7s+num11s;
-                  }
-                  indcatr = (int)(StrictMath.random()*possbl);
-                  // the bigger the factor, the more chances it
-                  // is shared
-                  numshared = (int)( 3.0*StrictMath.random() );
-                  whichshared = (int)( StrictMath.random()*3. );
-                  mdx = 3*numshared+whichshared;
-                  squarefact = 1 + ( int )( 1.6*StrictMath.random() );
-               }
-               mdx2prev = mdxprev;
-               mdxprev = mdx;
-               indcatr2prev = indcatrprev;
-               indcatrprev = indcatr;
-//               System.out.println("numshared");
-//               System.out.println(numshared);
-//               System.out.println("indcatr");
-//               System.out.println(indcatr);
-               if( indcatr < num2s ) {
-                  thisfact = 2;
-                  howmany2s += squarefact;
-               } else if( indcatr < num2s+num3s ) {
-                  thisfact = 3;
-               } else if( indcatr < num2s+num3s+num5s ) {
-                  thisfact = 5;
-                  howmany5s += squarefact;
-               } else if( indcatr < num2s+num3s+num5s+num7s ) {
-                  thisfact = 7;
-               } else if( indcatr < num2s+num3s+num5s+num7s+num11s ) {
-                  thisfact = 11;
-               } else if( indcatr < num2s+num3s+num5s+num7s+num11s + inc ) {
-                  thisfact = 13;
-                  howmanybig += 1;
-                  squarefact = 1;
-               } else if( indcatr < num2s+num3s+num5s+num7s+num11s + 2*inc ) {
-                  thisfact = 17;
-                  howmanybig += 1;
-                  squarefact = 1;
-               } else if( indcatr < num2s+num3s+num5s+num7s+num11s + 3*inc ) {
-                  thisfact = 19;
-                  howmanybig += 1;
-                  squarefact = 1;
-               } else if( indcatr < num2s+num3s+num5s+num7s+num11s + 4*inc ) {
-                  thisfact = 23;
-                  howmanybig += 1;
-                  squarefact = 1;
-               } else if( indcatr < num2s+num3s+num5s+num7s+num11s + 5*inc ) {
-                  thisfact = 29;
-                  howmanybig += 1;
-                  squarefact = 1;
-               } else if( indcatr < num2s+num3s+num5s+num7s+num11s + 6*inc ) {
-                  thisfact = 31;
-                  howmanybig += 1;
-                  squarefact = 1;
-               } else if( indcatr < num2s+num3s+num5s+num7s+num11s + 7*inc ) {
-                  thisfact = 37;
-                  howmanybig += 1;
-                  squarefact = 1;
-               } else if( indcatr < num2s+num3s+num5s+num7s+num11s + 8*inc ) {
-                  thisfact = 41;
-                  howmanybig += 1;
-                  squarefact = 1;
-               } else if( indcatr < num2s+num3s+num5s+num7s+num11s + 9*inc ) {
-                  thisfact = 43;
-                  howmanybig += 1;
-                  squarefact = 1;
-               } else if( indcatr < num2s+num3s+num5s+num7s+num11s + 10*inc ) {
-                  thisfact = 47;
-                  howmanybig += 1;
-                  squarefact = 1;
-               } else if( indcatr < num2s+num3s+num5s+num7s+num11s + 11*inc ) {
-                  thisfact = 53;
-                  howmanybig += 1;
-                  squarefact = 1;
-               } else if( indcatr < num2s+num3s+num5s+num7s+num11s + 12*inc ) {
-                  thisfact = 59;
-                  howmanybig += 1;
-                  squarefact = 1;
-               } else if( indcatr < num2s+num3s+num5s+num7s+num11s + 13*inc ) {
-                  thisfact = 61;
-                  howmanybig += 1;
-                  squarefact = 1;
-               } else if( indcatr < num2s+num3s+num5s+num7s+num11s + 14*inc ) {
-                  thisfact = 67;
-                  howmanybig += 1;
-                  squarefact = 1;
-               } else if( indcatr < num2s+num3s+num5s+num7s+num11s + 15*inc ) {
-                  thisfact = 71;
-                  howmanybig += 1;
-                  squarefact = 1;
-               } else if( indcatr < num2s+num3s+num5s+num7s+num11s + 16*inc ) {
-                  thisfact = 73;
-                  howmanybig += 1;
-                  squarefact = 1;
-               } else if( indcatr < num2s+num3s+num5s+num7s+num11s + 17*inc ) {
-                  thisfact = 79;
-                  howmanybig += 1;
-                  squarefact = 1;
-               } else if( indcatr < num2s+num3s+num5s+num7s+num11s + 18*inc ) {
-                  thisfact = 83;
-                  howmanybig += 1;
-                  squarefact = 1;
-               } else if( indcatr < num2s+num3s+num5s+num7s+num11s + 19*inc ) {
-                  thisfact = 89;
-                  howmanybig += 1;
-                  squarefact = 1;
-               } else if( indcatr < num2s+num3s+num5s+num7s+num11s + 20*inc ) {
-                  thisfact = 97;
-                  howmanybig += 1;
-                  squarefact = 1;
-               }
-//               System.out.println("thisfact");
-//               System.out.println(thisfact);
-               for( jdx = 0; jdx < numcats; jdx++ ) { 
-                  if( thisfact == cat[jdx] ) {
-                     break;
-                  }
-               }
-               if( jdx == numcats ) { // found a new category of prime factor
-//                  System.out.println("new category");
-                  cat[numcats] = thisfact;
-                  numcats++;
-               }
-               if( ( whichops[mdx] & 1 ) > 0 ) {
-                  boccurs[jdx] += squarefact;
-                  numoccurs[jdx] += squarefact;
 
-//                  System.out.println("boccurs");
-//                  System.out.println(boccurs[jdx]);
-               }
-               if( ( whichops[mdx] & 2 ) > 0 ) {
-                  roccurs[jdx] += squarefact;
-                  numoccurs[jdx] += squarefact;
-//                  System.out.println("roccurs");
-//                  System.out.println(roccurs[jdx]);
-               }
-               if( ( whichops[mdx] & 4 ) > 0 ) {
-                  goccurs[jdx] += squarefact;
-                  numoccurs[jdx] += squarefact;
-//                  System.out.println("goccurs");
-//                  System.out.println(goccurs[jdx]);
-               }
+            int nDistinctFactors = 5; // possible distinct factors
+            for( int idx = 0; idx < nDistinctFactors; idx++ ) {
+                while( ( mdx == mdxprev & indcatr == indcatrprev ) |
+                     ( mdx == mdx2prev & indcatr == indcatr2prev ) ) {
+                    if( howmanybig > 0 ) {
+                        possbl = num2s+num3s+num5s+num7s+num11s; // fixit
+                    }
+                    indcatr = (int)(StrictMath.random()*possbl);
+                    // the bigger the factor, the more chances it
+                    // is shared .. not true, should it be? fixit
+
+		    // numshared = 0 single color, blue, red or green
+		    // possible to have shared factors, but only by coincidence
+		    // because same factor was generated twice
+		    // numshared = 1 magenta, yellow or cyan
+		    // numshared = 2 white
+                    numshared = (int)( 3.0*StrictMath.random() );
+		    // whichshared = 0, 1: blue; 2, 3: red; 4, 5: green 
+                    whichshared = (int)( StrictMath.random()*6. );
+                    //whichshared = 4+(int)( StrictMath.random()*2);
+                    mdx = 6*numshared+whichshared;
+                    squarefact = 1 + ( int )( 1.6*StrictMath.random() );
+                }
+                mdx2prev = mdxprev;
+                mdxprev = mdx;
+                indcatr2prev = indcatrprev;
+                indcatrprev = indcatr;
+ //               System.out.println("numshared");
+ //               System.out.println(numshared);
+ //               System.out.println("indcatr");
+ //               System.out.println(indcatr);
+                if( indcatr < num2s ) {
+                   thisfact = 2;
+                   howmany2s += squarefact;
+                } else if( indcatr < num2s+num3s ) {
+                   thisfact = 3;
+                } else if( indcatr < num2s+num3s+num5s ) {
+                   thisfact = 5;
+                   howmany5s += squarefact;
+                } else if( indcatr < num2s+num3s+num5s+num7s ) {
+                   thisfact = 7;
+                } else if( indcatr < num2s+num3s+num5s+num7s+num11s ) {
+                   thisfact = 11;
+                } else if( indcatr < num2s+num3s+num5s+num7s+num11s + inc ) {
+                   thisfact = 13;
+                   howmanybig += 1;
+                   squarefact = 1;
+                } else if( indcatr < num2s+num3s+num5s+num7s+num11s + 2*inc ) {
+                   thisfact = 17;
+                   howmanybig += 1;
+                   squarefact = 1;
+                } else if( indcatr < num2s+num3s+num5s+num7s+num11s + 3*inc ) {
+                   thisfact = 19;
+                   howmanybig += 1;
+                   squarefact = 1;
+                } else if( indcatr < num2s+num3s+num5s+num7s+num11s + 4*inc ) {
+                   thisfact = 23;
+                   howmanybig += 1;
+                   squarefact = 1;
+                } else if( indcatr < num2s+num3s+num5s+num7s+num11s + 5*inc ) {
+                   thisfact = 29;
+                   howmanybig += 1;
+                   squarefact = 1;
+                } else if( indcatr < num2s+num3s+num5s+num7s+num11s + 6*inc ) {
+                   thisfact = 31;
+                   howmanybig += 1;
+                   squarefact = 1;
+                } else if( indcatr < num2s+num3s+num5s+num7s+num11s + 7*inc ) {
+                   thisfact = 37;
+                   howmanybig += 1;
+                   squarefact = 1;
+                } else if( indcatr < num2s+num3s+num5s+num7s+num11s + 8*inc ) {
+                   thisfact = 41;
+                   howmanybig += 1;
+                   squarefact = 1;
+                } else if( indcatr < num2s+num3s+num5s+num7s+num11s + 9*inc ) {
+                   thisfact = 43;
+                   howmanybig += 1;
+                   squarefact = 1;
+                } else if( indcatr < num2s+num3s+num5s+num7s+num11s + 10*inc ) {
+                   thisfact = 47;
+                   howmanybig += 1;
+                   squarefact = 1;
+                } else if( indcatr < num2s+num3s+num5s+num7s+num11s + 11*inc ) {
+                   thisfact = 53;
+                   howmanybig += 1;
+                   squarefact = 1;
+                } else if( indcatr < num2s+num3s+num5s+num7s+num11s + 12*inc ) {
+                   thisfact = 59;
+                   howmanybig += 1;
+                   squarefact = 1;
+                } else if( indcatr < num2s+num3s+num5s+num7s+num11s + 13*inc ) {
+                   thisfact = 61;
+                   howmanybig += 1;
+                   squarefact = 1;
+                } else if( indcatr < num2s+num3s+num5s+num7s+num11s + 14*inc ) {
+                   thisfact = 67;
+                   howmanybig += 1;
+                   squarefact = 1;
+                } else if( indcatr < num2s+num3s+num5s+num7s+num11s + 15*inc ) {
+                   thisfact = 71;
+                   howmanybig += 1;
+                   squarefact = 1;
+                } else if( indcatr < num2s+num3s+num5s+num7s+num11s + 16*inc ) {
+                   thisfact = 73;
+                   howmanybig += 1;
+                   squarefact = 1;
+                } else if( indcatr < num2s+num3s+num5s+num7s+num11s + 17*inc ) {
+                   thisfact = 79;
+                   howmanybig += 1;
+                   squarefact = 1;
+                } else if( indcatr < num2s+num3s+num5s+num7s+num11s + 18*inc ) {
+                   thisfact = 83;
+                   howmanybig += 1;
+                   squarefact = 1;
+                } else if( indcatr < num2s+num3s+num5s+num7s+num11s + 19*inc ) {
+                   thisfact = 89;
+                   howmanybig += 1;
+                   squarefact = 1;
+                } else if( indcatr < num2s+num3s+num5s+num7s+num11s + 20*inc ) {
+                   thisfact = 97;
+                   howmanybig += 1;
+                   squarefact = 1;
+                }
+ //               System.out.println("thisfact");
+ //               System.out.println(thisfact);
+                for( jdx = 0; jdx < numcats; jdx++ ) { 
+                   if( thisfact == cat[jdx] ) {
+                      break;
+                   }
+                }
+                if( jdx == numcats ) { // found a new category of prime factor
+ //                  System.out.println("new category");
+                   cat[numcats] = thisfact;
+                   numcats++;
+                }
+                if( ( whichops[mdx] & 1 ) > 0 ) {
+                   boccurs[jdx] += squarefact;
+                   numoccurs[jdx] += squarefact;
+
+ //                  System.out.println("boccurs");
+ //                  System.out.println(boccurs[jdx]);
+                }
+                if( ( whichops[mdx] & 2 ) > 0 ) {
+                   roccurs[jdx] += squarefact;
+                   numoccurs[jdx] += squarefact;
+ //                  System.out.println("roccurs");
+ //                  System.out.println(roccurs[jdx]);
+                }
+                if( ( whichops[mdx] & 4 ) > 0 ) {
+                   goccurs[jdx] += squarefact;
+                   numoccurs[jdx] += squarefact;
+ //                  System.out.println("goccurs");
+ //                  System.out.println(goccurs[jdx]);
+                }
 //               System.out.println("numoccurs");
 //               System.out.println(numoccurs[jdx]);
             }
@@ -625,7 +640,7 @@ for( int row = 0; row < maxrow; ++row ) { %>
     </div>
     <input type="<%=itype%>" id="linedUp" value="false" class="shortbox">
     <table id="statusTable">
-<% for( int i = 0, j = 1; i < 28; i += 2, j += 2 ) {
+<% for( int i = 0, j = 1; i < 0; i += 2, j += 2 ) {
     String whatId = "statusBox" + i; 
     String whatId2 = "statusBox" + j; %>
     <tr><td><%=i%></td><td><div id="<%=whatId%>"></div></td><td><%=j%></td><td><div id="<%=whatId2%>"></div></td></tr>
