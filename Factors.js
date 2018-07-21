@@ -45,8 +45,6 @@ var ginc = 1;
 
 // when number is entered too fast, neither the input boxes nor the alert show the correct entry fixit
 
-// table rows need a backup fixit
-
 var x = 0;
 var nSbxs = 28;
 function callmymethod(){
@@ -186,8 +184,44 @@ function multiply() {
 
         var pos = getPos(factors[kdx]);
         var xcoord = pos.x;
+        var ycoord = pos.y
+        var factor = factors[kdx].value;
+        var valueLen = factor.length;
+        var spaces = 6 - valueLen;
+        for( var i = 0; i < spaces; ++i ) {
+            factor = " " + factor;
+        }
+        factor = "X" + factor;
+        var whatName = factors[kdx].name;
+        var factPos = factors[kdx].getAttribute("position"); // other position may have roundoff
+        var allNames = doc.getElementsByName( whatName );
+        var howManyNames = allNames.length;
+        for( var i = 0; i < howManyNames; ++i  ) {
+            if( allNames[i].getAttribute("position") === factPos ) {
+                allNames[i].value = factor;
+            }
+        }
         var ydiff = 0.03*num(window.innerHeight);
-        var ycoord = pos.y + ydiff;
+        ycoord = ycoord + ydiff;
+        var bar = doc.createElement("div");
+        doc.body.appendChild( bar );
+        var more2left = xcoord - 2;
+        var styles = "border: 1px solid black;"
+	    + "width: 58px;"
+	    + "height: 0px;"
+	    + "position: absolute;"
+	    + "top: " + ycoord + "px;"
+	    + "left: " + more2left + "px;";
+        if( whatName === "red" |
+            whatName === "magenta" |
+            whatName === "blue" ) {
+            styles = styles +  "border: 1px solid white";
+        } else {
+            styles = styles +  "border: 1px solid black";
+        }
+	bar.setAttribute("style", styles);
+        bar.setAttribute("name", "intermediateBar");
+            
         // set up box
         var dBox = doc.createElement("tr");
 	dBox.setAttribute("name", "ntrmed");
@@ -220,6 +254,7 @@ function multiply() {
                 nput.onkeydown=eraseAll;
             }
 	}
+        ycoord = ycoord + 1;
         dBox.style.top = ycoord + "px";
         dBox.style.left = xcoord + "px";
         // move the rest of the factors 
@@ -267,14 +302,52 @@ function multiply() {
 	}
         var pos = getPos(factors[kdx]);
         var xcoord = pos.x;
+        var ycoord = pos.y;
         var ydiff = 0.03*num(window.innerHeight);
-        var ycoord = pos.y + ydiff;
+        var factor = factors[kdx].value;
+        var valueLen = factor.length;
+        var spaces = 6 - valueLen;
+        for( var i = 0; i < spaces; ++i ) {
+            factor = " " + factor;
+        }
+        factor = "X" + factor;
+        var whatName = factors[kdx].name;
+        var factPos = factors[kdx].getAttribute("position"); // other position may have roundoff
+        var allNames = doc.getElementsByName( whatName );
+        var howManyNames = allNames.length;
+        for( var i = 0; i < howManyNames; ++i  ) {
+            if( allNames[i].getAttribute("position") === factPos ) {
+                allNames[i].value = factor;
+            }
+        }
+        ycoord = ycoord + ydiff;
         dBox.style.top = ycoord + "px";
         dBox.style.left = xcoord + "px";
         dBox.style.position = "absolute";
         dBox.setAttribute("moved","false"); 
         dBox.type="text";
         dBox.setAttribute("class","dragBox");
+        dBox.setAttribute("id", whatName);
+        ycoord = ycoord + 1;
+        var bar = doc.createElement("div");
+        doc.body.appendChild( bar );
+        var more2left = xcoord - 2;
+        var styles = "border: 1px solid black;"
+	    + "width: 58px;"
+	    + "height: 0px;"
+	    + "position: absolute;"
+	    + "top: " + ycoord + "px;"
+	    + "left: " + more2left + "px;";
+        var needWhite = ( whatName === "red" |
+                          whatName === "magenta" |
+                          whatName === "blue" );
+        if( needWhite ) {
+            styles = styles +  "border: 1px solid white";
+        } else {
+            styles = styles +  "border: 1px solid black";
+        }
+	bar.setAttribute("style", styles);
+        bar.id = whatName + "Bar";
     } else { 
         alert("you do still need this, don't take it out. might need fixing");
         gmdx = 0;
@@ -439,7 +512,19 @@ function checkBackM( ev ) {
                         factors[m].style.top = ycoord + "px"; 
                     }
                     ycoord = ycoord + ydiff;
+                    var barName = grandparent.getAttribute("id") + "Bar";
+                    
+                    var whatBar = doc.getElementById(barName);
+                    whatBar.style.top = ycoord + "px";
+                    ycoord = ycoord + 2;
                     grandparent.style.top = ycoord + "px";
+                }
+                var bars = doc.getElementsByName("intermediateBar");
+                var bLen = bars.length;
+                for( var i = 0; i < bLen; ++i ) {
+                    var whichBar = bars[0];
+                    var whichParent = whichBar.parentNode;
+                    whichParent.removeChild( whichBar ); 
                 }
             }
             if( cdx < 7 ) {
