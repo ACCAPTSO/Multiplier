@@ -40,10 +40,17 @@ var fmdx = 0;
 var cdx = 0;
 var glen = 0;
 var ginc = 1;
+var lastPos = 0;
 
-// perhaps change onkeyup or onkeydown to eliminate typing 2 digits in one product box fixit
+// perhaps change onkeyup or onkeydown to eliminate typing 2 digits in one 
+// product box.  fixit
 
-// when number is entered too fast, neither the input boxes nor the alert show the correct entry fixit
+// hide factors that went into intermediate product and just show the
+// intermediate product fixit
+
+// remove "X" from factors that went into intermediate product fixit
+// don't put actual position for intermediate box, put the position of the 
+// last factor, otherwise it won't bet blanked out if it is the second intermediate fixit
 
 var x = 0;
 var nSbxs = 28;
@@ -140,6 +147,7 @@ function getMultiplying() {
             gmdx = 0;
             gprod = 1;
             gindexes = indexes;
+		lastPos = 0;
             multiply();
         } else { // nothing to multiply, go on to next section
             ndx = ndx + 1;
@@ -170,37 +178,94 @@ function multiply() {
     // either this is the first factor multi-digot or not or
     // product is still less than 9 or
     // there has been a multiplication box befor this
+    var whatFactor;
+    var whatColor = factors[0].name;
+    var allNames = doc.getElementsByName( whatColor );
+    var howManyNames = allNames.length;
+    var factVal;
+    var factPos;
+    
+    var last = num(lastPos);
+    if( last > 0 ) {        
+        //doc.getElementById("statusBox" + x).innerHTML = "howManyNames: " + howManyNames;
+        //x = (x + 1)%nSbxs;
+        // hide factors that went into any intermediate product
+        for( var i = 0; i < howManyNames; ++i  ) {
+            var ipos = allNames[i].getAttribute("position");
+            //doc.getElementById("statusBox" + x).innerHTML = "ipos: " + ipos + " last: " + last;
+            //x = (x + 1)%nSbxs;
+            if( num(ipos) <= last ) {
+                allNames[i].style.color = "#b4c5e2";
+            }
+	}
+	// hide all but oneprevious intermediate products
+	var ntermeds = doc.getElementsByName("ntrmed");
+	var howManyNtermeds = ntermeds.length;
+        //doc.getElementById("statusBox" + x).innerHTML = "howManyNtermeds: " + howManyNtermeds;
+        //x = (x + 1)%nSbxs;
+	for( var i = 0; i < howManyNtermeds; ++i ) {
+            var ipos = ntermeds[i].getAttribute("position");
+            //doc.getElementById("statusBox" + x).innerHTML = "ipos: " + ipos + " last: " + last;
+            //x = (x + 1)%nSbxs;
+            if( num(ipos) <= last ) {
+                var children = ntermeds[i].childNodes;
+        	var nChilds = children.length;
+                //doc.getElementById("statusBox" + x).innerHTML = "type: " + ntermeds[i].type + " nodes of ntermediate box: " + nChilds;
+                //x = (x + 1)%nSbxs;
+	        for( var j = 0; j < nChilds; ++j ) {
+                    var grandkids = children[j].childNodes;
+                    var nGrandKids = grandkids.length;
+                    //doc.getElementById("statusBox" + x).innerHTML = "type: " + children[j].type + " nGrandKids: " + nGrandKids;
+                    //x = (x + 1)%nSbxs;
+                    for( var k = 0; k < nGrandKids; ++k ) {
+                        //doc.getElementById("statusBox" + x).innerHTML = "type: " + grandkids[k].type + " value: " + grandkids[k].value;
+                        //x = (x + 1)%nSbxs;
+		        grandkids[k].style.color = "#b4c5e2";
+                    }
+		}
+            }
+	}
+    }
     do {
         kdx = indexes[mdx];
-        var factor = num(factors[kdx].value);
-        lprod = lprod*factor;
+        whatFactor = factors[kdx];  
+        factVal = whatFactor.value;
+        lprod = lprod*num(factVal);
         mdx = mdx + inc;     
     } while( mdx  < len &&( mdx <= inc || lprod <= 9 ) );
+    
+    factPos = whatFactor.getAttribute("position"); // getPos may have roundoff
+    var valueLen = factVal.length;
+    var spaces = 6 - valueLen;
+    for( var i = 0; i < spaces; ++i ) {
+        factVal = " " + factVal;
+    }
+    factVal = "X" + factVal;
+    
+    // put an "X" in all the copies as it is probably
+    // a copy that lands on  top    
+    for( var i = 0; i < howManyNames; ++i  ) {
+        if( allNames[i].getAttribute("position") === factPos ) {
+            allNames[i].value = factVal;
+        }
+    }
+        
     // if prod has 2+ digits, 
     // if it is indeed a product of two or more factors
     // but you still have more factors to go
     // make a box and multiply it out
     if( lprod > 9 && mdx > 0 && mdx < len ) {
 
-        var pos = getPos(factors[kdx]);
+                            
+    	lastPos = factPos;      // save it for blanking first
+                                // factors out and later restoring 
+                                // factors, removing intermediate products and X's
+                   
+        // add a times "X" symbol to last factor
+        var pos = getPos(whatFactor);
         var xcoord = pos.x;
-        var ycoord = pos.y
-        var factor = factors[kdx].value;
-        var valueLen = factor.length;
-        var spaces = 6 - valueLen;
-        for( var i = 0; i < spaces; ++i ) {
-            factor = " " + factor;
-        }
-        factor = "X" + factor;
-        var whatName = factors[kdx].name;
-        var factPos = factors[kdx].getAttribute("position"); // other position may have roundoff
-        var allNames = doc.getElementsByName( whatName );
-        var howManyNames = allNames.length;
-        for( var i = 0; i < howManyNames; ++i  ) {
-            if( allNames[i].getAttribute("position") === factPos ) {
-                allNames[i].value = factor;
-            }
-        }
+        var ycoord = pos.y;
+
         var ydiff = 0.03*num(window.innerHeight);
         ycoord = ycoord + ydiff;
         var bar = doc.createElement("div");
@@ -212,9 +277,9 @@ function multiply() {
 	    + "position: absolute;"
 	    + "top: " + ycoord + "px;"
 	    + "left: " + more2left + "px;";
-        if( whatName === "red" |
-            whatName === "magenta" |
-            whatName === "blue" ) {
+        if( whatColor === "red" |
+            whatColor === "magenta" |
+            whatColor === "blue" ) {
             styles = styles +  "border: 1px solid white";
         } else {
             styles = styles +  "border: 1px solid black";
@@ -257,6 +322,11 @@ function multiply() {
         ycoord = ycoord + 1;
         dBox.style.top = ycoord + "px";
         dBox.style.left = xcoord + "px";
+        var relPos = factPos + 1; // position needs to be relative to original
+                                  // positions of factors, not actual position
+                                  // actual positions keep changing
+        dBox.setAttribute("position", relPos);
+
         // move the rest of the factors 
         for( var i = mdx; i < len; ++i ) {
             var m = indexes[i];
@@ -268,13 +338,13 @@ function multiply() {
             whatBx.style.top = ycoord + "px";          
         }
         dBox.style.position = "absolute";
-        dBox.setAttribute("moved","false"); 
-        dBox.setAttribute("class","dragBox");
+        //dBox.setAttribute("moved","false"); 
+        //dBox.setAttribute("class","dragBox");
     } else if( inc < len && len <= mdx ) { // last multiplication
         cdx = ndx + 1;   
         gmdx = mdx;
         gprod = lprod;
-        // set up box
+        // set up final answer box
         var dBox = doc.createElement("tr");
 	dBox.setAttribute("name", "final");
         dBox.style.padding = 0;
@@ -300,26 +370,11 @@ function multiply() {
                 nput.onkeydown=eraseAll;
             }
 	}
-        var pos = getPos(factors[kdx]);
+        var pos = getPos(whatFactor);
         var xcoord = pos.x;
         var ycoord = pos.y;
         var ydiff = 0.03*num(window.innerHeight);
-        var factor = factors[kdx].value;
-        var valueLen = factor.length;
-        var spaces = 6 - valueLen;
-        for( var i = 0; i < spaces; ++i ) {
-            factor = " " + factor;
-        }
-        factor = "X" + factor;
-        var whatName = factors[kdx].name;
-        var factPos = factors[kdx].getAttribute("position"); // other position may have roundoff
-        var allNames = doc.getElementsByName( whatName );
-        var howManyNames = allNames.length;
-        for( var i = 0; i < howManyNames; ++i  ) {
-            if( allNames[i].getAttribute("position") === factPos ) {
-                allNames[i].value = factor;
-            }
-        }
+        
         ycoord = ycoord + ydiff;
         dBox.style.top = ycoord + "px";
         dBox.style.left = xcoord + "px";
@@ -327,7 +382,7 @@ function multiply() {
         dBox.setAttribute("moved","false"); 
         dBox.type="text";
         dBox.setAttribute("class","dragBox");
-        dBox.setAttribute("id", whatName);
+        dBox.setAttribute("id", whatColor);
         ycoord = ycoord + 1;
         var bar = doc.createElement("div");
         doc.body.appendChild( bar );
@@ -338,18 +393,18 @@ function multiply() {
 	    + "position: absolute;"
 	    + "top: " + ycoord + "px;"
 	    + "left: " + more2left + "px;";
-        var needWhite = ( whatName === "red" |
-                          whatName === "magenta" |
-                          whatName === "blue" );
+        var needWhite = ( whatColor === "red" |
+                          whatColor === "magenta" |
+                          whatColor === "blue" );
         if( needWhite ) {
             styles = styles +  "border: 1px solid white";
         } else {
             styles = styles +  "border: 1px solid black";
         }
 	bar.setAttribute("style", styles);
-        bar.id = whatName + "Bar";
+        bar.id = whatColor + "Bar";
     } else { 
-        alert("you do still need this, don't take it out. might need fixing");
+        alert("why are you here? inc: " + inc + " len: " + len + " mdx: " + mdx + " lprod: " + lprod);
         gmdx = 0;
         gprod = 1;
         getMultiplying(); // start multiplying a new column
@@ -441,7 +496,6 @@ function passFocus( ev ) {
 function checkBackM( ev ) {
     ev = ev || window.event;
     var ansBx = ev.target;
-    //alert("backwards checking multiplication");
     if (ev.which === 13 || ev.keyCode === 13) {
         var doc = document;
         var num = Number;
@@ -456,11 +510,7 @@ function checkBackM( ev ) {
             if( ( parentNode = parents[i]).NodeType !== 1 ) {
                 var allBoxes = parentNode.childNodes;
                 boxes[boxLen] = num(allBoxes[0].value);
-                //doc.getElementById("statusBox" + x).innerHTML = "grandparent tag name: " + grandparent.tagName + " parentNode tag name" + parentNode.tagName + "  typeof( boxes[boxLen] ): " +  typeof( boxes[boxLen] )
-                //x = (x + 1)%14;
                 if( typeof( boxes[boxLen] ) === "number" ) {
-                    //doc.getElementById("statusBox" + x).innerHTML = "allBoxes[0].tagName " + allBoxes[0].tagName + " boxes[" + boxLen + "]: " + boxes[boxLen];
-                    //x = (x + 1)%14;
                     ++boxLen;
                 }
             }
@@ -468,8 +518,6 @@ function checkBackM( ev ) {
         var answer = 0;
 	var ten2pow = 1;
 	for( var i = boxLen-1; i >= 0; --i ) {
-            //doc.getElementById("statusBox" + x).innerHTML = "answer: " + answer + " ten2pow: " + ten2pow + " boxes[" + i + "]: " + boxes[i];
-            //x = (x + 1)%14;
 	    answer = answer + ten2pow*boxes[i];
 	    ten2pow = ten2pow*10;
 	}
@@ -502,17 +550,38 @@ function checkBackM( ev ) {
 		    var len = indexes.length;
                     // what was mdx when the first intermediate box was placed
                     var mdx = fmdx;
+                    var lastFact = num(lastPos);
                     
-                    // move the rest of the factors
-                    for( var i = mdx; i < len; ++i ) {
+                    for( var i = 0; i < len; ++i ) {
                         var m = indexes[i];
-                        if( i > mdx && i%inc === 0 ) {
-                            ycoord = ycoord + ydiff;
-                        }    
-                        factors[m].style.top = ycoord + "px"; 
+                        var factor = factors[m];
+                        // remove all but the last "X"
+                        var factPos = factor.getAttribute( "position" );
+                        //doc.getElementById("statusBox" + x).innerHTML = "last: " + last + " factPos: " + factPos;
+                        //x = (x + 1)%nSbxs;
+                        if( num(factPos) <= lastFact ) {
+                            var factVal = factor.value;
+                            var factLen = factVal.length;
+                            while( isNaN(factVal) ) {
+                                factVal = factVal.substr(1, factLen);
+                                factLen = factLen - 1;
+                                //doc.getElementById("statusBox" + x).innerHTML = "factVal: " + factVal;
+                                //x = (x + 1)%nSbxs;
+                            }
+                            factor.value = factVal;
+                        }
+                        // move the the factors after the first intermrediate
+                        // product back
+                        if( i >= mdx ) {
+                            if( i > mdx && i%inc === 0 ) {
+                                ycoord = ycoord + ydiff;
+                            }    
+                            factor.style.top = ycoord + "px"; 
+                        }
                     }
                     ycoord = ycoord + ydiff;
-                    var barName = grandparent.getAttribute("id") + "Bar";
+                    var whatColor = grandparent.getAttribute("id");
+                    var barName = whatColor + "Bar";
                     
                     var whatBar = doc.getElementById(barName);
                     whatBar.style.top = ycoord + "px";
@@ -525,6 +594,12 @@ function checkBackM( ev ) {
                     var whichBar = bars[0];
                     var whichParent = whichBar.parentNode;
                     whichParent.removeChild( whichBar ); 
+                }
+                // unhide all factors
+                var allfactors = doc.getElementsByName(whatColor);
+                var fLen = allfactors.length;
+                for( var i = 0; i < fLen; ++i ) {
+                    allfactors[i].style.color = "#11397a";
                 }
             }
             if( cdx < 7 ) {
