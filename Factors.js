@@ -41,22 +41,168 @@ var cdx = 0;
 var glen = 0;
 var ginc = 1;
 var lastPos = 0;
+var doingMults = true;
 
 // perhaps change onkeyup or onkeydown to eliminate typing 2 digits in one 
 // product box.  fixit
-
-// hide factors that went into intermediate product and just show the
-// intermediate product fixit
-
-// remove "X" from factors that went into intermediate product fixit
-// don't put actual position for intermediate box, put the position of the 
-// last factor, otherwise it won't bet blanked out if it is the second intermediate fixit
+//
+// how am i oing to do this? sometimes gcf is one, sometimes it's a single
+// factor, sometimes multiple things need to be multiplied together.
+// can i drag a factor or type in an answer and have either one be
+// accepted as an answer? fixit
+//
+// askQuestions can't run in a loop, it needs to store global variables
+// and be called multiple times fixit
+var NQUES = 8; // 17;
+var alreadyasked = new Array(NQUES);
 
 var x = 0;
-var nSbxs = 28;
-function callmymethod(){
-    //here I want to prevent default
-    return false;
+var nSbxs = 10;
+
+function askQuestions() {
+    var whichQues;
+    var validQues = false;
+    var allDone = false;
+    var udx = 0;
+    var lques = NQUES;
+    var doc = document;
+    for( udx = 0; udx < lques; udx++ ) {
+        if( !alreadyasked[udx] ) {
+            break;
+        }
+    }
+    if( udx == lques ) {
+        //allDone = true;
+        doc.getElementById("instr0").innerHTML = "All Done";
+        doc.getElementById("instr1").style.color = "#3961a2";
+	return;
+    }
+    var mat = Math;
+    var num = Number;
+    var whitefactor = num(doc.getElementById("whitefactor").value);
+    var magentafactor = num(doc.getElementById("magentafactor").value);
+    var yellowfactor = num(doc.getElementById("yellowfactor").value);
+    var cyanfactor = num(doc.getElementById("cyanfactor").value);
+    var bluefactor = num(doc.getElementById("bluefactor").value);
+    var redfactor = num(doc.getElementById("redfactor").value);
+    var greenfactor = num(doc.getElementById("greenfactor").value);
+    var expAns = 0;
+    
+    doc.getElementById("instr1").style.color = "#e2eeeb";
+
+    //if( !validQues & !allDone ) {
+        var numAns = false;
+        var showTorF = false;
+
+        whichQues = mat.floor(mat.random()*lques);
+        while( alreadyasked[whichQues] ) {
+            whichQues = mat.floor(mat.random()*lques);
+        }
+
+        alreadyasked[whichQues] = true;
+        validQues = true;
+        //doc.getElementById("statusBox" + x).innerHTML = "whichQues: " + whichQues;
+        //x = (x + 1)%nSbxs;
+	for( var i = 0; i < lques; ++i ) {
+        	//doc.getElementById("statusBox" + x).innerHTML = "alreadyasked[" + i + "]: " + alreadyasked[i];
+        	//x = (x + 1)%nSbxs;
+	}
+
+        if( whichQues < 1 ) {
+            var inStr0 = "What is the Greatest Common Divisor of ";
+            doc.getElementById("instr0").innerHTML = inStr0;
+            var inStr1 = doc.getElementById("g0_1").value;
+            inStr1 = inStr1 + " and " + doc.getElementById("g0_4").value;
+            doc.getElementById("instr1").innerHTML = inStr1;
+            expAns = magentafactor*whitefactor;
+            //askNum( BLUE, RED, expAns );
+        } else if( whichQues < 2 ) {
+            var inStr0 = "What is the Greatest Common Divisor of ";
+            doc.getElementById("instr0").innerHTML = inStr0;
+            var inStr1 = doc.getElementById("g0_4").value;
+            inStr1 = inStr1 + " and " + doc.getElementById("g0_7").value;
+            doc.getElementById("instr1").innerHTML = inStr1;
+            expAns = yellowfactor*whitefactor;
+            //askNum( RED, GREEN, expAns );
+         } else if( whichQues < 3 ) {
+            var inStr0 = "What is the Greatest Common Divisor of ";
+            doc.getElementById("instr0").innerHTML = inStr0;
+            var inStr1 = doc.getElementById("g0_1").value;
+            inStr1 = inStr1 + " and " + doc.getElementById("g0_7").value;
+            doc.getElementById("instr1").innerHTML = inStr1;
+            expAns = cyanfactor*whitefactor;
+            //askNum( BLUE, GREEN, expAns );
+         } else if( whichQues < 4 ) {
+            var inStr0 = "What is the Greatest Common Divisor of ";
+            doc.getElementById("instr0").innerHTML = inStr0;
+            var inStr1 = doc.getElementById("g0_1").value;
+            inStr1 = inStr1 + ", " + doc.getElementById("g0_4").value;
+            inStr1 = inStr1 + " and " + doc.getElementById("g0_7").value;
+            doc.getElementById("instr1").innerHTML = inStr1;
+            expAns = whitefactor;
+            //askNum( BLUE, RED, GREEN, expAns );
+         } else if( whichQues < 5 ) {
+            var inStr0 = "What is the Lowest Common Multiple of ";
+            doc.getElementById("instr0").innerHTML = inStr0;
+            var inStr1 = doc.getElementById("g0_1").value;
+            inStr1 = inStr1 + " and " + doc.getElementById("g0_4").value;
+            doc.getElementById("instr1").innerHTML = inStr1;
+            expAns = whitefactor*magentafactor*bluefactor*redfactor;
+            expAns *= yellowfactor*cyanfactor;
+         } else if( whichQues < 6 ) {
+            var inStr0 = "What is the Lowest Common Multiple of ";
+            doc.getElementById("instr0").innerHTML = inStr0;
+            var inStr1 = doc.getElementById("g0_4").value;
+            inStr1 = inStr1 + " and " + doc.getElementById("g0_7").value;
+            doc.getElementById("instr1").innerHTML = inStr1;
+            expAns = whitefactor*yellowfactor*greenfactor*redfactor;
+            expAns *= cyanfactor*magentafactor;
+            //askNum( RED, GREEN, expAns );
+         } else if( whichQues < 7 ) {
+            var inStr0 = "What is the Lowest Common Multiple of ";
+            doc.getElementById("instr0").innerHTML = inStr0;
+            var inStr1 = doc.getElementById("g0_1").value;
+            inStr1 = inStr1 + " and " + doc.getElementById("g0_7").value;
+            doc.getElementById("instr1").innerHTML = inStr1;
+            expAns = whitefactor*cyanfactor*bluefactor*greenfactor;
+            expAns *= yellowfactor*magentafactor;
+            //askNum( BLUE, GREEN, expAns );
+         } else if( whichQues < 8 ) {
+            var inStr0 = "What is the Lowest Common Multiple of ";
+            doc.getElementById("instr0").innerHTML = inStr0;
+            var inStr1 = doc.getElementById("g0_1").value;
+            inStr1 = inStr1 + ", " + doc.getElementById("g0_4").value;
+            inStr1 = inStr1 + " and " + doc.getElementById("g0_7").value;
+            doc.getElementById("instr1").innerHTML = inStr1;
+            expAns = whitefactor*yellowfactor*greenfactor*redfactor;
+            expAns *= cyanfactor*magentafactor*bluefactor;
+            //askNum( BLUE, RED, GREEN, expAns );
+         } else if( whichQues < 9 ) {
+            validQues = askTorF( BLUE, RED );
+         } else if( whichQues < 10 ) {
+            validQues = askTorF( BLUE, GREEN );
+         } else if( whichQues < 11 ) {
+            validQues = askTorF( RED, BLUE );
+         } else if( whichQues < 12 ) {
+            validQues = askTorF( RED, GREEN );
+         } else if( whichQues < 13 ) {
+            validQues = askTorF( GREEN, BLUE );
+         } else if( whichQues < 14 ) {
+            validQues = askTorF( GREEN, RED );
+         } else if( whichQues < 15 ) {
+            validQues = askSqrt( BLUE );
+         } else if( whichQues < 16 ) {
+            validQues = askSqrt( RED );
+         } else if( whichQues < 17 ) {
+            validQues = askSqrt( GREEN );
+         }
+	gprod = expAns;
+        //doc.getElementById("statusBox" + x).innerHTML = "expAns: " + expAns;
+        //x = (x + 1)%nSbxs;
+//         System.out.println("validQues");
+//         System.out.println(validQues);
+      //}
+
 }
 function getMultiplying() {
     var doc = document;
@@ -147,14 +293,59 @@ function getMultiplying() {
             gmdx = 0;
             gprod = 1;
             gindexes = indexes;
-		lastPos = 0;
+            lastPos = 0;
             multiply();
         } else { // nothing to multiply, go on to next section
+            if( len > 0 ) {
+		for( var i = 0; i < len; ++i ) {
+                    factors[i].setAttribute("moved", "false" );
+		}
+            }
             ndx = ndx + 1;
         }
     }
+    //alert("done with while ndx: " + ndx);
     if( ndx > 6 ) {
-        doc.getElementById("instr0").innerHTML = "Work the problems on the white graph paper";
+        var instr0 = doc.getElementById("instr0");
+        instr0.style.color = "#e2eeeb";
+        instr0.innerHTML = "Work the problems on the white graph paper";
+        //alert("doingMults: " + doingMults + " in getMultiplying");
+        var frame = doc.getElementById("paperFrame");
+        var graphP = doc.createElement("img");
+	graphP.style.position = "absolute";
+	var win = window;
+        var hgt = num(win.innerHeight);
+        var wid = num(win.innerWidth);
+        var imgHgt = 0.45*hgt;
+        graphP.style.height = imgHgt + "px";
+	frame.style.height = imgHgt + "px";
+        var topPos = hgt - imgHgt - 4;
+        var imgWid = 1.1*imgHgt;
+        graphP.style.width = imgWid + "px";
+        var leftPos = 0.12*wid;
+        //alert("wid: " + wid + " imgWid: " + imgWid);
+        frame.style.left = leftPos + "px";  
+        frame.style.top = topPos + "px";
+        frame.insertBefore(graphP, frame.childNodes[0]);
+        graphP.src = 'Images/allwhite.png';
+        var ansBx = doc.getElementsByClassName("onewide");
+        var nBxs = ansBx.length;
+        var leasDig = nBxs - 1;
+        for( var i = 0; i < nBxs; ++i ) {
+            var nput = ansBx[i];
+            if( nput ) {
+                nput.onkeyup=passFocus;
+                if( i === leasDig ) {
+                    doc.activeElement.blur();
+                    //nput.style.background = "pink";
+                    nput.focus();
+                    nput.onkeydown=eraseAll;
+                }
+            }
+        }
+        cdx = 7; // don't come back here
+        doingMults = false;
+	askQuestions();
     }
 }
 function multiply() {
@@ -413,13 +604,21 @@ function multiply() {
 function eraseAll( ev ) {
     ev = ev || window.event;
     var ansBx = ev.target;
-    if( ansBx.style.color === "red") {
-        ansBx.style.color = "#11397a";
-        var answer = ansBx.value;
-        var len = answer.length;    
+    var doc = document;
+    //for( x = 0; x < nSbxs; ++x ) {
+     //doc.getElementById("statusBox" + x).innerHTML = "";
+    //}
+    //x = 0;
+
+    ansBx.style.color = "#11397a";
+    var answer = ansBx.value;
+    var len = answer.length;
+    //doc.getElementById("statusBox" + x).innerHTML = "IN eraseAll! doingMults: " + doingMults;
+    //x = (x + 1)%nSbxs;
+    if( doingMults ) {
         var parent = ansBx.parentNode;
-	var grandparent = parent.parentNode;
-	var parents = grandparent.childNodes;
+        var grandparent = parent.parentNode;
+        var parents = grandparent.childNodes;
         var parentNode = parents[0];
         var len = parents.length;
         for( var i = 0; i < len; ++i ) {
@@ -428,9 +627,19 @@ function eraseAll( ev ) {
                 allBoxes[0].value = "";
                 allBoxes[0].style.color = "#11397a";
             }
-	}
-        ansBx.value = answer.substring(len, len);
+        }
+    } else {
+            var allBoxes = document.getElementsByClassName("onewide");
+            var l = allBoxes.length;
+            for( var i = 0; i < l; ++i ) {
+                //doc.getElementById("statusBox" + x).innerHTML = "in eraseAll doingMults: " + doingMults + " len: " + l + " allBoxes[" + i + "]: " + allBoxes[i].value;
+                //x = (x + 1)%nSbxs;
+                allBoxes[i].value = "";
+                allBoxes[i].style.color = "#11397a";
+                
+            }
     }
+    ansBx.value = answer.substring(len, len);
 }
 function erase( ev ) {
     ev = ev || window.event;
@@ -445,6 +654,7 @@ function erase( ev ) {
 function passFocus( ev ) {
     ev = ev || window.event;
     var ansBx = ev.target;
+    var doc = document;
     
     if (ev.which === 8 || ev.keyCode === 8) { // backspace
         // find previous box
@@ -458,6 +668,7 @@ function passFocus( ev ) {
         var parentNode = parents[i];
         var foundCurrentBx = false;
 	while( ( parentNode = parents[i]).NodeType !== 1 ) {
+		if( parentNode.tagName === "TD" ) {
             var children = parentNode.childNodes;
             thisBox = children[0];
             if( foundCurrentBx ) {
@@ -465,10 +676,11 @@ function passFocus( ev ) {
                 thisBox.focus();
                 break;
             }
-            ++i;
             if( thisBox === ansBx ) {
 		foundCurrentBx = true;
             }
+		}
+            ++i;
 	}
     } else if (ev.which === 13 || ev.keyCode === 13) { // return
         checkBackM(ev);
@@ -482,13 +694,17 @@ function passFocus( ev ) {
         var parentNode = parents[i];
         // not quite right probably won't work for larger numbers fixit
 	while( ( parentNode = parents[i]).NodeType !== 1 ) {
+		if( parentNode.tagName === "TD" ) {
             nextBox = thisBox;
             var children = parentNode.childNodes;
+            //doc.getElementById("statusBox" + x).innerHTML = "parent tag: " + parent.tagName + " grandparent tag: " + grandparent.tagName + " parentNode tag: " + parentNode.tagName;
+            //x = (x + 1)%nSbxs;
             thisBox = children[0];
-            ++i;
             if( thisBox === ansBx ) {
 		break;
             }
+		}
+            ++i;
 	}
 	nextBox.focus();
     }
@@ -507,10 +723,12 @@ function checkBackM( ev ) {
         var boxes = new Array();
         var len = parents.length;
         for( var i = 0; i < len; ++i ) {
-            if( ( parentNode = parents[i]).NodeType !== 1 ) {
+            if( ( parentNode = parents[i]).tagName === "TD" ) {
                 var allBoxes = parentNode.childNodes;
                 boxes[boxLen] = num(allBoxes[0].value);
-                if( typeof( boxes[boxLen] ) === "number" ) {
+                //doc.getElementById("statusBox" + x).innerHTML = "doingMults: " + doingMults + " len: " + len + " boxes[" + boxLen + "]: " + boxes[boxLen];
+                //x = (x + 1)%nSbxs;
+                if( typeof( boxes[boxLen] ) === "number" ) { 
                     ++boxLen;
                 }
             }
@@ -608,17 +826,75 @@ function checkBackM( ev ) {
                 } else {
                     multiply();
                 }
-            } else {
-                doc.getElementById("instr0").innerHTML = "Work the problems on the white graph paper";
-            }
+            } else if( doingMults ) {
+                //alert("doingMults: " + doingMults + " in checkBackM");
+                doc.getElementById("instr0").innerHTML = "Work the problems on the white graph";
+                var frame = doc.getElementById("paperFrame");
+                var graphP = doc.createElement("img");
+                graphP.style.position = "absolute";
+                var win = window;
+                var hgt = num(win.innerHeight);
+                var wid = num(win.innerWidth);
+                var imgHgt = 0.45*hgt;
+                graphP.style.height = imgHgt + "px";
+                frame.style.height = imgHgt + "px";
+                var topPos = hgt - imgHgt;
+                var imgWid = 1.1*imgHgt;
+                graphP.style.width = imgWid + "px";
+                var leftPos = 0.12*wid;
+                //alert("wid: " + wid + " imgWid: " + imgWid);
+                frame.style.left = leftPos + "px";  
+                frame.style.top = topPos + "px";
+                frame.insertBefore(graphP, frame.childNodes[0]);
+                graphP.src = 'Images/allwhite.png';
+                var ansBx = doc.getElementsByClassName("onewide");
+                var nBxs = ansBx.length;
+                var leasDig = nBxs - 1;
+                for( var i = 0; i < nBxs; ++i ) {
+                    var nput = ansBx[i];
+                    if( nput ) {
+                        nput.onkeyup=passFocus;
+                        if( i === leasDig ) {
+                            doc.activeElement.blur();
+                            //nput.style.background = "pink";
+                            nput.focus();
+                            nput.onkeydown=eraseAll;
+                        }
+                    }
+                }
+		doingMults = false;
+                askQuestions();
+            } else { 
+		    alert("Correct. Go again?");
+		     var inBxs = doc.getElementsByClassName("onewide");
+		    var last = inBxs.length - 1;
+		    inBxs[last].focus();
+                askQuestions();
+	    }
 	} else {
             alert("entered: " + answer + " should be: " + gprod);
-            for( var i = 0; i < len; ++i ) {
-                if( ( parentNode = parents[i]).NodeType !== 1 ) {
-                    var allBoxes = parentNode.childNodes;
-                    allBoxes[0].style.color = "red";
-                    if( i === len-1 ) {
-                        allBoxes[0].focus();
+            var leasDig = -1;
+            if( doingMults ) {
+		leasDig = len - 1;
+                for( var i = 0; i < len; ++i ) {
+                    if( ( parentNode = parents[i]).tagName === "TD" ) {
+                        var allBoxes = parentNode.childNodes;
+                        allBoxes[0].style.color = "red";
+                        if( i === leasDig ) {
+                            allBoxes[0].focus();
+                        }
+                    }
+                }   
+            } else {
+                var allBoxes = doc.getElementsByClassName("onewide");
+		len = allBoxes.length;
+                leasDig = len - 1;
+                for( var i = 0; i < len; ++i ) {
+                    //doc.getElementById("statusBox" + x).innerHTML = "doingMults: " + doingMults + " len: " + len + " leasDig: " + leasDig + " parents[" + i + "].tagName: " + parents[i].tagName;
+                    //x = (x + 1)%nSbxs;
+                    allBoxes[i].style.color = "red";
+                    if( i === leasDig ) {
+                        allBoxes[i].focus();
                     }
                 }
             }   
@@ -1061,11 +1337,9 @@ window.onload = function(){
     var index = doc.getElementById("index");
     var indexpos = mat.round(hgt*0.91);
     index.style.marginTop = indexpos + "px";
-    //var allInputs = doc.getElementsByTagName("input");
-    //var len = allInputs.length;
-    //for( var i = 0; i < len; ++i ) {
-    //    allInputs[i].onclick="return callmymethod()";
-    //}
+
+        
+	
 };
 window.onresize = function() {
     //window.settimout( 

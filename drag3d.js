@@ -617,6 +617,7 @@ function checklineup() {
             }
         }
         if( allLinedUp ) {
+    	doc.getElementById("linedUp").value = "true";
             var mx = doc.getElementsByClassName("instrs").length;
             for( var instIdx = 0; instIdx < mx; ++instIdx) {
                 var whatInstr = doc.getElementById("instr" + instIdx);

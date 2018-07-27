@@ -48,13 +48,23 @@ th{
     height: 1.4em;
     height: 20px;
 }
-
 .dragBox{
     margin: 0px;
     position: absolute;
 }
 .ghost{
     margin: 0px;
+}
+.nomargin{
+	margin: 0;
+	border: 0;
+	padding: 0;
+}
+.onewide{
+	margin: 0;
+	border: 0;
+	padding: 0;
+	width: 0.6em;
 }
 .op{
     width: 4em;
@@ -93,6 +103,13 @@ th{
     text-align: left;
     color: white;
 }
+#fans{
+position: absolute;
+top: 90%;
+left: 20%;
+padding: 0;
+margin: 0;
+}
 #ghosts{
     position: absolute;
     color: #d2edf9;
@@ -120,6 +137,12 @@ th{
 #instr2{
     color: #d2edf9;
     /* padding-bottom: 1em; */
+}
+#paperFrame{
+    position: fixed;
+    /* position: relative; */
+    text-align: left;
+    color: white;
 }
 #statusTable{
     position: absolute;

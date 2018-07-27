@@ -19,7 +19,7 @@
             // this needs some serious commenting so I know how to modify distribution fixit
         final int MAXBOXES = 5000; // one too many 0s fixit
         final int UNCLASSED = 0;
-        final int NQUES = 17;
+
         final double MAXOPRND = 999999.; // one too many 9s fixit
         final int BLUE = 0;
         final int RED = 1;
@@ -56,7 +56,7 @@
         placed = new boolean[MAXBOXES];
         firstmoved = new boolean[MAXBOXES];
         lightbackground = new boolean[MAXBOXES];
-        alreadyasked = new boolean[NQUES];
+
 
         int[] redPos = { 734, 60 };    // y positions are written over
         int[] whitePos = { 690, 370 };
@@ -101,10 +101,6 @@
             placed[idx] = false;
             firstmoved[idx] = true;
             lightbackground[idx] = true;
-        }
-
-        for( int idx = 0; idx < NQUES; idx++ ) {
-           alreadyasked[idx] = false;
         }
 
         redPos[1] = 60;
@@ -208,7 +204,7 @@
             }
             numcats = 0;
 
-            int nDistinctFactors = 5; // possible distinct factors
+            int nDistinctFactors = 5;// possible distinct factors
             for( int idx = 0; idx < nDistinctFactors; idx++ ) {
                 while( ( mdx == mdxprev & indcatr == indcatrprev ) |
                      ( mdx == mdx2prev & indcatr == indcatr2prev ) ) {
@@ -524,6 +520,7 @@
             String blueIdx = "nBlue" + idx;
             String nBlueIdx = String.valueOf(numblues[idx]); 
             String boccursIdx = "boccurs" + idx; 
+
         
              %>    
             <input type="<%=itype%>" id="<%=catIdx%>" value="<%=cat[idx]%>" class="cat">
@@ -637,6 +634,21 @@ for( int row = 0; row < maxrow; ++row ) { %>
         <label id="cyanLabel3" class="section">cyan</label>
         <label id="cyanLabel4" class="section">cyan</label>
         <label id="greenLabel" class="section">green</label>       
+    </div>
+    <div id="paperFrame">   
+        <label id="finstr0"></label>       
+        <label id="finstr1"></label>       
+	<table>
+	<tr id="fans">
+		<td class="nomargin"><input class="onewide"></input></td>
+		<td class="nomargin"><input class="onewide"></input></td>
+		<td class="nomargin"><input class="onewide"></input></td>
+		<td class="nomargin"><input class="onewide"></input></td>
+		<td class="nomargin"><input class="onewide"></input></td>
+		<td class="nomargin"><input class="onewide"></input></td>
+		<td class="nomargin"><input class="onewide"></input></td>
+	</tr>
+    </table>
     </div>
     <input type="<%=itype%>" id="linedUp" value="false" class="shortbox">
     <table id="statusTable">
