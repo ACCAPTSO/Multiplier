@@ -104,15 +104,20 @@ th{
     color: white;
 }
 #fans{
-position: absolute;
-top: 90%;
-left: 20%;
-padding: 0;
-margin: 0;
-}
-#ghosts{
     position: absolute;
-    color: #d2edf9;
+    top: 90%;
+/*horizontal-align: middle; */
+/* displlay: inline-table; */
+    padding: 0;
+    border: 0;
+}
+#finstr0{
+    position: absolute;
+    color: #3961a2;
+}
+#finstr1{
+    position: absolute;
+    color: #3961a2;
 }
 #firstGhost{
     border-left-color: #11397a;
@@ -121,6 +126,10 @@ margin: 0;
 #firstOp{
     border-left-color: #11397a;
     border-bottom-color: #11397a;
+}
+#ghosts{
+    position: absolute;
+    color: #d2edf9;
 }
 #home{
     position: absolute;
@@ -141,7 +150,8 @@ margin: 0;
 #paperFrame{
     position: fixed;
     /* position: relative; */
-    text-align: left;
+    text-align: center;
+    /* padding: 10%; */
     color: white;
 }
 #statusTable{

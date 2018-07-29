@@ -638,8 +638,8 @@ for( int row = 0; row < maxrow; ++row ) { %>
     <div id="paperFrame">   
         <label id="finstr0"></label>       
         <label id="finstr1"></label>       
-	<table>
-	<tr id="fans">
+	<table id="fans">
+	<tr>
 		<td class="nomargin"><input class="onewide"></input></td>
 		<td class="nomargin"><input class="onewide"></input></td>
 		<td class="nomargin"><input class="onewide"></input></td>

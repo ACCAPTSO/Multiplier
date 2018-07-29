@@ -42,7 +42,11 @@ var glen = 0;
 var ginc = 1;
 var lastPos = 0;
 var doingMults = true;
-
+//  "oc delete all --all" from command line removes entire application
+//  so you can upload a new one
+//  delete build directory and distribution directory, rebuild practice.was
+//  clear the browser cache if you want the openshift version to work
+//  
 // perhaps change onkeyup or onkeydown to eliminate typing 2 digits in one 
 // product box.  fixit
 //
@@ -53,6 +57,22 @@ var doingMults = true;
 //
 // askQuestions can't run in a loop, it needs to store global variables
 // and be called multiple times fixit
+//
+// operands need to be draggable but not editable fixit
+//
+// drag to paper needs to click to position fixit
+//
+// need bar after dragged factors on paper fixit
+//
+// put directions on paper itself fixit
+//
+// add t/f questions fixit
+//
+// hide answer boxes and make them non-editable until they are needed fixit
+//
+// add square root questions. make original factors draggable again. fixit
+//
+//
 var NQUES = 8; // 17;
 var alreadyasked = new Array(NQUES);
 
@@ -73,8 +93,11 @@ function askQuestions() {
     }
     if( udx == lques ) {
         //allDone = true;
-        doc.getElementById("instr0").innerHTML = "All Done";
+        doc.getElementById("finstr0").innerHTML = "All Done";
+        doc.getElementById("finstr1").innerHTML = "";
+        doc.getElementById("instr0").style.color = "#3961a2";
         doc.getElementById("instr1").style.color = "#3961a2";
+        doc.getElementById("instr2").style.color = "#3961a2";
 	return;
     }
     var mat = Math;
@@ -110,70 +133,86 @@ function askQuestions() {
 
         if( whichQues < 1 ) {
             var inStr0 = "What is the Greatest Common Divisor of ";
-            doc.getElementById("instr0").innerHTML = inStr0;
+            //doc.getElementById("instr0").innerHTML = inStr0;
+            doc.getElementById("finstr0").innerHTML = inStr0;
             var inStr1 = doc.getElementById("g0_1").value;
             inStr1 = inStr1 + " and " + doc.getElementById("g0_4").value;
-            doc.getElementById("instr1").innerHTML = inStr1;
+            //doc.getElementById("instr1").innerHTML = inStr1;
+            doc.getElementById("finstr1").innerHTML = inStr1;
             expAns = magentafactor*whitefactor;
             //askNum( BLUE, RED, expAns );
         } else if( whichQues < 2 ) {
             var inStr0 = "What is the Greatest Common Divisor of ";
-            doc.getElementById("instr0").innerHTML = inStr0;
+            //doc.getElementById("instr0").innerHTML = inStr0;
+            doc.getElementById("finstr0").innerHTML = inStr0;
             var inStr1 = doc.getElementById("g0_4").value;
             inStr1 = inStr1 + " and " + doc.getElementById("g0_7").value;
-            doc.getElementById("instr1").innerHTML = inStr1;
+            //doc.getElementById("instr1").innerHTML = inStr1;
+            doc.getElementById("finstr1").innerHTML = inStr1;
             expAns = yellowfactor*whitefactor;
             //askNum( RED, GREEN, expAns );
          } else if( whichQues < 3 ) {
             var inStr0 = "What is the Greatest Common Divisor of ";
-            doc.getElementById("instr0").innerHTML = inStr0;
+            //doc.getElementById("instr0").innerHTML = inStr0;
+            doc.getElementById("finstr0").innerHTML = inStr0;
             var inStr1 = doc.getElementById("g0_1").value;
             inStr1 = inStr1 + " and " + doc.getElementById("g0_7").value;
-            doc.getElementById("instr1").innerHTML = inStr1;
+            //doc.getElementById("instr1").innerHTML = inStr1;
+            doc.getElementById("finstr1").innerHTML = inStr1;
             expAns = cyanfactor*whitefactor;
             //askNum( BLUE, GREEN, expAns );
          } else if( whichQues < 4 ) {
             var inStr0 = "What is the Greatest Common Divisor of ";
-            doc.getElementById("instr0").innerHTML = inStr0;
+            //doc.getElementById("instr0").innerHTML = inStr0;
+            doc.getElementById("finstr0").innerHTML = inStr0;
             var inStr1 = doc.getElementById("g0_1").value;
             inStr1 = inStr1 + ", " + doc.getElementById("g0_4").value;
             inStr1 = inStr1 + " and " + doc.getElementById("g0_7").value;
-            doc.getElementById("instr1").innerHTML = inStr1;
+            //doc.getElementById("instr1").innerHTML = inStr1;
+            doc.getElementById("finstr1").innerHTML = inStr1;
             expAns = whitefactor;
             //askNum( BLUE, RED, GREEN, expAns );
          } else if( whichQues < 5 ) {
             var inStr0 = "What is the Lowest Common Multiple of ";
-            doc.getElementById("instr0").innerHTML = inStr0;
+            //doc.getElementById("instr0").innerHTML = inStr0;
+            doc.getElementById("finstr0").innerHTML = inStr0;
             var inStr1 = doc.getElementById("g0_1").value;
             inStr1 = inStr1 + " and " + doc.getElementById("g0_4").value;
-            doc.getElementById("instr1").innerHTML = inStr1;
+            //doc.getElementById("instr1").innerHTML = inStr1;
+            doc.getElementById("finstr1").innerHTML = inStr1;
             expAns = whitefactor*magentafactor*bluefactor*redfactor;
             expAns *= yellowfactor*cyanfactor;
          } else if( whichQues < 6 ) {
             var inStr0 = "What is the Lowest Common Multiple of ";
-            doc.getElementById("instr0").innerHTML = inStr0;
+            //doc.getElementById("instr0").innerHTML = inStr0;
+            doc.getElementById("finstr0").innerHTML = inStr0;
             var inStr1 = doc.getElementById("g0_4").value;
             inStr1 = inStr1 + " and " + doc.getElementById("g0_7").value;
-            doc.getElementById("instr1").innerHTML = inStr1;
+            //doc.getElementById("instr1").innerHTML = inStr1;
+            doc.getElementById("finstr1").innerHTML = inStr1;
             expAns = whitefactor*yellowfactor*greenfactor*redfactor;
             expAns *= cyanfactor*magentafactor;
             //askNum( RED, GREEN, expAns );
          } else if( whichQues < 7 ) {
             var inStr0 = "What is the Lowest Common Multiple of ";
-            doc.getElementById("instr0").innerHTML = inStr0;
+            //doc.getElementById("instr0").innerHTML = inStr0;
+            doc.getElementById("finstr0").innerHTML = inStr0;
             var inStr1 = doc.getElementById("g0_1").value;
             inStr1 = inStr1 + " and " + doc.getElementById("g0_7").value;
-            doc.getElementById("instr1").innerHTML = inStr1;
+            //doc.getElementById("instr1").innerHTML = inStr1;
+            doc.getElementById("finstr1").innerHTML = inStr1;
             expAns = whitefactor*cyanfactor*bluefactor*greenfactor;
             expAns *= yellowfactor*magentafactor;
             //askNum( BLUE, GREEN, expAns );
          } else if( whichQues < 8 ) {
             var inStr0 = "What is the Lowest Common Multiple of ";
-            doc.getElementById("instr0").innerHTML = inStr0;
+            //doc.getElementById("instr0").innerHTML = inStr0;
+            doc.getElementById("finstr0").innerHTML = inStr0;
             var inStr1 = doc.getElementById("g0_1").value;
             inStr1 = inStr1 + ", " + doc.getElementById("g0_4").value;
             inStr1 = inStr1 + " and " + doc.getElementById("g0_7").value;
-            doc.getElementById("instr1").innerHTML = inStr1;
+            //doc.getElementById("instr1").innerHTML = inStr1;
+            doc.getElementById("finstr1").innerHTML = inStr1;
             expAns = whitefactor*yellowfactor*greenfactor*redfactor;
             expAns *= cyanfactor*magentafactor*bluefactor;
             //askNum( BLUE, RED, GREEN, expAns );
@@ -307,10 +346,16 @@ function getMultiplying() {
     //alert("done with while ndx: " + ndx);
     if( ndx > 6 ) {
         var instr0 = doc.getElementById("instr0");
+        var instr1 = doc.getElementById("instr1");
+        var instr2 = doc.getElementById("instr2");
         instr0.style.color = "#e2eeeb";
+        instr1.style.color = "#e2eeeb";
+        instr2.style.color = "#e2eeeb";
         instr0.innerHTML = "Work the problems on the white graph paper";
-        //alert("doingMults: " + doingMults + " in getMultiplying");
+        instr1.innerHTML = "Drag any numbers you need for your calculations";
+        instr2.innerHTML = "Enter your answers least significant digits first";
         var frame = doc.getElementById("paperFrame");
+	var fans = doc.getElementById("fans");
         var graphP = doc.createElement("img");
 	graphP.style.position = "absolute";
 	var win = window;
@@ -323,9 +368,21 @@ function getMultiplying() {
         var imgWid = 1.1*imgHgt;
         graphP.style.width = imgWid + "px";
         var leftPos = 0.12*wid;
-        //alert("wid: " + wid + " imgWid: " + imgWid);
         frame.style.left = leftPos + "px";  
         frame.style.top = topPos + "px";
+	var fansleft = 0.35*imgWid;
+	var fleftStr = fansleft + "px";
+	fans.style.left = fleftStr;
+	var finalIns0 = doc.getElementById("finstr0");
+	var finalIns1 = doc.getElementById("finstr1");
+	finalIns0.style.color = "#11397a";
+	finalIns1.style.color = "#11397a";
+	topPos = 20;
+        finalIns0.style.top = topPos + "px";
+        finalIns0.style.width = imgWid + "px";
+	topPos = topPos + 20;
+        finalIns1.style.top = topPos + "px";
+        finalIns1.style.width = imgWid + "px";
         frame.insertBefore(graphP, frame.childNodes[0]);
         graphP.src = 'Images/allwhite.png';
         var ansBx = doc.getElementsByClassName("onewide");
@@ -334,6 +391,7 @@ function getMultiplying() {
         for( var i = 0; i < nBxs; ++i ) {
             var nput = ansBx[i];
             if( nput ) {
+                nput.style.backgroundColor = "white";
                 nput.onkeyup=passFocus;
                 if( i === leasDig ) {
                     doc.activeElement.blur();
@@ -827,9 +885,17 @@ function checkBackM( ev ) {
                     multiply();
                 }
             } else if( doingMults ) {
-                //alert("doingMults: " + doingMults + " in checkBackM");
-                doc.getElementById("instr0").innerHTML = "Work the problems on the white graph";
+                var instr0 = doc.getElementById("instr0");
+                var instr1 = doc.getElementById("instr1");
+                var instr2 = doc.getElementById("instr2");
+                instr0.style.color = "#e2eeeb";
+                instr1.style.color = "#e2eeeb";
+                instr2.style.color = "#e2eeeb";
+                instr0.innerHTML = "Work the problems on the white graph paper";
+                instr1.innerHTML = "Drag any numbers you need for your calculations";
+                instr2.innerHTML = "Enter your answers least significant digits first";
                 var frame = doc.getElementById("paperFrame");
+                var fans = doc.getElementById("fans");
                 var graphP = doc.createElement("img");
                 graphP.style.position = "absolute";
                 var win = window;
@@ -838,15 +904,28 @@ function checkBackM( ev ) {
                 var imgHgt = 0.45*hgt;
                 graphP.style.height = imgHgt + "px";
                 frame.style.height = imgHgt + "px";
-                var topPos = hgt - imgHgt;
+                var topPos = hgt - imgHgt - 4;
                 var imgWid = 1.1*imgHgt;
                 graphP.style.width = imgWid + "px";
                 var leftPos = 0.12*wid;
-                //alert("wid: " + wid + " imgWid: " + imgWid);
                 frame.style.left = leftPos + "px";  
                 frame.style.top = topPos + "px";
+                var fansleft = 0.35*imgWid;
+                var fleftStr = fansleft + "px";
+                fans.style.left = fleftStr;
+                var finalIns0 = doc.getElementById("finstr0");
+                var finalIns1 = doc.getElementById("finstr1");
+                finalIns0.style.color = "#11397a";
+                finalIns1.style.color = "#11397a";
+                topPos = 20;
+                finalIns0.style.top = topPos + "px";
+                finalIns0.style.width = imgWid + "px";
+                topPos = topPos + 20;
+                finalIns1.style.top = topPos + "px";
+                finalIns1.style.width = imgWid + "px";
                 frame.insertBefore(graphP, frame.childNodes[0]);
                 graphP.src = 'Images/allwhite.png';
+
                 var ansBx = doc.getElementsByClassName("onewide");
                 var nBxs = ansBx.length;
                 var leasDig = nBxs - 1;
@@ -854,6 +933,7 @@ function checkBackM( ev ) {
                     var nput = ansBx[i];
                     if( nput ) {
                         nput.onkeyup=passFocus;
+                        nput.style.backgroundColor = "white";
                         if( i === leasDig ) {
                             doc.activeElement.blur();
                             //nput.style.background = "pink";
@@ -998,6 +1078,11 @@ function check( ev ) {
                         var snow = "#e2eeeb";
                         var water = "#3961a2"; //"#3f66a1";
                         doc.body.style.backgroundColor = "#3961a2";
+			var onewides = doc.getElementsByClassName("onewide");
+			var len = onewides.length;
+			for( var i = 0; i < len; ++i ) {
+                            onewides[i].style.backgroundColor = "#3961a2";
+			}
                         var win = window;
                         var hgt = num(win.innerHeight);
                         var wid = num(win.innerWidth);
@@ -1011,6 +1096,7 @@ function check( ev ) {
                         var topPos = hgt - imgHgt;
                         var imgWid = 1.05*imgHgt;
                         img.style.width = imgWid + "px";
+                        frame.style.width = imgWid + "px";
                         var leftPos = wid - imgWid;
                         //alert("wid: " + wid + " imgWid: " + imgWid);
                         frame.style.left = leftPos + "px";  
@@ -1023,6 +1109,7 @@ function check( ev ) {
                         doc.getElementById("instr1").style.color = "#3961a2";
                         doc.getElementById("instr2").style.color = "#3961a2";
                         var links = document.getElementsByTagName("a");
+			len = links.length;
                         for(var i=0;i<links.length;i++) {
                             if(links[i].href) {
                                 links[i].style.color = "black";//"#11397a"; 
@@ -1085,7 +1172,7 @@ function check( ev ) {
                         cyanLabel4.innerHTML = greenValue;
                         
                         var stillBoxes = doc.getElementsByClassName("stillBox");
-                        var len = stillBoxes.length;
+                        len = stillBoxes.length;
                         for( var i = 0; i < len; ++i ) {
                             stillBoxes[i].style.backgroundColor = water;
                             stillBoxes[i].style.color = snow;
