@@ -204,7 +204,7 @@
             }
             numcats = 0;
 
-            int nDistinctFactors = 5;// possible distinct factors
+            int nDistinctFactors = 5; // possible distinct factors
             for( int idx = 0; idx < nDistinctFactors; idx++ ) {
                 while( ( mdx == mdxprev & indcatr == indcatrprev ) |
                      ( mdx == mdx2prev & indcatr == indcatr2prev ) ) {
@@ -640,13 +640,13 @@ for( int row = 0; row < maxrow; ++row ) { %>
         <label id="finstr1"></label>       
 	<table id="fans">
 	<tr>
-		<td class="nomargin"><input class="onewide"></input></td>
-		<td class="nomargin"><input class="onewide"></input></td>
-		<td class="nomargin"><input class="onewide"></input></td>
-		<td class="nomargin"><input class="onewide"></input></td>
-		<td class="nomargin"><input class="onewide"></input></td>
-		<td class="nomargin"><input class="onewide"></input></td>
-		<td class="nomargin"><input class="onewide"></input></td>
+		<td class="nomargin"><input class="onewide"  disabled></input></td>
+                <td class="nomargin"><input class="onewide"  disabled></input></td>
+                <td class="nomargin"><input class="onewide"  disabled></input></td>
+                <td class="nomargin"><input class="onewide"  disabled></input></td>
+                <td class="nomargin"><input class="onewide"  disabled></input></td>
+                <td class="nomargin"><input class="onewide"  disabled></input></td>
+                <td class="nomargin"><input class="onewide"  disabled></input></td>
 	</tr>
     </table>
     </div>

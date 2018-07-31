@@ -459,148 +459,153 @@ function checklineup() {
                     dHelperIdx.style.color = "red";
                     dHelperIdx.style.border = "3px solid red";
                     var nextCol = col + 1;
-                    var origOp = doc.getElementById("g0_" + nextCol).value;
-                    instrs[instIdx] = "This " + dVal + " factor originated from " + origOp;
-                    var whatInstr = doc.getElementById("instr" + instIdx);
-                    whatInstr.innerHTML = instrs[instIdx];
-                    whatInstr.style.color = "#e2eeeb";
-                    ++instIdx;
-
-                    // don't allow inputs to be moved once placed. Create another 
-                    // drag box for moving it to the white graph paper and erase 
-                    // that drag box once the problem is done
-                                        
-                    if( possPlaces === 1 ) {
-                        if( origRed && boccurs === 0 && goccurs === 0 ||
-                                origBlue && goccurs === 0 && roccurs === 0 ||
-                                origGreen && roccurs === 0 && boccurs === 0) {
-                            var onlyPlace = redWasPoss? "red" : greenWasPoss? "green" : "blue";
-                            instrs[instIdx] = "Only " + origOp + " has a factor of " + dVal + ", so " + dVal + " goes in " + onlyPlace + ".";
-                        } else if( whiteWasPoss ) {
-                            var otherCol1 = (col + 3)%9 + 1;
-                            var otherOp1 = doc.getElementById("g0_" + otherCol1).value;
-                            var otherCol2 = (col + 6)%9 + 1;
-                            var otherOp2 = doc.getElementById("g0_" + otherCol2).value;
-                            instrs[instIdx] = otherOp1 + " & " + otherOp2 + " have >= number of " + dVal + "s than " + origOp + ", so " + dVal + " goes in white.";
-                        } else if( magentaWasPoss ) {
-                            var otherCol1 = col === 0? 4 : 1;
-                            var otherOp1 = doc.getElementById("g0_" + otherCol1).value;
-                            var otherCol2 = 7;
-                            var otherOp2 = doc.getElementById("g0_" + otherCol2).value;
-                            instrs[instIdx] =  otherOp1 + " has >= # " + dVal + "s than " + origOp + ", " + otherOp2 + " has none, so " + dVal + " goes in magenta.";
-                        } else if( yellowWasPoss ) {
-                            var otherCol1 = col === 3? 7 : 4;
-                            var otherOp1 = doc.getElementById("g0_" + otherCol1).value;
-                            var otherCol2 = 1;
-                            var otherOp2 = doc.getElementById("g0_" + otherCol2).value;
-                            instrs[instIdx] = otherOp1 + " has >= # " + dVal + "s than " + origOp + ", " + otherOp2 + " has none, so " + dVal + " goes in yellow.";
-                        } else if( cyanWasPoss ) {
-                            var otherCol1 = col === 0? 7 : 1;
-                            var otherOp1 = doc.getElementById("g0_" + otherCol1).value;
-                            var otherCol2 = 4;
-                            var otherOp2 = doc.getElementById("g0_" + otherCol2).value;
-                            instrs[instIdx] = otherOp1 + " has >=  # " + dVal + "s than " + origOp + ", " + otherOp2 + " has none, so " + dVal + " goes in cyan.";
-                        }
-                        whatInstr = doc.getElementById("instr" + instIdx);
+                    var origOpBx = doc.getElementById("g0_" + nextCol);
+                    if( origOpBx ) {
+                        var origOp = origOpBx.value;
+                        instrs[instIdx] = "This " + dVal + " factor originated from " + origOp;
+                        var whatInstr = doc.getElementById("instr" + instIdx);
                         whatInstr.innerHTML = instrs[instIdx];
                         whatInstr.style.color = "#e2eeeb";
                         ++instIdx;
-                    } else {
-                        if( whiteWasPoss ) {
-                            var otherCol1 = (col + 3)%9 + 1;
-                            var otherOp1 = doc.getElementById("g0_" + otherCol1).value;
-                            var otherCol2 = (col + 6)%9 + 1;
-                            var otherOp2 = doc.getElementById("g0_" + otherCol2).value;
-                            instrs[instIdx] = otherOp1 + " & " + otherOp2 + " have one or more " + dVal + "s also, so " + dVal + " can go in white.";
-                            whatInstr = doc.getElementById("instr" + instIdx);
-                            whatInstr.innerHTML = instrs[instIdx];
-                            whatInstr.style.color = "#e2eeeb";
-                            ++instIdx;
-                        }
-                        if( magentaWasPoss ) {
-                            var otherCol1 = col === 0? 4 : 1;
-                            var otherOp1 = doc.getElementById("g0_" + otherCol1).value;
-                            var otherCol2 = 7;
-                            var otherOp2 = doc.getElementById("g0_" + otherCol2).value;
-                            instrs[instIdx] = origOp + " & " + otherOp1 + " have >= # " + dVal + "s than " + otherOp2 + ", so " + dVal + " can go in magenta.";
-                            whatInstr = doc.getElementById("instr" + instIdx);
-                            whatInstr.innerHTML = instrs[instIdx];
-                            whatInstr.style.color = "#e2eeeb";
-                            ++instIdx;
-                        } else if( yellowWasPoss ) {
-                            var otherCol1 = col === 3? 7 : 4;
-                            var otherOp1 = doc.getElementById("g0_" + otherCol1).value;
-                            var otherCol2 = 1;
-                            var otherOp2 = doc.getElementById("g0_" + otherCol2).value;
-                            instrs[instIdx] = origOp + " & " + otherOp1 + " have >= # " + dVal + "s than " + otherOp2 + ", so " + dVal + " can go in yellow.";
-                            whatInstr = doc.getElementById("instr" + instIdx);
-                            whatInstr.innerHTML = instrs[instIdx];
-                            whatInstr.style.color = "#e2eeeb";
-                            ++instIdx;
-                        } else if( cyanWasPoss ) {
-                            var otherCol1 = col === 0? 7 : 1;
-                            var otherOp1 = doc.getElementById("g0_" + otherCol1).value;
-                            var otherCol2 = 4;
-                            var otherOp2 = doc.getElementById("g0_" + otherCol2).value;
-                            instrs[instIdx] = origOp + " & " + otherOp1 + " have >= # " + dVal + "s than " + otherOp2 + ", so " + dVal + " can go in cyan.";
-                            whatInstr = doc.getElementById("instr" + instIdx);
-                            whatInstr.innerHTML = instrs[instIdx];
-                            whatInstr.style.color = "#e2eeeb";
-                            ++instIdx;
-                        }
-                        if( redWasPoss ) {
-                            var otherOp1 = doc.getElementById("g0_1").value;
-                            var otherOp2 = doc.getElementById("g0_7").value;
-                            instrs[instIdx] = origOp + " has >= # " + dVal + "s than " + otherOp1 + " or "+ otherOp2 + ", so " + dVal + " can go in red.";
-                            whatInstr = doc.getElementById("instr" + instIdx);
-                            whatInstr.innerHTML = instrs[instIdx];
-                            whatInstr.style.color = "#e2eeeb";
-                            ++instIdx;
-                        } else if( blueWasPoss ) {
-                            var otherOp1 = doc.getElementById("g0_4").value;
-                            var otherOp2 = doc.getElementById("g0_7").value;
-                            instrs[instIdx] = origOp + " has >= # " + dVal + "s than " + otherOp1 + " or "+ otherOp2 + ", so " + dVal + " can go in blue.";
-                            whatInstr = doc.getElementById("instr" + instIdx);
-                            whatInstr.innerHTML = instrs[instIdx];
-                            whatInstr.style.color = "#e2eeeb";
-                            ++instIdx;
-                        } else if( greenWasPoss ) {
-                            var otherOp1 = doc.getElementById("g0_1").value;
-                            var otherOp2 = doc.getElementById("g0_4").value;
-                            instrs[instIdx] = origOp + " has >= # " + dVal + "s than " + otherOp1 + " or "+ otherOp2 + ", so " + dVal + " can go in green.";
-                            whatInstr = doc.getElementById("instr" + instIdx);
-                            whatInstr.innerHTML = instrs[instIdx];
-                            whatInstr.style.color = "#e2eeeb";
-                            ++instIdx;
-                        }
-                    }
-                    var idx = instIdx;
-                    var wasPoss = new Array( whiteWasPoss, magentaWasPoss, 
-			    		yellowWasPoss, cyanWasPoss, 
-			    blueWasPoss, redWasPoss, greenWasPoss );
-                    var poss = new Array( whitePoss, magentaPoss, yellowPoss, 
-                                        cyanPoss, bluePoss, redPoss, greenPoss );
-                    var sections = new Array( "white", "magenta", "yellow", 
-                                        "cyan", "blue", "red", "green" );
-                                        
-                    var raylen = wasPoss.length;
-                    
-                    for( var i = 0; i < raylen; ++i ) {
-                        if( wasPoss[i] && !poss[i] ) {
-                                instrs[instIdx++] = "The " + dVal + "s in the " + sections[i] + " section are accounted for, so don't put it there."; 
+
+                        // don't allow inputs to be moved once placed. Create another 
+                        // drag box for moving it to the white graph paper and erase 
+                        // that drag box once the problem is done
+
+                        if( possPlaces === 1 ) {
+                            if( origRed && boccurs === 0 && goccurs === 0 ||
+                                    origBlue && goccurs === 0 && roccurs === 0 ||
+                                    origGreen && roccurs === 0 && boccurs === 0) {
+                                var onlyPlace = redWasPoss? "red" : greenWasPoss? "green" : "blue";
+                                instrs[instIdx] = "Only " + origOp + " has a factor of " + dVal + ", so " + dVal + " goes in " + onlyPlace + ".";
+                            } else if( whiteWasPoss ) {
+                                var otherCol1 = (col + 3)%9 + 1;
+                                var otherOp1 = doc.getElementById("g0_" + otherCol1).value;
+                                var otherCol2 = (col + 6)%9 + 1;
+                                var otherOp2 = doc.getElementById("g0_" + otherCol2).value;
+                                instrs[instIdx] = otherOp1 + " & " + otherOp2 + " have >= number of " + dVal + "s than " + origOp + ", so " + dVal + " goes in white.";
+                            } else if( magentaWasPoss ) {
+                                var otherCol1 = col === 0? 4 : 1;
+                                var otherOp1 = doc.getElementById("g0_" + otherCol1).value;
+                                var otherCol2 = 7;
+                                var otherOp2 = doc.getElementById("g0_" + otherCol2).value;
+                                instrs[instIdx] =  otherOp1 + " has >= # " + dVal + "s than " + origOp + ", " + otherOp2 + " has none, so " + dVal + " goes in magenta.";
+                            } else if( yellowWasPoss ) {
+                                var otherCol1 = col === 3? 7 : 4;
+                                var otherOp1 = doc.getElementById("g0_" + otherCol1).value;
+                                var otherCol2 = 1;
+                                var otherOp2 = doc.getElementById("g0_" + otherCol2).value;
+                                instrs[instIdx] = otherOp1 + " has >= # " + dVal + "s than " + origOp + ", " + otherOp2 + " has none, so " + dVal + " goes in yellow.";
+                            } else if( cyanWasPoss ) {
+                                var otherCol1 = col === 0? 7 : 1;
+                                var otherOp1 = doc.getElementById("g0_" + otherCol1).value;
+                                var otherCol2 = 4;
+                                var otherOp2 = doc.getElementById("g0_" + otherCol2).value;
+                                instrs[instIdx] = otherOp1 + " has >=  # " + dVal + "s than " + origOp + ", " + otherOp2 + " has none, so " + dVal + " goes in cyan.";
                             }
-                    }
-                    
-                    for( ; idx < instIdx; ++idx ) {
-                        whatInstr = doc.getElementById("instr" + idx);
-                        whatInstr.innerHTML = instrs[idx];
-                        whatInstr.style.color = "#e2eeeb";
-                    }
-                    var mx = doc.getElementsByClassName("instrs").length;
-                    while( instIdx < mx ) {
-                        whatInstr = doc.getElementById("instr" + instIdx);
-                        whatInstr.style.color = "#3961a2";
-                        ++instIdx;
+                            whatInstr = doc.getElementById("instr" + instIdx);
+                            whatInstr.innerHTML = instrs[instIdx];
+                            whatInstr.style.color = "#e2eeeb";
+                            ++instIdx;
+                        } else {
+                            if( whiteWasPoss ) {
+                                var otherCol1 = (col + 3)%9 + 1;
+                                var otherOp1 = doc.getElementById("g0_" + otherCol1).value;
+                                var otherCol2 = (col + 6)%9 + 1;
+                                var otherOp2 = doc.getElementById("g0_" + otherCol2).value;
+                                instrs[instIdx] = otherOp1 + " & " + otherOp2 + " have one or more " + dVal + "s also, so " + dVal + " can go in white.";
+                                whatInstr = doc.getElementById("instr" + instIdx);
+                                whatInstr.innerHTML = instrs[instIdx];
+                                whatInstr.style.color = "#e2eeeb";
+                                ++instIdx;
+                            }
+                            if( magentaWasPoss ) {
+                                var otherCol1 = col === 0? 4 : 1;
+                                var otherOp1 = doc.getElementById("g0_" + otherCol1).value;
+                                var otherCol2 = 7;
+                                var otherOp2 = doc.getElementById("g0_" + otherCol2).value;
+                                instrs[instIdx] = origOp + " & " + otherOp1 + " have >= # " + dVal + "s than " + otherOp2 + ", so " + dVal + " can go in magenta.";
+                                whatInstr = doc.getElementById("instr" + instIdx);
+                                whatInstr.innerHTML = instrs[instIdx];
+                                whatInstr.style.color = "#e2eeeb";
+                                ++instIdx;
+                            } else if( yellowWasPoss ) {
+                                var otherCol1 = col === 3? 7 : 4;
+                                var otherOp1 = doc.getElementById("g0_" + otherCol1).value;
+                                var otherCol2 = 1;
+                                var otherOp2 = doc.getElementById("g0_" + otherCol2).value;
+                                instrs[instIdx] = origOp + " & " + otherOp1 + " have >= # " + dVal + "s than " + otherOp2 + ", so " + dVal + " can go in yellow.";
+                                whatInstr = doc.getElementById("instr" + instIdx);
+                                whatInstr.innerHTML = instrs[instIdx];
+                                whatInstr.style.color = "#e2eeeb";
+                                ++instIdx;
+                            } else if( cyanWasPoss ) {
+                                var otherCol1 = col === 0? 7 : 1;
+                                var otherOp1 = doc.getElementById("g0_" + otherCol1).value;
+                                var otherCol2 = 4;
+                                var otherOp2 = doc.getElementById("g0_" + otherCol2).value;
+                                instrs[instIdx] = origOp + " & " + otherOp1 + " have >= # " + dVal + "s than " + otherOp2 + ", so " + dVal + " can go in cyan.";
+                                whatInstr = doc.getElementById("instr" + instIdx);
+                                whatInstr.innerHTML = instrs[instIdx];
+                                whatInstr.style.color = "#e2eeeb";
+                                ++instIdx;
+                            }
+                            if( redWasPoss ) {
+                                var otherOp1 = doc.getElementById("g0_1").value;
+                                var otherOp2 = doc.getElementById("g0_7").value;
+                                instrs[instIdx] = origOp + " has >= # " + dVal + "s than " + otherOp1 + " or "+ otherOp2 + ", so " + dVal + " can go in red.";
+                                whatInstr = doc.getElementById("instr" + instIdx);
+                                whatInstr.innerHTML = instrs[instIdx];
+                                whatInstr.style.color = "#e2eeeb";
+                                ++instIdx;
+                            } else if( blueWasPoss ) {
+                                var otherOp1 = doc.getElementById("g0_4").value;
+                                var otherOp2 = doc.getElementById("g0_7").value;
+                                instrs[instIdx] = origOp + " has >= # " + dVal + "s than " + otherOp1 + " or "+ otherOp2 + ", so " + dVal + " can go in blue.";
+                                whatInstr = doc.getElementById("instr" + instIdx);
+                                whatInstr.innerHTML = instrs[instIdx];
+                                whatInstr.style.color = "#e2eeeb";
+                                ++instIdx;
+                            } else if( greenWasPoss ) {
+                                var otherOp1 = doc.getElementById("g0_1").value;
+                                var otherOp2 = doc.getElementById("g0_4").value;
+                                instrs[instIdx] = origOp + " has >= # " + dVal + "s than " + otherOp1 + " or "+ otherOp2 + ", so " + dVal + " can go in green.";
+                                whatInstr = doc.getElementById("instr" + instIdx);
+                                whatInstr.innerHTML = instrs[instIdx];
+                                whatInstr.style.color = "#e2eeeb";
+                                ++instIdx;
+                            }
+                        }
+                        var idx = instIdx;
+                        var wasPoss = new Array( whiteWasPoss, magentaWasPoss, 
+                                            yellowWasPoss, cyanWasPoss, 
+                                blueWasPoss, redWasPoss, greenWasPoss );
+                        var poss = new Array( whitePoss, magentaPoss, yellowPoss, 
+                                            cyanPoss, bluePoss, redPoss, greenPoss );
+                        var sections = new Array( "white", "magenta", "yellow", 
+                                            "cyan", "blue", "red", "green" );
+
+                        var raylen = wasPoss.length;
+
+                        for( var i = 0; i < raylen; ++i ) {
+                            if( wasPoss[i] && !poss[i] ) {
+                                    instrs[instIdx++] = "The " + dVal + "s in the " + sections[i] + " section are accounted for, so don't put it there."; 
+                                }
+                        }
+
+                        for( ; idx < instIdx; ++idx ) {
+                            whatInstr = doc.getElementById("instr" + idx);
+                            whatInstr.innerHTML = instrs[idx];
+                            whatInstr.style.color = "#e2eeeb";
+                        }
+                        var mx = doc.getElementsByClassName("instrs").length;
+                        while( instIdx < mx ) {
+                            whatInstr = doc.getElementById("instr" + instIdx);
+                            whatInstr.style.color = "#3961a2";
+                            ++instIdx;
+                        }
+                    } else {
+                        alert("leave that one where it was for now"); // fixit
                     }
                 }
                 break;
@@ -611,9 +616,18 @@ function checklineup() {
         var len = allboxes.length;
         //doc.getElementById("statusBox0").innerHTML = "len: " + len;
         for( var i = 0; i < len; ++i ) {
-            if( allboxes[i].getAttribute("moved") === "false" ) {
-                allLinedUp = false;
-                break;
+	    whatDBx = allboxes[i];
+            if( whatDBx.getAttribute("moved") === "false" ) {
+		// check if it's one of the ones that should not be moved
+            	var whatId = whatDBx.id;
+	        var idlen = whatId.length;
+            	var unPos = whatId.indexOf("_");
+            	var row = whatId.substr(1,unPos-1);
+            	var col = num(whatId.substr(unPos+1,idlen));
+		if( !(row === "0" && (col-1)%3 === 0) ) {
+                    allLinedUp = false;
+                    break;
+		}
             }
         }
         if( allLinedUp ) {
@@ -722,10 +736,10 @@ function draggerSetup(){
             var whatId = whatGhost.id;
             var idlen = whatId.length;
             var unPos = whatId.indexOf("_");
-            var row = whatId.substr(1,unPos);
-            var col = whatId.substr(unPos+1,idlen);
+            var row = whatId.substr(1,unPos-1);
+            var col = num(whatId.substr(unPos+1,idlen));
             var whatValue = whatGhost.value;
-            if( row === "0" || (num(col)%3 === 0 && whatValue !== "" ) ) {
+            if( row === "0" || (col%3 === 0 && whatValue !== "" ) ) {
                 whatGhost.style.background = "#4270b1"; // midrange
                 whatGhost.style.color = "#11397a";
                 var testInput = doc.createElement("input");
@@ -740,10 +754,16 @@ function draggerSetup(){
                 testInput.setAttribute("class","dragBox");
                 testInput.style.position = "absolute";
                 testInput.setAttribute("moved","false"); 
-                testInput.style.background = "#e2eeeb";
+		if( row === "0" && col%3 !== 0 ) {
+                    testInput.style.background = "#b4c5e2";
+		} else {
+                    testInput.style.background = "#e2eeeb";
+		}
+                //testInput.style.background = "orange";
                 testInput.style.color = "#3961a2";
                 testInput.style.left = xcoord + "px";
                 testInput.style.top = ycoord + "px";
+                //testInput.disabled = true;
             	doc.body.appendChild(testInput);
                 
             }
