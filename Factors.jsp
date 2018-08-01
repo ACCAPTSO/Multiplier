@@ -647,6 +647,7 @@ for( int row = 0; row < maxrow; ++row ) { %>
                 <td class="nomargin"><input class="onewide"  disabled></input></td>
                 <td class="nomargin"><input class="onewide"  disabled></input></td>
                 <td class="nomargin"><input class="onewide"  disabled></input></td>
+                <td class="nomargin"><input class="onewide"  disabled></input></td>
 	</tr>
     </table>
     </div>

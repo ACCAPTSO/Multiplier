@@ -54,18 +54,11 @@ var isTrue = true;
 // perhaps change onkeyup or onkeydown to eliminate typing 2 digits in one 
 // product box.  fixit
 //
-// how am i oing to do this? sometimes gcf is one, sometimes it's a single
-// factor, sometimes multiple things need to be multiplied together.
-// can i drag a factor or type in an answer and have either one be
-// accepted as an answer? fixit
-//
 // operands need to be draggable but not editable fixit
 //
 // drag to paper needs to click to position fixit
 //
 // need bar after dragged factors on paper fixit
-//
-// add t/f questions fixit
 //
 // add square root questions. make original factors draggable again. fixit
 //
@@ -73,11 +66,27 @@ var isTrue = true;
 //
 // focus on onewides least significant digit after numbers are moved fixit
 //
-var NQUES = 14; // 17;
+// paper needs intermediate boxes and 3 intermediate boxes for 2 digit multiplication fixit
+//
+// go over askQuestions with a fine toothed comb to make sure there are no duplicates fixit
+//
+// reduce the number of questions reguardless of duplicates fixit
+//
+
+var NQUES = 17; // assumes all three operands are perfect squares
 var alreadyasked = new Array(NQUES);
 
 var x = 0;
 var nSbxs = 28; 
+
+function askSqrt( val, root ) {
+    var doc = document;
+
+    doc.getElementById("finstr0").innerHTML = "What is the square root of " + val + "?";
+    doc.getElementById("finstr1").style.color = "white";
+    gprod = root;
+    doc.getElementById("leasDig").focus();
+}
 function blank() {
     var allBoxes = document.getElementsByClassName("onewide");
     var l = allBoxes.length;
@@ -103,15 +112,15 @@ function checkTorF( ev ) {
 
     if( ansBtn.id === "True" ) {
 	if( isTrue ) {
-            alert("Correct. Go Again?");
+            alert("Correct. Press 'Enter' to Continue?");
 	} else {
-            alert("No. Go Again?");
+            alert("No. Press 'Enter' to Continue?");
 	}
     } else {
 	if( !isTrue ) {
-            alert("Correct. Go Again?");
+            alert("Correct. Press 'Enter' to Continue?");
 	} else {
-            alert("No. Go Again?");
+            alert("No. Press 'Enter' to Continue?");
 	}
     }
     askQuestions();
@@ -154,14 +163,14 @@ function askTorF( op1, op2 ) {
     if( whatInstr ) {
         instruction1 = " is a multiple of ";
     }
-    var op1First = 2*mat.random() < 1;
-    if( op1First ) {
+    //var op1First = 2*mat.random() < 1;
+    //if( op1First ) {
         instruction1 = op1 + instruction1 + op2;
 	isTrue = whatInstr? op1%op2 === 0 : op2%op1 === 0;
-    } else {
-        instruction1 = op2 + instruction1 + op1;
-	isTrue = whatInstr? op2%op1 === 0 : op1%op2 === 0;
-    }
+    //} else {
+    //    instruction1 = op2 + instruction1 + op1;
+//	isTrue = whatInstr? op2%op1 === 0 : op1%op2 === 0;
+ //   }
 
     doc.getElementById("finstr0").innerHTML = "True or False:";
     doc.getElementById("finstr1").innerHTML = instruction1;
@@ -255,6 +264,7 @@ function askQuestions() {
         doc.getElementById("instr1").style.color = "#3961a2";
         doc.getElementById("instr2").style.color = "#3961a2";
 	whiteout();
+        doc.activeElement.blur();
 	return;
     }
     var mat = Math;
@@ -268,7 +278,7 @@ function askQuestions() {
     var greenfactor = num(doc.getElementById("greenfactor").value);
     var expAns = 0;
     
-    doc.getElementById("instr1").style.color = "#e2eeeb";
+    doc.getElementById("finstr1").style.color = "#11397a";
 
     var numAns = false;
     var showTorF = false;
@@ -279,19 +289,13 @@ function askQuestions() {
     }
 
     alreadyasked[whichQues] = true;
-    var whichBit = 1 << whichQues;
-    indicator = indicator | whichBit
-    validQues = true;
+//    var whichBit = 1 << whichQues;
+//    indicator = indicator | whichBit
 //    doc.getElementById("statusBox" + x).innerHTML = "whichQues: " + whichQues;
 //    x = (x + 1)%nSbxs;
 //    doc.getElementById("statusBox" + x).innerHTML = "indicator: " + indicator.toString(16);
 //    x = (x + 1)%nSbxs;
-	/*
-    for( var i = 0; i < lques; ++i ) {
-    	doc.getElementById("statusBox" + x).innerHTML = "alreadyasked[" + i + "]: " + alreadyasked[i];
-    	x = (x + 1)%nSbxs;
-	}
-	*/
+    validQues = true;
 
     if( whichQues < 1 ) {
 	blank();
@@ -343,6 +347,19 @@ function askQuestions() {
 	    doc.getElementById("leasDig").focus();
         //askNum( BLUE, RED, GREEN, expAns );
      } else if( whichQues < 5 ) {
+	blank();
+        var inStr0 = "What is the Lowest Common Multiple of ";
+        //doc.getElementById("instr0").innerHTML = inStr0;
+        doc.getElementById("finstr0").innerHTML = inStr0;
+        var inStr1 = doc.getElementById("g0_1").value;
+        inStr1 = inStr1 + " and " + doc.getElementById("g0_4").value;
+        //doc.getElementById("instr1").innerHTML = inStr1;
+        doc.getElementById("finstr1").innerHTML = inStr1;
+        expAns = whitefactor*yellowfactor*bluefactor*redfactor;
+        gprod = expAns*cyanfactor*magentafactor;
+	    doc.getElementById("leasDig").focus();
+        //askNum( BLUE, RED, expAns );
+     } else if( whichQues < 6 ) {
 	blank();
         var inStr0 = "What is the Lowest Common Multiple of ";
         //doc.getElementById("instr0").innerHTML = inStr0;
@@ -403,12 +420,45 @@ function askQuestions() {
             validQues = askTorF( doc.getElementById("g0_7").value, doc.getElementById("g0_4").value );
             //validQues = askTorF( GREEN, RED );
         } else {
+	    var sqCount = 0;
+	    var col = 1;
+	    var inc = 3;
+	    var id = "";
+	    var val = 0;
+	    var root = -1;
             if( whichQues < 15 ) {
-               validQues = askSqrt( BLUE );
+	        while( sqCount < 1 ) {
+		    id = "g0_" + col;
+		    val = num(doc.getElementById( id ).value);
+		    root = mat.sqrt( val );
+	            if( root === mat.floor( root ) ) {
+		        sqCount += 1;
+		    }
+		    col += inc;
+	        }
+                validQues = askSqrt( val, root );
             } else if( whichQues < 16 ) {
-               validQues = askSqrt( RED );
+	        while( sqCount < 2 ) {
+		    id = "g0_" + col;
+		    val = num(doc.getElementById( id ).value);
+		    root = mat.sqrt( val );
+	            if( root === mat.floor( root ) ) {
+		        sqCount += 1;
+		    }
+		    col += inc;
+	        }
+                validQues = askSqrt( val, root );
             } else if( whichQues < 17 ) {
-               validQues = askSqrt( GREEN );
+	        while( sqCount < 3 ) {
+		    id = "g0_" + col;
+		    val = num(doc.getElementById( id ).value);
+		    root = mat.sqrt( val );
+	            if( root === mat.floor( root ) ) {
+		        sqCount += 1;
+		    }
+		    col += inc;
+	        }
+                validQues = askSqrt( val, root );
             }
         }
     }
@@ -885,6 +935,7 @@ function setPaper() {
     var doc = document;
     var num = Number;
     var win = window;
+    var mat = Math;
     var instr0 = doc.getElementById("instr0");
     var instr1 = doc.getElementById("instr1");
     var instr2 = doc.getElementById("instr2");
@@ -908,7 +959,7 @@ function setPaper() {
     var imgWid = 1.1*imgHgt;
     graphP.style.width = imgWid + "px";
     var leftPos = 0.12*wid;
-	leftPos = 0.4*wid;
+	leftPos = 0.38*wid;
     frame.style.left = leftPos + "px";  
     frame.style.top = topPos + "px";
     var fansleft = 0.35*imgWid;
@@ -948,6 +999,22 @@ function setPaper() {
     gImageWidth = imgWid;
     gImageHeight = imgHgt;
     doingMults = false;
+    var howManySquares = 0;
+    var blueRoot = mat.sqrt(num(doc.getElementById("g0_1").value));
+    var redRoot = mat.sqrt(num(doc.getElementById("g0_4").value));
+    var greenRoot = mat.sqrt(num(doc.getElementById("g0_7").value));
+
+    if( blueRoot === mat.floor( blueRoot ) ) {
+	howManySquares += 1;
+    }
+    if( redRoot === mat.floor( redRoot ) ) {
+	howManySquares += 1;
+    }
+    if( greenRoot === mat.floor( greenRoot ) ) {
+	howManySquares += 1;
+    }
+    var lques = NQUES - 3 + howManySquares;
+    NQUES = lques;
     askQuestions();
 }
 function checkBackM( ev ) {
@@ -1072,14 +1139,14 @@ function checkBackM( ev ) {
             } else if( doingMults ) {
 		setPaper();
             } else { 
-		    alert("Correct. Go again?");
+		    alert("Correct. Press 'Enter' to continue.");
 		     var inBxs = doc.getElementsByClassName("onewide");
 		    var last = inBxs.length - 1;
 		    inBxs[last].focus();
                 askQuestions();
 	    }
 	} else {
-            alert("entered: " + answer + " should be: " + gprod);
+            alert("entered: " + answer + " should be: " + gprod + ". Press 'Enter' to continue.");
             var leasDig = -1;
             if( doingMults ) {
 		leasDig = len - 1;
