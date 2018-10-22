@@ -562,9 +562,9 @@
         </th>
         </tr>
         <tr>
-            <th colspan="8" id="instr1" class="instrs">What is a         
+            <th colspan="8" id="instr1" class="instrs">What         
                 <a href="/Tutorials/FindPrimes.jsp" class="ndx"> Prime </a>
-                number that evenly divides <%=blueOp%>? (Enter)
+                number evenly divides <%=blueOp%>? (Enter)
         </th>
         </tr>
 <%      for( int i = 2; i < 6; ++i ) {

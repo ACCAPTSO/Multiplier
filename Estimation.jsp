@@ -11,7 +11,7 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <%@ page import="java.util.regex.Pattern,javax.ejb.EJB,java.util.TreeMap" %>
-    <%@ page import="com.frieda.Question,com.frieda.Format" %>
+    <%@ page import="com.khalid.Question,com.khalid.Format" %>
     <link rel="stylesheet" href="Estimation.css" type="text/css">
     <title>Estimation</title>
     <script src="Estimation.js"></script>

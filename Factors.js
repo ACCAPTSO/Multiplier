@@ -955,11 +955,11 @@ function setPaper() {
     var imgHgt = 0.45*hgt;
     graphP.style.height = imgHgt + "px";
     frame.style.height = imgHgt + "px";
-    var topPos = hgt - imgHgt - 4;
+    var topPos = hgt - imgHgt - 10;
     var imgWid = 1.1*imgHgt;
     graphP.style.width = imgWid + "px";
     var leftPos = 0.12*wid;
-	leftPos = 0.38*wid;
+	leftPos = 0.34*wid;
     frame.style.left = leftPos + "px";  
     frame.style.top = topPos + "px";
     var fansleft = 0.35*imgWid;
@@ -969,7 +969,7 @@ function setPaper() {
     var finalIns1 = doc.getElementById("finstr1");
     finalIns0.style.color = "#11397a";
     finalIns1.style.color = "#11397a";
-    topPos = 20;
+    topPos = 24;
     finalIns0.style.top = topPos + "px";
     finalIns0.style.width = imgWid + "px";
     topPos = topPos + 20;
@@ -1265,7 +1265,7 @@ function check( ev ) {
                         nextOp.type = "text";
                         var nextVal = nextOp.value;
                         doc.getElementById("instr1").innerHTML = 
-                            "What is a prime number that evenly divides " + nextVal + "? (Enter)";
+                            "What prime number evenly divides " + nextVal + "? (Enter)";
                         var nextTd = nextOp.parentNode;
                         nextTd.style.borderLeftColor = "#11397a";
                         nextTd.style.borderBottomColor = "#11397a";
@@ -1301,7 +1301,7 @@ function check( ev ) {
                         //frame.appendChild(img);
                         frame.insertBefore(img, frame.childNodes[0]);
                         //doc.body.appendChild(frame);
-                        img.src = 'Images/factors2.png'; // "url('Images/factors.png')";
+                        img.src = 'Images/factors.png'; // "url('Images/factors.png')";
                         doc.getElementById("instr1").style.color = "#3961a2";
                         doc.getElementById("instr2").style.color = "#3961a2";
                         var links = document.getElementsByTagName("a");
@@ -1405,7 +1405,7 @@ function check( ev ) {
                 } else {
                     col = prevCol;
                     doc.getElementById("instr1").innerHTML = 
-                       "What is a prime number that evenly divides " + answer + "? (Enter)";
+                       "What prime number evenly divides " + answer + "? (Enter)";
                 }
                 var nextIn = doc.getElementById( "g" + row + "_" + col );
                 if( nextIn && !(!nextOp && answer === 1)) {
@@ -1465,7 +1465,7 @@ function movelabels() {
             hgt = num(w.outerHeight);
             //alert("w.fullscreen: " + fullscr + " screen.width: " + swid + " screen.height: " + shgt + " w.width: " + wid + " w.height: " + hgt );
             if( fullscr ||
-                ( wid === swid && shgt - 15 <= hgt && hgt <= shgt )) {
+                ( wid === swid && shgt - 65 <= hgt && hgt <= shgt )) {
                 //doc.getElementById("instr0").style.color = "#3961a2";
                 var dragExists = doc.getElementsByClassName("dragBox");
                 if( !dragExists[0] ) {
