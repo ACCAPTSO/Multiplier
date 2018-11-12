@@ -639,7 +639,7 @@ for( int row = 0; row < maxrow; ++row ) { %>
         <label id="finstr0"></label>       
         <label id="finstr1"></label>       
 	<table id="fans">
-	<tr>
+        <tr>
 		<td class="nomargin"><input class="onewide"  disabled></input></td>
                 <td class="nomargin"><input class="onewide"  disabled></input></td>
                 <td class="nomargin"><input class="onewide"  disabled></input></td>
@@ -649,7 +649,7 @@ for( int row = 0; row < maxrow; ++row ) { %>
                 <td class="nomargin"><input class="onewide"  disabled></input></td>
                 <td class="nomargin"><input class="onewide"  disabled></input></td>
 	</tr>
-    </table>
+        </table>
     </div>
     <input type="<%=itype%>" id="linedUp" value="false" class="shortbox">
     <table id="statusTable">

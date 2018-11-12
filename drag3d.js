@@ -141,9 +141,9 @@ function mouseDown(ev){
         var alreadyMoved = dHelp.getAttribute("moved");
         //document.getElementById("statusBox" + x).innerHTML = "i: " +i + " top: " + top + " bottom: " + bottom + " left: " + left + " right: " + right;
         //x = (x + 1)%10;
-        if( alreadyMoved === "false" &&
-                top < mousePos.y && mousePos.y < bottom &&
-                   left < mousePos.x && mousePos.x < right ) {
+        //if( alreadyMoved === "pos0" &&
+        if( top < mousePos.y && mousePos.y < bottom &&
+            left < mousePos.x && mousePos.x < right ) {
             var val = dHelp.value;
             var id = dHelp.id;
             //document.getElementById("statusBox" + x).innerHTML = "mousedown at target " + i + " value: " + val + " id: " + id;
@@ -175,6 +175,11 @@ function checklineup() {
     var num = Number;
     var mat = Math;
 
+    var dHelperIdx = dragBox;
+    var bxHgt = boxHeight;
+    var bxWid = boxWidth;
+    var dPosX = getPosition( dHelperIdx ).x + bxWid/2;
+    var dPosY = getPosition( dHelperIdx ).y + bxHgt/2;
     if( doc.getElementById("linedUp").value === "false") {
         var allLinedUp = true;
         // for every distinct prime factor
@@ -184,13 +189,13 @@ function checklineup() {
         var ncats = cats.length;
         //var sections = new Array( " white", " magenta", " yellow", 
         //                                " cyan", " blue", " red", " green" );
+
+
         for( var kdx = 0; kdx < ncats; ++kdx ) {
             var whatCat = cats[kdx];        
-            var dHelperIdx = dragBox;
             var dVal = num(dHelperIdx.value);
             if( num(whatCat.value) === dVal ) {
-                var bxHgt = boxHeight;
-                var bxWid = boxWidth;
+
                 var rad = radius;
                 var rCentX = redCenterX;
                 var rCentY = redCenterY;
@@ -315,8 +320,6 @@ function checklineup() {
                 var nGreen = num(greenBx.value);
                 var greenPoss = nGreen > 0 &&  origGreen;
 
-                var dPosX = getPosition( dHelperIdx ).x + bxWid/2;
-                var dPosY = getPosition( dHelperIdx ).y + bxHgt/2;
                 var distFromRed = mat.sqrt(mat.pow(dPosX-rCentX, 2) + mat.pow(dPosY-rCentY, 2));
                 var distFromGreen = mat.sqrt(mat.pow(dPosX-gCentX, 2) + mat.pow(dPosY-gCentY, 2));
                 var distFromBlue = mat.sqrt(mat.pow(dPosX-bCentX, 2) + mat.pow(dPosY-bCentY, 2));
@@ -333,7 +336,7 @@ function checklineup() {
                     setBox( dHelperIdx, dPosX, dPosY, leftPos, topPos );
                     dHelperIdx.setAttribute("name", "white");
                     dHelperIdx.setAttribute("position", topPos);
-                    dHelperIdx.setAttribute("moved", "true");
+                    dHelperIdx.setAttribute("moved", "pos1");
                     //alert("about to copy cols leftPos: " + leftPos + " topPos: " + topPos);
                     copyCols( dVal, col === 0, col === 3, col === 6, leftPos, topPos, "white" );
                     nWhite = nWhite - 1;
@@ -349,7 +352,7 @@ function checklineup() {
                     setBox( dHelperIdx, dPosX, dPosY, leftPos, topPos ); 
                     dHelperIdx.setAttribute("name", "magenta");
                     dHelperIdx.setAttribute("position", topPos);
-                    dHelperIdx.setAttribute("moved", "true");
+                    dHelperIdx.setAttribute("moved", "pos1");
                     copyCols( dVal, col === 0, col === 3, true, leftPos, topPos, "magenta" );
                     nMagenta = nMagenta - 1;
                     magentaBx.value = nMagenta;
@@ -364,7 +367,7 @@ function checklineup() {
                     setBox( dHelperIdx, dPosX, dPosY, leftPos, topPos );
                     dHelperIdx.setAttribute("name", "yellow");
                     dHelperIdx.setAttribute("position", topPos);
-                    dHelperIdx.setAttribute("moved", "true");
+                    dHelperIdx.setAttribute("moved", "pos1");
                     copyCols( dVal, true, col === 3, col === 6, leftPos, topPos, "yellow" );
                     nYellow = nYellow - 1;
                     yellowBx.value = nYellow;
@@ -379,7 +382,7 @@ function checklineup() {
                     setBox( dHelperIdx, dPosX, dPosY, leftPos, topPos ); 
                     dHelperIdx.setAttribute("name", "cyan");
                     dHelperIdx.setAttribute("position", topPos);
-                    dHelperIdx.setAttribute("moved", "true");
+                    dHelperIdx.setAttribute("moved", "pos1");
                     copyCols( dVal, col === 0, true, col === 6, leftPos, topPos, "cyan" );
                     nCyan = nCyan - 1;
                     cyanBx.value = nCyan;
@@ -612,12 +615,13 @@ function checklineup() {
             }
             //doc.getElementById("statusBox2").innerHTML = "after kdx loop";
         }
+
         var allboxes = doc.getElementsByClassName("dragBox");
         var len = allboxes.length;
         //doc.getElementById("statusBox0").innerHTML = "len: " + len;
         for( var i = 0; i < len; ++i ) {
 	    whatDBx = allboxes[i];
-            if( whatDBx.getAttribute("moved") === "false" ) {
+            if( whatDBx.getAttribute("moved") === "pos0" ) {
 		// check if it's one of the ones that should not be moved
             	var whatId = whatDBx.id;
 	        var idlen = whatId.length;
@@ -640,6 +644,34 @@ function checklineup() {
             dragBox  = null;
             getMultiplying();
         }
+    } else {
+        //alert("not original position");
+        var paperExists = doc.getElementById("graphPaper");
+        if( paperExists ) {
+            var frame = doc.getElementById("paperFrame");
+            var getstyle = getComputedStyle;
+            //var actual = getstyle(frame).width;
+            //var actual2 = getstyle(paperExists).width;
+            var leftSide = num(getstyle(frame).left.match(/[0-9]+/));
+            var paperWid = num(getstyle(paperExists).width.match(/[0-9]+/));
+            var rightSide = leftSide + paperWid;
+            var topSide = num(getstyle(frame).top.match(/[0-9]+/));
+            var bottomSide = 
+                topSide + num(getstyle(frame).height.match(/[0-9]+/));
+            if( leftSide < dPosX && 
+                dPosX <  rightSide &&
+                topSide < dPosY &&
+                dPosY < bottomSide ) {  
+                var fansWid = num(getComputedStyle(fans).width.match(/[0-9]+/));
+                var center = mat.floor(leftSide) - 2 + paperWid/2 + fansWid/2 - boxWidth; 
+                //alert("leftside = " + leftSide + " paperWid: " + paperWid + " fansWid: " + fansWid + " boxWidth: " + boxWidth);
+                //alert("on paper center = " + center);
+                dHelperIdx.style.left = center + "px";
+                dHelperIdx.setAttribute("moved", "pos2");
+                var leasDig = doc.getElementById("leasDig");
+                leasDig.focus();
+            }
+        }
     }
     dragBox  = null;
 }
@@ -647,14 +679,22 @@ function checklineup() {
 function setBox( dHelperIdx, dPosX, dPosY, leftPos, topPos ){
     if( dPosX !== leftPos ) { // line them up if not exact        
         dHelperIdx.style.left = leftPos + "px";
+        dHelperIdx.setAttribute("backHomeX", leftPos );
+        //var whatWasX = dHelperIdx.getAttribute("backHomeX");
+        //alert("whatWasX: " + whatWasX ); 
     }
     if( dPosY !== topPos ) {   
         dHelperIdx.style.top = topPos + "px";
+        dHelperIdx.setAttribute("backHomeY", topPos.toString() );
+        //var whatWasY = dHelperIdx.getAttribute("backHomeY");
+        //alert("whatWasY: " + whatWasY ); 
     }
     dHelperIdx.style.color = "#3961a2";
     dHelperIdx.style.border = "none";
-    dHelperIdx.setAttribute("moved", "true");
+    dHelperIdx.setAttribute("moved", "pos1");
 }
+// these don't all have a backHomeX, backHomeY and wind up undefined and in the 
+// top left corner. better to just remove them? fixit
 function copyCols( val, col0Moved, col3Moved, col6Moved, leftPos, topPos, boxName ) {
     var doc = document;
     var num = Number;
@@ -672,7 +712,7 @@ function copyCols( val, col0Moved, col3Moved, col6Moved, leftPos, topPos, boxNam
             //doc.getElementById("statusBox" + x).innerHTML = "i: " + i + " val: " + val + " id: " + bxid;
             //x = (x + 1)%14;
             if( bxVal === val ) {
-                var notMovedYet = whatBx.getAttribute("moved") === "false";
+                var notMovedYet = whatBx.getAttribute("moved") === "pos0";
                 //doc.getElementById("statusBox" + x).innerHTML = "i: " + i + " allBxLen: " + allBxLen + " notMovedYet: " + notMovedYet;
                 //x = (x + 1)%14;
                 //alert("notMovedYet: " + notMovedYet + " id: " + (whatBx.id));
@@ -689,9 +729,10 @@ function copyCols( val, col0Moved, col3Moved, col6Moved, leftPos, topPos, boxNam
                         whatBx.style.top = topPos + "px";
                         whatBx.style.color = "#3961a2";
                         whatBx.style.border = "none";
-                        whatBx.setAttribute("moved", "true");
+                        whatBx.setAttribute("moved", "pos1");
                         whatBx.setAttribute("name", boxName);
                         whatBx.setAttribute("position", topPos);
+                        // goin g to have to set backHomeX, backHomeY can forget position? fixit
                         col0Moved = col0Moved || bxCol === 0;
                         col3Moved = col3Moved || bxCol === 3;
                         col6Moved = col6Moved || bxCol === 6;
@@ -753,9 +794,11 @@ function draggerSetup(){
                 testInput.setAttribute("value",whatValue);
                 testInput.setAttribute("class","dragBox");
                 testInput.style.position = "absolute";
-                testInput.setAttribute("moved","false"); 
+                testInput.setAttribute("moved","pos0"); 
 		if( row === "0" && col%3 !== 0 ) {
                     testInput.style.background = "#b4c5e2";
+                    testInput.setAttribute("backHomeX",xcoord);
+                    testInput.setAttribute("backHomeY",ycoord);
 		} else {
                     testInput.style.background = "#e2eeeb";
 		}

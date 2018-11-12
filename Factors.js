@@ -45,7 +45,7 @@ var gYdiff = 0;
 var gImageWidth = 0;
 var gImageHeight = 0;
 var isTrue = true;
-    var indicator = 0;
+var indicator = 0;
 //  "oc delete all --all" from command line removes entire application
 //  so you can upload a new one
 //  delete build directory and distribution directory, rebuild practice.was
@@ -72,6 +72,8 @@ var isTrue = true;
 //
 // reduce the number of questions reguardless of duplicates fixit
 //
+// is there a problem with moved = pos0, pos1 where you might be able to move something
+// that shouldn't be moved fixit
 
 var NQUES = 17; // assumes all three operands are perfect squares
 var alreadyasked = new Array(NQUES);
@@ -91,9 +93,34 @@ function blank() {
     var allBoxes = document.getElementsByClassName("onewide");
     var l = allBoxes.length;
     for( var i = 0; i < l; ++i ) {
-        allBoxes[i].value = "";
-        allBoxes[i].style.color = "#11397a";
-        allBoxes[i].style.backgroundColor = "#d2edf9";
+        var whatBx = allBoxes[i];
+        whatBx.value = "";
+        whatBx.style.color = "#11397a";
+        whatBx.style.backgroundColor = "#d2edf9";
+    }
+    
+}
+function putBoxesBack() {
+    var dBoxes = document.getElementsByClassName("dragBox");
+    var l = dBoxes.length;
+    //alert("dBoxes length: " + l );
+    for( var i = 0; i < l; ++i ) {
+        var whatBx = dBoxes[i];  
+        if( whatBx ) {
+            var whatPos = whatBx.getAttribute("moved");
+            var displaced = whatPos === "pos2";
+            //alert("whatBx[" + i + "] position: " + whatPos + " displaced: " + displaced);
+            if( displaced ) {
+                var homeLeft = whatBx.getAttribute("backHomeX");
+                var homeTop = whatBx.getAttribute("backHomeY");
+                var styles = "color: fuschia;"
+                + "top: " + homeTop + "px;"
+                + "left: " + homeLeft + "px;";
+                whatBx.setAttribute("style", styles);
+                //alert("homeLeft: " + homeLeft + " homeTop: " + homeTop );
+                whatBx.setAttribute("moved", "pos1");
+            }
+        }
     }
 }
 function whiteout() {
@@ -264,6 +291,7 @@ function askQuestions() {
         doc.getElementById("instr1").style.color = "#3961a2";
         doc.getElementById("instr2").style.color = "#3961a2";
 	whiteout();
+        putBoxesBack();
         doc.activeElement.blur();
 	return;
     }
@@ -299,6 +327,7 @@ function askQuestions() {
 
     if( whichQues < 1 ) {
 	blank();
+        putBoxesBack();
         var inStr0 = "What is the Greatest Common Divisor of ";
         //doc.getElementById("instr0").innerHTML = inStr0;
         doc.getElementById("finstr0").innerHTML = inStr0;
@@ -311,6 +340,7 @@ function askQuestions() {
         //askNum( BLUE, RED, expAns );
     } else if( whichQues < 2 ) {
 	blank();
+        putBoxesBack();
         var inStr0 = "What is the Greatest Common Divisor of ";
         //doc.getElementById("instr0").innerHTML = inStr0;
         doc.getElementById("finstr0").innerHTML = inStr0;
@@ -323,6 +353,7 @@ function askQuestions() {
         //askNum( RED, GREEN, expAns );
      } else if( whichQues < 3 ) {
 	blank();
+        putBoxesBack();
         var inStr0 = "What is the Greatest Common Divisor of ";
         //doc.getElementById("instr0").innerHTML = inStr0;
         doc.getElementById("finstr0").innerHTML = inStr0;
@@ -335,6 +366,7 @@ function askQuestions() {
         //askNum( BLUE, GREEN, expAns );
      } else if( whichQues < 4 ) {
 	blank();
+        putBoxesBack();
         var inStr0 = "What is the Greatest Common Divisor of ";
         //doc.getElementById("instr0").innerHTML = inStr0;
         doc.getElementById("finstr0").innerHTML = inStr0;
@@ -348,6 +380,7 @@ function askQuestions() {
         //askNum( BLUE, RED, GREEN, expAns );
      } else if( whichQues < 5 ) {
 	blank();
+        putBoxesBack();
         var inStr0 = "What is the Lowest Common Multiple of ";
         //doc.getElementById("instr0").innerHTML = inStr0;
         doc.getElementById("finstr0").innerHTML = inStr0;
@@ -361,6 +394,7 @@ function askQuestions() {
         //askNum( BLUE, RED, expAns );
      } else if( whichQues < 6 ) {
 	blank();
+        putBoxesBack();
         var inStr0 = "What is the Lowest Common Multiple of ";
         //doc.getElementById("instr0").innerHTML = inStr0;
         doc.getElementById("finstr0").innerHTML = inStr0;
@@ -374,6 +408,7 @@ function askQuestions() {
         //askNum( RED, GREEN, expAns );
      } else if( whichQues < 7 ) {
 	blank();
+        putBoxesBack();
         var inStr0 = "What is the Lowest Common Multiple of ";
         //doc.getElementById("instr0").innerHTML = inStr0;
         doc.getElementById("finstr0").innerHTML = inStr0;
@@ -387,6 +422,7 @@ function askQuestions() {
         //askNum( BLUE, GREEN, expAns );
      } else if( whichQues < 8 ) {
 	blank();
+        putBoxesBack();
         var inStr0 = "What is the Lowest Common Multiple of ";
         //doc.getElementById("instr0").innerHTML = inStr0;
         doc.getElementById("finstr0").innerHTML = inStr0;
@@ -401,6 +437,7 @@ function askQuestions() {
         //askNum( BLUE, RED, GREEN, expAns );
      } else {
 	 whiteout();
+         putBoxesBack();
          if( whichQues < 9 ) {
             validQues = askTorF( doc.getElementById("g0_1").value, doc.getElementById("g0_4").value );
             //validQues = askTorF( BLUE, RED );
@@ -557,7 +594,7 @@ var inc = 1;
         } else { // nothing to multiply, go on to next section
             if( len > 0 ) {
 		for( var i = 0; i < len; ++i ) {
-                    factors[i].setAttribute("moved", "false" );
+                    factors[i].setAttribute("moved", "pos0" );
 		}
             }
             ndx = ndx + 1;
@@ -701,8 +738,10 @@ function multiply() {
         bar.setAttribute("name", "intermediateBar");
             
         // set up box
+        var dTbl = doc.createElement("table");
         var dBox = doc.createElement("tr");
-	dBox.setAttribute("name", "ntrmed");
+	dTbl.setAttribute("name", "ntrmed");
+        dTbl.setAttribute("class","ntrmed");
         cdx = ndx;
         if( fmdx === 0 ) {
             fmdx = mdx;
@@ -711,7 +750,8 @@ function multiply() {
         gprod = lprod;
         dBox.style.padding = 0;
         dBox.style.margin = 0;
-        doc.body.appendChild(dBox);
+        doc.body.appendChild(dTbl);
+        dTbl.appendChild(dBox);
         var nBxs = 7;
         var leasDig = 6;
 	for( var i = 0; i < nBxs; ++i ) {
@@ -722,7 +762,7 @@ function multiply() {
             var nput = doc.createElement("input");
             nput.style.margin = 0;
             nput.style.padding = 0;
-            nput.style.width = "0.6em";
+            nput.style.width = "0.58em";
             nput.onkeyup=passFocus;
             td.appendChild(nput);
             dBox.appendChild(td);
@@ -733,12 +773,12 @@ function multiply() {
             }
 	}
         ycoord = ycoord + 1;
-        dBox.style.top = ycoord + "px";
-        dBox.style.left = xcoord + "px";
+        dTbl.style.top = ycoord + "px";
+        dTbl.style.left = xcoord + "px";
         var relPos = factPos + 1; // position needs to be relative to original
                                   // positions of factors, not actual position
                                   // actual positions keep changing
-        dBox.setAttribute("position", relPos);
+        dTbl.setAttribute("position", relPos);
 
         // move the rest of the factors 
         for( var i = mdx; i < len; ++i ) {
@@ -750,7 +790,7 @@ function multiply() {
             }
             whatBx.style.top = ycoord + "px";          
         }
-        dBox.style.position = "absolute";
+        dTbl.style.position = "absolute";
         //dBox.setAttribute("moved","false"); 
         //dBox.setAttribute("class","dragBox");
     } else if( inc < len && len <= mdx ) { // last multiplication
@@ -758,11 +798,13 @@ function multiply() {
         gmdx = mdx;
         gprod = lprod;
         // set up final answer box
+        var dTbl = doc.createElement("table");
         var dBox = doc.createElement("tr");
-	dBox.setAttribute("name", "final");
+	dTbl.setAttribute("name", "final");
         dBox.style.padding = 0;
         dBox.style.margin = 0;
-        doc.body.appendChild(dBox);
+        doc.body.appendChild(dTbl);
+        dTbl.appendChild(dBox);
         var nBxs = 7;
         var leasDig = 6;
 	for( var i = 0; i < nBxs; ++i ) {
@@ -773,7 +815,7 @@ function multiply() {
             var nput = doc.createElement("input");
             nput.style.margin = 0;
             nput.style.padding = 0;
-            nput.style.width = "0.6em";
+            nput.style.width = "0.58em";
             nput.onkeyup=passFocus;
             td.appendChild(nput);
             dBox.appendChild(td);
@@ -789,13 +831,15 @@ function multiply() {
         var ydiff = 0.03*num(window.innerHeight);
         
         ycoord = ycoord + ydiff;
-        dBox.style.top = ycoord + "px";
-        dBox.style.left = xcoord + "px";
-        dBox.style.position = "absolute";
-        dBox.setAttribute("moved","false"); 
+        dTbl.style.top = ycoord + "px";
+        dTbl.style.left = xcoord + "px";
+        dTbl.style.position = "absolute";
+        dTbl.setAttribute("moved","pos1"); 
+        dTbl.setAttribute("backHomeX", xcoord );
+        dTbl.setAttribute("backHomeY", ycoord );
         dBox.type="text";
-        dBox.setAttribute("class","dragBox");
-        dBox.setAttribute("id", whatColor);
+        dTbl.setAttribute("class","dragBox");
+        dTbl.setAttribute("id", whatColor);
         ycoord = ycoord + 1;
         var bar = doc.createElement("div");
         doc.body.appendChild( bar );
@@ -952,17 +996,23 @@ function setPaper() {
     
     var hgt = num(win.innerHeight);
     var wid = num(win.innerWidth);
-    var imgHgt = 0.45*hgt;
+    var imgHgt = mat.floor(0.45*hgt);
     graphP.style.height = imgHgt + "px";
     frame.style.height = imgHgt + "px";
     var topPos = hgt - imgHgt - 10;
-    var imgWid = 1.1*imgHgt;
+    var imgWid = mat.floor(1.1*imgHgt);
+    if( imgWid%2 != 0 ) {
+        imgWid += 1;
+    }
     graphP.style.width = imgWid + "px";
     var leftPos = 0.12*wid;
-	leftPos = 0.34*wid;
+	leftPos = mat.round(0.34*wid);
     frame.style.left = leftPos + "px";  
     frame.style.top = topPos + "px";
-    var fansleft = 0.35*imgWid;
+    var pfansleft = 0.35*imgWid;
+    var fansWid = num(getComputedStyle(fans).width.match(/[0-9]+/));
+    var fansleft = imgWid/2 - fansWid/2; // centered
+    //alert("imgWid: " + imgWid + " fansWid: " + fansWid + " fansleft: " + fansleft + " pfansleft: " + pfansleft);
     var fleftStr = fansleft + "px";
     fans.style.left = fleftStr;
     var finalIns0 = doc.getElementById("finstr0");
@@ -977,6 +1027,7 @@ function setPaper() {
     finalIns1.style.width = imgWid + "px";
     frame.insertBefore(graphP, frame.childNodes[0]);
     graphP.src = 'Images/allwhite.png';
+    graphP.id = "graphPaper";
 
     var ansBx = doc.getElementsByClassName("onewide");
     var nBxs = ansBx.length;
@@ -1025,6 +1076,8 @@ function checkBackM( ev ) {
         var num = Number;
 	var parent = ansBx.parentNode;
 	var grandparent = parent.parentNode;
+        var greatgparent = grandparent.parentNode;
+        var ggparent = greatgparent.parentNode;
 	var parents = grandparent.childNodes;
         var parentNode = parents[0];
         var boxLen = 0;
@@ -1051,7 +1104,10 @@ function checkBackM( ev ) {
 	}
         
 	if( answer === gprod ) {
-            var bxName = grandparent.getAttribute("name");
+            //var grandparenttag = grandparent.tagName;
+            //var greatgrandparenttag = greatgparent.tagName;
+            var bxName = greatgparent.getAttribute("name");
+            //alert("grandparenttag: " + grandparenttag + " greatgrandparenttag: " + greatgrandparenttag + "bxName: " + bxName);
             //doc.getElementById("statusBox" + x).innerHTML = "bxName: " + bxName;
             //x = (x + 1)%nSbxs;
             if( bxName === "final" ) {
@@ -1108,13 +1164,14 @@ function checkBackM( ev ) {
                         }
                     }
                     ycoord = ycoord + ydiff;
-                    var whatColor = grandparent.getAttribute("id");
+                    var whatColor = greatgparent.getAttribute("id");
                     var barName = whatColor + "Bar";
                     
                     var whatBar = doc.getElementById(barName);
                     whatBar.style.top = ycoord + "px";
                     ycoord = ycoord + 2;
-                    grandparent.style.top = ycoord + "px";
+                    greatgparent.style.top = ycoord + "px";
+                    greatgparent.setAttribute("backHomeY", ycoord)
                 }
                 var bars = doc.getElementsByName("intermediateBar");
                 var bLen = bars.length;
@@ -1511,7 +1568,7 @@ function movelabels() {
         var dboxLen = allDragBoxes.length;   
         for( var i = 0; i < dboxLen; ++i ) {
             var whatBx = allDragBoxes[i];
-            if( whatBx.getAttribute("moved") === "true") {
+            if( whatBx.getAttribute("moved") === "pos1") {
                 var pos = getPos( whatBx );
                 var xPos = pos.x + leftPos - prevX;
                 var yPos = pos.y + topPos - prevY;
